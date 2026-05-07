@@ -192,6 +192,23 @@ LostNumberGame.prototype.saveGameState = function () {
     // grid v2: cell objects с freeze/merged-флагами.
     const gridV2 = this._serializeGridV2();
 
+    // legacy compat поле {idx: turns}. Authoritative источник — freezeSystem.frozen.
+    // Падаем на legacy this.frozenCells только если freezeSystem недоступен.
+    const legacyFrozenCells =
+      this.freezeSystem && this.freezeSystem.frozen instanceof Map
+        ? Object.fromEntries(
+            [...this.freezeSystem.frozen.entries()]
+              .filter(([idx, data]) => {
+                const i = Number(idx);
+                const t = data ? Number(data.turns) : NaN;
+                return Number.isFinite(i) && i >= 0 && Number.isFinite(t) && t > 0;
+              })
+              .map(([idx, data]) => [Number(idx), Number(data.turns)])
+          )
+        : this.frozenCells instanceof Map
+          ? Object.fromEntries(this.frozenCells)
+          : {};
+
     // ВАЖНО: Сохраняем ТОЛЬКО игровые данные, НЕ настройки
     const state = {
       // version — legacy save-format marker; gridSchemaVersion управляет grid-структурой.
@@ -206,9 +223,7 @@ LostNumberGame.prototype.saveGameState = function () {
       pendingTransition: this.pendingTransition,
       maxReachedNumber: this.maxReachedNumber,
       carryNumber: this.carryNumber,
-      // legacy compat: external systems могут читать idx->turns map.
-      // freezeSystem.frozen Map при load восстанавливается из cell flags.
-      frozenCells: this.frozenCells instanceof Map ? Object.fromEntries(this.frozenCells) : {},
+      frozenCells: legacyFrozenCells,
       stats: this.stats,
       achievements: this.achievements,
       wheelSpinsToday: this.wheelSpinsToday,
