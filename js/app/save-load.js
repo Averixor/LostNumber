@@ -133,6 +133,9 @@ LostNumberGame.prototype.restoreFromState = function (state) {
     this.xpMultiplierTurns = state.xpMultiplierTurns || 0;
 
     const gridSchemaVersion = Number(state.gridSchemaVersion) || 1;
+    // _syncFreezeSystemAfterLoad() читает это, чтобы для v2-сейвов отключить
+    // legacy fallback (там cell flags — authoritative источник).
+    this._lastLoadedGridSchemaVersion = gridSchemaVersion;
     if (gridSchemaVersion >= 2 && Array.isArray(state.grid)) {
       this.grid = this._parseGridV2(state.grid);
     } else {
@@ -319,7 +322,10 @@ LostNumberGame.prototype._syncFreezeSystemAfterLoad = function () {
       }
     }
 
-    if (this.frozenCells instanceof Map) {
+    // legacy fallback только для v1-сейвов: в v2 cell flags — authoritative,
+    // а stale legacy frozenCells map может создать фантомные заморозки.
+    const schemaVersion = Number(this._lastLoadedGridSchemaVersion) || 1;
+    if (schemaVersion < 2 && this.frozenCells instanceof Map) {
       for (const [idxRaw, turnsRaw] of this.frozenCells.entries()) {
         const idx = Number(idxRaw);
         const turns = Number(turnsRaw);
