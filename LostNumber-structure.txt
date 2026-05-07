@@ -21,16 +21,11 @@ LostNumber/
 │   │   └── SeededRandom.js  # Детерминированный ГСЧ (с зерном)
 │   ├── game/                # Игровая логика
 │   │   ├── achievements.js  # Достижения, трекинг
-│   │   ├── AntiStuckSystem.js # Система против застревания
 │   │   ├── bonuses.js       # Бонусы, усилители
 │   │   ├── daily.js         # Ежедневные задания/события
-│   │   ├── DailyMoodSystem.js # Система настроения/графика
 │   │   ├── grid.js          # Логика игровой сетки
-│   │   ├── MicroComboSystem.js # Система микрокомбинаций
-│   │   ├── SmartFocusSystem.js # Умная система фокуса
 │   │   ├── state.js         # Состояние игры
 │   │   ├── stats.js         # Статистика игрока
-│   │   ├── TutorSystem.js   # Обучение, туториал
 │   │   └── wheel.js         # Колесо фортуны/рулетка
 │   ├── system/              # Системные утилиты
 │   │   ├── analytics.js     # Аналитика (метрики)
@@ -45,7 +40,6 @@ LostNumber/
 │   │   ├── DebugOverlay.js  # Оверлей для отладки
 │   │   ├── menu.js          # Меню, навигация
 │   │   ├── overlays.js      # Оверлеи, попапы
-│   │   ├── PublicAchievements.js # Публичные достижения
 │   │   ├── screens.js       # Экраны игры
 │   │   └── settings.js      # Настройки
 │   └── main.js              # Главный файл, точка входа
