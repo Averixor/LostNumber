@@ -398,13 +398,8 @@ class GameState {
     try {
       const base = this.baseXPByLen(len);
       let xp = Math.max(0, Math.round(base * this.levelXPMult()));
-
       if (this.xpMultiplier > 1 && this.xpMultiplierTurns > 0) {
         xp = Math.round(xp * this.xpMultiplier);
-        this.xpMultiplierTurns--;
-        if (this.xpMultiplierTurns <= 0) {
-          this.xpMultiplier = 1;
-        }
       }
 
       return xp;

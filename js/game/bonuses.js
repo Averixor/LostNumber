@@ -25,7 +25,10 @@ class BonusManager {
       }
 
       if (type === 'shuffle') {
-        this.game.bonusInventory.shuffle--;
+        if (!this.game.consumeBonus('shuffle', 1)) {
+          this.showMessage(this.game.t('no_bonus'));
+          return;
+        }
         this.game.stats.bonusesUsed = (this.game.stats.bonusesUsed || 0) + 1;
 
         // Анимированное перемешивание с обработкой ошибок
@@ -137,7 +140,12 @@ class BonusManager {
         return;
       }
 
-      this.game.bonusInventory.destroy--;
+      if (!this.game.consumeBonus('destroy', 1)) {
+        this.game.activeBonus = null;
+        this.updateBonusesUI();
+        this.showMessage(this.game.t('no_bonus'));
+        return;
+      }
       this.game.stats.bonusesUsed = (this.game.stats.bonusesUsed || 0) + 1;
 
       const removedCells = [{ x, y }];
@@ -215,7 +223,12 @@ class BonusManager {
         return;
       }
 
-      this.game.bonusInventory.explosion--;
+      if (!this.game.consumeBonus('explosion', 1)) {
+        this.game.activeBonus = null;
+        this.updateBonusesUI();
+        this.showMessage(this.game.t('no_bonus'));
+        return;
+      }
       this.game.stats.bonusesUsed = (this.game.stats.bonusesUsed || 0) + 1;
 
       const removedCells = [];
