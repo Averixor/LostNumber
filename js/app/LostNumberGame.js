@@ -27,6 +27,7 @@ class LostNumberGame {
     this.rng = null;
 
     this.core = new GameCore(this);
+    this._initContext();
 
     this.initSeededRandom();
 
@@ -40,6 +41,7 @@ class LostNumberGame {
 
     // Привязка менеджеров
     this.state.gridManager = this.gridManager;
+    this.refreshContextRefs();
 
     // Инициализация
     this.createFloatingNumbers = this.screenManager.createFloatingNumbers.bind(this.screenManager);
@@ -212,5 +214,37 @@ class LostNumberGame {
         configurable: false,
       });
     }
+  }
+
+  _initContext() {
+    this.context = {
+      game: this,
+      state: this.state,
+      core: this.core || null,
+      gridManager: this.gridManager || null,
+      storageManager: this.storageManager || null,
+      audioManager: this.audioManager || null,
+      eventBus: typeof window !== 'undefined' ? window.EventBus || null : null,
+    };
+  }
+
+  refreshContextRefs() {
+    if (!this.context) {
+      this._initContext();
+    }
+
+    this.context.game = this;
+    this.context.state = this.state;
+    this.context.core = this.core || null;
+    this.context.gridManager = this.gridManager || null;
+    this.context.storageManager = this.storageManager || null;
+    this.context.audioManager = this.audioManager || null;
+    this.context.eventBus = typeof window !== 'undefined' ? window.EventBus || null : null;
+
+    return this.context;
+  }
+
+  getContext() {
+    return this.context || this.refreshContextRefs();
   }
 }

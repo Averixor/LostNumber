@@ -24,6 +24,8 @@ GridManager.prototype.initGame = function (levelIndex = 0) {
     this.game.setGamePhase('playing');
     this.game.activeBonus = null;
     this.correctMoves = 0;
+    const ctx = this.game?.getContext?.() || this.game?.context || {};
+    const state = ctx.state || this.game?.state || this.game;
 
     // Инициализация сетки с проверкой
     this.game.grid = [];
@@ -32,7 +34,7 @@ GridManager.prototype.initGame = function (levelIndex = 0) {
       this.game.grid[x] = [];
       for (let y = 0; y < this.game.GRID_H; y++) {
         let num;
-        const genFunc = this.game.generateCellNumber || this.game.state?.generateCellNumber;
+        const genFunc = this.game.generateCellNumber || state?.generateCellNumber;
 
         try {
           do {
@@ -75,7 +77,7 @@ GridManager.prototype.initGame = function (levelIndex = 0) {
 
       if (found.length === 0) {
         try {
-          const rng = this.game.state && this.game.state.rng ? this.game.state.rng : null;
+          const rng = state && state.rng ? state.rng : null;
           let rx = rng ? rng.nextInt(this.game.GRID_W) : Math.floor(Math.random() * this.game.GRID_W);
           let ry = rng ? rng.nextInt(this.game.GRID_H) : Math.floor(Math.random() * this.game.GRID_H);
 
