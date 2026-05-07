@@ -133,8 +133,8 @@ LostNumberGame.prototype.handlePointerDown = function (e) {
     this.selected = [posCell];
     Chain.numbers = [this.grid[posCell.x][posCell.y].number];
     updateChainSum();
-    this.updatePreviewBubble();
-    this.gridManager.render();
+    this._schedulePreviewBubbleUpdate?.();
+    this._applySelectionHighlight?.(null, posCell);
   } catch (error) {
     ErrorHandler.handle(error, { type: 'pointer_down', clientX: e.clientX, clientY: e.clientY });
   }
@@ -157,11 +157,11 @@ LostNumberGame.prototype.handlePointerMove = function (e) {
     if (len >= 2) {
       const prev = this.selected[len - 2];
       if (prev.x === posCell.x && prev.y === posCell.y) {
-        this.selected.pop();
+        const removed = this.selected.pop();
         Chain.numbers.pop();
         updateChainSum();
-        this.updatePreviewBubble();
-        this.gridManager.render();
+        this._schedulePreviewBubbleUpdate?.();
+        if (removed) this._applySelectionHighlight?.(removed, null);
         return;
       }
     }
@@ -183,8 +183,8 @@ LostNumberGame.prototype.handlePointerMove = function (e) {
     Chain.numbers.push(newNum);
     updateChainSum();
 
-    this.updatePreviewBubble();
-    this.gridManager.render();
+    this._schedulePreviewBubbleUpdate?.();
+    this._applySelectionHighlight?.(null, posCell);
   } catch (error) {
     ErrorHandler.handle(error, { type: 'pointer_move', clientX: e.clientX, clientY: e.clientY });
   }
@@ -255,7 +255,12 @@ LostNumberGame.prototype.resetChain = function (reason = null) {
       this.showMessage(this.t('chain_invalid'));
     }
 
-    this.gridManager.render();
+    // На мобільних повний re-render тут дорогий і не потрібен:
+    // ми вже очистили selected/highlight в DOM вище.
+    const gridDiv = document.getElementById('grid');
+    if (!gridDiv) {
+      this.gridManager.render();
+    }
   } catch (error) {
     ErrorHandler.handle(error, { type: 'reset_chain', reason });
   }
