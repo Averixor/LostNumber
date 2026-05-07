@@ -349,16 +349,17 @@ class GameState {
   }
 
   getWheelCost() {
+    // Узгоджено з WheelManager.getWheelCost (BASE 25, FREE 5, STEP 10).
+    // Метод залишено для зворотної сумісності з прив'язками; реальна ціна — у WheelManager.
     try {
       const BASE = 25;
       const FREE = 5;
-      const STEP = 15;
-
-      if (this.wheelSpinsToday < FREE) return BASE;
-      return BASE + (this.wheelSpinsToday - FREE) * STEP;
+      const STEP = 10;
+      const spins = this.wheelSpinsToday || 0;
+      return spins < FREE ? BASE : BASE + (spins - FREE) * STEP;
     } catch (error) {
       ErrorHandler.warn('getWheelCost failed', { wheelSpinsToday: this.wheelSpinsToday, error });
-      return BASE;
+      return 25;
     }
   }
 

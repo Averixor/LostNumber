@@ -112,15 +112,19 @@ class GameCore {
 
   getWheelCost() {
     try {
+      const wm = this.game?.wheelManager;
+      if (wm && typeof wm.getWheelCost === 'function') {
+        return wm.getWheelCost();
+      }
+      // Fallback: те саме, що в WheelManager (BASE 25, FREE 5, STEP 10).
       const BASE = 25;
       const STEP = 10;
       const FREE = 5;
-
-      if (this.game.wheelSpinsToday < FREE) return BASE;
-      return BASE + (this.game.wheelSpinsToday - FREE) * STEP;
+      const spins = this.game?.wheelSpinsToday || 0;
+      return spins < FREE ? BASE : BASE + (spins - FREE) * STEP;
     } catch (error) {
       ErrorHandler.warn('getWheelCost failed', error);
-      return BASE; // Возвращаем базовую стоимость при ошибке
+      return 25;
     }
   }
 

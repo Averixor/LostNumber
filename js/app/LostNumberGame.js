@@ -16,6 +16,9 @@ class LostNumberGame {
     // Инициализация игрового состояния
     this.state = new GameState();
 
+    // Проксируем ТОЛЬКО state-data (без runtime/service полей).
+    this._bindStateProxy();
+
     // Seeded RNG (инициализируется в main.js)
     this.sessionSeed = 0;
     this.dailySeed = 0;
@@ -25,9 +28,6 @@ class LostNumberGame {
     this.core = new GameCore(this);
 
     this.initSeededRandom();
-
-    // Копируем свойства из состояния для обратной совместимости
-    Object.assign(this, this.state);
 
     // Инициализация менеджеров игровых систем
     this.gridManager = new GridManager(this);
@@ -51,7 +51,7 @@ class LostNumberGame {
 
     // Явное копирование методов из GameState
     this.formatNumber = this.state.formatNumber.bind(this.state);
-    this.getWheelCost = this.state.getWheelCost.bind(this.state);
+    this.getWheelCost = this.wheelManager.getWheelCost.bind(this.wheelManager);
     this.checkWheelDailyReset = this.state.checkWheelDailyReset.bind(this.state);
     this.baseXPByLen = this.state.baseXPByLen.bind(this.state);
     this.levelXPMult = this.state.levelXPMult.bind(this.state);
@@ -145,5 +145,59 @@ class LostNumberGame {
     }
 
     document.addEventListener('contextmenu', (e) => e.preventDefault());
+  }
+
+  _bindStateProxy() {
+    const stateKeys = [
+      'GRID_W',
+      'GRID_H',
+      'MAX_DAILY_SPINS',
+      'levels',
+      'MAX_LEVEL',
+      'currentLevel',
+      'xp',
+      'xpMultiplier',
+      'xpMultiplierTurns',
+      'maxReachedNumber',
+      'carryNumber',
+      'grid',
+      'selected',
+      'isDragging',
+      'activeBonus',
+      'bonusInventory',
+      'frozenCells',
+      'stats',
+      'achievements',
+      'pendingTransition',
+      'hasSave',
+      'wheelSpinsToday',
+      'lastWheelDay',
+      'animationEnabled',
+      'lang',
+      'soundEnabled',
+      'theme',
+      'sessionSeed',
+      'dailySeed',
+      'currentSeed',
+      'rng',
+      'screenState',
+      'gamePhase',
+      'gameState',
+      'dailyQuests',
+    ];
+
+    stateKeys.forEach((key) => {
+      const descriptor = Object.getOwnPropertyDescriptor(this, key);
+      if (descriptor && descriptor.configurable === false) return;
+
+      Object.defineProperty(this, key, {
+        enumerable: true,
+        configurable: true,
+        get: () => this.state[key],
+        set: (v) => {
+          this.state[key] = v;
+        },
+      });
+    });
   }
 }
