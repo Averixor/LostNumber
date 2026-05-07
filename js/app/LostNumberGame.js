@@ -18,6 +18,7 @@ class LostNumberGame {
 
     // Проксируем ТОЛЬКО state-data (без runtime/service полей).
     this._bindStateProxy();
+    this._lockStateReference();
 
     // Seeded RNG (инициализируется в main.js)
     this.sessionSeed = 0;
@@ -199,5 +200,17 @@ class LostNumberGame {
         },
       });
     });
+  }
+
+  _lockStateReference() {
+    const descriptor = Object.getOwnPropertyDescriptor(this, 'state');
+    if (!descriptor || descriptor.writable !== false) {
+      Object.defineProperty(this, 'state', {
+        value: this.state,
+        writable: false,
+        enumerable: true,
+        configurable: false,
+      });
+    }
   }
 }
