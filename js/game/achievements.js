@@ -37,7 +37,8 @@ class AchievementManager {
     ];
 
     for (const { key, icon } of achievementsList) {
-      const achievement = this.game.achievements[key];
+      const achievement = this.game.getAchievement(key);
+      if (!achievement) continue;
       const item = document.createElement('div');
       item.className = `achievement-item ${achievement.unlocked ? '' : 'locked'}`;
       item.innerHTML = `

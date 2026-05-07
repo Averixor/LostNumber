@@ -135,8 +135,8 @@ GridManager.prototype.performFullRender = function () {
           }
         } else {
           // Fallback для обратной совместимости
-          isFrozen = this.game.frozenCells?.has(idx) || cellData.frozen;
-          freezeTurns = this.game.frozenCells?.get(idx) || cellData.freezeTurns || 5;
+          isFrozen = this.game.isCellFrozen(idx) || cellData.frozen;
+          freezeTurns = this.game.getFrozenTurns(idx) || cellData.freezeTurns || 5;
           freezeMaxTurns = cellData.freezeMaxTurns || 5;
         }
 
@@ -191,9 +191,7 @@ GridManager.prototype.performFullRender = function () {
       ErrorHandler.debug('Grid rendered', {
         count: this.renderCount,
         cells: this.game.GRID_W * this.game.GRID_H,
-        frozenCells: this.game.freezeSystem
-          ? this.game.freezeSystem.getStats().currentlyFrozen
-          : this.game.frozenCells?.size || 0,
+        frozenCells: this.game.getFrozenCount(),
       });
     }
   } catch (error) {

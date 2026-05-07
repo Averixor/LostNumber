@@ -162,6 +162,42 @@
     }
   };
 
+  // --- Achievements read-only facade ---
+  // Source of truth: this.achievements (owner: state.js / save-load.js).
+  // Не добавлять write-методы — прогресс пишет только AchievementManager.
+
+  LostNumberGame.prototype.getAchievement = function (key) {
+    try {
+      const a = this.achievements;
+      if (!a || typeof a !== 'object') return null;
+      return Object.prototype.hasOwnProperty.call(a, key) ? a[key] : null;
+    } catch (error) {
+      ErrorHandler.warn('getAchievement failed', { error, key });
+      return null;
+    }
+  };
+
+  LostNumberGame.prototype.hasAchievement = function (key) {
+    try {
+      const a = this.getAchievement(key);
+      return a !== null && a.unlocked === true;
+    } catch (error) {
+      ErrorHandler.warn('hasAchievement failed', { error, key });
+      return false;
+    }
+  };
+
+  LostNumberGame.prototype.getAchievementsSnapshot = function () {
+    try {
+      const a = this.achievements;
+      if (!a || typeof a !== 'object') return {};
+      return Object.assign({}, a);
+    } catch (error) {
+      ErrorHandler.warn('getAchievementsSnapshot failed', { error });
+      return {};
+    }
+  };
+
   // --- Frozen cells read-only facade ---
   // Source of truth: this.freezeSystem (FreezeSystem), fallback: this.frozenCells (Map).
   // Не добавлять методы записи — owner grid-freeze.js / freezeSystem.js.
