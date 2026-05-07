@@ -70,6 +70,15 @@ class WheelManager {
     ErrorHandler.info('WheelManager initialized', { sectorCount: this.wheelSectors.length });
   }
 
+  // Deterministic RNG facade for wheel/gift selection.
+  // Falls back to Math.random() only if the game RNG is unavailable.
+  getRandomInt(max) {
+    if (this.game && typeof this.game.nextRandomInt === 'function') {
+      return this.game.nextRandomInt(max);
+    }
+    return Math.floor(Math.random() * max);
+  }
+
   getWheelCost() {
     try {
       const BASE = 25;
@@ -312,7 +321,7 @@ class WheelManager {
 
       // Выбор случайного сектора
       const sectorCount = this.wheelSectors.length;
-      const randomIndex = Math.floor(Math.random() * sectorCount);
+      const randomIndex = this.getRandomInt(sectorCount);
       const selectedSector = this.wheelSectors[randomIndex];
 
       // Расчет вращения
@@ -436,7 +445,7 @@ class WheelManager {
             { type: 'bonus', value: 'explosion', amount: 2, messageKey: 'wheel_gift_explosion2' },
             { type: 'xp', value: 30, messageKey: 'wheel_gift_xp30' },
           ];
-          const gift = gifts[Math.floor(Math.random() * gifts.length)];
+          const gift = gifts[this.getRandomInt(gifts.length)];
 
           if (gift.type === 'xp') {
             this.game.xp += gift.value;
