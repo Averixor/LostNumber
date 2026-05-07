@@ -29,7 +29,7 @@ class BonusManager {
           this.showMessage(this.game.t('no_bonus'));
           return;
         }
-        this.game.stats.bonusesUsed = (this.game.stats.bonusesUsed || 0) + 1;
+        this.game.incrementStat('bonusesUsed', 1);
 
         // Анимированное перемешивание с обработкой ошибок
         this.animatedShuffleGrid();
@@ -146,7 +146,7 @@ class BonusManager {
         this.showMessage(this.game.t('no_bonus'));
         return;
       }
-      this.game.stats.bonusesUsed = (this.game.stats.bonusesUsed || 0) + 1;
+      this.game.incrementStat('bonusesUsed', 1);
 
       const removedCells = [{ x, y }];
 
@@ -229,7 +229,7 @@ class BonusManager {
         this.showMessage(this.game.t('no_bonus'));
         return;
       }
-      this.game.stats.bonusesUsed = (this.game.stats.bonusesUsed || 0) + 1;
+      this.game.incrementStat('bonusesUsed', 1);
 
       const removedCells = [];
       for (let dx = -1; dx <= 1; dx++) {

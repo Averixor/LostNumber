@@ -279,7 +279,7 @@ class WheelManager {
       // Списание XP
       this.game.xp -= cost;
       this.game.wheelSpinsToday = (this.game.wheelSpinsToday || 0) + 1;
-      this.game.stats.wheelSpins = (this.game.stats.wheelSpins || 0) + 1;
+      this.game.incrementStat('wheelSpins', 1);
 
       // Обновление достижений
       if (this.game.achievementManager) {
@@ -400,7 +400,7 @@ class WheelManager {
         case 'xp':
           if (typeof sector.value === 'number') {
             this.game.xp += sector.value;
-            this.game.stats.totalXP = (this.game.stats.totalXP || 0) + Math.max(0, sector.value);
+            this.game.incrementStat('totalXP', Math.max(0, sector.value));
             this.game.showMessage(
               this.game.t(sector.messageKey) || `XP: ${sector.value > 0 ? '+' : ''}${sector.value}`
             );
@@ -440,7 +440,7 @@ class WheelManager {
 
           if (gift.type === 'xp') {
             this.game.xp += gift.value;
-            this.game.stats.totalXP = (this.game.stats.totalXP || 0) + gift.value;
+            this.game.incrementStat('totalXP', gift.value);
             this.game.showMessage(this.game.t(gift.messageKey) || `Gift: +${gift.value} XP`);
           } else if (gift.type === 'bonus' && gift.value) {
             this.game.grantBonus(gift.value, gift.amount);
@@ -469,7 +469,7 @@ class WheelManager {
           } else if (sector.fallbackXP) {
             // fallback — XP
             this.game.xp += sector.fallbackXP;
-            this.game.stats.totalXP = (this.game.stats.totalXP || 0) + sector.fallbackXP;
+            this.game.incrementStat('totalXP', sector.fallbackXP);
             this.game.showMessage(`+${sector.fallbackXP} XP`);
           }
 

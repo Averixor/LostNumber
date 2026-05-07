@@ -36,7 +36,7 @@ LostNumberGame.prototype.startNewGame = function () {
     }
 
     this.saveGameState();
-    this.stats.gamesPlayed++;
+    this.incrementStat('gamesPlayed', 1);
   } catch (error) {
     ErrorHandler.handle(error, { type: 'new_game' });
     // Пытаемся восстановиться
@@ -89,11 +89,9 @@ LostNumberGame.prototype.mergeChain = function () {
         const xpEarned = this.calculateXP(this.selected.length);
         this.xp += xpEarned;
 
-        this.stats.totalXP += xpEarned;
-        this.stats.totalMerges++;
-        if (this.selected.length > this.stats.longestChain) {
-          this.stats.longestChain = this.selected.length;
-        }
+        this.incrementStat('totalXP', xpEarned);
+        this.incrementStat('totalMerges', 1);
+        this.setStatMax('longestChain', this.selected.length);
 
         this.achievementManager.updateAchievementProgress('chain5', this.selected.length >= 5 ? 1 : 0);
         this.achievementManager.updateAchievementProgress('chain10', this.selected.length >= 10 ? 1 : 0);
@@ -110,7 +108,7 @@ LostNumberGame.prototype.mergeChain = function () {
 
         if (surplus > 0) {
           this.xp += surplus;
-          this.stats.totalXP += surplus;
+          this.incrementStat('totalXP', surplus);
           this.showMessage(this.formatTemplate('surplus_xp', { surplus }));
         }
 
@@ -187,10 +185,8 @@ LostNumberGame.prototype.handleLevelComplete = function () {
     this.pendingTransition = { active: true, nextLevel: nextLevelIndex, carryNumber: carryNumber };
     this.saveGameState();
 
-    this.stats.levelsCompleted++;
-    if (nextLevelNumber > this.stats.highestLevel) {
-      this.stats.highestLevel = nextLevelNumber;
-    }
+    this.incrementStat('levelsCompleted', 1);
+    this.setStatMax('highestLevel', nextLevelNumber);
 
     this.achievementManager.updateAchievementProgress('level10', 1);
     this.achievementManager.updateAchievementProgress('level25', 1);

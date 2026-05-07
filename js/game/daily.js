@@ -123,7 +123,7 @@ class DailyQuestManager {
     switch (id) {
       case 'completeLevel':
         this.game.xp += 20;
-        this.game.stats.totalXP += 20;
+        this.game.incrementStat('totalXP', 20);
         this.game.updateXPBar();
         break;
       case 'chain5':
@@ -132,7 +132,7 @@ class DailyQuestManager {
         break;
       case 'xp100':
         this.game.xp += 30;
-        this.game.stats.totalXP += 30;
+        this.game.incrementStat('totalXP', 30);
         this.game.updateXPBar();
         break;
       case 'useBonus':
@@ -141,7 +141,7 @@ class DailyQuestManager {
         break;
       case 'spinWheel':
         this.game.xp += 15;
-        this.game.stats.totalXP += 15;
+        this.game.incrementStat('totalXP', 15);
         this.game.updateXPBar();
         break;
     }

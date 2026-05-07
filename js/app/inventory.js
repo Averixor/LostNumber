@@ -1,14 +1,29 @@
-// Inventory: facade-методы для bonusInventory у LostNumberGame.
+// Inventory: facade-методы для bonusInventory и stats у LostNumberGame.
 // Не читать/писать state.bonusInventory или game.bonusInventory[...] напрямую в gameplay-коде.
-// API:
+// API (bonus):
 //   getBonusCount(type)            -> number (0 если нет/невалидно)
 //   grantBonus(type, amount=1)     -> new count (никогда не отрицательное)
 //   consumeBonus(type, amount=1)   -> boolean (true если count > 0 и списано)
 //   getBonusInventorySnapshot()    -> { destroy, shuffle, explosion }
 //   resetBonusInventory()          -> void (в zero-значения)
+// API (stats):
+//   getStat(key)                   -> number (0 если нет)
+//   incrementStat(key, delta=1)    -> void
+//   setStatMax(key, value)         -> void (ставит max(current, value))
 
 (function () {
   const BONUS_TYPES = ['destroy', 'shuffle', 'explosion'];
+
+  const KNOWN_STAT_KEYS = [
+    'gamesPlayed',
+    'levelsCompleted',
+    'highestLevel',
+    'totalXP',
+    'longestChain',
+    'bonusesUsed',
+    'wheelSpins',
+    'totalMerges',
+  ];
 
   function isValidType(type) {
     return typeof type === 'string' && BONUS_TYPES.indexOf(type) !== -1;
@@ -94,6 +109,56 @@
       this.bonusInventory = { destroy: 0, shuffle: 0, explosion: 0 };
     } catch (error) {
       ErrorHandler.warn('resetBonusInventory failed', { error });
+    }
+  };
+
+  // --- Stats facade ---
+
+  function ensureStats(game) {
+    if (!game.stats || typeof game.stats !== 'object') {
+      game.stats = {};
+    }
+    return game.stats;
+  }
+
+  LostNumberGame.prototype.getStat = function (key) {
+    try {
+      const s = ensureStats(this);
+      const v = s[key];
+      return typeof v === 'number' ? v : 0;
+    } catch (error) {
+      ErrorHandler.warn('getStat failed', { error, key });
+      return 0;
+    }
+  };
+
+  LostNumberGame.prototype.incrementStat = function (key, delta = 1) {
+    try {
+      if (KNOWN_STAT_KEYS.indexOf(key) === -1) {
+        ErrorHandler.warn('incrementStat: unknown stat key', { key, delta });
+      }
+      const s = ensureStats(this);
+      const cur = typeof s[key] === 'number' ? s[key] : 0;
+      const d = Number(delta);
+      s[key] = cur + (Number.isFinite(d) ? d : 1);
+    } catch (error) {
+      ErrorHandler.warn('incrementStat failed', { error, key, delta });
+    }
+  };
+
+  LostNumberGame.prototype.setStatMax = function (key, value) {
+    try {
+      if (KNOWN_STAT_KEYS.indexOf(key) === -1) {
+        ErrorHandler.warn('setStatMax: unknown stat key', { key, value });
+      }
+      const s = ensureStats(this);
+      const cur = typeof s[key] === 'number' ? s[key] : 0;
+      const v = Number(value);
+      if (Number.isFinite(v) && v > cur) {
+        s[key] = v;
+      }
+    } catch (error) {
+      ErrorHandler.warn('setStatMax failed', { error, key, value });
     }
   };
 })();
