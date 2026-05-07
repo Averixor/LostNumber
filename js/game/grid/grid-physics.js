@@ -41,7 +41,7 @@ GridManager.prototype.shuffleGrid = function () {
       this.game.frozenCells?.clear(); // Fallback
     }
 
-    this.performFullRender();
+    this.preferSyncOrFullRender();
 
     ErrorHandler.info('Grid shuffled');
     return true;
@@ -198,7 +198,7 @@ GridManager.prototype.applyLocalGravity = function (removedCells) {
     // Режим: переносим максимум несколько раз за ход
     this.applyPressureTransfer(2, 8);
 
-    this.performFullRender();
+    this.preferSyncOrFullRender();
     return true;
   } catch (error) {
     ErrorHandler.handle(error, {

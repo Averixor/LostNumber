@@ -191,6 +191,7 @@ class LostNumberGame {
       'lang',
       'soundEnabled',
       'theme',
+      'liteVisualMode',
       'sessionSeed',
       'dailySeed',
       'currentSeed',

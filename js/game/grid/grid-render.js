@@ -57,6 +57,15 @@ GridManager.prototype.render = function () {
       return;
     }
 
+    const expectedCells = this.game.GRID_W * this.game.GRID_H;
+    if (
+      gridDiv.childElementCount === expectedCells &&
+      gridDiv.querySelectorAll('.cell-inner').length === expectedCells &&
+      this.syncGridDOMFromModel()
+    ) {
+      return;
+    }
+
     this.performFullRender();
   } catch (error) {
     ErrorHandler.handle(error, { type: 'grid_render' });
@@ -212,5 +221,146 @@ GridManager.prototype.formatCarryVisual = function (num) {
   } catch (error) {
     ErrorHandler.warn('formatCarryVisual failed', { num, error });
     return num?.toString() || '2';
+  }
+};
+
+GridManager.prototype.syncGridDOMFromModel = function () {
+  try {
+    const gridDiv = document.getElementById('grid');
+    if (!gridDiv) return false;
+
+    const W = this.game.GRID_W;
+    const H = this.game.GRID_H;
+    const expected = W * H;
+    const cells = gridDiv.querySelectorAll('.cell');
+
+    if (cells.length !== expected) return false;
+    if (gridDiv.querySelectorAll('.cell-inner').length !== expected) return false;
+
+    const selectedCells = [...(this.game.selected || [])];
+
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const cellEl = gridDiv.querySelector(`.cell[data-x="${x}"][data-y="${y}"]`);
+        if (!cellEl) return false;
+        if (!this._syncSingleCellDOM(cellEl, x, y, selectedCells)) return false;
+      }
+    }
+
+    return true;
+  } catch (error) {
+    ErrorHandler.warn('syncGridDOMFromModel failed', { error });
+    return false;
+  }
+};
+
+/** After model updates (merge, gravity): avoid rebuilding the whole grid if DOM is intact. */
+GridManager.prototype.preferSyncOrFullRender = function () {
+  if (this.syncGridDOMFromModel()) return;
+  this.performFullRender();
+};
+
+GridManager.prototype._syncSingleCellDOM = function (cellEl, x, y, selectedCells) {
+  try {
+    let cellData = this.game.grid?.[x]?.[y];
+
+    if (!cellData || typeof cellData !== 'object') {
+      cellData = {
+        number: 2,
+        merged: false,
+        frozen: false,
+        freezeTurns: 0,
+        freezeMaxTurns: 0,
+      };
+
+      if (this.game.grid && this.game.grid[x]) {
+        this.game.grid[x][y] = cellData;
+      }
+    }
+
+    let num = cellData.number;
+    if (num == null) {
+      num = null;
+    }
+
+    cellEl.dataset.number = num == null ? '' : num;
+
+    const idx = y * this.game.GRID_W + x;
+
+    let isFrozen = false;
+    let freezeTurns = 0;
+    let freezeMaxTurns = 0;
+
+    if (this.game.freezeSystem) {
+      const freezeData = this.game.freezeSystem.getFreezeData?.(idx);
+      if (freezeData) {
+        isFrozen = true;
+        freezeTurns = freezeData.turns;
+        freezeMaxTurns = freezeData.maxTurns;
+
+        cellData.frozen = true;
+        cellData.freezeTurns = freezeTurns;
+        cellData.freezeMaxTurns = freezeMaxTurns;
+        cellData.freezeType = freezeData.type;
+      }
+    } else {
+      isFrozen = this.game.isCellFrozen(idx) || cellData.frozen;
+      freezeTurns = this.game.getFrozenTurns(idx) || cellData.freezeTurns || 5;
+      freezeMaxTurns = cellData.freezeMaxTurns || 5;
+    }
+
+    const showFreeze = !!(isFrozen || cellData.frozen);
+
+    cellEl.classList.toggle('frozen', showFreeze);
+    cellEl.querySelectorAll('.snowflake, .freeze-counter').forEach((el) => el.remove());
+
+    if (showFreeze) {
+      const t = cellData.freezeTurns || freezeTurns || 1;
+      const mt = cellData.freezeMaxTurns || freezeMaxTurns || 1;
+      const opacity = Math.max(0.2, Math.min(1, t / Math.max(1, mt)));
+
+      const snowflake = document.createElement('div');
+      snowflake.className = 'snowflake';
+      snowflake.textContent = '❄️';
+      snowflake.style.opacity = String(opacity);
+
+      const counter = document.createElement('div');
+      counter.className = 'freeze-counter';
+      counter.textContent = String(t);
+
+      const innerBefore = cellEl.querySelector('.cell-inner');
+      if (innerBefore) {
+        cellEl.insertBefore(snowflake, innerBefore);
+        cellEl.insertBefore(counter, innerBefore);
+      } else {
+        cellEl.appendChild(snowflake);
+        cellEl.appendChild(counter);
+      }
+
+      if (cellData.freezeType) {
+        cellEl.dataset.freezeType = cellData.freezeType;
+      } else {
+        delete cellEl.dataset.freezeType;
+      }
+    } else {
+      delete cellEl.dataset.freezeType;
+    }
+
+    const isSel = selectedCells.some((s) => s.x === x && s.y === y);
+    cellEl.classList.toggle('selected', isSel);
+    cellEl.classList.toggle('merged', !!cellData.merged);
+
+    let inner = cellEl.querySelector('.cell-inner');
+    if (!inner) {
+      inner = document.createElement('div');
+      inner.className = 'cell-inner';
+      cellEl.appendChild(inner);
+    }
+    inner.textContent = num == null ? '' : this.formatCarryVisual(num);
+
+    return true;
+  } catch (error) {
+    ErrorHandler.warn('_syncSingleCellDOM failed', { x, y, error });
+    return false;
   }
 };

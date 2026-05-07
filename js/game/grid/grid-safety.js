@@ -113,7 +113,7 @@ GridManager.prototype.repairGrid = function () {
 
     if (repaired) {
       ErrorHandler.info('Grid repaired');
-      this.performFullRender();
+      this.preferSyncOrFullRender();
     }
 
     return repaired;

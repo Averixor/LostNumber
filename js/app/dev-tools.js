@@ -30,3 +30,13 @@ LostNumberGame.prototype.addBonus = function (type, count = 1) {
     ErrorHandler.handle(error, { where: 'addBonus', type, count });
   }
 };
+
+if (typeof window !== 'undefined' && window.AppEnv?.isDev) {
+  window.__testLowFpsDisableFloatingNumbers = function () {
+    window.dispatchEvent(
+      new CustomEvent('lostnumber:floating-numbers-auto-disable', {
+        detail: { reason: 'fps', averageFps: 10, critical: true },
+      })
+    );
+  };
+}

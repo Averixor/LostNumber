@@ -41,6 +41,8 @@ class GameState {
       this.lang = 'ua';
       this.soundEnabled = true;
       this.theme = 'dusk';
+      /** 'auto' | 'on' | 'off' — lite CSS (html.low-performance) for MIUI / weak devices */
+      this.liteVisualMode = 'auto';
 
       // Seeded RNG (инициализируется в main.js)
       this.sessionSeed = 0;
@@ -78,6 +80,7 @@ class GameState {
     this.frozenCells = new Map();
     this.stats = this.defaultStats();
     this.achievements = this.defaultAchievements();
+    this.liteVisualMode = 'auto';
   }
 
   generateLevels(count) {

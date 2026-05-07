@@ -3,6 +3,22 @@ class SettingsManager {
     this.game = game;
   }
 
+  applyLiteVisualMode() {
+    try {
+      const raw = this.game.liteVisualMode;
+      const mode = raw === 'on' || raw === 'off' || raw === 'auto' ? raw : 'auto';
+
+      let lite = false;
+      if (mode === 'on') lite = true;
+      else if (mode === 'off') lite = false;
+      else lite = typeof PlatformDetector !== 'undefined' && PlatformDetector.shouldPreferLiteVisual?.();
+
+      document.documentElement.classList.toggle('low-performance', lite);
+    } catch (error) {
+      ErrorHandler.warn('applyLiteVisualMode failed', { error });
+    }
+  }
+
   applyFloatingNumbers() {
     try {
       if (this.game.floatingNumbersEnabled === false) {
@@ -41,6 +57,10 @@ class SettingsManager {
           this.game.floatingNumbersEnabled = on;
           this.game.floatingNumbersDisabledBy = on ? null : 'user';
         }
+        {
+          const lite = document.getElementById('liteVisualSelect')?.value;
+          this.game.liteVisualMode = lite === 'on' || lite === 'off' || lite === 'auto' ? lite : 'auto';
+        }
         this.game.soundEnabled = document.getElementById('soundSelect').value === 'on';
         this.game.theme = document.getElementById('themeSelect')?.value || 'dusk';
         const newLang = document.getElementById('languageSelect').value || 'ua';
@@ -61,6 +81,8 @@ class SettingsManager {
 
         // Применяем настройки плавающих фоновых чисел
         this.applyFloatingNumbers();
+
+        this.applyLiteVisualMode();
 
         // Сохраняем настройки
         this.saveSettings();
@@ -122,6 +144,8 @@ class SettingsManager {
       this.game.soundEnabled = settings.soundEnabled !== false;
       this.game.theme = settings.theme || this.game.theme || 'dusk';
       this.game.lang = settings.lang || this.game.lang || 'ua';
+      const lv = settings.liteVisualMode;
+      this.game.liteVisualMode = lv === 'on' || lv === 'off' || lv === 'auto' ? lv : 'auto';
 
       // Обновляем UI настроек
       this.updateSettingsUI();
@@ -134,6 +158,7 @@ class SettingsManager {
       }
 
       this.applyFloatingNumbers();
+      this.applyLiteVisualMode();
     }
   }
 
@@ -141,6 +166,7 @@ class SettingsManager {
     // Обновляем элементы UI в соответствии с текущими настройками
     const animationSelect = document.getElementById('animationSelect');
     const bgEffectsSelect = document.getElementById('bgEffectsSelect');
+    const liteVisualSelect = document.getElementById('liteVisualSelect');
     const soundSelect = document.getElementById('soundSelect');
     const themeSelect = document.getElementById('themeSelect');
     const languageSelect = document.getElementById('languageSelect');
@@ -151,6 +177,11 @@ class SettingsManager {
 
     if (bgEffectsSelect) {
       bgEffectsSelect.value = this.game.floatingNumbersEnabled === false ? 'off' : 'on';
+    }
+
+    if (liteVisualSelect) {
+      const m = this.game.liteVisualMode;
+      liteVisualSelect.value = m === 'on' || m === 'off' || m === 'auto' ? m : 'auto';
     }
 
     if (soundSelect) {
@@ -174,6 +205,10 @@ class SettingsManager {
       soundEnabled: this.game.soundEnabled !== false,
       theme: this.game.theme || 'dusk',
       lang: this.game.lang || 'ua',
+      liteVisualMode:
+        this.game.liteVisualMode === 'on' || this.game.liteVisualMode === 'off' || this.game.liteVisualMode === 'auto'
+          ? this.game.liteVisualMode
+          : 'auto',
     };
 
     this.game.storageManager.saveSettings(settings);

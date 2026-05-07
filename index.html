@@ -5,20 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>LostNumber</title>
 
+    <script src="js/system/platform.js"></script>
     <script>
-      (function enableLowPerformanceMode() {
+      (function bootstrapLiteVisualEarly() {
         try {
-          var ua = navigator.userAgent || '';
-          var isXiaomiBrowser = /MiuiBrowser|MiBrowser|XiaoMi/i.test(ua);
-          var isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
-          var lowMemory = typeof navigator.deviceMemory === 'number' && navigator.deviceMemory <= 4;
-          var lowCores = typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 4;
-
-          if (isXiaomiBrowser || (isMobile && (lowMemory || lowCores))) {
+          if (
+            typeof PlatformDetector !== 'undefined' &&
+            typeof PlatformDetector.shouldPreferLiteVisual === 'function' &&
+            PlatformDetector.shouldPreferLiteVisual()
+          ) {
             document.documentElement.classList.add('low-performance');
           }
         } catch (e) {
-          // best-effort only
+          /* best-effort only */
         }
       })();
     </script>
@@ -223,6 +222,14 @@
           </select>
         </div>
         <div class="setting-item">
+          <span class="setting-label">Легкий візуальний режим</span>
+          <select class="setting-control" id="liteVisualSelect">
+            <option value="auto" selected>Авто (MIUI / слабкі пристрої)</option>
+            <option value="on">Увімкнено</option>
+            <option value="off">Вимкнено</option>
+          </select>
+        </div>
+        <div class="setting-item">
           <span class="setting-label" data-i18n="settings_sound_label"></span>
           <select class="setting-control" id="soundSelect">
             <option value="on" selected data-i18n="settings_sound_on"></option>
@@ -293,7 +300,6 @@
     <script src="js/system/i18n.js"></script>
     <script src="js/system/storage.js"></script>
     <script src="js/system/audio.js"></script>
-    <script src="js/system/platform.js"></script>
 
     <!-- system -->
     <script src="js/system/freezeSystem.js"></script>

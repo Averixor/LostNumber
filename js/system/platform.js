@@ -1,4 +1,19 @@
 class PlatformDetector {
+  /** Xiaomi / MIUI browser and weak mobile heuristics for lite CSS (low-performance class). */
+  static shouldPreferLiteVisual() {
+    try {
+      const ua = navigator.userAgent || '';
+      const isXiaomiBrowser = /MiuiBrowser|MiBrowser|XiaoMi/i.test(ua);
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
+      const lowMemory = typeof navigator.deviceMemory === 'number' && navigator.deviceMemory <= 4;
+      const lowCores = typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 4;
+
+      return isXiaomiBrowser || (isMobile && (lowMemory || lowCores));
+    } catch (_) {
+      return false;
+    }
+  }
+
   static isAndroidApp() {
     return !!(
       window.Capacitor ||

@@ -121,19 +121,6 @@ class OverlayManager {
     });
   }
 
-  // В overlays.js в класс OverlayManager добавьте:
-  clearSelectionHighlight(selectedCells) {
-    const gridDiv = document.getElementById('grid');
-    if (!gridDiv) return;
-
-    selectedCells.forEach((cell) => {
-      const cellEl = gridDiv.querySelector(`.cell[data-x="${cell.x}"][data-y="${cell.y}"]`);
-      if (cellEl) {
-        cellEl.classList.remove('selected');
-      }
-    });
-  }
-
   hidePreviewBubble() {
     const bubble = document.getElementById('previewBubble');
     if (!bubble) return;
