@@ -304,10 +304,7 @@ class ErrorHandler {
     console.warn(`%c[LostNumber WARN] ${id}: ${message}`, 'color:#ffa726;font-weight:bold', data);
 
     // Сохраняем важные предупреждения в историю
-    if (
-      data.type &&
-      ['performance', 'memory', 'fetch_status', 'xhr_status', 'validation', 'i18n', 'grid'].includes(data.type)
-    ) {
+    if (data.type && ['performance', 'memory', 'validation', 'i18n', 'grid'].includes(data.type)) {
       this._addToHistory({
         id,
         timestamp: Date.now(),
