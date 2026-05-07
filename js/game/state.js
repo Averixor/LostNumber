@@ -271,12 +271,26 @@ class GameState {
     }
   }
 
+  // Внутренний RNG-helper. Зеркалит LostNumberGame.prototype.nextRandomFloat,
+  // но доступен у GameState (где нет this.game). Math.random() — только
+  // defensive fallback, если seeded rng недоступен или сломан.
+  _nextRandomFloat() {
+    try {
+      if (this.rng && typeof this.rng.nextFloat === 'function') {
+        return this.rng.nextFloat();
+      }
+    } catch (error) {
+      ErrorHandler.warn('GameState._nextRandomFloat failed', { error });
+    }
+    return Math.random();
+  }
+
   pickWeighted(items) {
     try {
       let total = 0;
       for (const it of items) total += it.weight;
 
-      let r = (this.rng ? this.rng.nextFloat() : Math.random()) * total;
+      let r = this._nextRandomFloat() * total;
       for (const it of items) {
         r -= it.weight;
         if (r <= 0) return it;
