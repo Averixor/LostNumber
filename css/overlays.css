@@ -1,0 +1,214 @@
+/* ===== ОСНОВНЫЕ ОВЕРЛЕИ ===== */
+.victory-overlay,
+.level-overlay,
+.wheel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 245, 247, 0.96);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+/* Темная тема */
+html[data-theme='dusk'] .victory-overlay,
+html[data-theme='dusk'] .level-overlay,
+html[data-theme='dusk'] .wheel-overlay {
+  background: rgba(26, 15, 27, 0.96);
+}
+
+/* Скрытие оверлеев */
+.victory-overlay.hidden,
+.level-overlay.hidden,
+.wheel-overlay.hidden {
+  display: none !important;
+}
+
+/* ===== СТИЛИ КОНТЕНТА ОВЕРЛЕЕВ ===== */
+.victory-content,
+.level-content,
+.wheel-content {
+  background: var(--panel-bg);
+  border-radius: 20px;
+  padding: 22px 18px;
+  box-shadow: 0 18px 40px rgba(233, 30, 99, 0.35);
+  text-align: center;
+  max-width: 92%;
+  border: 2px solid var(--panel-border);
+  position: relative;
+}
+
+/* ===== КОЛЕСО ФОРТУНЫ ===== */
+.wheel-overlay .wheel-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  box-shadow: none;
+}
+
+/* Заголовок колеса */
+.wheel-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--primary-color);
+  margin-bottom: 15px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* XP под заголовком */
+.wheel-xp {
+  text-align: center;
+  font-size: 0.78rem;
+  opacity: 0.65;
+  margin: 2px 0 6px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-color);
+}
+
+/* Канвас колеса */
+#fortuneWheel {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Центральная кнопка */
+.wheel-center-btn {
+  margin-top: 15px;
+}
+
+/* Информация о ежедневных прокрутках */
+.wheel-daily-info {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted-color);
+  line-height: 1.4;
+}
+
+/* Стрелка на колесе */
+.wheel-arrow {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  color: var(--primary-color);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  z-index: 101;
+}
+
+/* Подсветка сектора */
+.wheel-sector-highlight {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: gold;
+  border-radius: 50%;
+  box-shadow: 0 0 10px gold;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* Счетчик прокруток (скрыт) */
+.wheel-spin-counter,
+#wheelSpinsUsed,
+#wheelSpinsTotal {
+  display: none !important;
+}
+
+/* ===== РЕЗУЛЬТАТ КОЛЕСА ===== */
+.wheel-result {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: var(--bg2-color);
+  border-radius: 10px;
+  color: var(--text-color);
+  border: 1px solid var(--panel-border);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  max-width: 90%;
+}
+
+.wheel-result.hidden {
+  display: none;
+}
+
+/* ===== ОВЕРЛЕЙ УРОВНЯ ===== */
+.level-title {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  margin-bottom: 8px;
+  font-weight: 900;
+}
+
+.level-text {
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+  color: var(--text-color);
+}
+
+.level-stats {
+  font-size: 0.85rem;
+  text-align: left;
+  margin: 0 auto 10px;
+  max-width: 260px;
+  line-height: 1.4;
+  color: var(--text-color);
+}
+
+.level-countdown {
+  font-weight: 700;
+  margin-top: 4px;
+  color: var(--text-color);
+}
+
+/* ===== ОВЕРЛЕЙ ПОБЕДЫ ===== */
+.victory-title {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  margin-bottom: 8px;
+  font-weight: 900;
+}
+
+.victory-text {
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+  color: var(--text-color);
+}
+
+/* ===== АНИМАЦИИ ===== */
+/* Мигание сектора колеса */
+@keyframes sectorBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Анимация появления результата колеса */
+@keyframes wheelResultIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#wheelResult.anim {
+  animation: wheelResultIn 160ms ease-out;
+}

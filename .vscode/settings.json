@@ -1,0 +1,124 @@
+{
+  "terminal.integrated.defaultProfile.windows": "Windows PowerShell",
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell",
+      "icon": "terminal-powershell"
+    },
+    "Command Prompt": {
+      "path": "C:\\WINDOWS\\System32\\cmd.exe",
+      "args": [],
+      "icon": "terminal-cmd"
+    },
+    "Git Bash": {
+      "source": "Git Bash"
+    },
+    "Windows PowerShell": {
+      "path": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "args": ["-NoLogo", "-NoProfile"],
+      "icon": "terminal-powershell"
+    }
+  },
+  "terminal.integrated.automationProfile.windows": {
+    "path": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "args": ["-NoLogo", "-NoProfile"]
+  },
+  "terminal.integrated.defaultLocation": "view",
+  "terminal.integrated.tabs.enabled": true,
+  "terminal.integrated.tabs.location": "right",
+  "terminal.integrated.fontFamily": "Consolas",
+  "terminal.integrated.fontSize": 11,
+  "terminal.integrated.lineHeight": 1.1,
+  "terminal.integrated.scrollback": 32767,
+  "terminal.integrated.smoothScrolling": false,
+  "terminal.integrated.shellIntegration.enabled": false,
+  "terminal.integrated.rightClickBehavior": "default",
+  "terminal.integrated.enablePersistentSessions": false,
+  "terminal.integrated.scrollOnInput": true,
+  "terminal.integrated.sendKeybindingsToShell": true,
+  "terminal.integrated.enableVisualBell": false,
+  "workbench.panel.defaultLocation": "bottom",
+  "workbench.panel.opensMaximized": "never",
+  "accessibility.signals.terminalBell": {
+    "sound": "off"
+  },
+  "workbench.colorCustomizations": {
+    "terminal.background": "#282C34",
+    "terminal.foreground": "#DCDFE4",
+    "terminalCursor.foreground": "#DCDFE4",
+    "terminal.selectionBackground": "#3E4451",
+    "terminal.ansiBlack": "#282C34",
+    "terminal.ansiRed": "#E06C75",
+    "terminal.ansiGreen": "#98C379",
+    "terminal.ansiYellow": "#E5C07B",
+    "terminal.ansiBlue": "#61AFEF",
+    "terminal.ansiMagenta": "#C678DD",
+    "terminal.ansiCyan": "#56B6C2",
+    "terminal.ansiWhite": "#DCDFE4",
+    "terminal.ansiBrightBlack": "#5C6370",
+    "terminal.ansiBrightRed": "#E06C75",
+    "terminal.ansiBrightGreen": "#98C379",
+    "terminal.ansiBrightYellow": "#E5C07B",
+    "terminal.ansiBrightBlue": "#61AFEF",
+    "terminal.ansiBrightMagenta": "#C678DD",
+    "terminal.ansiBrightCyan": "#56B6C2",
+    "terminal.ansiBrightWhite": "#DCDFE4"
+  },
+  "cursor.cpp.disabledLanguages": ["markdown"],
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "window.autoDetectColorScheme": true,
+  "workbench.preferredDarkColorTheme": "Default Dark+",
+  "powershell.buttons.showPanelMovementButtons": true,
+  "powershell.suppressAdditionalExeNotFoundWarning": true,
+  "powershell.sideBar.CommandExplorerVisibility": true,
+  "powershell.codeFormatting.autoCorrectAliases": true,
+  "powershell.codeFormatting.avoidSemicolonsAsLineTerminators": true,
+  "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
+  "powershell.codeFormatting.useConstantStrings": true,
+  "powershell.codeFormatting.useCorrectCasing": true,
+  "powershell.codeFormatting.whitespaceBetweenParameters": true,
+  "powershell.analyzeOpenDocumentsOnly": true,
+  "powershell.debugging.createTemporaryIntegratedConsole": false,
+  "powershell.startAsLoginShell.linux": false,
+  "powershell.integratedConsole.startInBackground": false,
+  "powershell.integratedConsole.useLegacyReadLine": false,
+  "powershell.integratedConsole.suppressStartupBanner": true,
+  "powershell.developer.editorServicesWaitForDebugger": false,
+  "powershell.developer.traceDap": false,
+  "powershell.integratedConsole.forceClearScrollbackBuffer": false,
+  "workbench.editor.enablePreview": false,
+  "cSpell.words": [
+    "базовую",
+    "бонусов",
+    "важное",
+    "видимости",
+    "зависимости",
+    "игру",
+    "конфигурацию",
+    "Конфигурация",
+    "логируем",
+    "обработчики",
+    "показываем",
+    "продакшне",
+    "режима",
+    "ссылку",
+    "только",
+    "Устанавливаем"
+  ],
+
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}

@@ -1,0 +1,183 @@
+// errorHandlerFallback.js - резервный обработчик ошибок
+(function () {
+  // Проверяем, не загружен ли уже ErrorHandler
+  if (typeof window.ErrorHandler !== 'undefined' && window.ErrorHandler._installed) {
+    console.log('Main ErrorHandler already installed, skipping fallback');
+    return;
+  }
+
+  console.log('Loading fallback ErrorHandler...');
+
+  const errorHistory = [];
+  const maxHistorySize = 50;
+
+  const addToHistory = (error, context) => {
+    errorHistory.push({
+      timestamp: Date.now(),
+      error: error instanceof Error ? error.message : String(error),
+      context: context,
+      stack: error instanceof Error ? error.stack : null,
+    });
+
+    if (errorHistory.length > maxHistorySize) {
+      errorHistory.shift();
+    }
+  };
+
+  const safeLog = (...args) => {
+    try {
+      console.log(...args);
+    } catch (_) {}
+  };
+
+  window.ErrorHandler = {
+    _installed: true,
+    _game: null,
+
+    handle: function (error, context) {
+      try {
+        console.error('[LostNumber ERROR]', error);
+        if (context) console.error('[Context]', context);
+
+        addToHistory(error, context);
+
+        // Безопасная обработка ошибок
+        try {
+          // Пытаемся показать сообщение пользователю
+          if (window.game && typeof window.game.showMessage === 'function') {
+            const message = window.game.t
+              ? window.game.t('error_generic') || 'Произошла ошибка. Игра продолжается.'
+              : 'Произошла ошибка. Игра продолжается.';
+            window.game.showMessage(message);
+          }
+        } catch (e) {
+          safeLog('Could not show error message:', e);
+        }
+      } catch (e) {
+        safeLog('Error in fallback handler:', e);
+      }
+    },
+
+    wrap: function (obj, methodName, fallback, label) {
+      if (!obj || !methodName) return;
+
+      const original = obj[methodName];
+      if (typeof original !== 'function') return;
+
+      obj[methodName] = function (...args) {
+        try {
+          return original.apply(this, args);
+        } catch (error) {
+          this.handle(error, {
+            where: label || methodName,
+            args: args.slice(0, 3),
+          });
+          return fallback ? fallback() : null;
+        }
+      }.bind(this);
+    },
+
+    setGame: function (game) {
+      this._game = game;
+    },
+
+    install: function (config) {
+      try {
+        console.log('Fallback ErrorHandler installed with config:', config);
+
+        // Базовые обработчики ошибок
+        window.addEventListener('error', (e) => {
+          this.handle(e.error || e.message, { type: 'global' });
+        });
+
+        window.addEventListener('unhandledrejection', (e) => {
+          this.handle(e.reason, { type: 'promise' });
+        });
+
+        safeLog('Fallback ErrorHandler installed');
+      } catch (e) {
+        safeLog('Failed to install fallback:', e);
+      }
+    },
+
+    warn: function (msg, data) {
+      console.warn('[LostNumber WARN]', msg, data);
+    },
+
+    info: function (msg, data) {
+      console.info('[LostNumber INFO]', msg, data);
+    },
+
+    debug: function (msg, data) {
+      console.debug('[LostNumber DEBUG]', msg, data);
+    },
+
+    setConfig: function (config) {
+      // Игнорируем конфигурацию в fallback режиме
+    },
+
+    getErrorHistory: function () {
+      return [...errorHistory];
+    },
+
+    clearErrorHistory: function () {
+      errorHistory.length = 0;
+    },
+
+    getErrorStats: function () {
+      const now = Date.now();
+      const lastHour = now - 3600000;
+
+      return {
+        totalErrors: errorHistory.length,
+        errorsLastHour: errorHistory.filter((e) => e.timestamp > lastHour).length,
+        latestError: errorHistory[errorHistory.length - 1],
+      };
+    },
+
+    safeExecute: function (fn, context, fallback) {
+      try {
+        return fn();
+      } catch (error) {
+        this.handle(error, {
+          type: 'safe_execute',
+          functionName: fn.name || 'anonymous',
+          context,
+        });
+        return typeof fallback === 'function' ? fallback() : fallback;
+      }
+    },
+
+    safePromise: function (promise, context) {
+      return promise
+        .then((result) => result)
+        .catch((error) => {
+          this.handle(error, {
+            type: 'safe_promise',
+            context,
+          });
+          throw error;
+        });
+    },
+  };
+
+  // Автоматически устанавливаем fallback с небольшой задержкой
+  // чтобы дать основному ErrorHandler время на установку
+  setTimeout(() => {
+    try {
+      // Проверяем, не установился ли основной ErrorHandler за это время
+      if (typeof window.ErrorHandler !== 'undefined' && window.ErrorHandler._installed) {
+        // Основной установился - используем его
+        console.log('Main ErrorHandler installed during timeout, using main');
+        return;
+      }
+
+      window.ErrorHandler.install();
+
+      // Устанавливаем флаг что это fallback
+      window.ErrorHandler._isFallback = true;
+    } catch (e) {
+      safeLog('Auto-install failed:', e);
+    }
+  }, 500);
+})();

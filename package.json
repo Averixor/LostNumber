@@ -1,0 +1,16 @@
+{
+  "name": "lostnumber",
+  "private": true,
+  "devDependencies": {
+    "eslint": "^10.3.0",
+    "globals": "^17.6.0",
+    "prettier": "3.5.3"
+  },
+  "scripts": {
+    "format": "node ./node_modules/prettier/bin/prettier.cjs --write .",
+    "format:check": "node ./node_modules/prettier/bin/prettier.cjs --check .",
+    "lint": "node ./node_modules/eslint/bin/eslint.js .",
+    "lint:fix": "node ./node_modules/eslint/bin/eslint.js . --fix",
+    "check": "npm run format:check && npm run lint"
+  }
+}

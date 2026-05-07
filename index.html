@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LostNumber</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/ui.css" />
+    <link rel="stylesheet" href="css/grid.css" />
+    <link rel="stylesheet" href="css/overlays.css" />
+    <!-- Runtime configuration -->
+    <script src="js/bootstrap/env.js"></script>
+    <link rel="stylesheet" href="css/critical.css" />
+  </head>
+
+  <body>
+    <!-- Индикатор загрузки -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none">
+      <div class="loading-spinner"></div>
+      <div class="loading-text" data-i18n="loading">Загрузка…</div>
+    </div>
+
+    <!-- Критическая ошибка -->
+    <div id="criticalErrorContainer" class="critical-error" style="display: none">
+      <h2>⚠️ LostNumber</h2>
+      <p id="criticalErrorMessage">Игра не может быть загружена. Обновите страницу или попробуйте позже.</p>
+      <button id="criticalReloadBtn">Обновить страницу</button>
+      <div class="error-id" id="criticalErrorId"></div>
+    </div>
+
+    <!-- Декор/эффекты -->
+    <div class="floating-hearts" id="floatingHearts"></div>
+
+    <!-- Победа -->
+    <div class="victory-overlay hidden" id="victoryOverlay">
+      <div class="victory-content">
+        <div class="victory-title" data-i18n="victory_title"></div>
+        <div class="victory-text" data-i18n="victory_text"></div>
+        <div class="menu-buttons" style="margin-top: 8px">
+          <button class="menu-btn primary" id="playAgainBtn" data-i18n="btn_play_again"></button>
+          <button class="menu-btn secondary" id="backToMenuBtn" data-i18n="btn_back_to_menu"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Экран уровня -->
+    <div class="level-overlay hidden" id="levelOverlay">
+      <div class="level-content">
+        <div class="level-title" id="levelOverlayTitle" data-i18n="level_completed_title"></div>
+        <div class="level-text" id="levelOverlayText"></div>
+        <div class="level-stats" id="levelStats"></div>
+        <div class="level-countdown" id="levelCountdown"></div>
+        <div class="menu-buttons">
+          <button class="menu-btn secondary" id="levelMenuBtn" data-i18n="btn_back_to_menu"></button>
+          <button class="menu-btn primary" id="levelNextBtn" data-i18n="btn_next_level"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Колесо фортуны -->
+    <div class="wheel-overlay hidden" id="wheelOverlay">
+      <div class="wheel-content">
+        <div class="wheel-title" id="wheelTitle" data-i18n="wheel_title"></div>
+        <div id="wheelXpLabel" class="wheel-xp"></div>
+        <canvas id="fortuneWheel" width="300" height="300"></canvas>
+        <div class="wheel-center-btn">
+          <button id="spinWheelBtn" class="menu-btn primary" data-i18n="btn_spin_wheel"></button>
+        </div>
+        <div id="wheelResult" class="wheel-result"></div>
+        <div class="wheel-daily-info" id="wheelDailyInfo"></div>
+        <div class="menu-buttons" style="margin-top: 10px">
+          <button class="menu-btn secondary" id="wheelCloseBtn" data-i18n="btn_close"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Главное меню -->
+    <div class="screen main-menu" id="mainMenuScreen">
+      <div class="game-logo"><span data-i18n="game_logo"></span></div>
+      <div class="menu-buttons">
+        <button class="menu-btn primary" id="continueBtn" data-i18n="btn_continue"></button>
+        <button class="menu-btn secondary" id="newGameBtn" data-i18n="btn_new_game"></button>
+        <button class="menu-btn secondary" id="settingsBtn" data-i18n="btn_settings"></button>
+        <button class="menu-btn secondary" id="dailyQuestsBtn" data-i18n="btn_daily_quests"></button>
+        <button class="menu-btn secondary" id="achievementsBtn" data-i18n="btn_achievements"></button>
+        <button class="menu-btn secondary" id="statsBtn" data-i18n="btn_stats"></button>
+      </div>
+    </div>
+
+    <!-- Достижения -->
+    <div class="screen achievements-screen hidden" id="achievementsScreen">
+      <div class="settings-title" data-i18n="achievements_title"></div>
+      <div class="achievements-grid" id="achievementsGrid"></div>
+      <div class="menu-buttons back-btn-menu">
+        <button class="menu-btn secondary" id="backFromAchievementsBtn" data-i18n="btn_back"></button>
+      </div>
+    </div>
+
+    <!-- Статистика -->
+    <div class="screen stats-screen hidden" id="statsScreen">
+      <div class="settings-title" data-i18n="stats_title"></div>
+      <div class="stats-grid" id="statsGrid"></div>
+      <div class="menu-buttons back-btn-menu">
+        <button class="menu-btn secondary" id="backFromStatsBtn" data-i18n="btn_back"></button>
+      </div>
+    </div>
+
+    <!-- Ежедневные задания -->
+    <div class="screen daily-quests-screen hidden" id="dailyQuestsScreen">
+      <div class="settings-title" data-i18n="daily_quests_title"></div>
+      <div class="settings-options" id="dailyQuestsList"></div>
+      <div class="menu-buttons back-btn-menu">
+        <button class="menu-btn secondary" id="backFromDailyQuestsBtn" data-i18n="btn_back"></button>
+      </div>
+    </div>
+
+    <!-- Игровой экран -->
+    <div class="screen game-screen hidden" id="gameScreen">
+      <div class="goal-box">
+        <span id="levelLabel"></span>
+        <span data-i18n="goal_full"></span>
+        <span id="targetValue"></span>
+      </div>
+
+      <div class="xp-wrap">
+        <div class="xp-multiplier-indicator" id="xpMultiplierIndicator"></div>
+        <div class="xp-bar">
+          <div class="xp-inner" id="xpBar"></div>
+          <div class="xp-text" id="xpText"></div>
+        </div>
+      </div>
+
+      <div class="bonuses">
+        <div class="bonuses-left">
+          <button class="bonus-btn" id="bonus-explosion" data-i18n-title="bonus_explosion_title">
+            <span data-i18n="icon_bonus_explosion"></span> <span class="bonus-count" id="count-explosion">0</span>
+          </button>
+          <button class="bonus-btn" id="bonus-shuffle" data-i18n-title="bonus_shuffle_title">
+            <span data-i18n="icon_bonus_shuffle"></span> <span class="bonus-count" id="count-shuffle">0</span>
+          </button>
+          <button class="bonus-btn" id="bonus-destroy" data-i18n-title="bonus_destroy_title">
+            <span data-i18n="icon_bonus_destroy"></span> <span class="bonus-count" id="count-destroy">0</span>
+          </button>
+        </div>
+        <div class="bonus-wheel-container">
+          <button class="bonus-btn" id="bonus-wheel" data-i18n-title="bonus_wheel_title">
+            <span data-i18n="icon_bonus_wheel"></span>
+          </button>
+          <span class="bonus-count" id="wheelCostLabel">25</span>
+          <span
+            class="bonus-count"
+            style="margin-left: 2px; color: var(--muted-color); font-size: 10px"
+            id="wheelRemainingSpins"
+            >(20)</span
+          >
+        </div>
+      </div>
+
+      <div class="game-content">
+        <div class="grid-container">
+          <div class="grid" id="grid"></div>
+          <div class="preview-bubble" id="previewBubble"></div>
+        </div>
+      </div>
+
+      <div class="game-footer" id="gameFooter">
+        <button class="footer-btn" id="footerHomeBtn" data-i18n-title="btn_home">
+          <span data-i18n="icon_home"></span>
+        </button>
+        <button class="footer-btn" id="footerSoundBtn" data-i18n-title="btn_sound">
+          <span data-i18n="icon_sound"></span>
+        </button>
+        <button class="footer-btn" id="footerSaveBtn" data-i18n-title="btn_save">
+          <span data-i18n="icon_save"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Настройки -->
+    <div class="screen settings-screen hidden" id="settingsScreen">
+      <div class="settings-title" data-i18n="settings_title"></div>
+      <div class="settings-options">
+        <div class="setting-item">
+          <span class="setting-label" data-i18n="settings_animations_label"></span>
+          <select class="setting-control" id="animationSelect">
+            <option value="on" selected data-i18n="settings_animations_on"></option>
+            <option value="off" data-i18n="settings_animations_off"></option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label" data-i18n="settings_sound_label"></span>
+          <select class="setting-control" id="soundSelect">
+            <option value="on" selected data-i18n="settings_sound_on"></option>
+            <option value="off" data-i18n="settings_sound_off"></option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label" data-i18n="settings_theme_label"></span>
+          <select class="setting-control" id="themeSelect">
+            <option value="dawn" data-i18n="settings_theme_dawn"></option>
+            <option value="dusk" data-i18n="settings_theme_dusk"></option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label" data-i18n="settings_language_label"></span>
+          <select class="setting-control" id="languageSelect">
+            <option value="ru" selected data-i18n="settings_language_ru"></option>
+            <option value="ua" data-i18n="settings_language_ua"></option>
+            <option value="en" data-i18n="settings_language_en"></option>
+          </select>
+        </div>
+      </div>
+      <div class="menu-buttons back-btn-menu">
+        <button class="menu-btn primary" id="saveSettingsBtn" data-i18n="btn_save_settings"></button>
+        <button class="menu-btn secondary" id="backFromSettingsBtn" data-i18n="btn_back"></button>
+      </div>
+    </div>
+
+    <!-- Об игре -->
+    <div class="screen settings-screen hidden" id="aboutScreen">
+      <div class="settings-title" data-i18n="about_title"></div>
+      <div class="settings-options">
+        <div class="setting-item" style="text-align: center">
+          <p style="margin-bottom: 10px; font-weight: 700" data-i18n="about_p1"></p>
+          <p style="font-size: 0.9rem; line-height: 1.4" data-i18n="about_p2"></p>
+          <p style="margin-top: 10px; font-size: 0.9rem; line-height: 1.4" data-i18n="about_p3"></p>
+        </div>
+      </div>
+      <div class="menu-buttons back-btn-menu">
+        <button class="menu-btn secondary" id="backFromAboutBtn" data-i18n="btn_back"></button>
+      </div>
+    </div>
+
+    <!-- JS: системные и игровые модули -->
+    <!-- Error handling core -->
+    <script src="js/system/errorHandler.js"></script>
+    <script src="js/system/errorHandlerFallback.js"></script>
+
+    <!-- Core игровые системы -->
+    <script src="js/core/SeededRandom.js"></script>
+    <script src="js/core/EventSystem.js"></script>
+    <script src="js/core/ErrorBoundary.js"></script>
+    <script src="js/core/NumberWeights.js"></script>
+    <script src="js/core/GameCore.js"></script>
+    <script src="js/core/Chain.js"></script>
+    <script src="js/core/rules.js"></script>
+
+    <!-- System модули -->
+    <script>
+      // debug.js только в dev
+      if (window.AppEnv?.isDev) {
+        var s = document.createElement('script');
+        s.src = 'js/system/debug.js';
+        document.head.appendChild(s);
+      }
+    </script>
+    <script src="js/system/analytics.js"></script>
+    <script src="js/system/i18n.js"></script>
+    <script src="js/system/storage.js"></script>
+    <script src="js/system/audio.js"></script>
+    <script src="js/system/platform.js"></script>
+
+    <!-- system -->
+    <script src="js/system/freezeSystem.js"></script>
+
+    <!-- Game модули -->
+    <script src="js/game/state.js"></script>
+    <script src="js/game/stats.js"></script>
+    <script src="js/game/achievements.js"></script>
+    <script src="js/game/bonuses.js"></script>
+    <script src="js/game/wheel.js"></script>
+    <script src="js/game/AntiStuckSystem.js"></script>
+    <script src="js/game/MicroComboSystem.js"></script>
+    <script src="js/game/DailyMoodSystem.js"></script>
+    <script src="js/game/TutorSystem.js"></script>
+    <script src="js/game/SmartFocusSystem.js"></script>
+    <script src="js/game/daily.js"></script>
+    <script src="js/game/grid/GridManager.js"></script>
+    <script src="js/game/grid/grid-init.js"></script>
+    <script src="js/game/grid/grid-freeze.js"></script>
+    <script src="js/game/grid/grid-physics.js"></script>
+    <script src="js/game/grid/grid-render.js"></script>
+    <script src="js/game/grid/grid-animations.js"></script>
+    <script src="js/game/grid/grid-safety.js"></script>
+
+    <!-- UI модули -->
+    <script src="js/ui/screens.js"></script>
+    <script src="js/ui/menu.js"></script>
+    <script src="js/ui/settings.js"></script>
+    <script src="js/ui/overlays.js"></script>
+    <script src="js/ui/DebugOverlay.js"></script>
+    <script src="js/ui/PublicAchievements.js"></script>
+
+    <!-- Главный класс и методы игры -->
+    <script src="js/app/LostNumberGame.js"></script>
+    <script src="js/app/error-runtime.js"></script>
+    <script src="js/app/dev-tools.js"></script>
+    <script src="js/app/random.js"></script>
+    <script src="js/app/i18n-theme.js"></script>
+    <script src="js/app/save-load.js"></script>
+    <script src="js/app/ui-refresh.js"></script>
+    <script src="js/app/ui-events.js"></script>
+    <script src="js/app/game-flow.js"></script>
+    <script src="js/app/misc.js"></script>
+    <!-- Глобальные обработчики и инициализация -->
+    <script src="js/bootstrap/boot.js"></script>
+  </body>
+</html>

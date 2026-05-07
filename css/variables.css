@@ -1,0 +1,66 @@
+:root {
+  /* общие */
+  --shadow: 0.18;
+
+  /* рассвет - исправленная иерархия */
+  --bg-color: #fff3ea;
+  --bg2-color: #f9e5d8;
+  --panel-bg: #f2dcd0;
+  --panel-border: rgba(139, 87, 42, 0.25);
+  --cell-color: #f9e5d8;
+  --btn-bg: #e4bfa8;
+  --btn-border: rgba(139, 87, 42, 0.35);
+  --primary-color: #e91e63;
+  --secondary-color: #ff4081;
+  --accent-color: #f8bbd9;
+  --text-color: #3b2b23;
+  --muted-color: #7a6358;
+  --white: #ffffff;
+
+  /* опасные кнопки */
+  --danger-bg: linear-gradient(135deg, #ff6b88, #ff9a6b);
+  --danger-border: rgba(255, 107, 136, 0.55);
+  --danger-text: #fff;
+
+  /* плавающие элементы */
+  --float-color: rgba(255, 94, 145, 0.15); /* Увеличена непрозрачность */
+
+  /* preview bubble colors */
+  --preview-valid: #4caf50;
+  --preview-invalid: #f44336;
+
+  /* цвет цифр в клетках (фиксированный для читаемости) */
+  --cell-number-color: #3b2b23;
+}
+
+html[data-theme='dusk'] {
+  /* закат - исправленная иерархия */
+  --bg-color: #1b1412;
+  --bg2-color: #231916;
+  --panel-bg: #2c1e1a;
+  --panel-border: rgba(246, 232, 222, 0.15);
+  --cell-color: #362822;
+  --btn-bg: #3f2a24;
+  --btn-border: rgba(246, 232, 222, 0.15);
+  --primary-color: #ff6b9d;
+  --secondary-color: #ff8f6b;
+  --accent-color: #ffb0a0;
+  --text-color: #f6e8de;
+  --muted-color: #d9c6b8;
+
+  /* опасные кнопки */
+  --danger-bg: linear-gradient(135deg, #ff7a59, #b94cff);
+  --danger-border: rgba(255, 122, 89, 0.4);
+  --danger-text: #fff;
+
+  /* плавающие элементы */
+  --float-color: rgba(255, 176, 92, 0.15);
+  --shadow: 0.35;
+
+  /* preview bubble colors */
+  --preview-valid: #81c784;
+  --preview-invalid: #e57373;
+
+  /* цвет цифр в клетках для темы закат (темнее для контраста) */
+  --cell-number-color: #2a1b16;
+}
