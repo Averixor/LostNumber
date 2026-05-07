@@ -107,7 +107,7 @@ LostNumberGame.prototype.handlePointerDown = function (e) {
     if (!posCell) return;
 
     const idx = posCell.y * this.GRID_W + posCell.x;
-    if (this.frozenCells.has(idx)) {
+    if (this.isCellFrozen(idx)) {
       this.showMessage(this.t('cell_frozen'));
       return;
     }
@@ -149,7 +149,7 @@ LostNumberGame.prototype.handlePointerMove = function (e) {
     if (!posCell) return;
 
     const idx = posCell.y * this.GRID_W + posCell.x;
-    if (this.frozenCells.has(idx)) return;
+    if (this.isCellFrozen(idx)) return;
 
     const len = this.selected.length;
     if (len === 0) return;

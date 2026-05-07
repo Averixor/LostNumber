@@ -161,4 +161,45 @@
       ErrorHandler.warn('setStatMax failed', { error, key, value });
     }
   };
+
+  // --- Frozen cells read-only facade ---
+  // Source of truth: this.freezeSystem (FreezeSystem), fallback: this.frozenCells (Map).
+  // Не добавлять методы записи — owner grid-freeze.js / freezeSystem.js.
+
+  LostNumberGame.prototype.isCellFrozen = function (idx) {
+    try {
+      if (this.freezeSystem) {
+        return this.freezeSystem.getFreezeData(idx) !== null;
+      }
+      return this.frozenCells?.has(idx) || false;
+    } catch (error) {
+      ErrorHandler.warn('isCellFrozen failed', { error, idx });
+      return false;
+    }
+  };
+
+  LostNumberGame.prototype.getFrozenTurns = function (idx) {
+    try {
+      if (this.freezeSystem) {
+        const data = this.freezeSystem.getFreezeData(idx);
+        return data ? data.turns : 0;
+      }
+      return this.frozenCells?.get(idx) || 0;
+    } catch (error) {
+      ErrorHandler.warn('getFrozenTurns failed', { error, idx });
+      return 0;
+    }
+  };
+
+  LostNumberGame.prototype.getFrozenCount = function () {
+    try {
+      if (this.freezeSystem) {
+        return this.freezeSystem.getStats().currentlyFrozen;
+      }
+      return this.frozenCells?.size || 0;
+    } catch (error) {
+      ErrorHandler.warn('getFrozenCount failed', { error });
+      return 0;
+    }
+  };
 })();

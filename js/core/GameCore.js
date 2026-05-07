@@ -6,13 +6,17 @@ class GameCore {
 
   validateMove(state) {
     try {
-      const { selected, grid, chain, frozenCells } = state;
+      const { selected, grid, chain } = state;
+      const isFrozenFn =
+        typeof this.game?.isCellFrozen === 'function'
+          ? (idx) => this.game.isCellFrozen(idx)
+          : (idx) => state.frozenCells?.has(idx);
 
       // Запрет начинать цепочку с замороженной клетки
       if (selected.length > 0) {
         const firstCell = selected[0];
         const firstIdx = firstCell.y * this.game.GRID_W + firstCell.x;
-        if (frozenCells.has(firstIdx)) {
+        if (isFrozenFn(firstIdx)) {
           return { valid: false, reason: 'cell_frozen' };
         }
       }
@@ -27,7 +31,7 @@ class GameCore {
         const idx = cell.y * this.game.GRID_W + cell.x;
 
         // Запрет включать замороженные клетки в цепочку
-        if (frozenCells.has(idx)) {
+        if (isFrozenFn(idx)) {
           return { valid: false, reason: 'cell_frozen' };
         }
 
