@@ -16,24 +16,24 @@ class OverlayManager {
       this.game.screenManager.showScreen('mainMenu');
     });
 
-    document.getElementById('playAgainBtn').addEventListener('click', () => {
+    document.getElementById('playAgainBtn')?.addEventListener('click', () => {
       this.game.audioManager.playTap();
       this.hideVictory();
       this.game.startNewGame();
     });
 
-    document.getElementById('backToMenuBtn').addEventListener('click', () => {
+    document.getElementById('backToMenuBtn')?.addEventListener('click', () => {
       this.game.audioManager.playTap();
       this.hideVictory();
       this.game.screenManager.showScreen('mainMenu');
     });
 
-    document.getElementById('wheelCloseBtn').addEventListener('click', () => {
+    document.getElementById('wheelCloseBtn')?.addEventListener('click', () => {
       this.game.audioManager.playTap();
       this.game.wheelManager.closeWheel();
     });
 
-    document.getElementById('spinWheelBtn').addEventListener('click', () => {
+    document.getElementById('spinWheelBtn')?.addEventListener('click', () => {
       this.game.audioManager.playTap();
       this.game.wheelManager.spinWheel();
     });
