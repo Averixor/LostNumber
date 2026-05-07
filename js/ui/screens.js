@@ -43,6 +43,12 @@ class ScreenManager {
 
   createFloatingNumbers() {
     try {
+      if (this.game && this.game.floatingNumbersEnabled === false) {
+        const container = document.getElementById('floatingHearts');
+        if (container) container.innerHTML = '';
+        return;
+      }
+
       const container = document.getElementById('floatingHearts');
       if (!container) {
         ErrorHandler.warn('Floating numbers container not found');

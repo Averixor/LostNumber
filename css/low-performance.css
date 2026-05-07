@@ -1,30 +1,13 @@
-/* Lite visual mode for buggy/slow mobile browsers (e.g. Xiaomi / MIUI). */
+/* Defensive: allow disabling floating numbers by CSS class. */
 
-html.low-performance *,
-html.low-performance *::before,
-html.low-performance *::after {
+html.floating-numbers-disabled .floating-hearts,
+html.floating-numbers-disabled .floating-heart,
+html.floating-numbers-disabled [data-floating-number] {
+  display: none !important;
   animation: none !important;
   transition: none !important;
-  filter: none !important;
-  backdrop-filter: none !important;
-  text-shadow: none !important;
 }
 
-html.low-performance .grid,
-html.low-performance .cell,
-html.low-performance .system-toast,
-html.low-performance .preview-bubble,
-html.low-performance .wheel-content,
-html.low-performance .victory-content,
-html.low-performance .level-content {
-  box-shadow: none !important;
-}
-
-html.low-performance .cell.frozen {
-  filter: none !important;
-}
-
-html.low-performance .floating-hearts,
-html.low-performance .preview-bubble {
+html.no-bg-effects .floating-hearts {
   display: none !important;
 }

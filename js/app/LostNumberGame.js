@@ -13,6 +13,10 @@ class LostNumberGame {
     this.settingsManager = new SettingsManager(this);
     this.overlayManager = new OverlayManager(this);
 
+    // Floating background numbers state (can be disabled by user or auto-disabled by FPS).
+    this.floatingNumbersEnabled = true;
+    this.floatingNumbersDisabledBy = null; // null | "user" | "fps"
+
     // Инициализация игрового состояния
     this.state = new GameState();
 
@@ -86,8 +90,6 @@ class LostNumberGame {
       this.storageManager.markFirstRunComplete();
     }
 
-    this.createFloatingNumbers();
-
     // ЗАГРУЖАЕМ НАСТРОЙКИ ПЕРВЫМИ
     this.settingsManager.loadSettings();
 
@@ -106,9 +108,16 @@ class LostNumberGame {
       document.body.classList.add('no-animations');
     }
 
+    // Создаем фоновые эффекты только если разрешены
+    if (this.floatingNumbersEnabled !== false) {
+      this.createFloatingNumbers();
+    }
+
     this.setupUI();
     this.checkExistingSave();
     this.showScreen('mainMenu');
+
+    this._installFloatingNumbersAutoDisableListener();
 
     // Debug overlay (Ctrl+D) — только в dev режиме или при ?dev=1
     try {
@@ -249,5 +258,39 @@ class LostNumberGame {
 
   getContext() {
     return this.context || this.refreshContextRefs();
+  }
+
+  _installFloatingNumbersAutoDisableListener() {
+    try {
+      window.addEventListener('lostnumber:floating-numbers-auto-disable', (e) => {
+        try {
+          if (this.floatingNumbersEnabled === false) return;
+          this.floatingNumbersEnabled = false;
+          this.floatingNumbersDisabledBy = 'fps';
+
+          if (this.settingsManager && typeof this.settingsManager.applyFloatingNumbers === 'function') {
+            this.settingsManager.applyFloatingNumbers();
+          }
+          if (this.settingsManager && typeof this.settingsManager.saveSettings === 'function') {
+            this.settingsManager.saveSettings();
+          }
+
+          const averageFps = e?.detail?.averageFps;
+          const critical = !!e?.detail?.critical;
+          ErrorHandler.info('Floating numbers auto-disabled due to low FPS', {
+            averageFps,
+            critical,
+            reason: 'fps',
+          });
+          try {
+            this.showMessage?.('FPS просів — фонові цифри вимкнено');
+          } catch (_) {}
+        } catch (err) {
+          ErrorHandler.warn('Auto-disable floating numbers failed', { err });
+        }
+      });
+    } catch (error) {
+      ErrorHandler.warn('_installFloatingNumbersAutoDisableListener failed', { error });
+    }
   }
 }

@@ -5,24 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>LostNumber</title>
 
-    <script>
-      (function enableLowPerformanceMode() {
-        try {
-          var ua = navigator.userAgent || '';
-          var isXiaomiBrowser = /MiuiBrowser|MiBrowser|XiaoMi/i.test(ua);
-          var isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
-          var lowMemory = typeof navigator.deviceMemory === 'number' && navigator.deviceMemory <= 4;
-          var lowCores = typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 4;
-
-          if (isXiaomiBrowser || (isMobile && (lowMemory || lowCores))) {
-            document.documentElement.classList.add('low-performance');
-          }
-        } catch (e) {
-          // ignore: this mode is best-effort only
-        }
-      })();
-    </script>
-
     <!-- CSS -->
     <link rel="stylesheet" href="css/variables.css" />
     <link rel="stylesheet" href="css/base.css" />
@@ -216,6 +198,13 @@
           </select>
         </div>
         <div class="setting-item">
+          <span class="setting-label">Фонові ефекти</span>
+          <select class="setting-control" id="bgEffectsSelect">
+            <option value="on" selected>Увімкнено</option>
+            <option value="off">Вимкнено</option>
+          </select>
+        </div>
+        <div class="setting-item">
           <span class="setting-label" data-i18n="settings_sound_label"></span>
           <select class="setting-control" id="soundSelect">
             <option value="on" selected data-i18n="settings_sound_on"></option>
@@ -321,6 +310,7 @@
     <script src="js/app/inventory.js"></script>
     <script src="js/app/i18n-theme.js"></script>
     <script src="js/app/save-load.js"></script>
+    <script src="js/app/performance-monitor.js"></script>
     <script src="js/app/ui-refresh.js"></script>
     <script src="js/app/ui-events.js"></script>
     <script src="js/app/game-flow.js"></script>
