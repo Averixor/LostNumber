@@ -452,8 +452,16 @@ class WheelManager {
           break;
 
         case 'freeze': {
+          if (!this.game.freezeSystem && typeof this.game.gridManager?.initFreezeSystem === 'function') {
+            this.game.gridManager.initFreezeSystem();
+          }
           if (!this.game.freezeSystem) {
-            console.warn('FreezeSystem not initialized');
+            ErrorHandler.warn('FreezeSystem not initialized');
+            if (sector.fallbackXP) {
+              this.game.xp += sector.fallbackXP;
+              this.game.incrementStat('totalXP', sector.fallbackXP);
+              this.game.showMessage(`+${sector.fallbackXP} XP`);
+            }
             break;
           }
 

@@ -33,6 +33,9 @@ class LostNumberGame {
 
     // Инициализация менеджеров игровых систем
     this.gridManager = new GridManager(this);
+    if (typeof this.gridManager.initFreezeSystem === 'function') {
+      this.gridManager.initFreezeSystem();
+    }
     this.bonusManager = new BonusManager(this);
     this.wheelManager = new WheelManager(this);
     this.achievementManager = new AchievementManager(this);
