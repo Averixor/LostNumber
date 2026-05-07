@@ -4,9 +4,12 @@ class AchievementManager {
   }
 
   updateAchievementProgress(key, value = 1) {
-    if (!this.game.achievements[key]) return;
+    const achievement =
+      typeof this.game.getAchievement === 'function'
+        ? this.game.getAchievement(key)
+        : this.game.achievements?.[key] || null;
+    if (!achievement) return;
 
-    const achievement = this.game.achievements[key];
     achievement.progress = Math.min(achievement.max, achievement.progress + value);
 
     if (achievement.progress >= achievement.max && !achievement.unlocked) {

@@ -8,15 +8,17 @@ class StatsManager {
     if (!grid) return;
 
     grid.innerHTML = '';
+    const getStat =
+      typeof this.game.getStat === 'function' ? (key) => this.game.getStat(key) : (key) => this.game?.stats?.[key] || 0;
 
     const items = [
-      ['stat_games_played', this.game.formatNumber(this.game.stats.gamesPlayed)],
-      ['stat_levels_completed', this.game.formatNumber(this.game.stats.levelsCompleted)],
-      ['stat_highest_level', this.game.formatNumber(this.game.stats.highestLevel)],
-      ['stat_total_xp', this.game.formatNumber(this.game.stats.totalXP)],
-      ['stat_longest_chain', this.game.formatNumber(this.game.stats.longestChain)],
-      ['stat_bonuses_used', this.game.formatNumber(this.game.stats.bonusesUsed)],
-      ['stat_wheel_spins', this.game.formatNumber(this.game.stats.wheelSpins)],
+      ['stat_games_played', this.game.formatNumber(getStat('gamesPlayed'))],
+      ['stat_levels_completed', this.game.formatNumber(getStat('levelsCompleted'))],
+      ['stat_highest_level', this.game.formatNumber(getStat('highestLevel'))],
+      ['stat_total_xp', this.game.formatNumber(getStat('totalXP'))],
+      ['stat_longest_chain', this.game.formatNumber(getStat('longestChain'))],
+      ['stat_bonuses_used', this.game.formatNumber(getStat('bonusesUsed'))],
+      ['stat_wheel_spins', this.game.formatNumber(getStat('wheelSpins'))],
     ];
 
     items.forEach(([labelKey, value]) => {
