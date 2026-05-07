@@ -65,10 +65,6 @@ class ErrorHandler {
       });
     });
 
-    // Ошибки в fetch/XHR (если нужно)
-    this._wrapFetch();
-    this._wrapXHR();
-
     // Мониторинг производительности
     this._setupPerformanceMonitoring();
 
@@ -88,94 +84,6 @@ class ErrorHandler {
 
     this._errorTimestamps.push(now);
     return true;
-  }
-
-  static _wrapFetch() {
-    if (!window.fetch) return;
-
-    const originalFetch = window.fetch;
-    window.fetch = function (...args) {
-      const startTime = Date.now();
-      return originalFetch
-        .apply(this, args)
-        .then((response) => {
-          if (!response.ok) {
-            ErrorHandler.warn(`Fetch ${args[0]} returned ${response.status}`, {
-              type: 'fetch_status',
-              url: args[0],
-              status: response.status,
-              duration: Date.now() - startTime,
-            });
-          }
-          return response;
-        })
-        .catch((err) => {
-          ErrorHandler.handle(`Fetch error: ${args[0]}`, {
-            type: 'fetch',
-            url: args[0],
-            method: args[1]?.method || 'GET',
-            timestamp: Date.now(),
-            duration: Date.now() - startTime,
-          });
-          throw err;
-        });
-    };
-  }
-
-  static _wrapXHR() {
-    if (!window.XMLHttpRequest) return;
-
-    const OriginalXHR = window.XMLHttpRequest;
-    window.XMLHttpRequest = function () {
-      const xhr = new OriginalXHR();
-      const originalOpen = xhr.open;
-      const originalSend = xhr.send;
-      let requestUrl, requestMethod, startTime;
-
-      xhr.open = function (method, url) {
-        requestUrl = url;
-        requestMethod = method;
-        return originalOpen.apply(this, arguments);
-      };
-
-      xhr.send = function (body) {
-        startTime = Date.now();
-
-        xhr.addEventListener('load', function () {
-          if (xhr.status >= 400) {
-            ErrorHandler.warn(`XHR ${requestUrl} returned ${xhr.status}`, {
-              type: 'xhr_status',
-              url: requestUrl,
-              status: xhr.status,
-              duration: Date.now() - startTime,
-            });
-          }
-        });
-
-        xhr.addEventListener('error', function () {
-          ErrorHandler.handle(`XHR error: ${requestUrl}`, {
-            type: 'xhr',
-            url: requestUrl,
-            method: requestMethod,
-            status: xhr.status,
-            timestamp: Date.now(),
-            duration: Date.now() - startTime,
-          });
-        });
-
-        xhr.addEventListener('timeout', function () {
-          ErrorHandler.warn(`XHR timeout: ${requestUrl}`, {
-            type: 'xhr_timeout',
-            url: requestUrl,
-            duration: Date.now() - startTime,
-          });
-        });
-
-        return originalSend.apply(this, arguments);
-      };
-
-      return xhr;
-    };
   }
 
   static _setupPerformanceMonitoring() {
