@@ -137,18 +137,8 @@ GridManager.prototype.onCorrectMove = function () {
   try {
     if (this.game.freezeSystem) {
       const result = this.game.freezeSystem.onCorrectMove();
-
-      // ✅ После уменьшения таймеров: обновляем отображение
       this.updateFrozenStates();
-
       return result;
-    }
-
-    this.correctMoves = (this.correctMoves || 0) + 1;
-
-    if (this.correctMoves >= 5) {
-      this.fallbackUnfreezeCells();
-      this.correctMoves = 0;
     }
 
     return { unfrozen: 0 };
@@ -170,45 +160,5 @@ GridManager.prototype.onChainComplete = function (chainLength, chainSum) {
   } catch (error) {
     ErrorHandler.warn('onChainComplete failed', error);
     return { unfrozen: 0, affected: 0, error: error.message };
-  }
-};
-
-GridManager.prototype.fallbackUnfreezeCells = function () {
-  try {
-    if (!this.game.frozenCells) return false;
-
-    let unfrozenCount = 0;
-
-    for (const [idx, turns] of this.game.frozenCells.entries()) {
-      const x = idx % this.game.GRID_W;
-      const y = Math.floor(idx / this.game.GRID_W);
-
-      const newTurns = Math.max(0, turns - 1);
-
-      if (newTurns <= 0) {
-        this.game.frozenCells.delete(idx);
-        if (this.game.grid[x] && this.game.grid[x][y]) {
-          this.game.grid[x][y].frozen = false;
-          this.game.grid[x][y].freezeTurns = 0;
-          this.game.grid[x][y].freezeMaxTurns = 0;
-        }
-        unfrozenCount++;
-      } else {
-        this.game.frozenCells.set(idx, newTurns);
-        if (this.game.grid[x] && this.game.grid[x][y]) {
-          this.game.grid[x][y].freezeTurns = newTurns;
-        }
-      }
-    }
-
-    if (unfrozenCount > 0) {
-      this.updateFrozenStates();
-      this.game.showMessage(`Разморожено ${unfrozenCount} клеток!`);
-    }
-
-    return unfrozenCount > 0;
-  } catch (error) {
-    ErrorHandler.handle(error, { type: 'fallback_unfreeze_cells' });
-    return false;
   }
 };

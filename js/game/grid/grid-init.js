@@ -23,7 +23,6 @@ GridManager.prototype.initGame = function (levelIndex = 0) {
     Chain.sum = 0;
     this.game.setGamePhase('playing');
     this.game.activeBonus = null;
-    this.correctMoves = 0;
 
     // Инициализация сетки с проверкой
     this.game.grid = [];
