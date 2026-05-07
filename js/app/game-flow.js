@@ -8,6 +8,9 @@ LostNumberGame.prototype.startNewGame = function () {
     this.xpMultiplierTurns = 0;
     this.resetBonusInventory();
     this.frozenCells.clear();
+    if (this.freezeSystem && typeof this.freezeSystem.clearAll === 'function') {
+      this.freezeSystem.clearAll();
+    }
     this.stats = this.defaultStats();
     this.achievements = this.defaultAchievements();
     this.pendingTransition = null;
