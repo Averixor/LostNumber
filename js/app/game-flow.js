@@ -237,6 +237,7 @@ LostNumberGame.prototype.completeLevelTransition = function () {
       this.currentLevel = this.MAX_LEVEL - 1;
       this.carryNumber = carry;
       this.gridManager.initGame(this.currentLevel);
+      this.refreshLevelUI();
       this.saveGameState();
       this.achievementManager.updateAchievementProgress('firstGame', 1);
       this.showVictory();
@@ -244,11 +245,25 @@ LostNumberGame.prototype.completeLevelTransition = function () {
       this.currentLevel = nextLevelIndex;
       this.carryNumber = carry;
       this.gridManager.initGame(this.currentLevel);
+      this.refreshLevelUI();
       this.saveGameState();
     }
   } catch (error) {
     ErrorHandler.handle(error, { type: 'level_transition', pending: this.pendingTransition });
     // Сбрасываем на главный экран если переход сломался
     this.showScreen('mainMenu');
+  }
+};
+
+LostNumberGame.prototype.refreshLevelUI = function () {
+  try {
+    this.updateTargetInfo?.();
+    this.updateGoal?.();
+    this.updateXPBar?.();
+    this.updateMultiplierIndicator?.();
+    if (this.bonusManager) this.bonusManager.updateBonusesUI();
+    if (this.wheelManager) this.wheelManager.updateWheelUI();
+  } catch (error) {
+    ErrorHandler.warn('refreshLevelUI failed', { error });
   }
 };

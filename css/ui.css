@@ -1,11 +1,12 @@
 /* Main Menu */
 .main-menu {
   text-align: center;
-  gap: 12px;
+  gap: clamp(6px, 1.5vh, 12px);
+  justify-content: center;
 }
 
 .game-logo {
-  margin-bottom: 30px;
+  margin-bottom: clamp(8px, 3vh, 30px);
 }
 
 .game-logo span {
@@ -41,18 +42,18 @@
 .menu-buttons {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: clamp(6px, 1.2vh, 10px);
   width: 100%;
   max-width: 260px;
 }
 
 .menu-btn {
-  padding: 10px 14px;
+  padding: clamp(7px, 1.4vh, 10px) 14px;
   border-radius: 14px;
   border: 2px solid var(--btn-border);
   background: var(--btn-bg);
   color: var(--text-color);
-  font-size: 0.95rem;
+  font-size: clamp(0.82rem, 1.7vh, 0.95rem);
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 4px 15px rgba(233, 30, 99, calc(var(--shadow) * 1.5));
@@ -88,7 +89,10 @@
 /* Game Screen */
 .game-screen {
   justify-content: flex-start;
-  padding: 8px 10px 10px;
+  padding: clamp(4px, 1vh, 10px) clamp(6px, 2vw, 12px);
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
 }
 
 .goal-box {
@@ -256,17 +260,18 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
   flex-direction: column;
   margin-top: 2px;
   min-height: 0;
-  padding-bottom: 28px;
+  padding-bottom: clamp(6px, 1.5vh, 28px);
   position: relative;
+  overflow: hidden;
 }
 
 .game-footer {
   width: 100%;
-  height: 56px;
+  height: clamp(44px, 7vh, 56px);
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   align-items: center;
-  margin-top: 6px;
+  margin-top: clamp(2px, 0.6vh, 6px);
 }
 
 .footer-btn {
@@ -368,7 +373,7 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
 .achievements-screen,
 .stats-screen,
 .daily-quests-screen {
-  padding: 20px 18px 90px;
+  padding: clamp(10px, 2.5vh, 20px) clamp(10px, 3vw, 18px) clamp(60px, 12vh, 90px);
   text-align: center;
   justify-content: flex-start;
   overflow-y: auto;
@@ -549,20 +554,23 @@ html[data-theme='dusk'] .preview-bubble {
 }
 
 /* Responsive */
-@media (max-height: 620px) {
-  .game-screen {
-    padding-top: 6px;
-  }
-  .wheel-content {
-    padding: 18px 14px;
+@media (max-width: 340px) {
+  .menu-buttons {
+    max-width: 240px;
   }
 }
 
-@media (max-width: 340px) {
-  .menu-buttons {
-    max-width: 250px;
+/* Очень короткие экраны: главное меню стискаем максимально */
+@media (max-height: 520px) {
+  .game-logo {
+    margin-bottom: 6px;
   }
-  .wheel-content {
-    padding: 16px 12px;
+
+  .game-logo span {
+    font-size: clamp(1.2rem, 4vh, 1.6rem);
+  }
+
+  .subtitle {
+    display: none;
   }
 }

@@ -63,6 +63,9 @@
     <!-- Колесо фортуны -->
     <div class="wheel-overlay hidden" id="wheelOverlay">
       <div class="wheel-content">
+        <button type="button" id="wheelCloseBtn" class="wheel-close-btn" data-i18n-title="btn_close" aria-label="Close">
+          ✕
+        </button>
         <div class="wheel-title" id="wheelTitle" data-i18n="wheel_title"></div>
         <div id="wheelXpLabel" class="wheel-xp"></div>
         <canvas id="fortuneWheel" width="300" height="300"></canvas>
@@ -71,9 +74,6 @@
         </div>
         <div id="wheelResult" class="wheel-result"></div>
         <div class="wheel-daily-info" id="wheelDailyInfo"></div>
-        <div class="menu-buttons" style="margin-top: 10px">
-          <button class="menu-btn secondary" id="wheelCloseBtn" data-i18n="btn_close"></button>
-        </div>
       </div>
     </div>
 

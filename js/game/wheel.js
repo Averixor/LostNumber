@@ -336,7 +336,8 @@ class WheelManager {
           if (resultEl) {
             try {
               const messageParams = selectedSector.turns ? { turns: selectedSector.turns } : {};
-              const message = this.game.t(selectedSector.messageKey, messageParams) || selectedSector.label;
+              const message =
+                this.game.formatTemplate(selectedSector.messageKey, messageParams) || selectedSector.label;
               resultEl.textContent = message;
               resultEl.classList.remove('hidden');
             } catch (e) {
@@ -424,7 +425,7 @@ class WheelManager {
           this.game.xpMultiplierTurns = sector.turns || 3;
           this.game.updateMultiplierIndicator();
           this.game.showMessage(
-            this.game.t(sector.messageKey, { turns: this.game.xpMultiplierTurns }) ||
+            this.game.formatTemplate(sector.messageKey, { turns: this.game.xpMultiplierTurns }) ||
               `×${sector.multiplier} XP for ${sector.turns} turns`
           );
           break;
