@@ -126,11 +126,38 @@ LostNumberGame.prototype.fixGridStructure = function () {
 
 LostNumberGame.prototype.restoreFromState = function (state) {
   try {
+    function safeNumber(value, fallback, options = {}) {
+      const min = options.min ?? -Infinity;
+      const max = options.max ?? Infinity;
+      const integer = options.integer === true;
+
+      const number = Number(value);
+      if (!Number.isFinite(number)) return fallback;
+
+      const clamped = Math.max(min, Math.min(max, number));
+      return integer ? Math.floor(clamped) : clamped;
+    }
+
+    function safePlainObject(value, fallback) {
+      if (!value || typeof value !== 'object' || Array.isArray(value)) {
+        return fallback;
+      }
+
+      return value;
+    }
+
     // Восстанавливаем только игровые данные, НЕ настройки
-    this.currentLevel = state.currentLevel || 0;
-    this.xp = state.xp || 0;
-    this.xpMultiplier = state.xpMultiplier || 1;
-    this.xpMultiplierTurns = state.xpMultiplierTurns || 0;
+    this.currentLevel = safeNumber(state.currentLevel, 0, {
+      min: 0,
+      max: this.MAX_LEVEL - 1,
+      integer: true,
+    });
+    this.xp = safeNumber(state.xp, 0, { min: 0 });
+    this.xpMultiplier = safeNumber(state.xpMultiplier, 1, { min: 1 });
+    this.xpMultiplierTurns = safeNumber(state.xpMultiplierTurns, 0, {
+      min: 0,
+      integer: true,
+    });
 
     const gridSchemaVersion = Number(state.gridSchemaVersion) || 1;
     // _syncFreezeSystemAfterLoad() читает это, чтобы для v2-сейвов отключить
@@ -143,21 +170,26 @@ LostNumberGame.prototype.restoreFromState = function (state) {
       this.grid = state.grid || [];
     }
 
-    this.bonusInventory = state.bonusInventory || { destroy: 0, shuffle: 0, explosion: 0 };
-    this.pendingTransition = state.pendingTransition || null;
-    this.maxReachedNumber = state.maxReachedNumber || 8;
+    this.bonusInventory = safePlainObject(state.bonusInventory, { destroy: 0, shuffle: 0, explosion: 0 });
+    this.pendingTransition = safePlainObject(state.pendingTransition, null);
+    this.maxReachedNumber = safeNumber(state.maxReachedNumber, 8, { min: 2 });
     this.carryNumber = state.carryNumber || null;
-    this.stats = state.stats || this.defaultStats();
-    this.achievements = state.achievements || this.defaultAchievements();
-    this.wheelSpinsToday = state.wheelSpinsToday || 0;
-    this.lastWheelDay = state.lastWheelDay || this.getTodayKey();
+    this.stats = safePlainObject(state.stats, this.defaultStats());
+    this.achievements = safePlainObject(state.achievements, this.defaultAchievements());
+    this.wheelSpinsToday = safeNumber(state.wheelSpinsToday, 0, {
+      min: 0,
+      integer: true,
+    });
+    this.lastWheelDay =
+      typeof state.lastWheelDay === 'string' && state.lastWheelDay ? state.lastWheelDay : this.getTodayKey();
 
     // ВАЖНО: НЕ восстанавливаем настройки из сохранения
     // Они должны браться из текущих настроек пользователя
 
     // Восстанавливаем frozenCells
-    if (state.frozenCells) {
-      this.frozenCells = new Map(Object.entries(state.frozenCells).map(([k, v]) => [Number(k), v]));
+    const frozenCellsSource = safePlainObject(state.frozenCells, null);
+    if (frozenCellsSource) {
+      this.frozenCells = new Map(Object.entries(frozenCellsSource).map(([key, value]) => [Number(key), value]));
     } else {
       this.frozenCells = new Map();
     }
@@ -166,7 +198,11 @@ LostNumberGame.prototype.restoreFromState = function (state) {
     this.checkWheelDailyReset();
 
     if (this.pendingTransition && this.pendingTransition.active) {
-      this.currentLevel = Math.min(this.pendingTransition.nextLevel, this.MAX_LEVEL - 1);
+      this.currentLevel = safeNumber(this.pendingTransition.nextLevel, this.currentLevel, {
+        min: 0,
+        max: this.MAX_LEVEL - 1,
+        integer: true,
+      });
       this.carryNumber = this.pendingTransition.carryNumber ?? null;
       this.pendingTransition = null;
       this.gridManager.initGame(this.currentLevel);
