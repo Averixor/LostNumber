@@ -11,6 +11,6 @@
     "format:check": "node ./node_modules/prettier/bin/prettier.cjs --check .",
     "lint": "node ./node_modules/eslint/bin/eslint.js .",
     "lint:fix": "node ./node_modules/eslint/bin/eslint.js . --fix",
-    "check": "npm run format:check; if ($LASTEXITCODE -eq 0) { npm run lint }"
+    "check": "npm run format:check; if ($?) { npm run lint }"
   }
 }
