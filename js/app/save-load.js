@@ -50,6 +50,11 @@ LostNumberGame.prototype.resumeGame = function () {
     // ФИКСАЦИЯ: Восстанавливаем структуру grid, если она была сохранена как массив чисел
     this.fixGridStructure();
 
+    // Single source of truth для freeze после load:
+    // freezeSystem.frozen Map. Источники приоритетов: cell flags (v2) > legacy
+    // frozenCells Map (v1).
+    this._syncFreezeSystemAfterLoad();
+
     if (this.gridManager) {
       this.gridManager.render();
     }
@@ -126,7 +131,15 @@ LostNumberGame.prototype.restoreFromState = function (state) {
     this.xp = state.xp || 0;
     this.xpMultiplier = state.xpMultiplier || 1;
     this.xpMultiplierTurns = state.xpMultiplierTurns || 0;
-    this.grid = state.grid || [];
+
+    const gridSchemaVersion = Number(state.gridSchemaVersion) || 1;
+    if (gridSchemaVersion >= 2 && Array.isArray(state.grid)) {
+      this.grid = this._parseGridV2(state.grid);
+    } else {
+      // legacy v1: 2D numbers; нормализуется fixGridStructure() позже.
+      this.grid = state.grid || [];
+    }
+
     this.bonusInventory = state.bonusInventory || { destroy: 0, shuffle: 0, explosion: 0 };
     this.pendingTransition = state.pendingTransition || null;
     this.maxReachedNumber = state.maxReachedNumber || 8;
@@ -173,30 +186,26 @@ LostNumberGame.prototype.restoreFromState = function (state) {
 
 LostNumberGame.prototype.saveGameState = function () {
   try {
-    // Извлекаем только числа из grid для сохранения
-    const gridNumbers = [];
-    if (this.grid && Array.isArray(this.grid)) {
-      for (let x = 0; x < this.GRID_W; x++) {
-        gridNumbers[x] = [];
-        for (let y = 0; y < this.GRID_H; y++) {
-          gridNumbers[x][y] = this.grid[x][y] ? this.grid[x][y].number : null;
-        }
-      }
-    }
+    // grid v2: cell objects с freeze/merged-флагами.
+    const gridV2 = this._serializeGridV2();
 
     // ВАЖНО: Сохраняем ТОЛЬКО игровые данные, НЕ настройки
     const state = {
+      // version — legacy save-format marker; gridSchemaVersion управляет grid-структурой.
       version: 2,
+      gridSchemaVersion: 2,
       currentLevel: this.currentLevel,
       xp: this.xp,
       xpMultiplier: this.xpMultiplier,
       xpMultiplierTurns: this.xpMultiplierTurns,
-      grid: gridNumbers,
+      grid: gridV2,
       bonusInventory: this.bonusInventory,
       pendingTransition: this.pendingTransition,
       maxReachedNumber: this.maxReachedNumber,
       carryNumber: this.carryNumber,
-      frozenCells: Object.fromEntries(this.frozenCells),
+      // legacy compat: external systems могут читать idx->turns map.
+      // freezeSystem.frozen Map при load восстанавливается из cell flags.
+      frozenCells: this.frozenCells instanceof Map ? Object.fromEntries(this.frozenCells) : {},
       stats: this.stats,
       achievements: this.achievements,
       wheelSpinsToday: this.wheelSpinsToday,
@@ -212,6 +221,118 @@ LostNumberGame.prototype.saveGameState = function () {
   } catch (error) {
     ErrorHandler.handle(error, { type: 'save_state' });
     // Не бросаем ошибку дальше - потеря сохранения лучше чем краш игры
+  }
+};
+
+// Helper: сериализует this.grid в v2-формат cell objects.
+// Все клетки нормализованы; freezeType пишется только если есть.
+LostNumberGame.prototype._serializeGridV2 = function () {
+  const grid = [];
+  if (!this.grid || !Array.isArray(this.grid)) return grid;
+
+  for (let x = 0; x < this.GRID_W; x++) {
+    grid[x] = [];
+    const col = Array.isArray(this.grid[x]) ? this.grid[x] : [];
+    for (let y = 0; y < this.GRID_H; y++) {
+      const cell = col[y];
+      if (!cell || typeof cell !== 'object') {
+        grid[x][y] = null;
+        continue;
+      }
+      const obj = {
+        // save: value = runtime cell.number (мостик между runtime-полем и save-полем).
+        value: Number.isFinite(cell.number) ? cell.number : null,
+        merged: !!cell.merged,
+        frozen: !!cell.frozen,
+        freezeTurns: Number.isFinite(cell.freezeTurns) && cell.freezeTurns >= 0 ? cell.freezeTurns : 0,
+        freezeMaxTurns: Number.isFinite(cell.freezeMaxTurns) && cell.freezeMaxTurns >= 0 ? cell.freezeMaxTurns : 0,
+      };
+      if (cell.freezeType) obj.freezeType = cell.freezeType;
+      grid[x][y] = obj;
+    }
+  }
+  return grid;
+};
+
+// Helper: парсит v2-грид в runtime-формат cell objects.
+// Defensive: malformed клетки превращаются в безопасные default-объекты.
+LostNumberGame.prototype._parseGridV2 = function (rawGrid) {
+  const grid = [];
+  for (let x = 0; x < this.GRID_W; x++) {
+    grid[x] = [];
+    const col = Array.isArray(rawGrid[x]) ? rawGrid[x] : [];
+    for (let y = 0; y < this.GRID_H; y++) {
+      const raw = col[y];
+      if (!raw || typeof raw !== 'object') {
+        grid[x][y] = {
+          number: null,
+          merged: false,
+          frozen: false,
+          freezeTurns: 0,
+          freezeMaxTurns: 0,
+        };
+        continue;
+      }
+      const cell = {
+        // load: runtime использует cell.number; v2 хранит value — конвертируем обратно.
+        number: Number.isFinite(raw.value) ? raw.value : null,
+        merged: !!raw.merged,
+        frozen: !!raw.frozen,
+        freezeTurns: Number.isFinite(raw.freezeTurns) && raw.freezeTurns >= 0 ? raw.freezeTurns : 0,
+        freezeMaxTurns: Number.isFinite(raw.freezeMaxTurns) && raw.freezeMaxTurns >= 0 ? raw.freezeMaxTurns : 0,
+      };
+      if (raw.freezeType) cell.freezeType = raw.freezeType;
+      grid[x][y] = cell;
+    }
+  }
+  return grid;
+};
+
+// После load: восстанавливаем freezeSystem как single source of truth.
+// Приоритет: cell flags (v2 имеет полные данные turns/maxTurns/type).
+// Fallback: legacy frozenCells Map (v1 хранил только turns).
+LostNumberGame.prototype._syncFreezeSystemAfterLoad = function () {
+  try {
+    if (!this.freezeSystem || typeof this.freezeSystem.loadState !== 'function') return;
+
+    const list = [];
+    const seen = new Set();
+
+    if (Array.isArray(this.grid)) {
+      for (let x = 0; x < this.GRID_W; x++) {
+        const col = this.grid[x];
+        if (!Array.isArray(col)) continue;
+        for (let y = 0; y < this.GRID_H; y++) {
+          const cell = col[y];
+          if (!cell || typeof cell !== 'object' || !cell.frozen) continue;
+          const turns = Number.isFinite(cell.freezeTurns) ? cell.freezeTurns : 0;
+          if (turns <= 0) continue;
+          const idx = y * this.GRID_W + x;
+          list.push({
+            idx,
+            turns,
+            maxTurns: cell.freezeMaxTurns > 0 ? cell.freezeMaxTurns : turns,
+            type: cell.freezeType || 'wheel',
+          });
+          seen.add(idx);
+        }
+      }
+    }
+
+    if (this.frozenCells instanceof Map) {
+      for (const [idxRaw, turnsRaw] of this.frozenCells.entries()) {
+        const idx = Number(idxRaw);
+        const turns = Number(turnsRaw);
+        if (seen.has(idx)) continue;
+        if (!Number.isFinite(idx) || idx < 0) continue;
+        if (!Number.isFinite(turns) || turns <= 0) continue;
+        list.push({ idx, turns, maxTurns: turns, type: 'wheel' });
+      }
+    }
+
+    this.freezeSystem.loadState({ version: 1, frozenCells: list });
+  } catch (error) {
+    ErrorHandler.warn('_syncFreezeSystemAfterLoad failed', { error });
   }
 };
 
