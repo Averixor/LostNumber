@@ -407,12 +407,15 @@ class WheelManager {
           break;
 
         case 'bonus':
-          if (sector.value && this.game.bonusInventory && typeof this.game.bonusInventory[sector.value] === 'number') {
-            this.game.bonusInventory[sector.value]++;
-            if (this.game.bonusManager) {
-              this.game.bonusManager.updateBonusesUI();
+          if (sector.value && typeof this.game.getBonusInventorySnapshot === 'function') {
+            const snapshot = this.game.getBonusInventorySnapshot();
+            if (typeof snapshot[sector.value] === 'number') {
+              this.game.grantBonus(sector.value, 1);
+              if (this.game.bonusManager) {
+                this.game.bonusManager.updateBonusesUI();
+              }
+              this.game.showMessage(this.game.t(sector.messageKey) || `+1 ${sector.value} bonus`);
             }
-            this.game.showMessage(this.game.t(sector.messageKey) || `+1 ${sector.value} bonus`);
           }
           break;
 
@@ -438,8 +441,8 @@ class WheelManager {
             this.game.xp += gift.value;
             this.game.stats.totalXP = (this.game.stats.totalXP || 0) + gift.value;
             this.game.showMessage(this.game.t(gift.messageKey) || `Gift: +${gift.value} XP`);
-          } else if (gift.type === 'bonus' && this.game.bonusInventory) {
-            this.game.bonusInventory[gift.value] = (this.game.bonusInventory[gift.value] || 0) + gift.amount;
+          } else if (gift.type === 'bonus' && gift.value) {
+            this.game.grantBonus(gift.value, gift.amount);
             if (this.game.bonusManager) {
               this.game.bonusManager.updateBonusesUI();
             }

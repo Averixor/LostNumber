@@ -21,11 +21,11 @@ LostNumberGame.prototype.skipLevel = function () {
 LostNumberGame.prototype.addBonus = function (type, count = 1) {
   try {
     if (!type) return;
-    if (!this.bonusInventory) this.bonusInventory = {};
-    this.bonusInventory[type] = (this.bonusInventory[type] || 0) + (Number(count) || 1);
+    const amount = Number(count) || 1;
+    this.grantBonus(type, amount);
     this.updateBonusesUI?.();
     this.saveGameState?.();
-    this.showMessage?.(`+${count} ${type}`);
+    this.showMessage?.(`+${amount} ${type}`);
   } catch (error) {
     ErrorHandler.handle(error, { where: 'addBonus', type, count });
   }

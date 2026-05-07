@@ -127,7 +127,7 @@ class DailyQuestManager {
         this.game.updateXPBar();
         break;
       case 'chain5':
-        this.game.bonusInventory.explosion++;
+        this.game.grantBonus('explosion', 1);
         this.game.updateBonusesUI();
         break;
       case 'xp100':
@@ -136,7 +136,7 @@ class DailyQuestManager {
         this.game.updateXPBar();
         break;
       case 'useBonus':
-        this.game.bonusInventory.shuffle++;
+        this.game.grantBonus('shuffle', 1);
         this.game.updateBonusesUI();
         break;
       case 'spinWheel':

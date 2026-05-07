@@ -113,7 +113,7 @@ LostNumberGame.prototype.handlePointerDown = function (e) {
     }
 
     if (this.activeBonus === 'destroy') {
-      if (this.bonusInventory.destroy <= 0) {
+      if (this.getBonusCount('destroy') <= 0) {
         this.showMessage(this.t('no_bonus'));
         return;
       }
@@ -121,7 +121,7 @@ LostNumberGame.prototype.handlePointerDown = function (e) {
       return;
     }
     if (this.activeBonus === 'explosion') {
-      if (this.bonusInventory.explosion <= 0) {
+      if (this.getBonusCount('explosion') <= 0) {
         this.showMessage(this.t('no_bonus'));
         return;
       }

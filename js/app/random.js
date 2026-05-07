@@ -63,6 +63,31 @@ LostNumberGame.prototype.initSeededRandom = function (forceNew = false) {
   }
 };
 
+// Facade RNG: единая точка входа для gameplay-кода.
+// Не читать state.rng напрямую — использовать только этот метод.
+LostNumberGame.prototype.nextRandomInt = function (maxExclusive) {
+  const max = Math.max(1, maxExclusive | 0);
+  try {
+    if (this.rng && typeof this.rng.nextInt === 'function') {
+      return this.rng.nextInt(max);
+    }
+  } catch (error) {
+    ErrorHandler.warn('nextRandomInt failed', { error, maxExclusive });
+  }
+  return Math.floor(Math.random() * max);
+};
+
+LostNumberGame.prototype.nextRandomFloat = function () {
+  try {
+    if (this.rng && typeof this.rng.nextFloat === 'function') {
+      return this.rng.nextFloat();
+    }
+  } catch (error) {
+    ErrorHandler.warn('nextRandomFloat failed', { error });
+  }
+  return Math.random();
+};
+
 LostNumberGame.prototype.resetSeed = function () {
   try {
     localStorage.removeItem('lostNumberSessionSeed');

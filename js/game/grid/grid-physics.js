@@ -2,8 +2,6 @@
 
 GridManager.prototype.shuffleGrid = function () {
   try {
-    const ctx = this.game?.getContext?.() || this.game?.context || {};
-    const state = ctx.state || this.game?.state || this.game;
     const all = [];
     for (let x = 0; x < this.game.GRID_W; x++) {
       for (let y = 0; y < this.game.GRID_H; y++) {
@@ -16,10 +14,9 @@ GridManager.prototype.shuffleGrid = function () {
       }
     }
 
-    // Безопасное перемешивание
+    // Безопасное перемешивание (Fisher-Yates через facade RNG)
     for (let i = all.length - 1; i > 0; i--) {
-      const rng = state && state.rng ? state.rng : null;
-      const j = rng ? rng.nextInt(i + 1) : Math.floor(Math.random() * (i + 1));
+      const j = this.game.nextRandomInt(i + 1);
       [all[i], all[j]] = [all[j], all[i]];
     }
 
@@ -56,8 +53,6 @@ GridManager.prototype.shuffleGrid = function () {
 
 GridManager.prototype.applyLocalGravity = function (removedCells) {
   try {
-    const ctx = this.game?.getContext?.() || this.game?.context || {};
-    const state = ctx.state || this.game?.state || this.game;
     if (!removedCells || !Array.isArray(removedCells)) {
       ErrorHandler.warn('Invalid removedCells in applyLocalGravity', { removedCells });
       return false;

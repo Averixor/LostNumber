@@ -19,18 +19,12 @@ class BonusManager {
         return;
       }
 
-      if (this.game.bonusInventory[type] <= 0) {
+      if (this.game.getBonusCount(type) <= 0) {
         this.showMessage(this.game.t('no_bonus'));
         return;
       }
 
       if (type === 'shuffle') {
-        // Безопасное использование бонуса
-        if (this.game.bonusInventory.shuffle <= 0) {
-          this.showMessage(this.game.t('no_bonus'));
-          return;
-        }
-
         this.game.bonusInventory.shuffle--;
         this.game.stats.bonusesUsed = (this.game.stats.bonusesUsed || 0) + 1;
 
@@ -136,7 +130,7 @@ class BonusManager {
         return;
       }
 
-      if (!this.game.bonusInventory || this.game.bonusInventory.destroy <= 0) {
+      if (this.game.getBonusCount('destroy') <= 0) {
         this.showMessage(this.game.t('no_bonus'));
         this.game.activeBonus = null;
         this.updateBonusesUI();
@@ -214,7 +208,7 @@ class BonusManager {
         return;
       }
 
-      if (!this.game.bonusInventory || this.game.bonusInventory.explosion <= 0) {
+      if (this.game.getBonusCount('explosion') <= 0) {
         this.showMessage(this.game.t('no_bonus'));
         this.game.activeBonus = null;
         this.updateBonusesUI();
@@ -297,8 +291,11 @@ class BonusManager {
       const bonusShuffle = document.getElementById('bonus-shuffle');
       const bonusDestroy = document.getElementById('bonus-destroy');
 
-      // Безопасное получение данных бонусов
-      const b = this.game.bonusInventory || { explosion: 0, shuffle: 0, destroy: 0 };
+      // Безопасное получение данных бонусов через facade
+      const b =
+        typeof this.game.getBonusInventorySnapshot === 'function'
+          ? this.game.getBonusInventorySnapshot()
+          : this.game.bonusInventory || { explosion: 0, shuffle: 0, destroy: 0 };
 
       if (countExplosion) countExplosion.textContent = b.explosion || 0;
       if (countShuffle) countShuffle.textContent = b.shuffle || 0;

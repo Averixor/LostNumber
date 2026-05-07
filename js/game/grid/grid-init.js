@@ -24,8 +24,6 @@ GridManager.prototype.initGame = function (levelIndex = 0) {
     this.game.setGamePhase('playing');
     this.game.activeBonus = null;
     this.correctMoves = 0;
-    const ctx = this.game?.getContext?.() || this.game?.context || {};
-    const state = ctx.state || this.game?.state || this.game;
 
     // Инициализация сетки с проверкой
     this.game.grid = [];
@@ -77,9 +75,8 @@ GridManager.prototype.initGame = function (levelIndex = 0) {
 
       if (found.length === 0) {
         try {
-          const rng = state && state.rng ? state.rng : null;
-          let rx = rng ? rng.nextInt(this.game.GRID_W) : Math.floor(Math.random() * this.game.GRID_W);
-          let ry = rng ? rng.nextInt(this.game.GRID_H) : Math.floor(Math.random() * this.game.GRID_H);
+          const rx = this.game.nextRandomInt(this.game.GRID_W);
+          const ry = this.game.nextRandomInt(this.game.GRID_H);
 
           this.game.grid[rx][ry].number = this.game.carryNumber;
           this.game.grid[rx][ry].merged = false;

@@ -6,7 +6,7 @@ LostNumberGame.prototype.startNewGame = function () {
     this.xp = 0;
     this.xpMultiplier = 1;
     this.xpMultiplierTurns = 0;
-    this.bonusInventory = { destroy: 0, shuffle: 0, explosion: 0 };
+    this.resetBonusInventory();
     this.frozenCells.clear();
     this.stats = this.defaultStats();
     this.achievements = this.defaultAchievements();
