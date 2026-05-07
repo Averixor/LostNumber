@@ -34,11 +34,11 @@ GridManager.prototype.initGame = function (levelIndex = 0) {
       this.game.grid[x] = [];
       for (let y = 0; y < this.game.GRID_H; y++) {
         let num;
-        const genFunc = this.game.generateCellNumber || state?.generateCellNumber;
+        const genFunc = this.game?.generateCellNumber;
 
         try {
           do {
-            num = genFunc ? genFunc.call(this.game) : 2;
+            num = genFunc ? genFunc.call(this.game, level) : 2;
           } while (num >= level.target);
         } catch (error) {
           ErrorHandler.warn('Failed to generate cell number', { x, y, error });

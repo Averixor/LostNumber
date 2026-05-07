@@ -75,20 +75,24 @@ GridManager.prototype.applyLocalGravity = function (removedCells) {
     const H = this.game.GRID_H;
     const grid = this.game.grid;
 
-    const genFunc = this.game.generateCellNumber || state?.generateCellNumber;
+    const genFunc = this.game?.generateCellNumber;
     const level = this.game.levels?.[this.game.currentLevel];
 
     const genNewNumber = () => {
-      let newNum = genFunc ? genFunc.call(this.game) : 2;
-      if (level && level.target) {
-        // защита от бесконечного цикла
-        let guard = 0;
-        while (newNum >= level.target && guard++ < 50) {
-          newNum = genFunc ? genFunc.call(this.game) : 2;
+      try {
+        let newNum = genFunc ? genFunc.call(this.game, level) : 2;
+        if (level && level.target) {
+          // защита от бесконечного цикла
+          let guard = 0;
+          while (newNum >= level.target && guard++ < 50) {
+            newNum = genFunc ? genFunc.call(this.game, level) : 2;
+          }
+          if (newNum >= level.target) newNum = 2;
         }
-        if (newNum >= level.target) newNum = 2;
+        return newNum;
+      } catch (_) {
+        return 2;
       }
-      return newNum;
     };
 
     const isFrozenAt = (x, y) => {
@@ -212,12 +216,10 @@ GridManager.prototype.applyLocalGravity = function (removedCells) {
 
 GridManager.prototype.applyPressureTransfer = function (requiredEmptyDepth = 2, maxMovesPerTurn = 8) {
   try {
-    const ctx = this.game?.getContext?.() || this.game?.context || {};
-    const state = ctx.state || this.game?.state || this.game;
     const grid = this.game.grid;
     const W = this.game.GRID_W;
     const H = this.game.GRID_H;
-    const genFunc = this.game.generateCellNumber || state?.generateCellNumber;
+    const genFunc = this.game?.generateCellNumber;
     const level = this.game.levels?.[this.game.currentLevel];
 
     let moves = 0;
@@ -278,11 +280,18 @@ GridManager.prototype.applyPressureTransfer = function (requiredEmptyDepth = 2, 
           }
 
           // ✅ спавним сверху В ЖИВОМ столбе
-          let newNum = genFunc ? genFunc.call(this.game) : 2;
-          if (level?.target) {
-            while (newNum >= level.target) {
-              newNum = genFunc ? genFunc.call(this.game) : 2;
+          let newNum;
+          try {
+            newNum = genFunc ? genFunc.call(this.game, level) : 2;
+            if (level?.target) {
+              let guard = 0;
+              while (newNum >= level.target && guard++ < 50) {
+                newNum = genFunc ? genFunc.call(this.game, level) : 2;
+              }
+              if (newNum >= level.target) newNum = 2;
             }
+          } catch (_) {
+            newNum = 2;
           }
           grid[sx][0].number = newNum;
 
