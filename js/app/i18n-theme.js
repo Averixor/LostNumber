@@ -27,6 +27,12 @@ LostNumberGame.prototype.renderStaticI18n = function () {
       if (!key) return;
       el.title = this.t(key);
     });
+
+    document.querySelectorAll('[data-i18n-aria-label]').forEach((el) => {
+      const key = el.getAttribute('data-i18n-aria-label');
+      if (!key) return;
+      el.setAttribute('aria-label', this.t(key));
+    });
   } catch (error) {
     ErrorHandler.warn('renderStaticI18n failed', error);
   }

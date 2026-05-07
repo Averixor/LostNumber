@@ -35,8 +35,8 @@ LostNumberGame.prototype.startNewGame = function () {
       this.wheelManager.updateWheelUI();
     }
 
-    this.saveGameState();
     this.incrementStat('gamesPlayed', 1);
+    this.saveGameState();
   } catch (error) {
     ErrorHandler.handle(error, { type: 'new_game' });
     // Пытаемся восстановиться
@@ -183,10 +183,10 @@ LostNumberGame.prototype.handleLevelComplete = function () {
 
     this.carryNumber = carryNumber;
     this.pendingTransition = { active: true, nextLevel: nextLevelIndex, carryNumber: carryNumber };
-    this.saveGameState();
 
     this.incrementStat('levelsCompleted', 1);
     this.setStatMax('highestLevel', nextLevelNumber);
+    this.saveGameState();
 
     this.achievementManager.updateAchievementProgress('level10', 1);
     this.achievementManager.updateAchievementProgress('level25', 1);
