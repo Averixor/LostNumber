@@ -56,6 +56,7 @@ const I18N = {
     goal_full: '· Ціль:',
     level_label: 'Рівень {level}',
     xp_label: 'Очки: {xp} XP',
+    chain_sum_label: 'Сума ланцюга',
 
     settings_title: 'Налаштування ⚙️',
     settings_animations_label: 'Анімації:',
@@ -251,6 +252,7 @@ const I18N = {
     goal_full: '· Цель:',
     level_label: 'Уровень {level}',
     xp_label: 'Очки: {xp} XP',
+    chain_sum_label: 'Сумма цепочки',
 
     settings_title: 'Настройки ⚙️',
     settings_animations_label: 'Анимации:',
@@ -454,6 +456,7 @@ const I18N = {
     goal_full: '· Goal:',
     level_label: 'Level {level}',
     xp_label: 'XP: {xp}',
+    chain_sum_label: 'Chain sum',
 
     settings_title: 'Settings ⚙️',
     settings_animations_label: 'Animations:',

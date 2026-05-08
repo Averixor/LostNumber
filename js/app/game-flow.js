@@ -124,6 +124,8 @@ LostNumberGame.prototype.mergeChain = function () {
         // Очищаем подсветку в DOM
         this.clearSelectionHighlight(oldSelected);
 
+        this.updatePreviewBubble();
+
         this.updateXPBar();
         this.bonusManager.updateBonusesUI();
 

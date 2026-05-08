@@ -73,7 +73,48 @@ class OverlayManager {
     } catch (_) {}
   }
 
+  /**
+   * Панель під смугою XP: поточна сума ланцюга (узгоджено з canFinishChain для довжини ≥ 2).
+   * @param {boolean} forceIdle — одразу «—» (кінець жесту / скидання прев’ю).
+   */
+  updateChainSumHud(forceIdle = false) {
+    const strip = document.getElementById('chainSumStrip');
+    const valueEl = document.getElementById('chainSumValue');
+    if (!strip || !valueEl || !this.game) return;
+
+    strip.classList.remove('chain-sum-hud--idle', 'chain-sum-hud--valid', 'chain-sum-hud--invalid');
+
+    if (forceIdle) {
+      valueEl.textContent = '—';
+      strip.classList.add('chain-sum-hud--idle');
+      return;
+    }
+
+    const selLen = this.game.selected?.length ?? 0;
+    if (selLen === 0) {
+      valueEl.textContent = '—';
+      strip.classList.add('chain-sum-hud--idle');
+      return;
+    }
+
+    const chainLen = typeof Chain !== 'undefined' && Chain?.numbers ? Chain.numbers.length : 0;
+    if (chainLen === 0) {
+      valueEl.textContent = '—';
+      strip.classList.add('chain-sum-hud--idle');
+      return;
+    }
+
+    valueEl.textContent = this.game.formatNumber(Chain.sum);
+
+    const canFinish = this.game.core.canFinishChain(Chain);
+    if (chainLen >= 2) {
+      strip.classList.add(canFinish ? 'chain-sum-hud--valid' : 'chain-sum-hud--invalid');
+    }
+  }
+
   updatePreviewBubble() {
+    this.updateChainSumHud(false);
+
     const bubble = document.getElementById('previewBubble');
     if (!bubble) return;
 
@@ -243,6 +284,7 @@ class OverlayManager {
     bubble.style.opacity = '0';
     bubble.classList.remove('valid', 'invalid', 'valid-sum');
     this.clearChainPreviewClasses();
+    this.updateChainSumHud(true);
   }
 
   showMessage(text) {
