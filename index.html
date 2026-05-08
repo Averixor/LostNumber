@@ -1,9 +1,32 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-theme="dusk">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>LostNumber</title>
+
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="./logo.svg" />
+    <link rel="icon" href="./favicon.ico" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+
+    <link rel="preload" as="image" href="./logo.svg" />
+    <link rel="preload" as="image" href="./splash-screen.png" />
+
+    <meta name="theme-color" content="#ff6b9d" />
+    <meta name="msapplication-TileColor" content="#ff6b9d" />
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="LostNumber" />
+
+    <meta property="og:title" content="Lost Number" />
+    <meta
+      property="og:description"
+      content="Спокійна головоломка з числами. Грайте у своєму темпі, без таймерів і поспіху."
+    />
+    <meta property="og:image" content="https://averixor.github.io/LostNumber/icon-512.png" />
+    <meta property="og:type" content="website" />
 
     <script src="js/system/platform.js"></script>
     <script>
@@ -36,10 +59,27 @@
   </head>
 
   <body>
-    <!-- Индикатор загрузки -->
-    <div class="loading-overlay" id="loadingOverlay" style="display: none">
-      <div class="loading-spinner"></div>
-      <div class="loading-text" data-i18n="loading">Загрузка…</div>
+    <!-- Индикатор загрузки (splash + спінер; скрывается после инициализации) -->
+    <div
+      class="loading-overlay app-splash"
+      id="loadingOverlay"
+      style="display: none"
+      aria-busy="true"
+      aria-label="Lost Number loading screen"
+    >
+      <img
+        class="app-splash__image"
+        src="./splash-screen.png"
+        alt=""
+        width="941"
+        height="1672"
+        decoding="async"
+        fetchpriority="high"
+      />
+      <div class="loading-overlay__footer">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" data-i18n="loading">Загрузка…</div>
+      </div>
     </div>
 
     <!-- Критическая ошибка -->
@@ -104,7 +144,10 @@
 
     <!-- Главное меню -->
     <div class="screen main-menu" id="mainMenuScreen">
-      <div class="game-logo"><span data-i18n="game_logo"></span></div>
+      <div class="game-logo">
+        <img class="app-logo" src="./logo.svg" alt="" width="128" height="128" decoding="async" />
+        <span data-i18n="game_logo"></span>
+      </div>
       <div class="menu-buttons">
         <button class="menu-btn primary" id="continueBtn" data-i18n="btn_continue"></button>
         <button class="menu-btn secondary" id="newGameBtn" data-i18n="btn_new_game"></button>

@@ -93,7 +93,16 @@ LostNumberGame.prototype.formatTemplate = function (key, params) {
 LostNumberGame.prototype.applyTheme = function () {
   try {
     const root = document.documentElement;
-    root.setAttribute('data-theme', this.theme || 'dusk');
+    const theme = this.theme === 'dawn' ? 'dawn' : 'dusk';
+    root.setAttribute('data-theme', theme);
+
+    const themeColor = getComputedStyle(root).getPropertyValue('--pwa-theme-color').trim();
+    if (themeColor) {
+      const metaTheme = document.querySelector('meta[name="theme-color"]');
+      if (metaTheme) metaTheme.setAttribute('content', themeColor);
+      const metaTile = document.querySelector('meta[name="msapplication-TileColor"]');
+      if (metaTile) metaTile.setAttribute('content', themeColor);
+    }
   } catch (error) {
     ErrorHandler.warn('Theme application failed', { theme: this.theme, error });
   }

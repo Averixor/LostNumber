@@ -20,20 +20,36 @@ window.showCriticalError = function (message, errorId) {
   }
 };
 
+/** Мінімум показу заставки (мс), щоб не «мигнула» при швидкій ініціалізації */
+const SPLASH_MIN_MS = 600;
+
+let splashShownAt = 0;
+
 function hideLoadingScreen() {
   try {
     const overlay = document.getElementById('loadingOverlay');
-    if (overlay) {
+    if (!overlay) return;
+
+    const elapsed = typeof performance !== 'undefined' ? performance.now() - splashShownAt : SPLASH_MIN_MS;
+    const wait = Math.max(0, SPLASH_MIN_MS - elapsed);
+
+    setTimeout(() => {
       overlay.style.opacity = '0';
       setTimeout(() => {
         overlay.style.display = 'none';
+        overlay.removeAttribute('aria-busy');
       }, 500);
-    }
+    }, wait);
   } catch (_) {}
 }
+
 function showLoadingScreen() {
   const overlay = document.getElementById('loadingOverlay');
-  if (overlay) overlay.style.display = 'flex';
+  if (overlay) {
+    splashShownAt = typeof performance !== 'undefined' ? performance.now() : 0;
+    overlay.style.display = 'flex';
+    overlay.style.opacity = '1';
+  }
 }
 
 window.addEventListener('DOMContentLoaded', () => {

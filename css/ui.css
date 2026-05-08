@@ -7,6 +7,22 @@
 
 .game-logo {
   margin-bottom: clamp(8px, 3vh, 30px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(4px, 1.2vh, 10px);
+}
+
+.app-logo {
+  display: block;
+  width: clamp(64px, 20vw, 128px);
+  height: clamp(64px, 20vw, 128px);
+  object-fit: contain;
+  flex-shrink: 0;
+  margin: 0 auto;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.22));
 }
 
 .game-logo span {
@@ -617,6 +633,11 @@ html[data-theme='dusk'] .preview-bubble {
 @media (max-height: 520px) {
   .game-logo {
     margin-bottom: 6px;
+  }
+
+  .app-logo {
+    width: clamp(48px, 14vw, 80px);
+    height: clamp(48px, 14vw, 80px);
   }
 
   .game-logo span {
