@@ -18,6 +18,33 @@ LostNumberGame.prototype.skipLevel = function () {
   }
 };
 
+LostNumberGame.prototype.getDebugContext = function () {
+  try {
+    const base = {
+      currentLevel: this.currentLevel,
+      gamePhase: this.gamePhase,
+      screenState: this.screenState,
+      carryNumber: this.carryNumber,
+    };
+    if (!window.AppEnv?.isDebugFull) {
+      return base;
+    }
+    return {
+      ...base,
+      animationEnabled: this.animationEnabled,
+      liteVisualMode: this.liteVisualMode,
+      floatingNumbersEnabled: this.floatingNumbersEnabled,
+      xpMultiplier: this.xpMultiplier,
+      xpMultiplierTurns: this.xpMultiplierTurns,
+      bonusInventory: this.bonusInventory ? { ...this.bonusInventory } : null,
+      selectedLen: this.selected?.length,
+      chainSum: typeof Chain !== 'undefined' && Chain ? Chain.sum : null,
+    };
+  } catch (e) {
+    return { getDebugContextError: String(e) };
+  }
+};
+
 LostNumberGame.prototype.addBonus = function (type, count = 1) {
   try {
     if (!type) return;
@@ -38,5 +65,14 @@ if (typeof window !== 'undefined' && window.AppEnv?.isDev) {
         detail: { reason: 'fps', averageFps: 10, critical: true },
       })
     );
+  };
+}
+
+if (typeof window !== 'undefined' && window.AppEnv?.isDebugFull) {
+  window.__LN_SENIOR = {
+    help: () => window.LN_DEBUG?.help?.(),
+    dumpErrors: () => ErrorHandler.getErrorHistory?.(),
+    clearErrors: () => ErrorHandler.clearErrorHistory?.(),
+    game: () => window.game,
   };
 }

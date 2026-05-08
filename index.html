@@ -30,6 +30,7 @@
     <link rel="stylesheet" href="css/overlays.css" />
     <!-- Runtime configuration -->
     <script src="js/bootstrap/env.js"></script>
+    <script src="js/system/debug.js"></script>
     <link rel="stylesheet" href="css/critical.css" />
     <link rel="stylesheet" href="css/low-performance.css" />
   </head>
@@ -287,15 +288,7 @@
     <script src="js/core/Chain.js"></script>
     <script src="js/core/rules.js"></script>
 
-    <!-- System модули -->
-    <script>
-      // debug.js только в dev
-      if (window.AppEnv?.isDev) {
-        var s = document.createElement('script');
-        s.src = 'js/system/debug.js';
-        document.head.appendChild(s);
-      }
-    </script>
+    <!-- System модули (debug.js уже в <head>, лог активується через AppEnv) -->
     <script src="js/system/analytics.js"></script>
     <script src="js/system/i18n.js"></script>
     <script src="js/system/storage.js"></script>

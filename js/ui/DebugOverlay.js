@@ -1,4 +1,4 @@
-// DebugOverlay.js — Ctrl+D, показывает состояние и команды
+// DebugOverlay — Ctrl+D; увімкнено при AppEnv.isDev (dev або full).
 class DebugOverlay {
   constructor(game) {
     this.game = game;
@@ -11,9 +11,7 @@ class DebugOverlay {
   }
 
   init() {
-    // показывать только в dev или если принудительно
-    const allow =
-      (typeof Debug !== 'undefined' && Debug.isDev()) || new URL(location.href).searchParams.get('debug') === '1';
+    const allow = window.AppEnv?.isDev === true;
     if (!allow) return;
 
     this.el = document.createElement('div');
@@ -32,34 +30,94 @@ class DebugOverlay {
       background: rgba(0,0,0,0.65);
       color: #fff;
       backdrop-filter: blur(6px);
-      max-width: 320px;
+      max-width: min(360px, calc(100vw - 24px));
+      max-height: calc(100vh - 24px);
+      overflow: auto;
       display: none;
       user-select: text;
     `;
+    const isFull = window.AppEnv?.isDebugFull === true;
     this.el.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;">
-        <strong style="font-size:12px;">DEBUG</strong>
-        <button id="dbgClose" style="cursor:pointer;border:0;background:transparent;color:#fff;font-size:14px;">×</button>
+        <strong style="font-size:12px;">DEBUG <span id="dbgModeLabel" style="opacity:.75;font-weight:600;"></span></strong>
+        <button type="button" id="dbgClose" style="cursor:pointer;border:0;background:transparent;color:#fff;font-size:14px;">×</button>
       </div>
-      <pre id="dbgText" style="margin:0;white-space:pre-wrap;"></pre>
+      <pre id="dbgText" style="margin:0;white-space:pre-wrap;font-size:11px;"></pre>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
-        <button id="dbgResetSeed" style="cursor:pointer;padding:6px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:#fff;">resetSeed()</button>
-        <button id="dbgForceError" style="cursor:pointer;padding:6px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:#fff;">forceError()</button>
-        <button id="dbgSkipLevel" style="cursor:pointer;padding:6px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:#fff;">skipLevel()</button>
+        <button type="button" id="dbgResetSeed" style="cursor:pointer;padding:6px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:#fff;">seed</button>
+        <button type="button" id="dbgForceError" style="cursor:pointer;padding:6px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:#fff;">err</button>
+        <button type="button" id="dbgSkipLevel" style="cursor:pointer;padding:6px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:#fff;">lvl+</button>
+        ${
+          isFull
+            ? `<button type="button" id="dbgDumpGrid" style="cursor:pointer;padding:6px 8px;border-radius:10px;border:1px solid rgba(126,252,106,.4);background:rgba(126,252,106,.12);color:#cfe;">grid</button>
+        <button type="button" id="dbgCopyCtx" style="cursor:pointer;padding:6px 8px;border-radius:10px;border:1px solid rgba(126,252,106,.4);background:rgba(126,252,106,.12);color:#cfe;">copy</button>
+        <button type="button" id="dbgPersist" style="cursor:pointer;padding:6px 8px;border-radius:10px;border:1px solid rgba(126,252,106,.4);background:rgba(126,252,106,.12);color:#cfe;">save=FULL</button>`
+            : ''
+        }
       </div>
+      <div id="dbgHint" style="margin-top:8px;font-size:10px;opacity:.65;"></div>
     `;
     document.body.appendChild(this.el);
 
-    this.el.querySelector('#dbgClose').addEventListener('click', () => this.hide());
-    this.el
-      .querySelector('#dbgResetSeed')
-      .addEventListener('click', () => this.game.resetSeed && this.game.resetSeed());
-    this.el
-      .querySelector('#dbgForceError')
-      .addEventListener('click', () => this.game.forceError && this.game.forceError());
-    this.el
-      .querySelector('#dbgSkipLevel')
-      .addEventListener('click', () => this.game.skipLevel && this.game.skipLevel());
+    const label = this.el.querySelector('#dbgModeLabel');
+    if (label) label.textContent = `(${window.AppEnv?.debugMode || '?'})`;
+
+    const hint = this.el.querySelector('#dbgHint');
+    if (hint) {
+      hint.textContent = isFull
+        ? 'Senior: LN_DEBUG.help() · grid у консоль · save=FULL → localStorage'
+        : 'Підказка: ?debug=full для повного режиму';
+    }
+
+    this.el.querySelector('#dbgClose')?.addEventListener('click', () => this.hide());
+    this.el.querySelector('#dbgResetSeed')?.addEventListener('click', () => this.game.resetSeed?.());
+    this.el.querySelector('#dbgForceError')?.addEventListener('click', () => this.game.forceError?.());
+    this.el.querySelector('#dbgSkipLevel')?.addEventListener('click', () => this.game.skipLevel?.());
+
+    if (isFull) {
+      this.el.querySelector('#dbgDumpGrid')?.addEventListener('click', () => {
+        try {
+          const g = this.game;
+          const rows = [];
+          for (let y = 0; y < g.GRID_H; y++) {
+            let line = '';
+            for (let x = 0; x < g.GRID_W; x++) {
+              const n = g.grid?.[x]?.[y]?.number;
+              line += n == null ? '.' : String(n).padStart(4, ' ');
+            }
+            rows.push(line);
+          }
+          console.log('[LN grid y=0 top →]\n' + rows.join('\n'));
+        } catch (e) {
+          console.warn('dump grid', e);
+        }
+      });
+      this.el.querySelector('#dbgCopyCtx')?.addEventListener('click', async () => {
+        try {
+          const payload = {
+            t: Date.now(),
+            mode: window.AppEnv?.debugMode,
+            ctx: typeof ErrorHandler._ctx === 'function' ? ErrorHandler._ctx() : {},
+            stats: typeof ErrorHandler.getErrorStats === 'function' ? ErrorHandler.getErrorStats() : {},
+          };
+          const text = JSON.stringify(payload, null, 2);
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(text);
+            this.game.showMessage?.('DEBUG: буфер обміну');
+          } else {
+            console.log(text);
+          }
+        } catch (e) {
+          console.warn('copy ctx', e);
+        }
+      });
+      this.el.querySelector('#dbgPersist')?.addEventListener('click', () => {
+        try {
+          window.LN_DEBUG?.persist?.('full');
+          this.game.showMessage?.('DEBUG: збережено full; F5');
+        } catch (_) {}
+      });
+    }
 
     window.addEventListener(
       'keydown',
@@ -71,6 +129,17 @@ class DebugOverlay {
       },
       { passive: false }
     );
+
+    if (isFull) {
+      try {
+        const corner = document.createElement('div');
+        corner.id = 'lnDebugCorner';
+        corner.textContent = 'DBG·FULL';
+        corner.style.cssText =
+          'position:fixed;left:0;bottom:0;z-index:9998;padding:4px 8px;font:10px/1 ui-monospace,monospace;background:rgba(80,160,60,.35);color:#e8ffe8;pointer-events:none;border-top-right-radius:8px;';
+        document.body.appendChild(corner);
+      } catch (_) {}
+    }
 
     this.tick();
   }
@@ -105,6 +174,7 @@ class DebugOverlay {
     this.last = now;
 
     const g = this.game;
+    const isFull = window.AppEnv?.isDebugFull === true;
     const chainSum =
       typeof Chain !== 'undefined' && Chain && typeof Chain.sum === 'number' ? Chain.sum : g.activeChainSum || 0;
     const empty = g.gridManager ? g.gridManager.countEmptyCells?.() : null;
@@ -116,17 +186,32 @@ class DebugOverlay {
       }
     } catch (_) {}
 
-    const text = [
+    const lines = [
       `FPS: ${this.fps}`,
-      `chain.sum: ${chainSum}`,
-      `lastSpinBonus: ${g.lastSpinBonus || '-'}`,
-      `currentSeed: ${(g.state && g.state.currentSeed) || g.currentSeed || '-'}`,
-      `levelTarget: ${g.levelTarget || '-'}`,
+      `phase: ${g.gamePhase ?? '-'} screen: ${g.screenState ?? '-'}`,
+      `level: ${g.currentLevel ?? '-'} target: ${g.levels?.[g.currentLevel]?.target ?? '-'}`,
+      `chain.sum: ${chainSum} sel: ${g.selected?.length ?? 0}`,
+      `seed: ${(g.state && g.state.currentSeed) || g.currentSeed || '-'}`,
+      `emptyCells: ${empty == null ? '-' : empty}`,
       `mem: ${mem || '-'}`,
-      `grid.emptyCells: ${empty == null ? '-' : empty}`,
-    ].join('\n');
+    ];
+
+    if (isFull) {
+      lines.push(
+        `liteVisual: ${g.liteVisualMode ?? '-'} anim: ${g.animationEnabled !== false} float#: ${g.floatingNumbersEnabled !== false}`,
+        `carry: ${g.carryNumber ?? '-'} mult: ${g.xpMultiplier ?? 1} (turns ${g.xpMultiplierTurns ?? 0})`
+      );
+      try {
+        const hist = typeof ErrorHandler.getErrorHistory === 'function' ? ErrorHandler.getErrorHistory() : [];
+        const recent = hist.slice(-3);
+        if (recent.length) {
+          lines.push('— errors (last 3) —');
+          recent.forEach((e) => lines.push(`${e.id}: ${(e.message || '').slice(0, 72)}`));
+        }
+      } catch (_) {}
+    }
 
     const pre = this.el.querySelector('#dbgText');
-    if (pre) pre.textContent = text;
+    if (pre) pre.textContent = lines.join('\n');
   }
 }

@@ -159,5 +159,8 @@
     "tag": "ukr",
     "refName": "Ukrainian",
     "projectStatus": "target"
-  }
+  },
+  "editor.fontFamily": "charis serif",
+  "git.enabled": true,
+  "git.blame.editorDecoration.enabled": true
 }

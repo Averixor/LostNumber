@@ -318,13 +318,17 @@ class ErrorHandler {
   }
 
   static info(message, data = {}) {
-    if (window.AppEnv?.isDev) {
+    if (window.AppEnv?.debugMode === 'off') return;
+    try {
       console.info(`%c[LostNumber INFO] ${message}`, 'color:#4fc3f7', data);
-    }
+    } catch (_) {}
   }
 
   static debug(message, data = {}) {
-    console.debug(`%c[LostNumber DEBUG] ${message}`, 'color:#81c784', data);
+    if (window.AppEnv?.debugMode === 'off') return;
+    try {
+      console.debug(`%c[LostNumber DEBUG] ${message}`, 'color:#81c784', data);
+    } catch (_) {}
   }
 
   // Методы для диагностики
@@ -390,30 +394,25 @@ class ErrorHandler {
 
 // Автоматическая установка с настройками по умолчанию
 if (typeof ErrorHandler !== 'undefined') {
-  // Можно добавить конфигурацию из глобальной переменной
   const userConfig = window.ErrorHandlerConfig || {};
 
-  // Автоматическое определение среды
-  const isDevelopment =
-    window.location.hostname === 'localhost' ||
-    window.location.hostname === '127.0.0.1' ||
-    window.location.search.includes('dev=1');
+  const debugMode = window.AppEnv?.debugMode || 'off';
+  const isDevelopment = debugMode !== 'off';
 
   if (isDevelopment) {
     Object.assign(userConfig, {
       logToConsole: true,
-      showUserMessages: false,
-      maxErrorsPerMinute: 100,
+      showUserMessages: debugMode === 'full',
+      maxErrorsPerMinute: window.AppEnv?.isDebugFull ? 250 : 120,
     });
   }
 
-  // Устанавливаем обработчик после загрузки страницы
   setTimeout(() => {
     try {
       ErrorHandler.install(userConfig);
       ErrorHandler.info('ErrorHandler configured', {
-        mode: isDevelopment ? 'development' : 'production',
-        config: userConfig,
+        mode: debugMode,
+        config: { ...userConfig, onErrorReport: userConfig.onErrorReport ? '[fn]' : undefined },
       });
     } catch (error) {
       console.error('Failed to install ErrorHandler:', error);
