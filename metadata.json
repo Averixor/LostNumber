@@ -1,176 +1,165 @@
 {
-    "format": "scripture burrito",
-    "projectName": "LostNumber",
-    "projectId": "onm1drbs3vevdv3c41gqzi",
-    "meta": {
-        "version": "0.0.0",
-        "category": "Translation",
-        "generator": {
-            "softwareName": "Codex Editor",
-            "softwareVersion": "0.27.0",
-            "userName": "",
-            "userEmail": ""
-        },
-        "defaultLocale": "en",
-        "dateCreated": "Fri May 08 2026",
-        "normalization": "NFC",
-        "comments": [],
-        "requiredExtensions": {
-            "codexEditor": "0.27.0",
-            "frontierAuthentication": "0.6.0"
-        },
-        "validationCount": 1,
-        "validationCountAudio": 1,
-        "abbreviation": ""
+  "format": "scripture burrito",
+  "projectName": "LostNumber",
+  "projectId": "onm1drbs3vevdv3c41gqzi",
+  "meta": {
+    "version": "0.0.0",
+    "category": "Translation",
+    "generator": {
+      "softwareName": "Codex Editor",
+      "softwareVersion": "0.27.0",
+      "userName": "",
+      "userEmail": ""
     },
-    "idAuthorities": {},
-    "identification": {},
-    "languages": [
-        {
-            "name": {
-                "en": "English"
-            },
-            "tag": "eng",
-            "refName": "English",
-            "projectStatus": "source"
-        },
-        {
-            "name": {
-                "en": "Ukrainian"
-            },
-            "tag": "ukr",
-            "refName": "Ukrainian",
-            "projectStatus": "target"
-        }
-    ],
-    "type": {
-        "flavorType": {
-            "name": "default",
-            "flavor": {
-                "name": "default",
-                "usfmVersion": "3.0",
-                "translationType": "unknown",
-                "audience": "general",
-                "projectType": "unknown"
-            },
-            "currentScope": {
-                "GEN": [],
-                "EXO": [],
-                "LEV": [],
-                "NUM": [],
-                "DEU": [],
-                "JOS": [],
-                "JDG": [],
-                "RUT": [],
-                "1SA": [],
-                "2SA": [],
-                "1KI": [],
-                "2KI": [],
-                "1CH": [],
-                "2CH": [],
-                "EZR": [],
-                "NEH": [],
-                "EST": [],
-                "JOB": [],
-                "PSA": [],
-                "PRO": [],
-                "ECC": [],
-                "SNG": [],
-                "ISA": [],
-                "JER": [],
-                "LAM": [],
-                "EZK": [],
-                "DAN": [],
-                "HOS": [],
-                "JOL": [],
-                "AMO": [],
-                "OBA": [],
-                "JON": [],
-                "MIC": [],
-                "NAM": [],
-                "HAB": [],
-                "ZEP": [],
-                "HAG": [],
-                "ZEC": [],
-                "MAL": [],
-                "MAT": [],
-                "MRK": [],
-                "LUK": [],
-                "JHN": [],
-                "ACT": [],
-                "ROM": [],
-                "1CO": [],
-                "2CO": [],
-                "GAL": [],
-                "EPH": [],
-                "PHP": [],
-                "COL": [],
-                "1TH": [],
-                "2TH": [],
-                "1TI": [],
-                "2TI": [],
-                "TIT": [],
-                "PHM": [],
-                "HEB": [],
-                "JAS": [],
-                "1PE": [],
-                "2PE": [],
-                "1JN": [],
-                "2JN": [],
-                "3JN": [],
-                "JUD": [],
-                "REV": []
-            }
-        }
+    "defaultLocale": "en",
+    "dateCreated": "Fri May 08 2026",
+    "normalization": "NFC",
+    "comments": [],
+    "requiredExtensions": {
+      "codexEditor": "0.27.0",
+      "frontierAuthentication": "0.6.0"
     },
-    "confidential": false,
-    "agencies": [],
-    "targetAreas": [],
-    "localizedNames": {},
-    "ingredients": {},
-    "copyright": {
-        "shortStatements": []
+    "validationCount": 1,
+    "validationCountAudio": 1,
+    "abbreviation": ""
+  },
+  "idAuthorities": {},
+  "identification": {},
+  "languages": [
+    {
+      "name": {
+        "en": "English"
+      },
+      "tag": "eng",
+      "refName": "English",
+      "projectStatus": "source"
     },
-    "edits": [
-        {
-            "editMap": [
-                "meta",
-                "validationCount"
-            ],
-            "value": 1,
-            "timestamp": 1778215740002,
-            "type": "user-edit",
-            "author": "Averixor"
-        },
-        {
-            "editMap": [
-                "meta",
-                "validationCountAudio"
-            ],
-            "value": 1,
-            "timestamp": 1778215740002,
-            "type": "user-edit",
-            "author": "Averixor"
-        },
-        {
-            "editMap": [
-                "meta",
-                "abbreviation"
-            ],
-            "value": "",
-            "timestamp": 1778215740002,
-            "type": "user-edit",
-            "author": "Averixor"
-        },
-        {
-            "editMap": [
-                "chatSystemMessage"
-            ],
-            "value": "When translating from English to Ukrainian, maintain strict aspectual distinctions in verbs (perfective vs. imperfective), as Ukrainian requires explicit marking of action completion that English often leaves ambiguous. Pay close attention to word order flexibility: while English relies on SVO, Ukrainian uses word order primarily for information structure (topic-comment), placing new information toward the end of the clause and allowing freer constituent arrangement. Preserve the distinction between ти/ви forms of address, considering social distance, formality, and number more carefully than English \"you.\" Handle articles analytically since Ukrainian lacks them—definiteness and specificity must be conveyed through word order, demonstratives, or context. Be aware of motion verb complexity: Ukrainian distinguishes determinate/indeterminate motion and requires prefixation to show direction more explicitly than English. Render gender agreement consistently across nouns, adjectives, pronouns, and past tense verbs (masculine, feminine, neuter). Convert English gerunds and infinitive constructions appropriately, often using subordinate clauses or verbal nouns. Adjust register markers carefully: Ukrainian maintains more distinct formal/informal registers in both lexical choice and morphology than contemporary English. Handle English passive constructions by preferring Ukrainian active voice with indefinite-personal constructions or reflexive verbs when agent is unimportant. Finally, respect case government: Ukrainian's seven-case system requires accurate case selection based on verb/preposition governance and semantic roles rather than English positional syntax.",
-            "timestamp": 1778215751878,
-            "type": "user-edit",
-            "author": "Averixor"
-        }
-    ],
-    "chatSystemMessage": "When translating from English to Ukrainian, maintain strict aspectual distinctions in verbs (perfective vs. imperfective), as Ukrainian requires explicit marking of action completion that English often leaves ambiguous. Pay close attention to word order flexibility: while English relies on SVO, Ukrainian uses word order primarily for information structure (topic-comment), placing new information toward the end of the clause and allowing freer constituent arrangement. Preserve the distinction between ти/ви forms of address, considering social distance, formality, and number more carefully than English \"you.\" Handle articles analytically since Ukrainian lacks them—definiteness and specificity must be conveyed through word order, demonstratives, or context. Be aware of motion verb complexity: Ukrainian distinguishes determinate/indeterminate motion and requires prefixation to show direction more explicitly than English. Render gender agreement consistently across nouns, adjectives, pronouns, and past tense verbs (masculine, feminine, neuter). Convert English gerunds and infinitive constructions appropriately, often using subordinate clauses or verbal nouns. Adjust register markers carefully: Ukrainian maintains more distinct formal/informal registers in both lexical choice and morphology than contemporary English. Handle English passive constructions by preferring Ukrainian active voice with indefinite-personal constructions or reflexive verbs when agent is unimportant. Finally, respect case government: Ukrainian's seven-case system requires accurate case selection based on verb/preposition governance and semantic roles rather than English positional syntax."
+    {
+      "name": {
+        "en": "Ukrainian"
+      },
+      "tag": "ukr",
+      "refName": "Ukrainian",
+      "projectStatus": "target"
+    }
+  ],
+  "type": {
+    "flavorType": {
+      "name": "default",
+      "flavor": {
+        "name": "default",
+        "usfmVersion": "3.0",
+        "translationType": "unknown",
+        "audience": "general",
+        "projectType": "unknown"
+      },
+      "currentScope": {
+        "GEN": [],
+        "EXO": [],
+        "LEV": [],
+        "NUM": [],
+        "DEU": [],
+        "JOS": [],
+        "JDG": [],
+        "RUT": [],
+        "1SA": [],
+        "2SA": [],
+        "1KI": [],
+        "2KI": [],
+        "1CH": [],
+        "2CH": [],
+        "EZR": [],
+        "NEH": [],
+        "EST": [],
+        "JOB": [],
+        "PSA": [],
+        "PRO": [],
+        "ECC": [],
+        "SNG": [],
+        "ISA": [],
+        "JER": [],
+        "LAM": [],
+        "EZK": [],
+        "DAN": [],
+        "HOS": [],
+        "JOL": [],
+        "AMO": [],
+        "OBA": [],
+        "JON": [],
+        "MIC": [],
+        "NAM": [],
+        "HAB": [],
+        "ZEP": [],
+        "HAG": [],
+        "ZEC": [],
+        "MAL": [],
+        "MAT": [],
+        "MRK": [],
+        "LUK": [],
+        "JHN": [],
+        "ACT": [],
+        "ROM": [],
+        "1CO": [],
+        "2CO": [],
+        "GAL": [],
+        "EPH": [],
+        "PHP": [],
+        "COL": [],
+        "1TH": [],
+        "2TH": [],
+        "1TI": [],
+        "2TI": [],
+        "TIT": [],
+        "PHM": [],
+        "HEB": [],
+        "JAS": [],
+        "1PE": [],
+        "2PE": [],
+        "1JN": [],
+        "2JN": [],
+        "3JN": [],
+        "JUD": [],
+        "REV": []
+      }
+    }
+  },
+  "confidential": false,
+  "agencies": [],
+  "targetAreas": [],
+  "localizedNames": {},
+  "ingredients": {},
+  "copyright": {
+    "shortStatements": []
+  },
+  "edits": [
+    {
+      "editMap": ["meta", "validationCount"],
+      "value": 1,
+      "timestamp": 1778215740002,
+      "type": "user-edit",
+      "author": "Averixor"
+    },
+    {
+      "editMap": ["meta", "validationCountAudio"],
+      "value": 1,
+      "timestamp": 1778215740002,
+      "type": "user-edit",
+      "author": "Averixor"
+    },
+    {
+      "editMap": ["meta", "abbreviation"],
+      "value": "",
+      "timestamp": 1778215740002,
+      "type": "user-edit",
+      "author": "Averixor"
+    },
+    {
+      "editMap": ["chatSystemMessage"],
+      "value": "When translating from English to Ukrainian, maintain strict aspectual distinctions in verbs (perfective vs. imperfective), as Ukrainian requires explicit marking of action completion that English often leaves ambiguous. Pay close attention to word order flexibility: while English relies on SVO, Ukrainian uses word order primarily for information structure (topic-comment), placing new information toward the end of the clause and allowing freer constituent arrangement. Preserve the distinction between ти/ви forms of address, considering social distance, formality, and number more carefully than English \"you.\" Handle articles analytically since Ukrainian lacks them—definiteness and specificity must be conveyed through word order, demonstratives, or context. Be aware of motion verb complexity: Ukrainian distinguishes determinate/indeterminate motion and requires prefixation to show direction more explicitly than English. Render gender agreement consistently across nouns, adjectives, pronouns, and past tense verbs (masculine, feminine, neuter). Convert English gerunds and infinitive constructions appropriately, often using subordinate clauses or verbal nouns. Adjust register markers carefully: Ukrainian maintains more distinct formal/informal registers in both lexical choice and morphology than contemporary English. Handle English passive constructions by preferring Ukrainian active voice with indefinite-personal constructions or reflexive verbs when agent is unimportant. Finally, respect case government: Ukrainian's seven-case system requires accurate case selection based on verb/preposition governance and semantic roles rather than English positional syntax.",
+      "timestamp": 1778215751878,
+      "type": "user-edit",
+      "author": "Averixor"
+    }
+  ],
+  "chatSystemMessage": "When translating from English to Ukrainian, maintain strict aspectual distinctions in verbs (perfective vs. imperfective), as Ukrainian requires explicit marking of action completion that English often leaves ambiguous. Pay close attention to word order flexibility: while English relies on SVO, Ukrainian uses word order primarily for information structure (topic-comment), placing new information toward the end of the clause and allowing freer constituent arrangement. Preserve the distinction between ти/ви forms of address, considering social distance, formality, and number more carefully than English \"you.\" Handle articles analytically since Ukrainian lacks them—definiteness and specificity must be conveyed through word order, demonstratives, or context. Be aware of motion verb complexity: Ukrainian distinguishes determinate/indeterminate motion and requires prefixation to show direction more explicitly than English. Render gender agreement consistently across nouns, adjectives, pronouns, and past tense verbs (masculine, feminine, neuter). Convert English gerunds and infinitive constructions appropriately, often using subordinate clauses or verbal nouns. Adjust register markers carefully: Ukrainian maintains more distinct formal/informal registers in both lexical choice and morphology than contemporary English. Handle English passive constructions by preferring Ukrainian active voice with indefinite-personal constructions or reflexive verbs when agent is unimportant. Finally, respect case government: Ukrainian's seven-case system requires accurate case selection based on verb/preposition governance and semantic roles rather than English positional syntax."
 }

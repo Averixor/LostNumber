@@ -21,11 +21,11 @@ npx serve .
 
 Після `npm install`:
 
-| Команда          | Опис                                                         |
-| ---------------- | ------------------------------------------------------------ |
-| `npm run format` | Prettier — запис файлів                                      |
-| `npm run lint`   | ESLint                                                       |
-| `npm run check`  | Перевірка формату + lint (PowerShell)                        |
+| Команда          | Опис                                  |
+| ---------------- | ------------------------------------- |
+| `npm run format` | Prettier — запис файлів               |
+| `npm run lint`   | ESLint                                |
+| `npm run check`  | Перевірка формату + lint (PowerShell) |
 
 ## Режими та дебаг
 

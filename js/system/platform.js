@@ -9,14 +9,9 @@ class PlatformDetector {
       const lowCores = typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 4;
       const mm = typeof window.matchMedia === 'function' ? window.matchMedia.bind(window) : null;
       const reduceMotion = mm ? mm('(prefers-reduced-motion: reduce)').matches : false;
-      const coarseTouch =
-        mm && isMobile ? mm('(pointer: coarse)').matches || mm('(hover: none)').matches : false;
+      const coarseTouch = mm && isMobile ? mm('(pointer: coarse)').matches || mm('(hover: none)').matches : false;
 
-      return (
-        isXiaomiBrowser ||
-        reduceMotion ||
-        (isMobile && (lowMemory || lowCores || coarseTouch))
-      );
+      return isXiaomiBrowser || reduceMotion || (isMobile && (lowMemory || lowCores || coarseTouch));
     } catch (_) {
       return false;
     }

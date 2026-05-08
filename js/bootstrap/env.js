@@ -1,11 +1,7 @@
 // Runtime environment, debug tiers, ErrorHandler configuration.
 (function () {
   const host = (window.location.hostname || '').toLowerCase();
-  const isLocalHost =
-    host === 'localhost' ||
-    host === '127.0.0.1' ||
-    host === '[::1]' ||
-    host.endsWith('.local');
+  const isLocalHost = host === 'localhost' || host === '127.0.0.1' || host === '[::1]' || host.endsWith('.local');
 
   /** @type {'off' | 'dev' | 'full'} */
   let debugMode = 'off';

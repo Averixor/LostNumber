@@ -55,8 +55,7 @@ class ScreenManager {
         return;
       }
 
-      const count =
-        typeof PlatformDetector !== 'undefined' && PlatformDetector.isMobile?.() ? 6 : 14;
+      const count = typeof PlatformDetector !== 'undefined' && PlatformDetector.isMobile?.() ? 6 : 14;
       const symbols = ['2', '4', '8', '16', '32', '64', '128'];
 
       // Очищаем старые элементы

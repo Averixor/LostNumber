@@ -1,4 +1,4 @@
-  // ===== API =====
+// ===== API =====
 class FreezeSystem {
   constructor(game) {
     this.game = game;
