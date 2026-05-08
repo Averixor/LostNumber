@@ -198,7 +198,7 @@ GridManager.prototype.applyLocalGravity = function (removedCells) {
     // Режим: переносим максимум несколько раз за ход
     this.applyPressureTransfer(2, 8);
 
-    this.preferSyncOrFullRender();
+    this.performFullRender();
     return true;
   } catch (error) {
     ErrorHandler.handle(error, {

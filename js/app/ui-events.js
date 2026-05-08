@@ -133,8 +133,12 @@ LostNumberGame.prototype.handlePointerDown = function (e) {
     this.selected = [posCell];
     Chain.numbers = [this.grid[posCell.x][posCell.y].number];
     updateChainSum();
-    this._schedulePreviewBubbleUpdate?.();
     this._applySelectionHighlight?.(null, posCell);
+    try {
+      this.updatePreviewBubble();
+    } catch (e) {
+      ErrorHandler.warn('updatePreviewBubble on pointerdown failed', e);
+    }
   } catch (error) {
     ErrorHandler.handle(error, { type: 'pointer_down', clientX: e.clientX, clientY: e.clientY });
   }
@@ -257,11 +261,42 @@ LostNumberGame.prototype.resetChain = function (reason = null) {
 
     // На мобільних повний re-render тут дорогий і не потрібен:
     // ми вже очистили selected/highlight в DOM вище.
-    const gridDiv = document.getElementById('grid');
-    if (!gridDiv) {
-      this.gridManager.render();
-    }
   } catch (error) {
     ErrorHandler.handle(error, { type: 'reset_chain', reason });
+  }
+};
+
+/** rAF-throttled: зменшує виклики updatePreviewBubble під час pointermove (до 1 на кадр). */
+LostNumberGame.prototype._schedulePreviewBubbleUpdate = function () {
+  try {
+    if (this._previewBubbleRaf) return;
+    this._previewBubbleRaf = requestAnimationFrame(() => {
+      this._previewBubbleRaf = 0;
+      try {
+        this.updatePreviewBubble();
+      } catch (e) {
+        ErrorHandler.warn('updatePreviewBubble in rAF failed', e);
+      }
+    });
+  } catch (error) {
+    ErrorHandler.warn('_schedulePreviewBubbleUpdate failed', error);
+  }
+};
+
+/** Миттєва підсвітка клітинок без повного scan гріда в updateSelectedCells (дешевше на move). */
+LostNumberGame.prototype._applySelectionHighlight = function (removed, added) {
+  try {
+    const gridDiv = document.getElementById('grid');
+    if (!gridDiv) return;
+    if (removed && typeof removed.x === 'number' && typeof removed.y === 'number') {
+      const el = gridDiv.querySelector(`.cell[data-x="${removed.x}"][data-y="${removed.y}"]`);
+      if (el) el.classList.remove('selected');
+    }
+    if (added && typeof added.x === 'number' && typeof added.y === 'number') {
+      const el = gridDiv.querySelector(`.cell[data-x="${added.x}"][data-y="${added.y}"]`);
+      if (el) el.classList.add('selected');
+    }
+  } catch (error) {
+    ErrorHandler.warn('_applySelectionHighlight failed', error);
   }
 };

@@ -82,20 +82,48 @@ class OverlayManager {
     const grid = document.getElementById('grid');
     if (!container || !grid) return;
 
-    const containerRect = container.getBoundingClientRect();
-    const gridRect = grid.getBoundingClientRect();
+    const gridOffsetX = gridRect.left - containerRect.left;
+    const gridOffsetY = gridRect.top - containerRect.top;
 
     const cellW = gridRect.width / this.game.GRID_W;
     const cellH = gridRect.height / this.game.GRID_H;
 
     const anchor = this.game.selected[this.game.selected.length - 1];
 
-    const x = gridRect.left - containerRect.left + (anchor.x + 0.5) * cellW;
+    const xCenter = gridOffsetX + (anchor.x + 0.5) * cellW;
 
-    const y = gridRect.top - containerRect.top + anchor.y * cellH - cellH;
+    const gap = 8;
+    const minY = gap;
+    const maxBottom = containerRect.height - gap;
+    const yAbove = gridOffsetY + anchor.y * cellH - cellH - gap;
+    const yBelow = gridOffsetY + (anchor.y + 1) * cellH + gap;
 
-    bubble.style.left = x + 'px';
-    bubble.style.top = y + 'px';
+    bubble.style.left = `${xCenter}px`;
+    bubble.style.top = `${yAbove}px`;
+
+    const bubbleH = bubble.offsetHeight || 44;
+    const bubbleW = bubble.offsetWidth || 72;
+
+    let y = yAbove;
+    if (y < minY || y + bubbleH > maxBottom) {
+      y = yBelow;
+    }
+    if (y + bubbleH > maxBottom) {
+      y = Math.max(minY, maxBottom - bubbleH);
+    }
+    if (y < minY) {
+      y = minY;
+    }
+
+    bubble.style.top = `${y}px`;
+
+    const halfW = bubbleW / 2;
+    const minX = halfW + gap;
+    const maxX = containerRect.width - halfW - gap;
+    if (maxX > minX) {
+      const clampedX = Math.max(minX, Math.min(maxX, xCenter));
+      bubble.style.left = `${clampedX}px`;
+    }
 
     // ВАЖНО: Не вызываем gridManager.render() здесь!
     // Вместо этого обновим только состояние selected клеток
@@ -107,17 +135,15 @@ class OverlayManager {
     const gridDiv = document.getElementById('grid');
     if (!gridDiv) return;
 
+    const selected = this.game.selected || [];
+    const selectedSet = new Set(selected.map((s) => `${s.x},${s.y}`));
+
     const cells = gridDiv.querySelectorAll('.cell');
     cells.forEach((cell) => {
-      const x = parseInt(cell.dataset.x);
-      const y = parseInt(cell.dataset.y);
-      const shouldBeSelected = this.game.selected.some((s) => s.x === x && s.y === y);
-
-      if (shouldBeSelected) {
-        cell.classList.add('selected');
-      } else {
-        cell.classList.remove('selected');
-      }
+      const x = parseInt(cell.dataset.x, 10);
+      const y = parseInt(cell.dataset.y, 10);
+      const shouldBeSelected = selectedSet.has(`${x},${y}`);
+      cell.classList.toggle('selected', shouldBeSelected);
     });
   }
 
