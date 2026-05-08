@@ -185,7 +185,12 @@ LostNumberGame.prototype.handleLevelComplete = function () {
     const nextLevelNumber = nextLevelIndex + 1;
 
     this.carryNumber = carryNumber;
-    this.pendingTransition = { active: true, nextLevel: nextLevelIndex, carryNumber: carryNumber };
+    this.pendingTransition = {
+      active: true,
+      nextLevel: nextLevelIndex,
+      carryNumber: carryNumber,
+      completedLevelIndex: prevLevelIndex,
+    };
 
     this.incrementStat('levelsCompleted', 1);
     this.setStatMax('highestLevel', nextLevelNumber);
@@ -230,9 +235,14 @@ LostNumberGame.prototype.completeLevelTransition = function () {
     if (!this.pendingTransition || !this.pendingTransition.active) return;
     const nextLevelIndex = this.pendingTransition.nextLevel;
     const carry = this.pendingTransition.carryNumber ?? null;
+    const completedLevelIndex =
+      typeof this.pendingTransition.completedLevelIndex === 'number'
+        ? this.pendingTransition.completedLevelIndex
+        : Math.max(0, nextLevelIndex - 1);
     this.pendingTransition = null;
 
-    if (nextLevelIndex >= this.MAX_LEVEL - 1) {
+    /* Победа только после завершения последнего уровня, а не при входе на него. */
+    if (completedLevelIndex >= this.MAX_LEVEL - 1) {
       this.currentLevel = this.MAX_LEVEL - 1;
       this.carryNumber = carry;
       this.gridManager.initGame(this.currentLevel);

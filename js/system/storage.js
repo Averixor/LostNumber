@@ -104,7 +104,12 @@ class StorageManager {
   }
 
   isFirstRun() {
-    return !localStorage.getItem(this.FIRST_RUN_KEY);
+    try {
+      return !localStorage.getItem(this.FIRST_RUN_KEY);
+    } catch (e) {
+      this._usingMemory = true;
+      return true;
+    }
   }
 
   markFirstRunComplete() {

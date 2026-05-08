@@ -1,5 +1,10 @@
 # Sync .project/sourceTexts/ folder (source text files)
 
+node_modules/
+
+# Персональні налаштування редактора (не застосовувати git.enabled тощо для всіх)
+.vscode/settings.json
+
 # Don't sync user-specific SQLite databases
 .project/*.sqlite
 

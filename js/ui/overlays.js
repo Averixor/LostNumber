@@ -121,6 +121,7 @@ class OverlayManager {
       return;
     }
 
+    // Обов’язково до будь-якого використання (уникнення ReferenceError у рантаймі)
     const containerRect = container.getBoundingClientRect();
     const gridRect = grid.getBoundingClientRect();
 

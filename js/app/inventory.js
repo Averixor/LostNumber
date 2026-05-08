@@ -82,6 +82,7 @@
       if (cur <= 0) return false;
       const n = Number(amount);
       const dec = Number.isFinite(n) && n > 0 ? n : 1;
+      if (cur < dec) return false;
       inv[type] = cur - dec;
       return true;
     } catch (error) {
