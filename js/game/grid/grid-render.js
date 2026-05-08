@@ -348,6 +348,9 @@ GridManager.prototype._syncSingleCellDOM = function (cellEl, x, y, selectedCells
 
     const isSel = selectedCells.some((s) => s.x === x && s.y === y);
     cellEl.classList.toggle('selected', isSel);
+    if (!isSel) {
+      cellEl.classList.remove('chain-preview-valid', 'chain-preview-invalid');
+    }
     cellEl.classList.toggle('merged', !!cellData.merged);
 
     let inner = cellEl.querySelector('.cell-inner');

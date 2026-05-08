@@ -224,7 +224,7 @@ LostNumberGame.prototype.clearSelectionHighlight = function (selectedCells) {
     selectedCells.forEach((cell) => {
       const cellEl = gridDiv.querySelector(`.cell[data-x="${cell.x}"][data-y="${cell.y}"]`);
       if (cellEl) {
-        cellEl.classList.remove('selected');
+        cellEl.classList.remove('selected', 'chain-preview-valid', 'chain-preview-invalid');
       }
     });
   } catch (error) {
@@ -298,7 +298,7 @@ LostNumberGame.prototype._applySelectionHighlight = function (removed, added) {
     if (!gridDiv) return;
     if (removed && typeof removed.x === 'number' && typeof removed.y === 'number') {
       const el = gridDiv.querySelector(`.cell[data-x="${removed.x}"][data-y="${removed.y}"]`);
-      if (el) el.classList.remove('selected');
+      if (el) el.classList.remove('selected', 'chain-preview-valid', 'chain-preview-invalid');
     }
     if (added && typeof added.x === 'number' && typeof added.y === 'number') {
       const el = gridDiv.querySelector(`.cell[data-x="${added.x}"][data-y="${added.y}"]`);

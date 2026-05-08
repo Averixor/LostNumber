@@ -41,3 +41,38 @@ html.low-performance .floating-hearts,
 html.low-performance .preview-bubble {
   display: none !important;
 }
+
+/*
+ * Після глобального «вимкни все анімації» залишаємо мінімальну плавність саме для гріда:
+ * інакше гравітація виглядає «як на калькуляторі». Специфічність вища за html.low-performance *.
+ */
+html.low-performance .cell {
+  transition:
+    transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1),
+    opacity 0.15s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease !important;
+}
+
+html.low-performance .cell-inner {
+  transition:
+    transform 0.18s ease,
+    background 0.2s ease,
+    color 0.15s ease !important;
+}
+
+html.low-performance .cell.popping {
+  animation: bubbleOut 0.24s ease forwards !important;
+}
+
+html.low-performance .cell.merged .cell-inner {
+  animation: pop 0.2s ease !important;
+}
+
+html.low-performance .cell.carry .cell-inner {
+  animation: carryIn 0.38s ease-out !important;
+}
+
+html.low-performance .cell.shuffle-anim .cell-inner {
+  animation: shuffleWiggle 0.32s ease !important;
+}

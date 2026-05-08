@@ -3,6 +3,22 @@ class OverlayManager {
     this.game = game;
   }
 
+  /** Мобільний / lite: суму показуємо кольором клітинок ланцюга, бульбашку ховаємо. */
+  static shouldHintChainOnCells() {
+    try {
+      if (document.documentElement.classList.contains('low-performance')) return true;
+      if (typeof PlatformDetector !== 'undefined' && PlatformDetector.isMobile?.()) return true;
+      if (
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(pointer: coarse)').matches &&
+        window.innerWidth <= 900
+      ) {
+        return true;
+      }
+    } catch (_) {}
+    return false;
+  }
+
   setupOverlays() {
     document.getElementById('levelNextBtn')?.addEventListener('click', () => {
       document.getElementById('levelOverlay').classList.add('hidden');
@@ -49,6 +65,14 @@ class OverlayManager {
     if (overlay) overlay.classList.add('hidden');
   }
 
+  clearChainPreviewClasses() {
+    try {
+      document
+        .querySelectorAll('#grid .cell.chain-preview-valid, #grid .cell.chain-preview-invalid')
+        .forEach((el) => el.classList.remove('chain-preview-valid', 'chain-preview-invalid'));
+    } catch (_) {}
+  }
+
   updatePreviewBubble() {
     const bubble = document.getElementById('previewBubble');
     if (!bubble) return;
@@ -59,28 +83,43 @@ class OverlayManager {
       bubble.style.opacity = '0';
       bubble.classList.remove('valid', 'invalid');
       bubble.classList.remove('valid-sum');
+      this.clearChainPreviewClasses();
       return;
     }
 
-    const first = Chain.numbers[0];
-    const sum = Chain.sum;
-
     const canFinish = this.game.core.canFinishChain(Chain);
+    const chainLen = Chain.numbers?.length ?? 0;
 
     bubble.classList.remove('valid', 'invalid', 'valid-sum');
 
     if (canFinish) {
       bubble.classList.add('valid');
       bubble.classList.add('valid-sum');
-    } else if (Chain.numbers.length >= 2) {
+    } else if (chainLen >= 2) {
       bubble.classList.add('invalid');
+    }
+
+    const useChainGlow = OverlayManager.shouldHintChainOnCells();
+    let chainHint = null;
+    if (useChainGlow && chainLen >= 2) {
+      chainHint = canFinish ? 'valid' : 'invalid';
+    }
+
+    if (useChainGlow) {
+      bubble.style.opacity = '0';
+      bubble.classList.remove('valid', 'invalid', 'valid-sum');
+      this.updateSelectedCells(chainHint);
+      return;
     }
 
     bubble.style.opacity = '1';
 
     const container = document.querySelector('#gameScreen .grid-container');
     const grid = document.getElementById('grid');
-    if (!container || !grid) return;
+    if (!container || !grid) {
+      this.updateSelectedCells(null);
+      return;
+    }
 
     const containerRect = container.getBoundingClientRect();
     const gridRect = grid.getBoundingClientRect();
@@ -160,13 +199,13 @@ class OverlayManager {
       bubble.style.left = `${clampedX}px`;
     }
 
-    // ВАЖНО: Не вызываем gridManager.render() здесь!
-    // Вместо этого обновим только состояние selected клеток
-    this.updateSelectedCells();
+    this.updateSelectedCells(null);
   }
 
-  // НОВЫЙ МЕТОД: Обновить только состояние selected клеток
-  updateSelectedCells() {
+  /**
+   * @param {null | 'valid' | 'invalid'} chainHint — колір ланцюга (лише коли shouldHintChainOnCells)
+   */
+  updateSelectedCells(chainHint = null) {
     const gridDiv = document.getElementById('grid');
     if (!gridDiv) return;
 
@@ -179,6 +218,21 @@ class OverlayManager {
       const y = parseInt(cell.dataset.y, 10);
       const shouldBeSelected = selectedSet.has(`${x},${y}`);
       cell.classList.toggle('selected', shouldBeSelected);
+
+      if (!shouldBeSelected) {
+        cell.classList.remove('chain-preview-valid', 'chain-preview-invalid');
+        return;
+      }
+
+      if (chainHint === 'valid') {
+        cell.classList.add('chain-preview-valid');
+        cell.classList.remove('chain-preview-invalid');
+      } else if (chainHint === 'invalid') {
+        cell.classList.add('chain-preview-invalid');
+        cell.classList.remove('chain-preview-valid');
+      } else {
+        cell.classList.remove('chain-preview-valid', 'chain-preview-invalid');
+      }
     });
   }
 
@@ -187,6 +241,7 @@ class OverlayManager {
     if (!bubble) return;
     bubble.style.opacity = '0';
     bubble.classList.remove('valid', 'invalid', 'valid-sum');
+    this.clearChainPreviewClasses();
   }
 
   showMessage(text) {
