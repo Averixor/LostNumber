@@ -130,6 +130,8 @@ LostNumberGame.prototype.handlePointerDown = function (e) {
     }
 
     this.isDragging = true;
+    this._bubblePointerX = e.clientX;
+    this._bubblePointerY = e.clientY;
     this.selected = [posCell];
     Chain.numbers = [this.grid[posCell.x][posCell.y].number];
     updateChainSum();
@@ -147,6 +149,8 @@ LostNumberGame.prototype.handlePointerDown = function (e) {
 LostNumberGame.prototype.handlePointerMove = function (e) {
   try {
     if (!this.isDragging || this.activeBonus) return;
+    this._bubblePointerX = e.clientX;
+    this._bubblePointerY = e.clientY;
     e.preventDefault();
 
     const posCell = this.gridManager.getCellFromPoint(e.clientX, e.clientY);
@@ -198,6 +202,8 @@ LostNumberGame.prototype.handlePointerUp = function (e) {
   try {
     if (!this.isDragging) return;
     this.isDragging = false;
+    this._bubblePointerX = null;
+    this._bubblePointerY = null;
     this.hidePreviewBubble();
 
     if (this.core.canFinishChain(Chain)) {
@@ -229,6 +235,8 @@ LostNumberGame.prototype.clearSelectionHighlight = function (selectedCells) {
 LostNumberGame.prototype.resetChain = function (reason = null) {
   try {
     this.isDragging = false;
+    this._bubblePointerX = null;
+    this._bubblePointerY = null;
 
     // HARD RESET визуала
     document

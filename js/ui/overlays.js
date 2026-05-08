@@ -82,31 +82,66 @@ class OverlayManager {
     const grid = document.getElementById('grid');
     if (!container || !grid) return;
 
-    const gridOffsetX = gridRect.left - containerRect.left;
-    const gridOffsetY = gridRect.top - containerRect.top;
-
-    const cellW = gridRect.width / this.game.GRID_W;
-    const cellH = gridRect.height / this.game.GRID_H;
+    const containerRect = container.getBoundingClientRect();
+    const gridRect = grid.getBoundingClientRect();
 
     const anchor = this.game.selected[this.game.selected.length - 1];
-
-    const xCenter = gridOffsetX + (anchor.x + 0.5) * cellW;
 
     const gap = 8;
     const minY = gap;
     const maxBottom = containerRect.height - gap;
-    const yAbove = gridOffsetY + anchor.y * cellH - cellH - gap;
-    const yBelow = gridOffsetY + (anchor.y + 1) * cellH + gap;
+
+    const g = this.game;
+    const usePointer =
+      g.isDragging &&
+      typeof g._bubblePointerX === 'number' &&
+      typeof g._bubblePointerY === 'number' &&
+      !Number.isNaN(g._bubblePointerX) &&
+      !Number.isNaN(g._bubblePointerY);
+
+    let xCenter;
+    let yCandidate;
+
+    if (usePointer) {
+      xCenter = g._bubblePointerX - containerRect.left;
+      const py = g._bubblePointerY - containerRect.top;
+      const fingerLift = 52;
+      yCandidate = py - fingerLift;
+    } else {
+      const gridOffsetX = gridRect.left - containerRect.left;
+      const gridOffsetY = gridRect.top - containerRect.top;
+      const cellW = gridRect.width / this.game.GRID_W;
+      const cellH = gridRect.height / this.game.GRID_H;
+
+      xCenter = gridOffsetX + (anchor.x + 0.5) * cellW;
+
+      const yAbove = gridOffsetY + anchor.y * cellH - cellH - gap;
+      const yBelow = gridOffsetY + (anchor.y + 1) * cellH + gap;
+
+      yCandidate = yAbove;
+      if (yCandidate < minY || yCandidate + 44 > maxBottom) {
+        yCandidate = yBelow;
+      }
+    }
 
     bubble.style.left = `${xCenter}px`;
-    bubble.style.top = `${yAbove}px`;
+    bubble.style.top = `${yCandidate}px`;
 
     const bubbleH = bubble.offsetHeight || 44;
     const bubbleW = bubble.offsetWidth || 72;
 
-    let y = yAbove;
-    if (y < minY || y + bubbleH > maxBottom) {
-      y = yBelow;
+    let y = yCandidate;
+    if (usePointer) {
+      if (y < minY) {
+        const py = g._bubblePointerY - containerRect.top;
+        y = py + 16;
+      }
+    } else {
+      if (y < minY || y + bubbleH > maxBottom) {
+        const gridOffsetY = gridRect.top - containerRect.top;
+        const cellH = gridRect.height / this.game.GRID_H;
+        y = gridOffsetY + (anchor.y + 1) * cellH + gap;
+      }
     }
     if (y + bubbleH > maxBottom) {
       y = Math.max(minY, maxBottom - bubbleH);
