@@ -2,6 +2,7 @@
   "name": "lostnumber",
   "private": true,
   "devDependencies": {
+    "@cursor/sdk": "^1.0.12",
     "eslint": "^10.3.0",
     "globals": "^17.6.0",
     "prettier": "3.5.3"
@@ -11,6 +12,8 @@
     "format:check": "node ./node_modules/prettier/bin/prettier.cjs --check .",
     "lint": "node ./node_modules/eslint/bin/eslint.js .",
     "lint:fix": "node ./node_modules/eslint/bin/eslint.js . --fix",
-    "check": "npm run format:check; if ($?) { npm run lint }"
+    "check": "npm run format:check; if ($?) { npm run lint }",
+    "cursor:audit": "node ./scripts/cursor-audit-local.mjs",
+    "cursor:audit:stream": "node ./scripts/cursor-audit-local.mjs --stream"
   }
 }

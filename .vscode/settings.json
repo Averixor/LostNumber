@@ -89,25 +89,42 @@
   "powershell.integratedConsole.forceClearScrollbackBuffer": false,
   "workbench.editor.enablePreview": false,
   "cSpell.words": [
+    "Авто",
+    "Автосохранение",
     "Адаптация",
+    "адаптивный",
     "базовую",
     "бонусов",
     "важное",
     "видимости",
+    "викликає",
     "Глобальное",
+    "документація",
     "зависимости",
+    "Залежності",
+    "залежностях",
+    "замовчуванням",
     "игру",
     "конфигурацию",
     "Конфигурация",
+    "лінтувати",
     "логируем",
+    "модули",
+    "настройки",
+    "НОВЫЕ",
     "обработчики",
     "отключение",
+    "ошибке",
     "показываем",
+    "Применяем",
     "продакшне",
+    "проєктна",
     "режима",
     "ссылку",
     "только",
-    "Устанавливаем"
+    "тощо",
+    "Устанавливаем",
+    "Якщо"
   ],
 
   "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -123,5 +140,24 @@
 
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  "markdownlint.ignore": ["**/node_modules/**"],
+  "codex-editor-extension.main_chat_language": "Русский (Russian)",
+  "codex-project-manager.sourceLanguage": {
+    "name": {
+      "en": "English"
+    },
+    "tag": "eng",
+    "refName": "English",
+    "projectStatus": "source"
+  },
+  "codex-project-manager.targetLanguage": {
+    "name": {
+      "en": "Ukrainian"
+    },
+    "tag": "ukr",
+    "refName": "Ukrainian",
+    "projectStatus": "target"
   }
 }

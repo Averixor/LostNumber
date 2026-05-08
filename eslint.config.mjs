@@ -1,9 +1,10 @@
-import globals from 'globals';
-
 /**
  * Мінімальний ESLint для проєкту без modules (глобалі з index.html).
  * Клас StorageManager конфліктує з Web API — no-redeclare вимкнено.
  */
+
+import globals from 'globals';
+
 export default [
   { ignores: ['node_modules/**'] },
   {
