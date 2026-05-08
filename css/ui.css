@@ -5,29 +5,11 @@
   justify-content: center;
 }
 
-.game-logo {
-  margin-bottom: clamp(8px, 3vh, 30px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: clamp(4px, 1.2vh, 10px);
-}
-
-.app-logo {
-  display: block;
-  width: clamp(64px, 20vw, 128px);
-  height: clamp(64px, 20vw, 128px);
-  object-fit: contain;
-  flex-shrink: 0;
-  margin: 0 auto;
-  user-select: none;
-  -webkit-user-drag: none;
-  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.22));
-}
-
-.game-logo span {
+/* Один заголовок головного меню (без дубля з малим логотипом/kicker) */
+.main-menu .game-title {
+  margin: 0 0 clamp(8px, 3vh, 24px);
   font-weight: 900;
-  font-size: clamp(1.8rem, 6vw, 2.4rem);
+  font-size: clamp(1.85rem, 7vw, 2.65rem);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--primary-color);
@@ -36,15 +18,7 @@
     0 0 18px rgba(255, 255, 255, 0.1);
   animation: titleBreathe 5.2s ease-in-out infinite;
   transform-origin: center;
-}
-
-.game-title {
-  font-size: clamp(2rem, 8vw, 2.6rem);
-  font-weight: 900;
-  color: var(--primary-color);
-  margin-bottom: 12px;
-  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  animation: heartbeat 2.4s ease-in-out infinite;
+  line-height: 1.1;
 }
 
 .subtitle {
@@ -631,17 +605,9 @@ html[data-theme='dusk'] .preview-bubble {
 
 /* Очень короткие экраны: главное меню стискаем максимально */
 @media (max-height: 520px) {
-  .game-logo {
+  .main-menu .game-title {
     margin-bottom: 6px;
-  }
-
-  .app-logo {
-    width: clamp(48px, 14vw, 80px);
-    height: clamp(48px, 14vw, 80px);
-  }
-
-  .game-logo span {
-    font-size: clamp(1.2rem, 4vh, 1.6rem);
+    font-size: clamp(1.2rem, 4vh, 1.75rem);
   }
 
   .subtitle {
