@@ -74,8 +74,8 @@ class OverlayManager {
   }
 
   /**
-   * Панель під смугою XP: поточна сума ланцюга (узгоджено з canFinishChain для довжини ≥ 2).
-   * @param {boolean} forceIdle — одразу «—» (кінець жесту / скидання прев’ю).
+   * Компактне «віконце» між бонусами й колесом: лише число (canFinishChain при довжині ≥ 2).
+   * @param {boolean} forceIdle — приховати суму (кінець жесту / скидання прев’ю).
    */
   updateChainSumHud(forceIdle = false) {
     const strip = document.getElementById('chainSumStrip');
@@ -83,23 +83,24 @@ class OverlayManager {
     if (!strip || !valueEl || !this.game) return;
 
     strip.classList.remove('chain-sum-hud--idle', 'chain-sum-hud--valid', 'chain-sum-hud--invalid');
+    strip.removeAttribute('title');
 
     if (forceIdle) {
-      valueEl.textContent = '—';
+      valueEl.textContent = '';
       strip.classList.add('chain-sum-hud--idle');
       return;
     }
 
     const selLen = this.game.selected?.length ?? 0;
     if (selLen === 0) {
-      valueEl.textContent = '—';
+      valueEl.textContent = '';
       strip.classList.add('chain-sum-hud--idle');
       return;
     }
 
     const chainLen = typeof Chain !== 'undefined' && Chain?.numbers ? Chain.numbers.length : 0;
     if (chainLen === 0) {
-      valueEl.textContent = '—';
+      valueEl.textContent = '';
       strip.classList.add('chain-sum-hud--idle');
       return;
     }
