@@ -41,30 +41,33 @@ class BonusManager {
         this.game.incrementStat('bonusesUsed', 1);
         this.game.setGamePhase('transitioning');
 
-        // Анимированное перемешивание с обработкой ошибок
-        this.animatedShuffleGrid();
-        try {
-          this.updateBonusesUI();
-          this.showMessage(this.game.t('shuffle_done'));
+        this.animatedShuffleGrid(() => {
+          try {
+            this.updateBonusesUI();
+            this.showMessage(this.game.t('shuffle_done'));
 
-          if (this.game.achievementManager) {
+            if (this.game.achievementManager) {
+              ErrorHandler.safeExecute(() => {
+                this.game.achievementManager.updateAchievementProgress('useAllBonuses', 1);
+              });
+            }
+
+            if (this.game.dailyQuestManager) {
+              ErrorHandler.safeExecute(() => {
+                this.game.dailyQuestManager.completeDailyQuest('useBonus');
+              });
+            }
+
             ErrorHandler.safeExecute(() => {
-              this.game.achievementManager.updateAchievementProgress('useAllBonuses', 1);
+              this.game.saveGameState();
+            });
+          } catch (postShuffleErr) {
+            ErrorHandler.handle(postShuffleErr, {
+              type: 'bonus_shuffle_post_ui',
+              bonusType: type,
             });
           }
-
-          if (this.game.dailyQuestManager) {
-            ErrorHandler.safeExecute(() => {
-              this.game.dailyQuestManager.completeDailyQuest('useBonus');
-            });
-          }
-
-          ErrorHandler.safeExecute(() => {
-            this.game.saveGameState();
-          });
-        } catch (postShuffleErr) {
-          ErrorHandler.handle(postShuffleErr, { type: 'bonus_shuffle_post_ui', bonusType: type });
-        }
+        });
 
         return;
       }
@@ -91,26 +94,33 @@ class BonusManager {
     }
   }
 
-  animatedShuffleGrid() {
+  animatedShuffleGrid(callback) {
+    const finish = () => {
+      this.game.setGamePhase('playing');
+
+      if (typeof callback === 'function') {
+        callback();
+      }
+    };
+
     try {
       const gridDiv = document.getElementById('grid');
+
       if (!gridDiv) {
         ErrorHandler.warn('Grid not found for shuffle animation');
-        // Продолжаем без анимации
+
         if (this.game.gridManager) {
           this.game.gridManager.shuffleGrid();
         }
-        this.game.setGamePhase('playing');
+
+        finish();
         return;
       }
 
       const cells = gridDiv.querySelectorAll('.cell');
-      cells.forEach((c) => {
-        try {
-          c.classList.add('shuffle-anim');
-        } catch (e) {
-          // Игнорируем ошибки добавления классов
-        }
+
+      cells.forEach((cell) => {
+        cell.classList.add('shuffle-anim');
       });
 
       setTimeout(() => {
@@ -118,26 +128,29 @@ class BonusManager {
           if (this.game.gridManager) {
             this.game.gridManager.shuffleGrid();
           }
-          cells.forEach((c) => {
+
+          cells.forEach((cell) => {
             try {
-              c.classList.remove('shuffle-anim');
+              cell.classList.remove('shuffle-anim');
             } catch (e) {
-              // Игнорируем ошибки удаления классов
+              // Ignore class removal errors.
             }
           });
-          this.game.setGamePhase('playing');
+
+          finish();
         } catch (error) {
           ErrorHandler.handle(error, { type: 'shuffle_execution' });
-          this.game.setGamePhase('playing');
+          finish();
         }
       }, 350);
     } catch (error) {
       ErrorHandler.handle(error, { type: 'shuffle_animation' });
-      // Пытаемся выполнить перемешивание без анимации
+
       if (this.game.gridManager) {
         this.game.gridManager.shuffleGrid();
       }
-      this.game.setGamePhase('playing');
+
+      finish();
     }
   }
 
