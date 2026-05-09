@@ -44,7 +44,7 @@ class LostNumberGame {
     this.wheelManager = new WheelManager(this);
     this.achievementManager = new AchievementManager(this);
     this.dailyQuestManager = new DailyQuestManager(this);
-    this.statsManager = new StatsManager(this);
+    this.statsManager = null;
 
     // Привязка менеджеров
     this.state.gridManager = this.gridManager;
@@ -119,15 +119,7 @@ class LostNumberGame {
 
     this._installFloatingNumbersAutoDisableListener();
 
-    // Debug overlay (Ctrl+D) — только в dev режиме или при ?dev=1
-    try {
-      if (typeof DebugOverlay !== 'undefined') {
-        this.debugOverlay = new DebugOverlay(this);
-        this.debugOverlay.init();
-      }
-    } catch (e) {
-      ErrorHandler.warn('DebugOverlay init failed', e);
-    }
+    this._scheduleLazySideModules();
 
     // Error boundaries
     try {
@@ -292,6 +284,64 @@ class LostNumberGame {
       });
     } catch (error) {
       ErrorHandler.warn('_installFloatingNumbersAutoDisableListener failed', { error });
+    }
+  }
+
+  /**
+   * Модулі, які не потрібні для першого кадру меню: stats (екран статистики), DebugOverlay (лише dev).
+   * daily/achievements/overlays лишаються синхронними — їх очікує конструктор, save-load і game-flow.
+   */
+  _scheduleLazySideModules() {
+    const run = () => {
+      try {
+        const statsPromise =
+          typeof StatsManager !== 'undefined'
+            ? Promise.resolve()
+            : typeof window.LN_loadScriptOnce === 'function'
+              ? window.LN_loadScriptOnce('js/game/stats.js')
+              : Promise.resolve();
+
+        statsPromise
+          .then(() => {
+            try {
+              if (!this.statsManager && typeof StatsManager !== 'undefined') {
+                this.statsManager = new StatsManager(this);
+              }
+              if (typeof this.scheduleNonCriticalI18nRender === 'function') {
+                this.scheduleNonCriticalI18nRender();
+              }
+            } catch (e) {
+              ErrorHandler.warn('Lazy stats init failed', e);
+            }
+          })
+          .catch((e) => {
+            ErrorHandler.warn('Lazy stats script failed', e);
+          });
+
+        if (window.AppEnv?.isDev === true && typeof window.LN_loadScriptOnce === 'function') {
+          window
+            .LN_loadScriptOnce('js/ui/DebugOverlay.js')
+            .then(() => {
+              try {
+                if (typeof DebugOverlay !== 'undefined') {
+                  this.debugOverlay = new DebugOverlay(this);
+                  this.debugOverlay.init();
+                }
+              } catch (e) {
+                ErrorHandler.warn('DebugOverlay init failed', e);
+              }
+            })
+            .catch((e) => ErrorHandler.warn('DebugOverlay script failed', e));
+        }
+      } catch (e) {
+        ErrorHandler.warn('_scheduleLazySideModules failed', e);
+      }
+    };
+
+    if (typeof requestIdleCallback === 'function') {
+      requestIdleCallback(run, { timeout: 2000 });
+    } else {
+      setTimeout(run, 0);
     }
   }
 }
