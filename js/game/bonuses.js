@@ -6,6 +6,14 @@ class BonusManager {
 
   activateBonus(type) {
     try {
+      // Під час анімацій бонусів (transitioning) та інших неігрових фаз — ігноруємо
+      if (this.game.gamePhase === 'transitioning') {
+        return;
+      }
+      if (this.game.gamePhase !== 'playing' && this.game.gamePhase !== 'idle') {
+        return;
+      }
+
       if (this.game.activeBonus === type) {
         this.game.activeBonus = null;
         this.updateBonusesUI();
@@ -29,31 +37,34 @@ class BonusManager {
           this.showMessage(this.game.t('no_bonus'));
           return;
         }
+
         this.game.incrementStat('bonusesUsed', 1);
+        this.game.setGamePhase('transitioning');
 
         // Анимированное перемешивание с обработкой ошибок
         this.animatedShuffleGrid();
-        this.updateBonusesUI();
-        this.showMessage(this.game.t('shuffle_done'));
+        try {
+          this.updateBonusesUI();
+          this.showMessage(this.game.t('shuffle_done'));
 
-        // Обновление достижений
-        if (this.game.achievementManager) {
+          if (this.game.achievementManager) {
+            ErrorHandler.safeExecute(() => {
+              this.game.achievementManager.updateAchievementProgress('useAllBonuses', 1);
+            });
+          }
+
+          if (this.game.dailyQuestManager) {
+            ErrorHandler.safeExecute(() => {
+              this.game.dailyQuestManager.completeDailyQuest('useBonus');
+            });
+          }
+
           ErrorHandler.safeExecute(() => {
-            this.game.achievementManager.updateAchievementProgress('useAllBonuses', 1);
+            this.game.saveGameState();
           });
+        } catch (postShuffleErr) {
+          ErrorHandler.handle(postShuffleErr, { type: 'bonus_shuffle_post_ui', bonusType: type });
         }
-
-        // Обновление ежедневных заданий
-        if (this.game.dailyQuestManager) {
-          ErrorHandler.safeExecute(() => {
-            this.game.dailyQuestManager.completeDailyQuest('useBonus');
-          });
-        }
-
-        // Автосохранение
-        ErrorHandler.safeExecute(() => {
-          this.game.saveGameState();
-        });
 
         return;
       }
@@ -69,6 +80,13 @@ class BonusManager {
         activeBonus: this.game.activeBonus,
         inventory: this.game.bonusInventory,
       });
+      if (this.game.gamePhase !== 'transitioning') {
+        try {
+          this.game.setGamePhase('playing');
+        } catch (phaseErr) {
+          ErrorHandler.warn('setGamePhase(playing) after bonus error failed', { phaseErr });
+        }
+      }
       this.showMessage(this.game.t('bonus_error') || 'Помилка активації бонусу');
     }
   }
@@ -82,6 +100,7 @@ class BonusManager {
         if (this.game.gridManager) {
           this.game.gridManager.shuffleGrid();
         }
+        this.game.setGamePhase('playing');
         return;
       }
 
@@ -106,8 +125,10 @@ class BonusManager {
               // Игнорируем ошибки удаления классов
             }
           });
+          this.game.setGamePhase('playing');
         } catch (error) {
           ErrorHandler.handle(error, { type: 'shuffle_execution' });
+          this.game.setGamePhase('playing');
         }
       }, 350);
     } catch (error) {
@@ -116,11 +137,19 @@ class BonusManager {
       if (this.game.gridManager) {
         this.game.gridManager.shuffleGrid();
       }
+      this.game.setGamePhase('playing');
     }
   }
 
   useDestroyBonus(x, y) {
     try {
+      if (this.game.gamePhase === 'transitioning') {
+        return;
+      }
+      if (this.game.gamePhase !== 'playing' && this.game.gamePhase !== 'idle') {
+        return;
+      }
+
       // Проверка валидности координат
       if (x < 0 || x >= this.game.GRID_W || y < 0 || y >= this.game.GRID_H) {
         ErrorHandler.warn('Invalid coordinates for destroy bonus', {
@@ -150,6 +179,8 @@ class BonusManager {
 
       const removedCells = [{ x, y }];
 
+      this.game.setGamePhase('transitioning');
+
       if (this.game.gridManager) {
         this.game.gridManager.animatePopping(removedCells, () => {
           this.game.gridManager.animateGravity(removedCells, () => {
@@ -159,6 +190,7 @@ class BonusManager {
               this.game.activeBonus = null;
               this.updateBonusesUI();
               this.showMessage(this.game.t('destroy_done'));
+              this.game.setGamePhase('playing');
 
               // Обновление достижений
               if (this.game.achievementManager) {
@@ -181,6 +213,7 @@ class BonusManager {
               });
               this.game.activeBonus = null;
               this.updateBonusesUI();
+              this.game.setGamePhase('playing');
             }
           });
         });
@@ -188,6 +221,7 @@ class BonusManager {
         ErrorHandler.warn('GridManager not available for destroy bonus');
         this.game.activeBonus = null;
         this.updateBonusesUI();
+        this.game.setGamePhase('playing');
       }
     } catch (error) {
       ErrorHandler.handle(error, {
@@ -199,11 +233,19 @@ class BonusManager {
       this.game.activeBonus = null;
       this.updateBonusesUI();
       this.showMessage(this.game.t('bonus_error') || 'Помилка використання бонусу');
+      this.game.setGamePhase('playing');
     }
   }
 
   useExplosionBonus(x, y) {
     try {
+      if (this.game.gamePhase === 'transitioning') {
+        return;
+      }
+      if (this.game.gamePhase !== 'playing' && this.game.gamePhase !== 'idle') {
+        return;
+      }
+
       // Проверка валидности координат
       if (x < 0 || x >= this.game.GRID_W || y < 0 || y >= this.game.GRID_H) {
         ErrorHandler.warn('Invalid coordinates for explosion bonus', {
@@ -242,6 +284,8 @@ class BonusManager {
         }
       }
 
+      this.game.setGamePhase('transitioning');
+
       if (this.game.gridManager) {
         this.game.gridManager.animatePopping(removedCells, () => {
           this.game.gridManager.animateGravity(removedCells, () => {
@@ -251,6 +295,7 @@ class BonusManager {
               this.game.activeBonus = null;
               this.updateBonusesUI();
               this.showMessage(this.game.t('explosion_done'));
+              this.game.setGamePhase('playing');
 
               // Обновление достижений
               if (this.game.achievementManager) {
@@ -273,6 +318,7 @@ class BonusManager {
               });
               this.game.activeBonus = null;
               this.updateBonusesUI();
+              this.game.setGamePhase('playing');
             }
           });
         });
@@ -280,6 +326,7 @@ class BonusManager {
         ErrorHandler.warn('GridManager not available for explosion bonus');
         this.game.activeBonus = null;
         this.updateBonusesUI();
+        this.game.setGamePhase('playing');
       }
     } catch (error) {
       ErrorHandler.handle(error, {
@@ -291,6 +338,7 @@ class BonusManager {
       this.game.activeBonus = null;
       this.updateBonusesUI();
       this.showMessage(this.game.t('bonus_error') || 'Помилка використання бонусу');
+      this.game.setGamePhase('playing');
     }
   }
 

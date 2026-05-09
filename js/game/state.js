@@ -289,20 +289,48 @@ class GameState {
   }
 
   pickWeighted(items) {
+    const fallbackItem = () =>
+      items && items.length > 0 && items[0] && typeof items[0] === 'object' && 'value' in items[0]
+        ? items[0]
+        : { value: 2, weight: 1 };
+
     try {
+      if (!items || !Array.isArray(items) || items.length === 0) {
+        return { value: 2, weight: 1 };
+      }
+
       let total = 0;
-      for (const it of items) total += it.weight;
+      for (const it of items) {
+        const w = Number(it?.weight);
+        if (Number.isFinite(w) && w > 0) total += w;
+      }
+
+      if (total <= 0) {
+        return fallbackItem();
+      }
 
       let r = this._nextRandomFloat() * total;
       for (const it of items) {
-        r -= it.weight;
+        const w = Number(it?.weight);
+        if (!Number.isFinite(w) || w <= 0) continue;
+        r -= w;
         if (r <= 0) return it;
       }
-      return items[items.length - 1];
+
+      for (let i = items.length - 1; i >= 0; i--) {
+        const it = items[i];
+        const w = Number(it?.weight);
+        if (Number.isFinite(w) && w > 0) return it;
+      }
+
+      return fallbackItem();
     } catch (error) {
       ErrorHandler.handle(error, { type: 'pick_weighted', items });
-      // Возвращаем первый элемент при ошибке
-      return items && items.length > 0 ? items[0] : { value: 2, weight: 1 };
+      try {
+        return fallbackItem();
+      } catch {
+        return { value: 2, weight: 1 };
+      }
     }
   }
 
@@ -530,16 +558,48 @@ class GameState {
         }
       }
 
-      // Исправляем статистику
+      // Исправляем статистику (глубоко: по ключам из шаблона)
       if (!this.stats || typeof this.stats !== 'object') {
         this.stats = this.defaultStats();
         repaired = true;
+      } else {
+        const defaultStats = this.defaultStats();
+        for (const key of Object.keys(defaultStats)) {
+          const v = this.stats[key];
+          if (typeof v !== 'number' || !Number.isFinite(v) || v < 0) {
+            this.stats[key] = defaultStats[key];
+            repaired = true;
+          }
+        }
       }
 
-      // Исправляем достижения
+      // Исправляем достижения (отсутствующие ключи и битые поля)
       if (!this.achievements || typeof this.achievements !== 'object') {
         this.achievements = this.defaultAchievements();
         repaired = true;
+      } else {
+        const defaultAchievements = this.defaultAchievements();
+        for (const key of Object.keys(defaultAchievements)) {
+          const cur = this.achievements[key];
+          const tmpl = defaultAchievements[key];
+          if (!cur || typeof cur !== 'object') {
+            this.achievements[key] = { ...tmpl };
+            repaired = true;
+            continue;
+          }
+          if (typeof cur.unlocked !== 'boolean') {
+            cur.unlocked = !!tmpl.unlocked;
+            repaired = true;
+          }
+          if (typeof cur.progress !== 'number' || !Number.isFinite(cur.progress) || cur.progress < 0) {
+            cur.progress = tmpl.progress;
+            repaired = true;
+          }
+          if (typeof cur.max !== 'number' || !Number.isFinite(cur.max) || cur.max <= 0) {
+            cur.max = tmpl.max;
+            repaired = true;
+          }
+        }
       }
 
       if (repaired) {

@@ -156,17 +156,7 @@ class ScreenManager {
     try {
       ErrorHandler.info('Attempting UI recovery');
 
-      // Прячем все экраны
-      this.hideAllScreens();
-
-      // Показываем главное меню
-      const mainScreen = document.getElementById('mainMenuScreen');
-      if (mainScreen) {
-        mainScreen.classList.remove('hidden');
-        this.game.screenState = 'mainMenu';
-      }
-
-      // Пересоздаем плавающие числа
+      this.showScreen('mainMenu');
       this.createFloatingNumbers();
 
       ErrorHandler.info('UI recovery completed');
