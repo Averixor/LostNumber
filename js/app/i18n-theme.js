@@ -81,13 +81,28 @@ LostNumberGame.prototype.formatTemplate = function (key, params) {
   try {
     let text = this.t(key);
     Object.keys(params || {}).forEach((k) => {
-      text = text.replace(`{${k}}`, params[k]);
+      const v = params[k];
+      text = text.replace(`{${k}}`, v == null ? '' : String(v));
     });
     return text;
   } catch (error) {
     ErrorHandler.warn('Template formatting failed', { key, params, error });
     return key;
   }
+};
+
+/** «5 ходів» / «1 хід» тощо — для freeze-повідомлень за поточною мовою. */
+LostNumberGame.prototype.formatFrozenTurnsPhrase = function (turns) {
+  try {
+    const lang = this.lang === 'ru' ? 'ru' : this.lang === 'en' ? 'en' : 'ua';
+    if (typeof TurnsPluralFormat !== 'undefined' && typeof TurnsPluralFormat.formatForLang === 'function') {
+      return TurnsPluralFormat.formatForLang(lang, turns);
+    }
+  } catch (error) {
+    ErrorHandler.warn('formatFrozenTurnsPhrase failed', { turns, error });
+  }
+  const n = Math.floor(Math.abs(Number(turns)) || 0);
+  return String(n);
 };
 
 LostNumberGame.prototype.applyTheme = function () {

@@ -344,7 +344,12 @@ class WheelManager {
           const resultEl = document.getElementById('wheelResult');
           if (resultEl) {
             try {
-              const messageParams = selectedSector.turns ? { turns: selectedSector.turns } : {};
+              const messageParams =
+                selectedSector.effect === 'freeze'
+                  ? { turns: this.game.formatFrozenTurnsPhrase(Number(selectedSector.value) || 5) }
+                  : Number.isFinite(selectedSector.turns)
+                    ? { turns: selectedSector.turns }
+                    : {};
               const message =
                 this.game.formatTemplate(selectedSector.messageKey, messageParams) || selectedSector.label;
               resultEl.textContent = message;
@@ -478,8 +483,11 @@ class WheelManager {
           const result = this.game.freezeSystem.freezeRandomCell(turns);
 
           if (result && result.success) {
-            // ✅ НОРМАЛЬНОЕ сообщение, БЕЗ {turns}
-            this.game.showMessage(`❄️ Клетка заморожена на ${result.turns} ходов!`);
+            this.game.showMessage(
+              this.game.formatTemplate('wheel_freeze_message', {
+                turns: this.game.formatFrozenTurnsPhrase(result.turns),
+              }) || `❄️ ${this.game.formatFrozenTurnsPhrase(result.turns)}`
+            );
 
             // 🔄 обновляем визуал
             this.game.gridManager.updateFrozenStates();
