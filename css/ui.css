@@ -363,8 +363,18 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
 
 /* Settings */
 .settings-screen {
-  padding: 20px 18px;
+  padding: clamp(12px, 3vh, 20px) clamp(12px, 3vw, 18px) clamp(24px, 8vh, 56px);
   text-align: center;
+  justify-content: flex-start;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.settings-screen > .settings-title,
+.settings-screen > .settings-options,
+.settings-screen > .menu-buttons {
+  flex-shrink: 0;
 }
 
 .settings-title {
