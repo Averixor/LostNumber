@@ -99,9 +99,13 @@ LostNumberGame.prototype.setupUI = function () {
   }
 };
 
+LostNumberGame.prototype.canAcceptGridInput = function () {
+  return this.gamePhase === 'playing';
+};
+
 LostNumberGame.prototype.handlePointerDown = function (e) {
   try {
-    if (this.gamePhase !== 'playing') return;
+    if (!this.canAcceptGridInput()) return;
 
     const posCell = this.gridManager.getCellFromPoint(e.clientX, e.clientY);
     if (!posCell) return;
@@ -149,6 +153,12 @@ LostNumberGame.prototype.handlePointerDown = function (e) {
 LostNumberGame.prototype.handlePointerMove = function (e) {
   try {
     if (!this.isDragging || this.activeBonus) return;
+
+    if (!this.canAcceptGridInput()) {
+      this.resetChain();
+      return;
+    }
+
     this._bubblePointerX = e.clientX;
     this._bubblePointerY = e.clientY;
     e.preventDefault();
@@ -201,6 +211,12 @@ LostNumberGame.prototype.handlePointerMove = function (e) {
 LostNumberGame.prototype.handlePointerUp = function (e) {
   try {
     if (!this.isDragging) return;
+
+    if (!this.canAcceptGridInput()) {
+      this.resetChain();
+      return;
+    }
+
     this.isDragging = false;
     this._bubblePointerX = null;
     this._bubblePointerY = null;
