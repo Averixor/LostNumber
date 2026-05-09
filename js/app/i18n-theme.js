@@ -8,7 +8,8 @@ LostNumberGame.prototype.applyLanguage = function (lang) {
     document.title = this.t('app_title');
 
     this.renderStaticI18n();
-    this.renderDynamicUI();
+    this.renderCriticalDynamicUI();
+    this.scheduleNonCriticalI18nRender();
   } catch (error) {
     ErrorHandler.handle(error, { type: 'i18n', lang });
   }
@@ -38,30 +39,63 @@ LostNumberGame.prototype.renderStaticI18n = function () {
   }
 };
 
-LostNumberGame.prototype.renderDynamicUI = function () {
+LostNumberGame.prototype.renderCriticalDynamicUI = function () {
   try {
     this.updateXPBar();
     this.updateGoal();
-    if (this.dailyQuestManager) {
-      this.dailyQuestManager.renderDailyQuests();
-    }
-    if (this.statsManager) {
-      this.statsManager.renderStats();
-    }
     if (this.wheelManager) {
       this.wheelManager.updateWheelUI();
     }
     if (this.bonusManager) {
       this.bonusManager.updateBonusesUI();
     }
-    if (this.achievementManager) {
-      this.achievementManager.renderAchievementsScreen();
-    }
     this.applyTheme();
     if (this.audioManager) {
       this.audioManager.updateSoundStateUI();
     }
     this.updateMultiplierIndicator();
+  } catch (error) {
+    ErrorHandler.handle(error, { type: 'ui_render', method: 'renderCriticalDynamicUI' });
+  }
+};
+
+LostNumberGame.prototype.renderNonCriticalDynamicUI = function () {
+  try {
+    if (this.dailyQuestManager) {
+      this.dailyQuestManager.renderDailyQuests();
+    }
+    if (this.statsManager) {
+      this.statsManager.renderStats();
+    }
+    if (this.achievementManager) {
+      this.achievementManager.renderAchievementsScreen();
+    }
+  } catch (error) {
+    ErrorHandler.handle(error, { type: 'ui_render', method: 'renderNonCriticalDynamicUI' });
+  }
+};
+
+LostNumberGame.prototype.scheduleNonCriticalI18nRender = function () {
+  this._nonCriticalI18nGen = (this._nonCriticalI18nGen || 0) + 1;
+  const gen = this._nonCriticalI18nGen;
+
+  requestAnimationFrame(() => {
+    const run = () => {
+      if (gen !== this._nonCriticalI18nGen) return;
+      this.renderNonCriticalDynamicUI();
+    };
+    if (typeof requestIdleCallback === 'function') {
+      requestIdleCallback(run, { timeout: 1000 });
+    } else {
+      setTimeout(run, 0);
+    }
+  });
+};
+
+LostNumberGame.prototype.renderDynamicUI = function () {
+  try {
+    this.renderCriticalDynamicUI();
+    this.renderNonCriticalDynamicUI();
   } catch (error) {
     ErrorHandler.handle(error, { type: 'ui_render', method: 'renderDynamicUI' });
   }
