@@ -1,8 +1,8 @@
-{
+﻿{
   "id": "./index.html",
   "name": "Lost Number",
   "short_name": "LostNumber",
-  "description": "Спокійна головоломка з числами. Грайте у своєму темпі, без таймерів і поспіху.",
+  "description": "РЎРїРѕРєС–Р№РЅР° РіРѕР»РѕРІРѕР»РѕРјРєР° Р· С‡РёСЃР»Р°РјРё. Р“СЂР°Р№С‚Рµ Сѓ СЃРІРѕС”РјСѓ С‚РµРјРїС–, Р±РµР· С‚Р°Р№РјРµСЂС–РІ С– РїРѕСЃРїС–С…Сѓ.",
   "lang": "uk",
   "dir": "ltr",
   "start_url": "./index.html",
@@ -54,7 +54,7 @@
   "screenshots": [
     {
       "src": "./splash-screen.png",
-      "sizes": "941x1672",
+      "sizes": "720x1280",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Lost Number start screen"
@@ -62,9 +62,9 @@
   ],
   "shortcuts": [
     {
-      "name": "Грати",
-      "short_name": "Грати",
-      "description": "Запустити Lost Number",
+      "name": "Р“СЂР°С‚Рё",
+      "short_name": "Р“СЂР°С‚Рё",
+      "description": "Р—Р°РїСѓСЃС‚РёС‚Рё Lost Number",
       "url": "./index.html",
       "icons": [
         {
