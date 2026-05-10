@@ -2,11 +2,15 @@
 (function () {
   // Проверяем, не загружен ли уже ErrorHandler
   if (typeof window.ErrorHandler !== 'undefined' && window.ErrorHandler._installed) {
-    console.log('Main ErrorHandler already installed, skipping fallback');
+    if (window.AppEnv?.isDev) {
+      console.log('Main ErrorHandler already installed, skipping fallback');
+    }
     return;
   }
 
-  console.log('Loading fallback ErrorHandler...');
+  if (window.AppEnv?.isDev) {
+    console.log('Loading fallback ErrorHandler...');
+  }
 
   const errorHistory = [];
   const maxHistorySize = 50;
@@ -83,7 +87,9 @@
 
     install: function (config) {
       try {
-        console.log('Fallback ErrorHandler installed with config:', config);
+        if (window.AppEnv?.isDev) {
+          console.log('Fallback ErrorHandler installed with config:', config);
+        }
 
         // Базовые обработчики ошибок
         window.addEventListener('error', (e) => {
@@ -168,7 +174,9 @@
       // Проверяем, не установился ли основной ErrorHandler за это время
       if (typeof window.ErrorHandler !== 'undefined' && window.ErrorHandler._installed) {
         // Основной установился - используем его
-        console.log('Main ErrorHandler installed during timeout, using main');
+        if (window.AppEnv?.isDev) {
+          console.log('Main ErrorHandler installed during timeout, using main');
+        }
         return;
       }
 

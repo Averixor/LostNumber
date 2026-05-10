@@ -1,5 +1,7 @@
 // errorHandler.js — глобальный контроль ошибок (без сервера)
-console.log('ErrorHandler loaded');
+if (window.AppEnv?.isDev) {
+  console.log('ErrorHandler loaded');
+}
 
 class ErrorHandler {
   static _installed = false;
@@ -68,7 +70,9 @@ class ErrorHandler {
     // Мониторинг производительности
     this._setupPerformanceMonitoring();
 
-    console.log('ErrorHandler installed successfully');
+    if (window.AppEnv?.isDev) {
+      console.log('ErrorHandler installed successfully');
+    }
   }
 
   static _shouldProcessError() {
