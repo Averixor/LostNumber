@@ -45,6 +45,7 @@
 
 - **`storage.js`**, **`audio.js`**, **`platform.js`**, **`i18n.js`**, **`plural-helpers.js`**
 - **`errorHandler.js`**, **`errorHandlerFallback.js`**, **`debug.js`**
+- **`cheats.js`** — однослівні тест-коди в консолі браузера (лише `AppEnv.isDev` або `?cheats=1` / `?debug=`).
 - **`lazy-script.js`**, **`freezeSystem.js`**
 
 ## `js/game/`
