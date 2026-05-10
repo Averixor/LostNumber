@@ -2,5 +2,15 @@
   "$schema": "https://raw.githubusercontent.com/DavidAnson/markdownlint-cli2/main/schema/markdownlint-cli2-config-schema.json",
 
   // Не лінтувати plaintext LICENSE у npm-залежностях (MD041 тощо).
-  "ignores": ["**/node_modules/**"],
+  "ignores": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/coverage/**",
+    "**/.git/**",
+    "**/package-lock.json",
+    "**/*.min.js",
+    "**/*.webp",
+    "**/*.png",
+    "**/*.ico"
+  ]
 }

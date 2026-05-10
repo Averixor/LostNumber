@@ -3,5 +3,11 @@
   "trailingComma": "all",
   "printWidth": 100,
   "semi": true,
-  "endOfLine": "lf"
+  "endOfLine": "lf",
+  "overrides": [
+    {
+      "files": [".markdownlint-cli2.jsonc", "markdownlint-cli2.jsonc"],
+      "options": { "trailingComma": "none" }
+    }
+  ]
 }
