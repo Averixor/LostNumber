@@ -422,6 +422,52 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
   margin-top: 16px;
 }
 
+/* About screen */
+.about-intro p {
+  font-size: 0.9rem;
+  line-height: 1.45;
+  margin: 0 0 8px;
+}
+
+.about-intro .about-lead {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.about-section-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  color: var(--text-color);
+}
+
+.about-list {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.about-list li {
+  margin-bottom: 6px;
+}
+
+.about-list li:last-child {
+  margin-bottom: 0;
+}
+
+.about-credits {
+  text-align: center;
+}
+
+.about-muted {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  opacity: 0.88;
+  color: var(--muted-color, var(--text-color));
+}
+
 /* Achievements & Stats */
 .achievements-screen,
 .stats-screen,

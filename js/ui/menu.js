@@ -66,6 +66,14 @@ class MenuManager {
         this.game.screenManager.showScreen('dailyQuests');
       });
     }
+
+    const aboutBtn = document.getElementById('aboutBtn');
+    if (aboutBtn) {
+      aboutBtn.addEventListener('click', () => {
+        this.game.audioManager.playTap();
+        this.game.screenManager.showScreen('about');
+      });
+    }
   }
 
   syncSettingsUI() {
