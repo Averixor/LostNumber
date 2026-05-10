@@ -1,6 +1,8 @@
 {
   "version": "0.2",
   "language": "en,uk,ru",
+  "allowCompoundWords": true,
+  "ignoreRegExpList": ["/[\\u0400-\\u04FF\\u0500-\\u052F\\u2DE0-\\u2DFF\\uA640-\\uA69F]+/g"],
   "ignorePaths": [
     "node_modules/**",
     "dist/**",

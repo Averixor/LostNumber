@@ -8,7 +8,7 @@
 - **`manifest.json`** — PWA (іконки, `start_url`, знімок екрана тощо).
 - **Ассети UI / PWA:** `favicon.ico`, `icon-192.png`, `icon-512.png`, `apple-touch-icon.png`, `logo.png`, заставка **`splash-screen.webp`** + **`splash-screen.png`** (fallback).
 - **Node-інструменти:** `package.json`, `eslint.config.mjs`, `scripts/` (див. `README.md`).
-- **Перевірка орфографії в IDE:** `cspell.json` (мови en, uk, ru; спільний словник), **`.vscode/extensions.json`** — рекомендовані розширення Code Spell Checker.
+- **Перевірка орфографії в IDE:** `cspell.json` (en, uk, ru; словник + **ігнор суцільних фрагментів кирилиці** в коді, щоб не засмічувати панель), **`.vscode/extensions.json`** — рекомендовані розширення.
 - **Документація:** `README.md`, цей файл, **`docs/PHASES.md`**.
 - **Допоміжно:** `format.ps1`, `lint.ps1` (Windows, обхід обмежень на cmd/npx).
 
