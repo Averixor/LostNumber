@@ -19,7 +19,7 @@ npx serve .
 
 ## PWA та публічний демо
 
-У корені є **`manifest.json`** та іконки (`favicon.ico`, `icon-192.png`, `icon-512.png`, `apple-touch-icon.png`). Заставка завантаження: **`splash-screen.webp`** (основний формат) і **`splash-screen.png`** як запасний варіант у `<picture>`.
+У корені є **`manifest.json`** та іконки (`favicon.ico`, `logo.png`, `icon-192.png`, `icon-512.png`, `apple-touch-icon.png`). Заставка завантаження: **`splash-screen.webp`** (основний формат) і **`splash-screen.png`** як запасний варіант у `<picture>` (у `manifest.json` для скріншота PWA все ще вказано PNG).
 
 Живий приклад на GitHub Pages: <https://averixor.github.io/LostNumber/>
 
@@ -29,14 +29,15 @@ npx serve .
 
 Після `npm install`:
 
-| Команда                | Опис                                                                                 |
-| ---------------------- | ------------------------------------------------------------------------------------ |
-| `npm run format`       | Prettier — запис усіх відповідних файлів                                             |
-| `npm run format:check` | Prettier — лише перевірка без змін                                                   |
-| `npm run lint`         | ESLint                                                                               |
-| `npm run lint:fix`     | ESLint з автовиправленням де можливо                                                 |
-| `npm run check`        | **`format:check` + `lint`** через `scripts/check.mjs` (Node, без прив’язки до shell) |
-| `npm run cursor:audit` | Допоміжний скрипт для локального аудиту з Cursor SDK                                 |
+| Команда                       | Опис                                                                                 |
+| ----------------------------- | ------------------------------------------------------------------------------------ |
+| `npm run format`              | Prettier — запис усіх відповідних файлів                                             |
+| `npm run format:check`        | Prettier — лише перевірка без змін                                                   |
+| `npm run lint`                | ESLint                                                                               |
+| `npm run lint:fix`            | ESLint з автовиправленням де можливо                                                 |
+| `npm run check`               | **`format:check` + `lint`** через `scripts/check.mjs` (Node, без прив’язки до shell) |
+| `npm run cursor:audit`        | Допоміжний скрипт для локального аудиту з Cursor SDK                                 |
+| `npm run cursor:audit:stream` | Те саме з потоковим виводом (`cursor-audit-local.mjs --stream`)                      |
 
 У Windows за бажанням можна користуватися **`format.ps1`** / **`lint.ps1`** поруч з npm-командами.
 
@@ -53,7 +54,7 @@ localStorage.setItem('lostnumber_debug', 'full');
 
 Після цього перезавантаж сторінку. Альтернатива після завантаження: `LN_DEBUG.help()` у консолі.
 
-Службові повідомлення в консолі з обробників помилок у продакшні приглушені: вони з’являються лише коли **`AppEnv.isDev`** активний (див. `js/bootstrap/env.js`).
+Службові повідомлення в консолі з обробників помилок (`errorHandler.js` / `errorHandlerFallback.js`) у продакшні приглушені: вони з’являються лише коли **`AppEnv.isDev`** активний (див. `js/bootstrap/env.js`; конфіг `ErrorHandlerConfig.logToConsole` теж залежить від режиму дебагу).
 
 На мобільних / у **легкому візуальному** режимі частина ефектів спрощується; підказка суми ланцюга може показуватися **кольором виділених клітинок** замість бульбашки.
 
@@ -64,7 +65,7 @@ localStorage.setItem('lostnumber_debug', 'full');
 - **`index.html`** — точка входу, послідовне підключення скриптів.
 - **`css/`** — змінні, сітка, UI, оверлеї, критичні екрани, режим низької продуктивності.
 - **`js/core/`** — правила, `GameCore`, ланцюг, RNG.
-- **`js/game/`** — стан, бонуси, колесо, досягнення, щоденні завдання.
+- **`js/game/`** — стан, бонуси, колесо, досягнення, щоденні завдання, екран статистики.
 - **`js/game/grid/`** — фізика (гравітація), рендер, анімації, заморозка.
 - **`js/system/`** — платформа, сховище, звук, i18n, обробка помилок.
 - **`js/ui/`** — екрани, меню, оверлеї, дебаг-панель.
