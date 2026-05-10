@@ -2,6 +2,30 @@
 <html lang="uk" data-theme="dusk">
   <head>
     <meta charset="utf-8" />
+    <!-- GitHub Pages: URL без завершального / ламає відносні ./assets; base виправляє розв’язання. -->
+    <script>
+      (function () {
+        try {
+          var path = new URL(window.location.href).pathname || '/';
+          if (!path.endsWith('/')) {
+            var last = path.split('/').pop() || '';
+            if (last.indexOf('.') !== -1) {
+              path = path.slice(0, path.lastIndexOf('/') + 1);
+            } else {
+              path = path + '/';
+            }
+          }
+          var b = document.createElement('base');
+          b.href = path;
+          var cs = document.querySelector('meta[charset]');
+          if (cs && cs.parentNode) {
+            cs.parentNode.insertBefore(b, cs.nextSibling);
+          } else {
+            document.head.prepend(b);
+          }
+        } catch (_) {}
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
