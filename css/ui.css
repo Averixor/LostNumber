@@ -13,7 +13,7 @@
   display: block;
   width: min(88vw, 520px);
   height: auto;
-  margin: 0 auto clamp(0.25rem, 1vh, 0.65rem);
+  margin: 0 auto 2rem;
   object-fit: contain;
   animation: titleBreathe 5.2s ease-in-out infinite;
   transform-origin: center;

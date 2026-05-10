@@ -88,8 +88,8 @@
   font-family: monospace;
 }
 
-/* Загрузка: splash (WebP/PNG) + спінер */
-.app-splash.loading-overlay {
+/* Завантаження: splash (WebP/PNG) + спінер */
+.app-splash {
   position: fixed;
   inset: 0;
   z-index: 99998;

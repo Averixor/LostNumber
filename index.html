@@ -71,14 +71,8 @@
   </head>
 
   <body>
-    <!-- Индикатор загрузки (splash + спінер; скрывается после инициализации) -->
-    <div
-      id="appSplash"
-      class="app-splash loading-overlay"
-      style="display: none"
-      aria-busy="true"
-      aria-label="Lost Number loading screen"
-    >
+    <!-- Заставка завантаження (splash + спінер; приховується після ініціалізації) -->
+    <div id="appSplash" class="app-splash" aria-busy="true">
       <picture class="app-splash__picture">
         <source srcset="./splash-screen.webp" type="image/webp" />
         <img
@@ -170,7 +164,14 @@
     <!-- Главное меню -->
     <div class="screen main-menu" id="mainMenuScreen">
       <h1 class="sr-only" data-i18n="game_logo">Lost Number</h1>
-      <img class="main-logo" src="./logo.png" alt="" width="768" height="512" decoding="async" />
+      <img
+        class="main-logo"
+        src="./logo.png"
+        alt="Lost Number"
+        width="712"
+        height="114"
+        decoding="async"
+      />
       <div class="menu-buttons">
         <button class="menu-btn primary" id="continueBtn" data-i18n="btn_continue"></button>
         <button class="menu-btn secondary" id="newGameBtn" data-i18n="btn_new_game"></button>
