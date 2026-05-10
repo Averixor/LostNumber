@@ -19,16 +19,14 @@ npx serve .
 
 ## Брендинг та PWA-асети
 
-| Файл                    | Призначення                                                                                              |
-| ----------------------- | -------------------------------------------------------------------------------------------------------- |
-| `logo.png`              | Широкий логотип на головному екрані меню (не входить до `manifest` icons).                               |
-| `splash-screen.webp`    | Основна легка заставка в HTML (`<picture>` + preload).                                                   |
-| `splash-screen.png`     | Fallback для заставки та **PNG-скріншот** у `manifest.json`.                                             |
-| `favicon.ico`           | Іконка вкладки браузера (`<link rel="icon" sizes="any">`).                                               |
-| `icon-192.png`          | PWA **192×192** для Android / install prompt.                                                            |
-| `icon-512.png`          | PWA **512×512** для Android / сторів / установки (**purpose**: `any`).                                   |
-| `icon-maskable-512.png` | Окремий **maskable** 512×512 з безпечними полями (Android adaptive icon).                                |
-| `apple-touch-icon.png`  | **180×180** для iOS home screen (лише `<link rel="apple-touch-icon">`, не дублювати в `manifest` icons). |
+- `logo.png` — основний широкий логотип для головного екрана / промо (не в `manifest` icons).
+- `splash-screen.webp` — основна заставка завантаження у HTML (`<picture>` + preload).
+- `splash-screen.png` — fallback для заставки та PNG-скріншот у `manifest.json`.
+- `favicon.ico` — іконка вкладки браузера.
+- `icon-192.png` — PWA-іконка 192×192 для встановлення на Android / install prompt.
+- `icon-512.png` — PWA-іконка 512×512 для Android / stores / install (**purpose**: `any`).
+- `icon-maskable-512.png` — окремий **maskable** 512×512 з безпечними полями (Android adaptive icon).
+- `apple-touch-icon.png` — іконка для додавання на головний екран iOS (лише `<link rel="apple-touch-icon">`, не в `manifest` icons).
 
 Колір оболонки PWA / `theme-color`: **`#1b1028`** (узгоджено з `manifest`, мета-тегами в `index.html` та `--pwa-theme-color` у `css/variables.css`).
 
