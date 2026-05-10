@@ -2,6 +2,67 @@
 <html lang="uk" data-theme="dusk">
   <head>
     <meta charset="utf-8" />
+    <!-- GitHub Pages: URL без завершального / ламає відносні ./assets; base виправляє розв’язання. -->
+    <script>
+      (function () {
+        function computeBasePath() {
+          var path = window.location.pathname || '/';
+          if (!path.endsWith('/')) {
+            var last = path.split('/').pop() || '';
+            if (last.indexOf('.') !== -1) {
+              path = path.slice(0, path.lastIndexOf('/') + 1);
+            } else {
+              path = path + '/';
+            }
+          }
+          return path;
+        }
+
+        function shouldLogBaseErrors() {
+          try {
+            var host = (window.location.hostname || '').toLowerCase();
+            var local =
+              host === 'localhost' ||
+              host === '127.0.0.1' ||
+              host === '[::1]' ||
+              host.endsWith('.local');
+            var u = window.location.search || '';
+            return (
+              local ||
+              u.indexOf('debug=1') !== -1 ||
+              u.indexOf('debug=full') !== -1 ||
+              u.indexOf('dev=1') !== -1
+            );
+          } catch (_) {
+            return false;
+          }
+        }
+
+        try {
+          var path = computeBasePath();
+          var existingBase = document.querySelector('base');
+          if (existingBase) {
+            var existingHref = existingBase.getAttribute('href');
+            if (!existingHref) {
+              existingBase.href = path;
+            }
+            return;
+          }
+          var b = document.createElement('base');
+          b.href = path;
+          var cs = document.querySelector('meta[charset]');
+          if (cs && cs.parentNode) {
+            cs.parentNode.insertBefore(b, cs.nextSibling);
+          } else {
+            document.head.prepend(b);
+          }
+        } catch (e) {
+          if (shouldLogBaseErrors() && typeof console !== 'undefined' && console.warn) {
+            console.warn('[LN_BASE] base path bootstrap failed:', e);
+          }
+        }
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
