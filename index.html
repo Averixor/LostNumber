@@ -78,15 +78,15 @@
       />
       <div class="loading-overlay__footer">
         <div class="loading-spinner"></div>
-        <div class="loading-text" data-i18n="loading">Загрузка…</div>
+        <div class="loading-text" data-i18n="loading">Завантаження…</div>
       </div>
     </div>
 
     <!-- Критическая ошибка -->
     <div id="criticalErrorContainer" class="critical-error" style="display: none">
       <h2>⚠️ LostNumber</h2>
-      <p id="criticalErrorMessage">Игра не может быть загружена. Обновите страницу или попробуйте позже.</p>
-      <button id="criticalReloadBtn">Обновить страницу</button>
+      <p id="criticalErrorMessage">Не вдалося завантажити гру. Оновіть сторінку або спробуйте пізніше.</p>
+      <button id="criticalReloadBtn">Оновити сторінку</button>
       <div class="error-id" id="criticalErrorId"></div>
     </div>
 
@@ -260,18 +260,18 @@
           </select>
         </div>
         <div class="setting-item">
-          <span class="setting-label">Фонові ефекти</span>
+          <span class="setting-label" data-i18n="settings_bg_effects_label"></span>
           <select class="setting-control" id="bgEffectsSelect">
-            <option value="on" selected>Увімкнено</option>
-            <option value="off">Вимкнено</option>
+            <option value="on" selected data-i18n="settings_state_on"></option>
+            <option value="off" data-i18n="settings_state_off"></option>
           </select>
         </div>
         <div class="setting-item">
-          <span class="setting-label">Легкий режим</span>
+          <span class="setting-label" data-i18n="settings_lite_mode_label"></span>
           <select class="setting-control" id="liteVisualSelect">
-            <option value="auto" selected>Авто</option>
-            <option value="on">Увімкнено</option>
-            <option value="off">Вимкнено</option>
+            <option value="auto" selected data-i18n="settings_state_auto"></option>
+            <option value="on" data-i18n="settings_state_on"></option>
+            <option value="off" data-i18n="settings_state_off"></option>
           </select>
         </div>
         <div class="setting-item">
@@ -291,8 +291,8 @@
         <div class="setting-item">
           <span class="setting-label" data-i18n="settings_language_label"></span>
           <select class="setting-control" id="languageSelect">
-            <option value="ru" selected data-i18n="settings_language_ru"></option>
-            <option value="ua" data-i18n="settings_language_ua"></option>
+            <option value="ua" selected data-i18n="settings_language_ua"></option>
+            <option value="ru" data-i18n="settings_language_ru"></option>
             <option value="en" data-i18n="settings_language_en"></option>
           </select>
         </div>
