@@ -90,6 +90,7 @@
     "Burrito",
     "Charis",
     "Codex",
+    "Consolas",
     "Cursor",
     "DebugOverlay",
     "ErrorBoundary",
@@ -105,11 +106,15 @@
     "LN_DEBUG",
     "localStorage",
     "LostNumber",
+    "Menlo",
     "MIUI",
+    "Mult",
+    "nums",
     "Prettier",
     "PWA",
     "SeededRandom",
     "splash",
+    "tmpl",
     "WebP"
   ]
 }
