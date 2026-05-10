@@ -5,6 +5,7 @@
     <!-- GitHub Pages: URL без завершального / ламає відносні ./assets; base виправляє розв’язання. -->
     <script>
       (function () {
+        /* Без `new URL(...)`: лише `pathname`, без зайвих об’єктів. */
         function computeBasePath() {
           var path = window.location.pathname || '/';
           if (!path.endsWith('/')) {
@@ -19,35 +20,43 @@
         }
 
         function shouldLogBaseErrors() {
-          try {
-            var host = (window.location.hostname || '').toLowerCase();
-            var local =
-              host === 'localhost' ||
-              host === '127.0.0.1' ||
-              host === '[::1]' ||
-              host.endsWith('.local');
-            var u = window.location.search || '';
-            return (
-              local ||
-              u.indexOf('debug=1') !== -1 ||
-              u.indexOf('debug=full') !== -1 ||
-              u.indexOf('dev=1') !== -1
-            );
-          } catch (_) {
-            return false;
+          var host = (window.location.hostname || '').toLowerCase();
+          var local =
+            host === 'localhost' ||
+            host === '127.0.0.1' ||
+            host === '[::1]' ||
+            host.endsWith('.local');
+          var u = window.location.search || '';
+          return (
+            local ||
+            u.indexOf('debug=1') !== -1 ||
+            u.indexOf('debug=full') !== -1 ||
+            u.indexOf('dev=1') !== -1
+          );
+        }
+
+        function logBaseFailure(e) {
+          if (shouldLogBaseErrors() && typeof console !== 'undefined' && console.warn) {
+            console.warn('[LN_BASE] base path bootstrap failed:', e);
           }
         }
 
-        try {
-          var path = computeBasePath();
-          var existingBase = document.querySelector('base');
-          if (existingBase) {
-            var existingHref = existingBase.getAttribute('href');
-            if (!existingHref) {
+        var path = computeBasePath();
+        /* Другий <base> не вставляємо — лише дописуємо href, якщо явного href ще немає. */
+        var existingBase = document.querySelector('base');
+        if (existingBase) {
+          var existingHref = existingBase.getAttribute('href');
+          if (!existingHref) {
+            try {
               existingBase.href = path;
+            } catch (e) {
+              logBaseFailure(e);
             }
-            return;
           }
+          return;
+        }
+
+        try {
           var b = document.createElement('base');
           b.href = path;
           var cs = document.querySelector('meta[charset]');
@@ -57,9 +66,7 @@
             document.head.prepend(b);
           }
         } catch (e) {
-          if (shouldLogBaseErrors() && typeof console !== 'undefined' && console.warn) {
-            console.warn('[LN_BASE] base path bootstrap failed:', e);
-          }
+          logBaseFailure(e);
         }
       })();
     </script>
