@@ -87,7 +87,7 @@ class GameState {
     try {
       const levels = [];
       let target = 64;
-      let baseNumbers = [2, 4, 8];
+      const baseNumbers = [2, 4, 8];
 
       for (let i = 0; i < count; i++) {
         const numbers = [...baseNumbers];
@@ -222,7 +222,7 @@ class GameState {
       const WINDOW = 9;
       const max = this.maxReachedNumber;
 
-      let arr = [];
+      const arr = [];
       let num = max;
 
       while (arr.length < WINDOW && num >= 2) {

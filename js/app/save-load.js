@@ -83,7 +83,7 @@ LostNumberGame.prototype.fixGridStructure = function () {
       }
 
       for (let y = 0; y < this.GRID_H; y++) {
-        let cellData = this.grid[x][y];
+        const cellData = this.grid[x][y];
 
         // Если это число, а не объект, преобразуем в объект
         if (typeof cellData === 'number' || cellData === null || cellData === undefined) {

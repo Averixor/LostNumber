@@ -2,7 +2,7 @@
  * Склонення «N ходів» для коротких ігрових повідомлень (колесо, заморозка).
  * Підключення: до LostNumberGame / formatTemplate; без bundler.
  */
-var TurnsPluralFormat = (function () {
+const TurnsPluralFormat = (function () {
   'use strict';
 
   function formatTurnsUk(turns) {
