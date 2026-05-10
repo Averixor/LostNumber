@@ -1,8 +1,11 @@
 /* Main Menu */
 .main-menu {
   text-align: center;
-  gap: clamp(6px, 1.5vh, 12px);
+  gap: clamp(4px, 1vh, 8px);
   justify-content: center;
+  /* Трохи нижче за голе вертикальне центрування — менше «повітря» над логотипом */
+  padding-top: clamp(20px, 5vh, 56px);
+  box-sizing: border-box;
 }
 
 /* Логотип головного меню (logo.png); текстовий заголовок — .sr-only для i18n/a11y */
@@ -10,7 +13,7 @@
   display: block;
   width: min(88vw, 520px);
   height: auto;
-  margin: 0 auto clamp(1rem, 3vh, 2rem);
+  margin: 0 auto clamp(0.25rem, 1vh, 0.65rem);
   object-fit: contain;
   animation: titleBreathe 5.2s ease-in-out infinite;
   transform-origin: center;
@@ -661,9 +664,13 @@ html[data-theme='dusk'] .preview-bubble {
 
 /* Очень короткие экраны: главное меню стискаем максимально */
 @media (max-height: 520px) {
+  .main-menu {
+    padding-top: clamp(8px, 2vh, 16px);
+  }
+
   .main-menu .main-logo {
     width: min(72vw, 380px);
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
 
   .subtitle {
