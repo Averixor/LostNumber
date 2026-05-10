@@ -36,8 +36,8 @@
 Правила й низькорівнева логіка без прив’язки до DOM:
 
 - **`rules.js`**, **`GameCore.js`**, **`Chain.js`** — правила гри, ядро, ланцюг клітинок.
-- **`SeededRandom.js`**, **`NumberWeights.js`** — генерація та ваги чисел.
-- **`EventSystem.js`**, **`ErrorBoundary.js`** — події та межа помилок.
+- **`SeededRandom.js`** — детермінований RNG.
+- **`ErrorBoundary.js`** — обгортка try/catch для критичних викликів.
 
 ## `js/system/`
 
@@ -45,7 +45,7 @@
 
 - **`storage.js`**, **`audio.js`**, **`platform.js`**, **`i18n.js`**, **`plural-helpers.js`**
 - **`errorHandler.js`**, **`errorHandlerFallback.js`**, **`debug.js`**
-- **`analytics.js`**, **`lazy-script.js`**, **`freezeSystem.js`**
+- **`lazy-script.js`**, **`freezeSystem.js`**
 
 ## `js/game/`
 

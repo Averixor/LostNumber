@@ -239,7 +239,6 @@ class LostNumberGame {
       gridManager: this.gridManager || null,
       storageManager: this.storageManager || null,
       audioManager: this.audioManager || null,
-      eventBus: typeof window !== 'undefined' ? window.EventBus || null : null,
     };
   }
 
@@ -254,7 +253,6 @@ class LostNumberGame {
     this.context.gridManager = this.gridManager || null;
     this.context.storageManager = this.storageManager || null;
     this.context.audioManager = this.audioManager || null;
-    this.context.eventBus = typeof window !== 'undefined' ? window.EventBus || null : null;
 
     return this.context;
   }

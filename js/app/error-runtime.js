@@ -127,7 +127,7 @@ LostNumberGame.prototype.reportErrorToAnalytics = function (errorData) {
       user_agent: navigator.userAgent.substring(0, 100),
     };
 
-    // Отправляем через analytics.js если доступен
+    // Опційно: глобальний об'єкт analytics з .track; інакше лише sendBeacon нижче
     if (typeof analytics !== 'undefined' && typeof analytics.track === 'function') {
       analytics.track('game_error', analyticsData);
     }
