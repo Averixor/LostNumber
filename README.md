@@ -17,9 +17,21 @@
 npx serve .
 ```
 
-## PWA та публічний демо
+## Брендинг та PWA-асети
 
-У корені є **`manifest.json`** та іконки (`favicon.ico`, `logo.png`, `icon-192.png`, `icon-512.png`, `apple-touch-icon.png`). Заставка завантаження: **`splash-screen.webp`** (основний формат) і **`splash-screen.png`** як запасний варіант у `<picture>` (у `manifest.json` для скріншота PWA все ще вказано PNG).
+| Файл                   | Призначення                                                                                                                                     |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `logo.png`             | Широкий логотип на головному екрані меню (не входить до `manifest` icons).                                                                      |
+| `splash-screen.webp`   | Основна легка заставка в HTML (`<picture>` + preload).                                                                                          |
+| `splash-screen.png`    | Fallback для заставки та **PNG-скріншот** у `manifest.json`.                                                                                    |
+| `favicon.ico`          | Іконка вкладки браузера (`<link rel="icon" sizes="any">`).                                                                                      |
+| `icon-192.png`         | PWA **192×192** для Android / install prompt.                                                                                                   |
+| `icon-512.png`         | PWA **512×512** для Android / сторів / установки; тимчасово також **maskable** (окремий `icon-maskable-512.png` — ідеал, якщо знак біля країв). |
+| `apple-touch-icon.png` | **180×180** для iOS home screen (лише `<link rel="apple-touch-icon">`, не дублювати в `manifest` icons).                                        |
+
+Колір оболонки PWA / `theme-color`: **`#1b1028`** (узгоджено з `manifest`, мета-тегами в `index.html` та `--pwa-theme-color` у `css/variables.css`).
+
+## PWA та публічний демо
 
 Живий приклад на GitHub Pages: <https://averixor.github.io/LostNumber/>
 

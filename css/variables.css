@@ -32,9 +32,9 @@
   /* цвет цифр в клетках (фиксированный для читаемости) */
   --cell-number-color: #3b2b23;
 
-  /* PWA: браузерна панель / manifest (світанок) — узгоджено з applyTheme */
-  --pwa-theme-color: #e91e63;
-  --pwa-background-color: #fff3ea;
+  /* PWA: браузерна панель / manifest — узгоджено з applyTheme */
+  --pwa-theme-color: #1b1028;
+  --pwa-background-color: #1b1028;
 }
 
 html[data-theme='dusk'] {
@@ -68,7 +68,7 @@ html[data-theme='dusk'] {
   /* цвет цифр в клетках для темы закат (темнее для контраста) */
   --cell-number-color: #2a1b16;
 
-  /* PWA: за замовчуванням гра починається в темі «захід» (state.js) */
-  --pwa-theme-color: #ff6b9d;
-  --pwa-background-color: #1b1412;
+  /* PWA: узгоджено з manifest / index.html */
+  --pwa-theme-color: #1b1028;
+  --pwa-background-color: #1b1028;
 }

@@ -25,6 +25,19 @@ body {
   color: var(--text-color);
 }
 
+/* Тільки для читачів екрана (заголовок меню поруч із логотипом-картинкою) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Глобальное отключение анимаций */
 body.no-animations *,
 body.no-animations *::before,

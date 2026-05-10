@@ -42,7 +42,7 @@ let splashShownAt = 0;
 
 function hideLoadingScreen() {
   try {
-    const overlay = document.getElementById('loadingOverlay');
+    const overlay = document.getElementById('appSplash');
     if (!overlay) return;
 
     const elapsed =
@@ -60,7 +60,7 @@ function hideLoadingScreen() {
 }
 
 function showLoadingScreen() {
-  const overlay = document.getElementById('loadingOverlay');
+  const overlay = document.getElementById('appSplash');
   if (overlay) {
     splashShownAt = typeof performance !== 'undefined' ? performance.now() : 0;
     overlay.style.display = 'flex';

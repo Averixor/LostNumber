@@ -10,14 +10,22 @@
     <title>LostNumber</title>
 
     <link rel="manifest" href="./manifest.json" />
-    <link rel="icon" type="image/png" href="./logo.png" />
-    <link rel="icon" href="./favicon.ico" />
+
+    <link rel="icon" href="./favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
 
-    <link rel="preload" as="image" href="./splash-screen.webp" type="image/webp" />
+    <meta name="theme-color" content="#1b1028" />
+    <meta name="background-color" content="#1b1028" />
+    <meta name="msapplication-TileColor" content="#1b1028" />
 
-    <meta name="theme-color" content="#ff6b9d" />
-    <meta name="msapplication-TileColor" content="#ff6b9d" />
+    <link
+      rel="preload"
+      as="image"
+      href="./splash-screen.webp"
+      type="image/webp"
+      fetchpriority="high"
+    />
+    <link rel="preload" as="image" href="./logo.png" type="image/png" />
 
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -65,8 +73,8 @@
   <body>
     <!-- Индикатор загрузки (splash + спінер; скрывается после инициализации) -->
     <div
-      class="loading-overlay app-splash"
-      id="loadingOverlay"
+      id="appSplash"
+      class="app-splash loading-overlay"
       style="display: none"
       aria-busy="true"
       aria-label="Lost Number loading screen"
@@ -77,8 +85,8 @@
           class="app-splash__image"
           src="./splash-screen.png"
           alt="Lost Number"
-          width="941"
-          height="1672"
+          width="720"
+          height="1280"
           decoding="async"
           fetchpriority="high"
         />
@@ -161,7 +169,8 @@
 
     <!-- Главное меню -->
     <div class="screen main-menu" id="mainMenuScreen">
-      <h1 class="game-title" data-i18n="game_logo">Lost Number</h1>
+      <h1 class="sr-only" data-i18n="game_logo">Lost Number</h1>
+      <img class="main-logo" src="./logo.png" alt="" width="768" height="512" decoding="async" />
       <div class="menu-buttons">
         <button class="menu-btn primary" id="continueBtn" data-i18n="btn_continue"></button>
         <button class="menu-btn secondary" id="newGameBtn" data-i18n="btn_new_game"></button>

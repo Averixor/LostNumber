@@ -88,15 +88,15 @@
   font-family: monospace;
 }
 
-/* Загрузка: splash (WebP/PNG) + спінер (один экран, без дубля appSplash) */
-.loading-overlay.app-splash {
+/* Загрузка: splash (WebP/PNG) + спінер */
+.app-splash.loading-overlay {
   position: fixed;
   inset: 0;
   z-index: 99998;
   display: none;
   flex-direction: column;
   overflow: hidden;
-  background: #1b1412;
+  background: #1b1028;
   transition: opacity 0.5s ease;
 }
 
