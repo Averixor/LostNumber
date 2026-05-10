@@ -10,7 +10,7 @@
 - **Node-інструменти:** `package.json`, `eslint.config.mjs`, `scripts/` (див. `README.md`).
 - **Перевірка орфографії в IDE:** `cspell.json` (мови en, uk, ru; спільний словник), **`.vscode/extensions.json`** — рекомендовані розширення Code Spell Checker.
 - **Документація:** `README.md`, цей файл, **`docs/PHASES.md`**.
-- **Допоміжно:** `format.ps1`, `lint.ps1` (Windows), `LostNumber-structure.txt` (довідковий текстовий дамп структури).
+- **Допоміжно:** `format.ps1`, `lint.ps1` (Windows, обхід обмежень на cmd/npx).
 
 ## `css/`
 
