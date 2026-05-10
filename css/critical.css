@@ -88,7 +88,7 @@
   font-family: monospace;
 }
 
-/* Загрузка: splash-screen.png + спінер (один экран, без дубля appSplash) */
+/* Загрузка: splash (WebP/PNG) + спінер (один экран, без дубля appSplash) */
 .loading-overlay.app-splash {
   position: fixed;
   inset: 0;
@@ -98,6 +98,14 @@
   overflow: hidden;
   background: #1b1412;
   transition: opacity 0.5s ease;
+}
+
+.app-splash__picture {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  display: block;
+  overflow: hidden;
 }
 
 .app-splash__image {

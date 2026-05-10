@@ -3,6 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Lost Number — легка логічна puzzle-гра з рівнями, бонусами, колесом фортуни та локальним збереженням прогресу."
+    />
     <title>LostNumber</title>
 
     <link rel="manifest" href="./manifest.json" />
@@ -10,7 +14,7 @@
     <link rel="icon" href="./favicon.ico" />
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
 
-    <link rel="preload" as="image" href="./splash-screen.png" />
+    <link rel="preload" as="image" href="./splash-screen.webp" type="image/webp" />
 
     <meta name="theme-color" content="#ff6b9d" />
     <meta name="msapplication-TileColor" content="#ff6b9d" />
@@ -67,15 +71,18 @@
       aria-busy="true"
       aria-label="Lost Number loading screen"
     >
-      <img
-        class="app-splash__image"
-        src="./splash-screen.png"
-        alt=""
-        width="941"
-        height="1672"
-        decoding="async"
-        fetchpriority="high"
-      />
+      <picture class="app-splash__picture">
+        <source srcset="./splash-screen.webp" type="image/webp" />
+        <img
+          class="app-splash__image"
+          src="./splash-screen.png"
+          alt="Lost Number"
+          width="941"
+          height="1672"
+          decoding="async"
+          fetchpriority="high"
+        />
+      </picture>
       <div class="loading-overlay__footer">
         <div class="loading-spinner"></div>
         <div class="loading-text" data-i18n="loading">Завантаження…</div>
@@ -282,21 +289,33 @@
       <div class="settings-title" data-i18n="settings_title"></div>
       <div class="settings-options">
         <div class="setting-item">
-          <span class="setting-label" data-i18n="settings_animations_label"></span>
+          <label
+            class="setting-label"
+            for="animationSelect"
+            data-i18n="settings_animations_label"
+          ></label>
           <select class="setting-control" id="animationSelect">
             <option value="on" selected data-i18n="settings_animations_on"></option>
             <option value="off" data-i18n="settings_animations_off"></option>
           </select>
         </div>
         <div class="setting-item">
-          <span class="setting-label" data-i18n="settings_bg_effects_label"></span>
+          <label
+            class="setting-label"
+            for="bgEffectsSelect"
+            data-i18n="settings_bg_effects_label"
+          ></label>
           <select class="setting-control" id="bgEffectsSelect">
             <option value="on" selected data-i18n="settings_state_on"></option>
             <option value="off" data-i18n="settings_state_off"></option>
           </select>
         </div>
         <div class="setting-item">
-          <span class="setting-label" data-i18n="settings_lite_mode_label"></span>
+          <label
+            class="setting-label"
+            for="liteVisualSelect"
+            data-i18n="settings_lite_mode_label"
+          ></label>
           <select class="setting-control" id="liteVisualSelect">
             <option value="auto" selected data-i18n="settings_state_auto"></option>
             <option value="on" data-i18n="settings_state_on"></option>
@@ -304,21 +323,25 @@
           </select>
         </div>
         <div class="setting-item">
-          <span class="setting-label" data-i18n="settings_sound_label"></span>
+          <label class="setting-label" for="soundSelect" data-i18n="settings_sound_label"></label>
           <select class="setting-control" id="soundSelect">
             <option value="on" selected data-i18n="settings_sound_on"></option>
             <option value="off" data-i18n="settings_sound_off"></option>
           </select>
         </div>
         <div class="setting-item">
-          <span class="setting-label" data-i18n="settings_theme_label"></span>
+          <label class="setting-label" for="themeSelect" data-i18n="settings_theme_label"></label>
           <select class="setting-control" id="themeSelect">
             <option value="dawn" data-i18n="settings_theme_dawn"></option>
             <option value="dusk" data-i18n="settings_theme_dusk"></option>
           </select>
         </div>
         <div class="setting-item">
-          <span class="setting-label" data-i18n="settings_language_label"></span>
+          <label
+            class="setting-label"
+            for="languageSelect"
+            data-i18n="settings_language_label"
+          ></label>
           <select class="setting-control" id="languageSelect">
             <option value="ua" selected data-i18n="settings_language_ua"></option>
             <option value="ru" data-i18n="settings_language_ru"></option>
