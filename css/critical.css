@@ -29,6 +29,30 @@
   margin-bottom: 20px;
   font-size: 28px;
 }
+.critical-error-message {
+  max-width: 520px;
+  margin-bottom: 30px;
+  line-height: 1.5;
+  font-size: 16px;
+  color: #b8c1ec;
+  text-align: center;
+}
+.critical-error-message p {
+  margin: 0 0 12px;
+  max-width: 520px;
+  line-height: 1.5;
+  font-size: 16px;
+  color: #b8c1ec;
+}
+.critical-error-message p:last-child {
+  margin-bottom: 0;
+}
+.critical-error-message hr {
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 16px auto;
+  max-width: 320px;
+}
 .critical-error p {
   max-width: 520px;
   margin-bottom: 30px;

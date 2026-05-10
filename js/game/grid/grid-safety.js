@@ -10,7 +10,9 @@ GridManager.prototype.validateGrid = function () {
     }
 
     if (this.game.grid.length !== this.game.GRID_W) {
-      issues.push(`Grid width mismatch: expected ${this.game.GRID_W}, got ${this.game.grid.length}`);
+      issues.push(
+        `Grid width mismatch: expected ${this.game.GRID_W}, got ${this.game.grid.length}`,
+      );
     }
 
     for (let x = 0; x < this.game.GRID_W; x++) {
@@ -183,7 +185,9 @@ GridManager.prototype.restoreGridFromBackup = function (backup) {
     if (backup.freezeSystemState && this.game.freezeSystem) {
       this.game.freezeSystem.loadState(backup.freezeSystemState);
     } else if (backup.frozenCells) {
-      this.game.frozenCells = new Map(Object.entries(backup.frozenCells).map(([k, v]) => [Number(k), v]));
+      this.game.frozenCells = new Map(
+        Object.entries(backup.frozenCells).map(([k, v]) => [Number(k), v]),
+      );
     } else {
       this.game.frozenCells = new Map();
     }

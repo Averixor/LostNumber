@@ -35,7 +35,9 @@ class EventSystem {
 
   once(event, callback, priority = 0) {
     if (!event || typeof callback !== 'function') {
-      console.warn(`[EventSystem] Invalid once() call: event=${event}, callback=${typeof callback}`);
+      console.warn(
+        `[EventSystem] Invalid once() call: event=${event}, callback=${typeof callback}`,
+      );
       return () => {};
     }
 
@@ -55,7 +57,7 @@ class EventSystem {
 
     this._map.set(
       event,
-      arr.filter((it) => it.cb !== callback)
+      arr.filter((it) => it.cb !== callback),
     );
   }
 

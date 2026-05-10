@@ -3,7 +3,11 @@
 GridManager.prototype.updateFrozenCells = function () {
   try {
     // ✅ Новая система
-    if (this.game && this.game.freezeSystem && typeof this.game.freezeSystem.updateFrozenCells === 'function') {
+    if (
+      this.game &&
+      this.game.freezeSystem &&
+      typeof this.game.freezeSystem.updateFrozenCells === 'function'
+    ) {
       const changed = this.game.freezeSystem.updateFrozenCells();
       if (typeof this.updateFrozenStates === 'function') this.updateFrozenStates();
       return changed || 0;
@@ -31,7 +35,8 @@ GridManager.prototype.updateFrozenCells = function () {
           if (this.game.grid?.[x]?.[y]) {
             this.game.grid[x][y].frozen = true;
             this.game.grid[x][y].freezeTurns = newTurns;
-            if (!this.game.grid[x][y].freezeMaxTurns) this.game.grid[x][y].freezeMaxTurns = Math.max(newTurns, 1);
+            if (!this.game.grid[x][y].freezeMaxTurns)
+              this.game.grid[x][y].freezeMaxTurns = Math.max(newTurns, 1);
           }
         }
       }

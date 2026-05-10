@@ -13,7 +13,8 @@
     var game = window.game;
     if (!game) return false;
 
-    if (typeof requestAnimationFrame !== 'function' || typeof performance?.now !== 'function') return true;
+    if (typeof requestAnimationFrame !== 'function' || typeof performance?.now !== 'function')
+      return true;
 
     // Rolling window of timestamps (ms) for FPS estimation.
     var times = [];

@@ -170,7 +170,11 @@ LostNumberGame.prototype.restoreFromState = function (state) {
       this.grid = state.grid || [];
     }
 
-    this.bonusInventory = safePlainObject(state.bonusInventory, { destroy: 0, shuffle: 0, explosion: 0 });
+    this.bonusInventory = safePlainObject(state.bonusInventory, {
+      destroy: 0,
+      shuffle: 0,
+      explosion: 0,
+    });
     this.pendingTransition = safePlainObject(state.pendingTransition, null);
     this.maxReachedNumber = safeNumber(state.maxReachedNumber, 8, { min: 2 });
     this.carryNumber = state.carryNumber || null;
@@ -181,7 +185,9 @@ LostNumberGame.prototype.restoreFromState = function (state) {
       integer: true,
     });
     this.lastWheelDay =
-      typeof state.lastWheelDay === 'string' && state.lastWheelDay ? state.lastWheelDay : this.getTodayKey();
+      typeof state.lastWheelDay === 'string' && state.lastWheelDay
+        ? state.lastWheelDay
+        : this.getTodayKey();
 
     // ВАЖНО: НЕ восстанавливаем настройки из сохранения
     // Они должны браться из текущих настроек пользователя
@@ -189,7 +195,9 @@ LostNumberGame.prototype.restoreFromState = function (state) {
     // Восстанавливаем frozenCells
     const frozenCellsSource = safePlainObject(state.frozenCells, null);
     if (frozenCellsSource) {
-      this.frozenCells = new Map(Object.entries(frozenCellsSource).map(([key, value]) => [Number(key), value]));
+      this.frozenCells = new Map(
+        Object.entries(frozenCellsSource).map(([key, value]) => [Number(key), value]),
+      );
     } else {
       this.frozenCells = new Map();
     }
@@ -239,7 +247,7 @@ LostNumberGame.prototype.saveGameState = function () {
                 const t = data ? Number(data.turns) : NaN;
                 return Number.isFinite(i) && i >= 0 && Number.isFinite(t) && t > 0;
               })
-              .map(([idx, data]) => [Number(idx), Number(data.turns)])
+              .map(([idx, data]) => [Number(idx), Number(data.turns)]),
           )
         : this.frozenCells instanceof Map
           ? Object.fromEntries(this.frozenCells)
@@ -298,8 +306,12 @@ LostNumberGame.prototype._serializeGridV2 = function () {
         value: Number.isFinite(cell.number) ? cell.number : null,
         merged: !!cell.merged,
         frozen: !!cell.frozen,
-        freezeTurns: Number.isFinite(cell.freezeTurns) && cell.freezeTurns >= 0 ? cell.freezeTurns : 0,
-        freezeMaxTurns: Number.isFinite(cell.freezeMaxTurns) && cell.freezeMaxTurns >= 0 ? cell.freezeMaxTurns : 0,
+        freezeTurns:
+          Number.isFinite(cell.freezeTurns) && cell.freezeTurns >= 0 ? cell.freezeTurns : 0,
+        freezeMaxTurns:
+          Number.isFinite(cell.freezeMaxTurns) && cell.freezeMaxTurns >= 0
+            ? cell.freezeMaxTurns
+            : 0,
       };
       if (cell.freezeType) obj.freezeType = cell.freezeType;
       grid[x][y] = obj;
@@ -333,7 +345,8 @@ LostNumberGame.prototype._parseGridV2 = function (rawGrid) {
         merged: !!raw.merged,
         frozen: !!raw.frozen,
         freezeTurns: Number.isFinite(raw.freezeTurns) && raw.freezeTurns >= 0 ? raw.freezeTurns : 0,
-        freezeMaxTurns: Number.isFinite(raw.freezeMaxTurns) && raw.freezeMaxTurns >= 0 ? raw.freezeMaxTurns : 0,
+        freezeMaxTurns:
+          Number.isFinite(raw.freezeMaxTurns) && raw.freezeMaxTurns >= 0 ? raw.freezeMaxTurns : 0,
       };
       if (raw.freezeType) cell.freezeType = raw.freezeType;
       grid[x][y] = cell;

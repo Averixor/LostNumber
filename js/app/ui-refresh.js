@@ -11,7 +11,9 @@ LostNumberGame.prototype.updateTargetInfo = function () {
         targetValue.textContent = this.formatNumber(level.target);
       }
       if (levelLabel) {
-        levelLabel.textContent = this.formatTemplate('level_label', { level: this.currentLevel + 1 });
+        levelLabel.textContent = this.formatTemplate('level_label', {
+          level: this.currentLevel + 1,
+        });
       }
     }
   } catch (error) {
@@ -69,7 +71,9 @@ LostNumberGame.prototype.updateGoal = function () {
         targetValue.textContent = this.formatNumber(level.target);
       }
       if (levelLabel) {
-        levelLabel.textContent = this.formatTemplate('level_label', { level: this.currentLevel + 1 });
+        levelLabel.textContent = this.formatTemplate('level_label', {
+          level: this.currentLevel + 1,
+        });
       }
     }
   } catch (error) {

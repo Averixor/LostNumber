@@ -134,7 +134,7 @@ class LostNumberGame {
             this.updateXPBar();
             this.showMessage(this.t('wheel_fallback_xp') || '+15 XP');
           },
-          'WheelManager.spinWheel'
+          'WheelManager.spinWheel',
         );
         ErrorBoundary.wrap(
           this.bonusManager,
@@ -142,10 +142,20 @@ class LostNumberGame {
           () => {
             this.showMessage(this.t('bonus_error') || 'Бонус недоступний');
           },
-          'BonusManager.activateBonus'
+          'BonusManager.activateBonus',
         );
-        ErrorBoundary.wrap(this.storageManager, 'loadGameState', () => null, 'StorageManager.loadGameState');
-        ErrorBoundary.wrap(this.storageManager, 'saveGameState', () => {}, 'StorageManager.saveGameState');
+        ErrorBoundary.wrap(
+          this.storageManager,
+          'loadGameState',
+          () => null,
+          'StorageManager.loadGameState',
+        );
+        ErrorBoundary.wrap(
+          this.storageManager,
+          'saveGameState',
+          () => {},
+          'StorageManager.saveGameState',
+        );
       }
     } catch (e) {
       ErrorHandler.warn('ErrorBoundary setup failed', e);
@@ -261,7 +271,10 @@ class LostNumberGame {
           this.floatingNumbersEnabled = false;
           this.floatingNumbersDisabledBy = 'fps';
 
-          if (this.settingsManager && typeof this.settingsManager.applyFloatingNumbers === 'function') {
+          if (
+            this.settingsManager &&
+            typeof this.settingsManager.applyFloatingNumbers === 'function'
+          ) {
             this.settingsManager.applyFloatingNumbers();
           }
           if (this.settingsManager && typeof this.settingsManager.saveSettings === 'function') {

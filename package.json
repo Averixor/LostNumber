@@ -12,7 +12,7 @@
     "format:check": "node ./node_modules/prettier/bin/prettier.cjs --check .",
     "lint": "node ./node_modules/eslint/bin/eslint.js .",
     "lint:fix": "node ./node_modules/eslint/bin/eslint.js . --fix",
-    "check": "npm run format:check; if ($?) { npm run lint }",
+    "check": "node ./scripts/check.mjs",
     "cursor:audit": "node ./scripts/cursor-audit-local.mjs",
     "cursor:audit:stream": "node ./scripts/cursor-audit-local.mjs --stream"
   }

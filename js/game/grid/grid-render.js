@@ -3,7 +3,12 @@
 GridManager.prototype.getCellFromPoint = function (clientX, clientY) {
   try {
     // ✅ Проверка на валидность координат
-    if (typeof clientX !== 'number' || typeof clientY !== 'number' || isNaN(clientX) || isNaN(clientY)) {
+    if (
+      typeof clientX !== 'number' ||
+      typeof clientY !== 'number' ||
+      isNaN(clientX) ||
+      isNaN(clientY)
+    ) {
       ErrorHandler.debug('Invalid coordinates in getCellFromPoint', { clientX, clientY });
       return null;
     }
@@ -18,7 +23,14 @@ GridManager.prototype.getCellFromPoint = function (clientX, clientY) {
     const y = parseInt(cell.dataset.y, 10);
 
     // ✅ Дополнительная проверка границ
-    if (isNaN(x) || isNaN(y) || x < 0 || x >= (this.game.GRID_W || 6) || y < 0 || y >= (this.game.GRID_H || 6)) {
+    if (
+      isNaN(x) ||
+      isNaN(y) ||
+      x < 0 ||
+      x >= (this.game.GRID_W || 6) ||
+      y < 0 ||
+      y >= (this.game.GRID_H || 6)
+    ) {
       ErrorHandler.debug('Cell coordinates out of bounds', {
         x,
         y,

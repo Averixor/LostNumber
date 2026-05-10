@@ -70,9 +70,15 @@ class DebugOverlay {
     }
 
     this.el.querySelector('#dbgClose')?.addEventListener('click', () => this.hide());
-    this.el.querySelector('#dbgResetSeed')?.addEventListener('click', () => this.game.resetSeed?.());
-    this.el.querySelector('#dbgForceError')?.addEventListener('click', () => this.game.forceError?.());
-    this.el.querySelector('#dbgSkipLevel')?.addEventListener('click', () => this.game.skipLevel?.());
+    this.el
+      .querySelector('#dbgResetSeed')
+      ?.addEventListener('click', () => this.game.resetSeed?.());
+    this.el
+      .querySelector('#dbgForceError')
+      ?.addEventListener('click', () => this.game.forceError?.());
+    this.el
+      .querySelector('#dbgSkipLevel')
+      ?.addEventListener('click', () => this.game.skipLevel?.());
 
     if (isFull) {
       this.el.querySelector('#dbgDumpGrid')?.addEventListener('click', () => {
@@ -98,7 +104,8 @@ class DebugOverlay {
             t: Date.now(),
             mode: window.AppEnv?.debugMode,
             ctx: typeof ErrorHandler._ctx === 'function' ? ErrorHandler._ctx() : {},
-            stats: typeof ErrorHandler.getErrorStats === 'function' ? ErrorHandler.getErrorStats() : {},
+            stats:
+              typeof ErrorHandler.getErrorStats === 'function' ? ErrorHandler.getErrorStats() : {},
           };
           const text = JSON.stringify(payload, null, 2);
           if (navigator.clipboard?.writeText) {
@@ -127,7 +134,7 @@ class DebugOverlay {
           this.toggle();
         }
       },
-      { passive: false }
+      { passive: false },
     );
 
     if (isFull) {
@@ -176,7 +183,9 @@ class DebugOverlay {
     const g = this.game;
     const isFull = window.AppEnv?.isDebugFull === true;
     const chainSum =
-      typeof Chain !== 'undefined' && Chain && typeof Chain.sum === 'number' ? Chain.sum : g.activeChainSum || 0;
+      typeof Chain !== 'undefined' && Chain && typeof Chain.sum === 'number'
+        ? Chain.sum
+        : g.activeChainSum || 0;
     const empty = g.gridManager ? g.gridManager.countEmptyCells?.() : null;
 
     let mem = '';
@@ -199,10 +208,11 @@ class DebugOverlay {
     if (isFull) {
       lines.push(
         `liteVisual: ${g.liteVisualMode ?? '-'} anim: ${g.animationEnabled !== false} float#: ${g.floatingNumbersEnabled !== false}`,
-        `carry: ${g.carryNumber ?? '-'} mult: ${g.xpMultiplier ?? 1} (turns ${g.xpMultiplierTurns ?? 0})`
+        `carry: ${g.carryNumber ?? '-'} mult: ${g.xpMultiplier ?? 1} (turns ${g.xpMultiplierTurns ?? 0})`,
       );
       try {
-        const hist = typeof ErrorHandler.getErrorHistory === 'function' ? ErrorHandler.getErrorHistory() : [];
+        const hist =
+          typeof ErrorHandler.getErrorHistory === 'function' ? ErrorHandler.getErrorHistory() : [];
         const recent = hist.slice(-3);
         if (recent.length) {
           lines.push('— errors (last 3) —');

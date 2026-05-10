@@ -151,7 +151,11 @@
   right: 0;
   font-size: 0.7rem;
   font-weight: 800;
-  background: linear-gradient(45deg, var(--xp-multiplier-start, #ffc107), var(--xp-multiplier-end, #ff9800));
+  background: linear-gradient(
+    45deg,
+    var(--xp-multiplier-start, #ffc107),
+    var(--xp-multiplier-end, #ff9800)
+  );
   color: var(--xp-multiplier-text, #000);
   padding: 2px 6px;
   border-radius: 10px;

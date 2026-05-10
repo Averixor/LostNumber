@@ -6,7 +6,15 @@ class WheelManager {
     this.highlightedSectorIndex = null;
 
     this.wheelSectors = [
-      { id: 0, type: 'xp_plus', label: 'XP+', color: '#4CAF50', effect: 'xp', value: 15, messageKey: 'wheel_xp_plus' },
+      {
+        id: 0,
+        type: 'xp_plus',
+        label: 'XP+',
+        color: '#4CAF50',
+        effect: 'xp',
+        value: 15,
+        messageKey: 'wheel_xp_plus',
+      },
       {
         id: 1,
         type: 'xp_minus',
@@ -54,7 +62,15 @@ class WheelManager {
         multiplier: 2,
         turns: 3,
       },
-      { id: 6, type: 'gift', label: '🎁', color: '#00BCD4', effect: 'gift', value: null, messageKey: 'wheel_gift' },
+      {
+        id: 6,
+        type: 'gift',
+        label: '🎁',
+        color: '#00BCD4',
+        effect: 'gift',
+        value: null,
+        messageKey: 'wheel_gift',
+      },
       {
         id: 7,
         type: 'freeze',
@@ -227,7 +243,14 @@ class WheelManager {
           const endAngle = (sectorIndex + 1) * anglePerSector;
 
           // Подсветка градиентом
-          const gradient = ctx.createRadialGradient(centerX, centerY, radius, centerX, centerY, radius + 8);
+          const gradient = ctx.createRadialGradient(
+            centerX,
+            centerY,
+            radius,
+            centerX,
+            centerY,
+            radius + 8,
+          );
           gradient.addColorStop(0, 'rgba(255, 215, 0, 0.4)');
           gradient.addColorStop(1, 'rgba(255, 215, 0, 0)');
 
@@ -332,7 +355,9 @@ class WheelManager {
       const wheel = document.getElementById('fortuneWheel');
       if (wheel) {
         const transitionEnabled = this.game.animationEnabled !== false;
-        wheel.style.transition = transitionEnabled ? 'transform 3s cubic-bezier(0.15, 0, 0.15, 1)' : 'none';
+        wheel.style.transition = transitionEnabled
+          ? 'transform 3s cubic-bezier(0.15, 0, 0.15, 1)'
+          : 'none';
         wheel.style.transform = `rotate(${this.currentRotation}deg)`;
       }
 
@@ -351,7 +376,8 @@ class WheelManager {
                     ? { turns: selectedSector.turns }
                     : {};
               const message =
-                this.game.formatTemplate(selectedSector.messageKey, messageParams) || selectedSector.label;
+                this.game.formatTemplate(selectedSector.messageKey, messageParams) ||
+                selectedSector.label;
               resultEl.textContent = message;
               resultEl.classList.remove('hidden');
             } catch (e) {
@@ -371,7 +397,9 @@ class WheelManager {
           if (spinBtn2) {
             spinBtn2.disabled = false;
             try {
-              spinBtn2.textContent = this.game.formatTemplate('btn_spin_wheel', { cost: this.getWheelCost() });
+              spinBtn2.textContent = this.game.formatTemplate('btn_spin_wheel', {
+                cost: this.getWheelCost(),
+              });
             } catch (e) {
               spinBtn2.textContent = `Spin (${this.getWheelCost()} XP)`;
             }
@@ -416,7 +444,7 @@ class WheelManager {
             this.game.xp += sector.value;
             this.game.incrementStat('totalXP', Math.max(0, sector.value));
             this.game.showMessage(
-              this.game.t(sector.messageKey) || `XP: ${sector.value > 0 ? '+' : ''}${sector.value}`
+              this.game.t(sector.messageKey) || `XP: ${sector.value > 0 ? '+' : ''}${sector.value}`,
             );
           }
           break;
@@ -440,7 +468,7 @@ class WheelManager {
           this.game.updateMultiplierIndicator();
           this.game.showMessage(
             this.game.formatTemplate(sector.messageKey, { turns: this.game.xpMultiplierTurns }) ||
-              `×${sector.multiplier} XP for ${sector.turns} turns`
+              `×${sector.multiplier} XP for ${sector.turns} turns`,
           );
           break;
 
@@ -461,12 +489,17 @@ class WheelManager {
             if (this.game.bonusManager) {
               this.game.bonusManager.updateBonusesUI();
             }
-            this.game.showMessage(this.game.t(gift.messageKey) || `Gift: +${gift.amount} ${gift.value}`);
+            this.game.showMessage(
+              this.game.t(gift.messageKey) || `Gift: +${gift.amount} ${gift.value}`,
+            );
           }
           break;
 
         case 'freeze': {
-          if (!this.game.freezeSystem && typeof this.game.gridManager?.initFreezeSystem === 'function') {
+          if (
+            !this.game.freezeSystem &&
+            typeof this.game.gridManager?.initFreezeSystem === 'function'
+          ) {
             this.game.gridManager.initFreezeSystem();
           }
           if (!this.game.freezeSystem) {
@@ -486,7 +519,7 @@ class WheelManager {
             this.game.showMessage(
               this.game.formatTemplate('wheel_freeze_message', {
                 turns: this.game.formatFrozenTurnsPhrase(result.turns),
-              }) || `❄️ ${this.game.formatFrozenTurnsPhrase(result.turns)}`
+              }) || `❄️ ${this.game.formatFrozenTurnsPhrase(result.turns)}`,
             );
 
             // 🔄 обновляем визуал
@@ -602,7 +635,10 @@ class WheelManager {
   updateWheelUI() {
     try {
       const cost = this.getWheelCost();
-      const remainingSpins = Math.max(0, (this.game.MAX_DAILY_SPINS || 20) - (this.game.wheelSpinsToday || 0));
+      const remainingSpins = Math.max(
+        0,
+        (this.game.MAX_DAILY_SPINS || 20) - (this.game.wheelSpinsToday || 0),
+      );
 
       // Удаляем счетчик опыта (проблема 4)
       const xpLabel = document.getElementById('wheelXpLabel');
@@ -625,7 +661,8 @@ class WheelManager {
         } catch (e) {
           spinBtn.textContent = `Spin (${cost} XP)`;
         }
-        spinBtn.disabled = this.isSpinning || (this.game.wheelSpinsToday || 0) >= (this.game.MAX_DAILY_SPINS || 20);
+        spinBtn.disabled =
+          this.isSpinning || (this.game.wheelSpinsToday || 0) >= (this.game.MAX_DAILY_SPINS || 20);
       }
 
       const dailyInfo = document.getElementById('wheelDailyInfo');
@@ -691,7 +728,9 @@ class WheelManager {
       }
 
       if (this.game.wheelSpinsToday > this.game.MAX_DAILY_SPINS) {
-        issues.push(`wheelSpinsToday exceeds limit: ${this.game.wheelSpinsToday} > ${this.game.MAX_DAILY_SPINS}`);
+        issues.push(
+          `wheelSpinsToday exceeds limit: ${this.game.wheelSpinsToday} > ${this.game.MAX_DAILY_SPINS}`,
+        );
       }
 
       if (issues.length > 0) {

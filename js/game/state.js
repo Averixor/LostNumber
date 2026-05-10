@@ -240,7 +240,10 @@ class GameState {
 
       return arr;
     } catch (error) {
-      ErrorHandler.handle(error, { type: 'get_allowed_numbers', maxReachedNumber: this.maxReachedNumber });
+      ErrorHandler.handle(error, {
+        type: 'get_allowed_numbers',
+        maxReachedNumber: this.maxReachedNumber,
+      });
       return [2, 4, 8, 16, 32, 64, 128, 256, 512]; // Fallback значения
     }
   }
@@ -591,7 +594,11 @@ class GameState {
             cur.unlocked = !!tmpl.unlocked;
             repaired = true;
           }
-          if (typeof cur.progress !== 'number' || !Number.isFinite(cur.progress) || cur.progress < 0) {
+          if (
+            typeof cur.progress !== 'number' ||
+            !Number.isFinite(cur.progress) ||
+            cur.progress < 0
+          ) {
             cur.progress = tmpl.progress;
             repaired = true;
           }

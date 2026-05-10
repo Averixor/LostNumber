@@ -27,7 +27,7 @@ try {
   console.error('Не вдалося завантажити @cursor/sdk. Виконайте npm install.', `\n(${msg})`);
   if (msg.includes('@cursor/sdk')) {
     console.error(
-      'Підказка: якщо node_modules підозрілий (ENOENT/TAR помилки), видаліть папку node_modules і знову npm install.'
+      'Підказка: якщо node_modules підозрілий (ENOENT/TAR помилки), видаліть папку node_modules і знову npm install.',
     );
   }
   process.exit(127);
@@ -41,7 +41,8 @@ const defaultPrompt =
 
 const prompt = process.env.CURSOR_AUDIT_PROMPT?.trim() || defaultPrompt;
 const apiKey = process.env.CURSOR_API_KEY?.trim();
-const useStream = process.argv.includes('--stream') || String(process.env.CURSOR_AUDIT_STREAM ?? '').trim() === '1';
+const useStream =
+  process.argv.includes('--stream') || String(process.env.CURSOR_AUDIT_STREAM ?? '').trim() === '1';
 
 const agentOptions = {
   apiKey,

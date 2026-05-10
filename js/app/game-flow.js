@@ -96,8 +96,14 @@ LostNumberGame.prototype.mergeChain = function () {
         this.incrementStat('totalMerges', 1);
         this.setStatMax('longestChain', this.selected.length);
 
-        this.achievementManager.updateAchievementProgress('chain5', this.selected.length >= 5 ? 1 : 0);
-        this.achievementManager.updateAchievementProgress('chain10', this.selected.length >= 10 ? 1 : 0);
+        this.achievementManager.updateAchievementProgress(
+          'chain5',
+          this.selected.length >= 5 ? 1 : 0,
+        );
+        this.achievementManager.updateAchievementProgress(
+          'chain10',
+          this.selected.length >= 10 ? 1 : 0,
+        );
         this.achievementManager.updateAchievementProgress('xp1000', xpEarned);
         this.achievementManager.updateAchievementProgress('xp5000', xpEarned);
 
@@ -218,8 +224,11 @@ LostNumberGame.prototype.handleLevelComplete = function () {
       });
 
     let statsHtml = '';
-    statsHtml += this.formatTemplate('level_stats_points', { points: this.formatNumber(this.xp) }) + '<br/>';
-    statsHtml += this.formatTemplate('level_stats_carry', { value: this.gridManager.formatCarryVisual(carryNumber) });
+    statsHtml +=
+      this.formatTemplate('level_stats_points', { points: this.formatNumber(this.xp) }) + '<br/>';
+    statsHtml += this.formatTemplate('level_stats_carry', {
+      value: this.gridManager.formatCarryVisual(carryNumber),
+    });
     if (stats) stats.innerHTML = statsHtml;
 
     if (overlay) overlay.classList.remove('hidden');

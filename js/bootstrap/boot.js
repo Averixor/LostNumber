@@ -1,19 +1,34 @@
 // Global handlers and game bootstrap.
+// Аварійний блок до ініціалізації i18n: укр. / рос. / англ. (статичний HTML).
+const LN_FATAL_LOAD_HTML =
+  '<p><strong>Гру не вдалося завантажити</strong><br />Оновіть сторінку або спробуйте пізніше.</p>' +
+  '<hr />' +
+  '<p>Игра не может быть загружена. Обновите страницу.</p>' +
+  '<p>The game could not be loaded. Please refresh the page.</p>';
+
 // Показ критической ошибки
-window.showCriticalError = function (message, errorId) {
+window.showCriticalError = function (message, errorId, options) {
   try {
     const container = document.getElementById('criticalErrorContainer');
     const msg = document.getElementById('criticalErrorMessage');
     const idEl = document.getElementById('criticalErrorId');
+    const asHtml = options && options.html === true;
 
     if (container && msg) {
-      msg.textContent = message || 'Произошла критическая ошибка. Обновите страницу.';
+      const fallbackText = 'Не вдалося завантажити гру. Оновіть сторінку або спробуйте пізніше.';
+      if (asHtml) {
+        msg.innerHTML = message || '';
+      } else {
+        msg.textContent = message != null && message !== '' ? message : fallbackText;
+      }
       idEl && (idEl.textContent = errorId ? 'Error ID: ' + errorId : '');
       container.style.display = 'flex';
 
-      document.querySelectorAll('.screen, .overlay, .victory-overlay, .level-overlay, .wheel-overlay').forEach((el) => {
-        if (el !== container) el.style.display = 'none';
-      });
+      document
+        .querySelectorAll('.screen, .overlay, .victory-overlay, .level-overlay, .wheel-overlay')
+        .forEach((el) => {
+          if (el !== container) el.style.display = 'none';
+        });
     }
   } catch (e) {
     console.error('Failed to show critical error:', e);
@@ -30,7 +45,8 @@ function hideLoadingScreen() {
     const overlay = document.getElementById('loadingOverlay');
     if (!overlay) return;
 
-    const elapsed = typeof performance !== 'undefined' ? performance.now() - splashShownAt : SPLASH_MIN_MS;
+    const elapsed =
+      typeof performance !== 'undefined' ? performance.now() - splashShownAt : SPLASH_MIN_MS;
     const wait = Math.max(0, SPLASH_MIN_MS - elapsed);
 
     setTimeout(() => {
@@ -68,7 +84,7 @@ window.addEventListener('DOMContentLoaded', () => {
         hideLoadingScreen();
 
         const errorId = error && error.message ? error.message : String(error).substring(0, 100);
-        window.showCriticalError('Игра не может быть загружена. Обновите страницу или попробуйте позже.', errorId);
+        window.showCriticalError(LN_FATAL_LOAD_HTML, errorId, { html: true });
 
         if (typeof ErrorHandler !== 'undefined') {
           ErrorHandler.handle(error, { type: 'fatal_init' });
@@ -78,7 +94,7 @@ window.addEventListener('DOMContentLoaded', () => {
   } catch (error) {
     console.error('Failed to set up game initialization:', error);
     hideLoadingScreen();
-    window.showCriticalError('Не удалось подготовить запуск игры. Обновите страницу.');
+    window.showCriticalError(LN_FATAL_LOAD_HTML, '', { html: true });
   }
 });
 
@@ -97,7 +113,7 @@ window.addEventListener(
       }
     }
   },
-  true
+  true,
 );
 
 // Состояние сети: online/offline

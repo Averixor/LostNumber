@@ -9,7 +9,9 @@ class StatsManager {
 
     grid.innerHTML = '';
     const getStat =
-      typeof this.game.getStat === 'function' ? (key) => this.game.getStat(key) : (key) => this.game?.stats?.[key] || 0;
+      typeof this.game.getStat === 'function'
+        ? (key) => this.game.getStat(key)
+        : (key) => this.game?.stats?.[key] || 0;
 
     const items = [
       ['stat_games_played', this.game.formatNumber(getStat('gamesPlayed'))],

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru" data-theme="dusk">
+<html lang="uk" data-theme="dusk">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -85,7 +85,9 @@
     <!-- Критическая ошибка -->
     <div id="criticalErrorContainer" class="critical-error" style="display: none">
       <h2>⚠️ LostNumber</h2>
-      <p id="criticalErrorMessage">Не вдалося завантажити гру. Оновіть сторінку або спробуйте пізніше.</p>
+      <div id="criticalErrorMessage" class="critical-error-message">
+        <p>Не вдалося завантажити гру. Оновіть сторінку або спробуйте пізніше.</p>
+      </div>
       <button id="criticalReloadBtn">Оновити сторінку</button>
       <div class="error-id" id="criticalErrorId"></div>
     </div>
@@ -100,7 +102,11 @@
         <div class="victory-text" data-i18n="victory_text"></div>
         <div class="menu-buttons" style="margin-top: 8px">
           <button class="menu-btn primary" id="playAgainBtn" data-i18n="btn_play_again"></button>
-          <button class="menu-btn secondary" id="backToMenuBtn" data-i18n="btn_back_to_menu"></button>
+          <button
+            class="menu-btn secondary"
+            id="backToMenuBtn"
+            data-i18n="btn_back_to_menu"
+          ></button>
         </div>
       </div>
     </div>
@@ -113,7 +119,11 @@
         <div class="level-stats" id="levelStats"></div>
         <div class="level-countdown" id="levelCountdown"></div>
         <div class="menu-buttons">
-          <button class="menu-btn secondary" id="levelMenuBtn" data-i18n="btn_back_to_menu"></button>
+          <button
+            class="menu-btn secondary"
+            id="levelMenuBtn"
+            data-i18n="btn_back_to_menu"
+          ></button>
           <button class="menu-btn primary" id="levelNextBtn" data-i18n="btn_next_level"></button>
         </div>
       </div>
@@ -149,8 +159,16 @@
         <button class="menu-btn primary" id="continueBtn" data-i18n="btn_continue"></button>
         <button class="menu-btn secondary" id="newGameBtn" data-i18n="btn_new_game"></button>
         <button class="menu-btn secondary" id="settingsBtn" data-i18n="btn_settings"></button>
-        <button class="menu-btn secondary" id="dailyQuestsBtn" data-i18n="btn_daily_quests"></button>
-        <button class="menu-btn secondary" id="achievementsBtn" data-i18n="btn_achievements"></button>
+        <button
+          class="menu-btn secondary"
+          id="dailyQuestsBtn"
+          data-i18n="btn_daily_quests"
+        ></button>
+        <button
+          class="menu-btn secondary"
+          id="achievementsBtn"
+          data-i18n="btn_achievements"
+        ></button>
         <button class="menu-btn secondary" id="statsBtn" data-i18n="btn_stats"></button>
         <button class="menu-btn secondary" id="aboutBtn" data-i18n="btn_about"></button>
       </div>
@@ -161,7 +179,11 @@
       <div class="settings-title" data-i18n="achievements_title"></div>
       <div class="achievements-grid" id="achievementsGrid"></div>
       <div class="menu-buttons back-btn-menu">
-        <button class="menu-btn secondary" id="backFromAchievementsBtn" data-i18n="btn_back"></button>
+        <button
+          class="menu-btn secondary"
+          id="backFromAchievementsBtn"
+          data-i18n="btn_back"
+        ></button>
       </div>
     </div>
 
@@ -179,7 +201,11 @@
       <div class="settings-title" data-i18n="daily_quests_title"></div>
       <div class="settings-options" id="dailyQuestsList"></div>
       <div class="menu-buttons back-btn-menu">
-        <button class="menu-btn secondary" id="backFromDailyQuestsBtn" data-i18n="btn_back"></button>
+        <button
+          class="menu-btn secondary"
+          id="backFromDailyQuestsBtn"
+          data-i18n="btn_back"
+        ></button>
       </div>
     </div>
 
@@ -202,13 +228,16 @@
       <div class="bonuses">
         <div class="bonuses-left">
           <button class="bonus-btn" id="bonus-explosion" data-i18n-title="bonus_explosion_title">
-            <span data-i18n="icon_bonus_explosion"></span> <span class="bonus-count" id="count-explosion">0</span>
+            <span data-i18n="icon_bonus_explosion"></span>
+            <span class="bonus-count" id="count-explosion">0</span>
           </button>
           <button class="bonus-btn" id="bonus-shuffle" data-i18n-title="bonus_shuffle_title">
-            <span data-i18n="icon_bonus_shuffle"></span> <span class="bonus-count" id="count-shuffle">0</span>
+            <span data-i18n="icon_bonus_shuffle"></span>
+            <span class="bonus-count" id="count-shuffle">0</span>
           </button>
           <button class="bonus-btn" id="bonus-destroy" data-i18n-title="bonus_destroy_title">
-            <span data-i18n="icon_bonus_destroy"></span> <span class="bonus-count" id="count-destroy">0</span>
+            <span data-i18n="icon_bonus_destroy"></span>
+            <span class="bonus-count" id="count-destroy">0</span>
           </button>
         </div>
         <div class="chain-sum-hud chain-sum-hud--idle" id="chainSumStrip" aria-live="polite">
@@ -298,7 +327,11 @@
         </div>
       </div>
       <div class="menu-buttons back-btn-menu">
-        <button class="menu-btn primary" id="saveSettingsBtn" data-i18n="btn_save_settings"></button>
+        <button
+          class="menu-btn primary"
+          id="saveSettingsBtn"
+          data-i18n="btn_save_settings"
+        ></button>
         <button class="menu-btn secondary" id="backFromSettingsBtn" data-i18n="btn_back"></button>
       </div>
     </div>

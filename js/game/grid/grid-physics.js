@@ -139,7 +139,13 @@ GridManager.prototype.applyLocalGravity = function (removedCells) {
         // очищаем сегмент
         for (let y = segTop; y <= segBottom; y++) {
           if (!grid[x][y]) {
-            grid[x][y] = { number: null, merged: false, frozen: false, freezeTurns: 0, freezeMaxTurns: 0 };
+            grid[x][y] = {
+              number: null,
+              merged: false,
+              frozen: false,
+              freezeTurns: 0,
+              freezeMaxTurns: 0,
+            };
           }
           // frozen внутри сегмента невозможны (мы сегменты режем по frozen), но на всякий
           if (isFrozenAt(x, y)) continue;
@@ -209,7 +215,10 @@ GridManager.prototype.applyLocalGravity = function (removedCells) {
   }
 };
 
-GridManager.prototype.applyPressureTransfer = function (requiredEmptyDepth = 2, maxMovesPerTurn = 8) {
+GridManager.prototype.applyPressureTransfer = function (
+  requiredEmptyDepth = 2,
+  maxMovesPerTurn = 8,
+) {
   try {
     const grid = this.game.grid;
     const W = this.game.GRID_W;
@@ -249,11 +258,13 @@ GridManager.prototype.applyPressureTransfer = function (requiredEmptyDepth = 2, 
 
           if (lx >= 0) {
             const depth = this.countEmptyBelow(lx, y);
-            if (depth >= requiredEmptyDepth && !grid[lx][y]?.frozen) candidates.push({ tx: lx, depth });
+            if (depth >= requiredEmptyDepth && !grid[lx][y]?.frozen)
+              candidates.push({ tx: lx, depth });
           }
           if (rx < W) {
             const depth = this.countEmptyBelow(rx, y);
-            if (depth >= requiredEmptyDepth && !grid[rx][y]?.frozen) candidates.push({ tx: rx, depth });
+            if (depth >= requiredEmptyDepth && !grid[rx][y]?.frozen)
+              candidates.push({ tx: rx, depth });
           }
 
           if (candidates.length === 0) continue;

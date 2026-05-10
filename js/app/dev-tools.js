@@ -63,7 +63,7 @@ if (typeof window !== 'undefined' && window.AppEnv?.isDev) {
     window.dispatchEvent(
       new CustomEvent('lostnumber:floating-numbers-auto-disable', {
         detail: { reason: 'fps', averageFps: 10, critical: true },
-      })
+      }),
     );
   };
 }

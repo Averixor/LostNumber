@@ -11,7 +11,9 @@ class SettingsManager {
       let lite = false;
       if (mode === 'on') lite = true;
       else if (mode === 'off') lite = false;
-      else lite = typeof PlatformDetector !== 'undefined' && PlatformDetector.shouldPreferLiteVisual?.();
+      else
+        lite =
+          typeof PlatformDetector !== 'undefined' && PlatformDetector.shouldPreferLiteVisual?.();
 
       document.documentElement.classList.toggle('low-performance', lite);
     } catch (error) {
@@ -27,7 +29,10 @@ class SettingsManager {
         if (container) container.innerHTML = '';
       } else {
         document.documentElement.classList.remove('floating-numbers-disabled');
-        if (this.game.screenManager && typeof this.game.screenManager.createFloatingNumbers === 'function') {
+        if (
+          this.game.screenManager &&
+          typeof this.game.screenManager.createFloatingNumbers === 'function'
+        ) {
           this.game.screenManager.createFloatingNumbers();
         }
       }
@@ -59,7 +64,8 @@ class SettingsManager {
         }
         {
           const lite = document.getElementById('liteVisualSelect')?.value;
-          this.game.liteVisualMode = lite === 'on' || lite === 'off' || lite === 'auto' ? lite : 'auto';
+          this.game.liteVisualMode =
+            lite === 'on' || lite === 'off' || lite === 'auto' ? lite : 'auto';
         }
         this.game.soundEnabled = document.getElementById('soundSelect').value === 'on';
         this.game.theme = document.getElementById('themeSelect')?.value || 'dusk';
@@ -134,9 +140,12 @@ class SettingsManager {
       // Backward compat: previously saved as backgroundEffectsEnabled (boolean).
       const legacyBg = settings.backgroundEffectsEnabled;
       this.game.floatingNumbersEnabled =
-        typeof settings.floatingNumbersEnabled === 'boolean' ? settings.floatingNumbersEnabled : legacyBg !== false;
+        typeof settings.floatingNumbersEnabled === 'boolean'
+          ? settings.floatingNumbersEnabled
+          : legacyBg !== false;
       this.game.floatingNumbersDisabledBy =
-        settings.floatingNumbersDisabledBy === 'fps' || settings.floatingNumbersDisabledBy === 'user'
+        settings.floatingNumbersDisabledBy === 'fps' ||
+        settings.floatingNumbersDisabledBy === 'user'
           ? settings.floatingNumbersDisabledBy
           : this.game.floatingNumbersEnabled
             ? null
@@ -206,7 +215,9 @@ class SettingsManager {
       theme: this.game.theme || 'dusk',
       lang: this.game.lang || 'ua',
       liteVisualMode:
-        this.game.liteVisualMode === 'on' || this.game.liteVisualMode === 'off' || this.game.liteVisualMode === 'auto'
+        this.game.liteVisualMode === 'on' ||
+        this.game.liteVisualMode === 'off' ||
+        this.game.liteVisualMode === 'auto'
           ? this.game.liteVisualMode
           : 'auto',
     };

@@ -1,7 +1,8 @@
 // Runtime environment, debug tiers, ErrorHandler configuration.
 (function () {
   const host = (window.location.hostname || '').toLowerCase();
-  const isLocalHost = host === 'localhost' || host === '127.0.0.1' || host === '[::1]' || host.endsWith('.local');
+  const isLocalHost =
+    host === 'localhost' || host === '127.0.0.1' || host === '[::1]' || host.endsWith('.local');
 
   /** @type {'off' | 'dev' | 'full'} */
   let debugMode = 'off';
@@ -79,7 +80,7 @@
             };
             navigator.sendBeacon(
               window.ANALYTICS_ENDPOINT + '/error',
-              new Blob([JSON.stringify(report)], { type: 'application/json' })
+              new Blob([JSON.stringify(report)], { type: 'application/json' }),
             );
           }
         }
@@ -92,12 +93,16 @@
       console.info(
         '%c[LostNumber] DEBUG FULL (senior)%c — ?debug=full | localStorage lostnumber_debug=full | Ctrl+D панель',
         'color:#7cfc00;font-weight:bold',
-        'color:#aaa;font-weight:normal'
+        'color:#aaa;font-weight:normal',
       );
     } catch (_) {}
   } else if (debugMode === 'dev') {
     try {
-      console.info('%c[LostNumber] DEBUG DEV%c — ?debug=1 або localhost', 'color:#4fc3f7', 'color:#888');
+      console.info(
+        '%c[LostNumber] DEBUG DEV%c — ?debug=1 або localhost',
+        'color:#4fc3f7',
+        'color:#888',
+      );
     } catch (_) {}
   }
 })();

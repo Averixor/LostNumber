@@ -166,7 +166,10 @@ class FreezeSystem {
           continue;
         }
 
-        const maxTurns = Number.isFinite(Number(entry.maxTurns)) && entry.maxTurns > 0 ? Number(entry.maxTurns) : turns;
+        const maxTurns =
+          Number.isFinite(Number(entry.maxTurns)) && entry.maxTurns > 0
+            ? Number(entry.maxTurns)
+            : turns;
         const type = entry.type || 'wheel';
 
         this.frozen.set(idx, { turns, maxTurns, type });

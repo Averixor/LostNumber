@@ -129,7 +129,10 @@ LostNumberGame.prototype.formatTemplate = function (key, params) {
 LostNumberGame.prototype.formatFrozenTurnsPhrase = function (turns) {
   try {
     const lang = this.lang === 'ru' ? 'ru' : this.lang === 'en' ? 'en' : 'ua';
-    if (typeof TurnsPluralFormat !== 'undefined' && typeof TurnsPluralFormat.formatForLang === 'function') {
+    if (
+      typeof TurnsPluralFormat !== 'undefined' &&
+      typeof TurnsPluralFormat.formatForLang === 'function'
+    ) {
       return TurnsPluralFormat.formatForLang(lang, turns);
     }
   } catch (error) {

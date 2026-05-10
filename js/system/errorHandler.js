@@ -53,7 +53,7 @@ class ErrorHandler {
           this._safeLog('[ErrorHandler] internal error', e);
         }
       },
-      true
+      true,
     );
 
     // Unhandled promise rejections

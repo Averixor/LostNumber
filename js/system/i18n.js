@@ -81,16 +81,20 @@ const I18N = {
 
     about_title: 'Про гру ℹ️',
     about_p1: '«Lost Number» — це затишна медитативна головоломка, де панують спокій і логіка.',
-    about_p2: 'Поєднуйте числа в елегантні ланцюжки, створюйте правильні суми та відкривайте нові рівні.',
+    about_p2:
+      'Поєднуйте числа в елегантні ланцюжки, створюйте правильні суми та відкривайте нові рівні.',
     about_p3: 'Без таймерів і поштовхів — тільки ви, цифри та задоволення від процесу.',
     about_heading_howto: 'Як грати',
     about_howto_1: 'Почніть з будь-якої клітинки та ведіть лінію по сусідах, зокрема по діагоналі.',
-    about_howto_2: 'Додавайте те саме число, його подвоєння або їх суму. Підсвітка підкаже можливі ходи.',
-    about_howto_3: 'Завершіть ланцюжок сумою, що є степенем двійки — це дасть XP і наблизить до мети.',
+    about_howto_2:
+      'Додавайте те саме число, його подвоєння або їх суму. Підсвітка підкаже можливі ходи.',
+    about_howto_3:
+      'Завершіть ланцюжок сумою, що є степенем двійки — це дасть XP і наблизить до мети.',
     about_howto_4: 'У складні моменти допоможуть бонуси та колесо фортуни.',
     about_howto_5: 'Прогрес зберігається автоматично. Щоденні завдання та досягнення — у меню.',
     about_heading_more: 'Особливості',
-    about_p4: 'Десятки рівнів, візуальні теми та детальна статистика. Повністю розслаблений геймплей.',
+    about_p4:
+      'Десятки рівнів, візуальні теми та детальна статистика. Повністю розслаблений геймплей.',
     about_credits: 'Створено з любов’ю до розумних ігор. Код: github.com/Averixor/LostNumber',
 
     victory_title: '🎉 Вітаємо! 🎉',
@@ -291,20 +295,25 @@ const I18N = {
 
     about_title: 'О игре ℹ️',
     about_p1: '«Lost Number» — это уютная медитативная головоломка, где царят покой и логика.',
-    about_p2: 'Соединяйте числа в элегантные цепочки, создавайте нужные суммы и открывайте новые уровни.',
+    about_p2:
+      'Соединяйте числа в элегантные цепочки, создавайте нужные суммы и открывайте новые уровни.',
     about_p3: 'Без таймеров и спешки — только вы, цифры и удовольствие от процесса.',
     about_heading_howto: 'Как играть',
     about_howto_1: 'Начните с любой клетки и ведите линию по соседям, включая диагонали.',
-    about_howto_2: 'Добавляйте то же число, его удвоение или их сумму. Подсветка подскажет возможные ходы.',
-    about_howto_3: 'Завершите цепочку суммой, равной степени двойки — это даст XP и приблизит к цели.',
+    about_howto_2:
+      'Добавляйте то же число, его удвоение или их сумму. Подсветка подскажет возможные ходы.',
+    about_howto_3:
+      'Завершите цепочку суммой, равной степени двойки — это даст XP и приблизит к цели.',
     about_howto_4: 'В сложные моменты помогут бонусы и колесо фортуны.',
     about_howto_5: 'Прогресс сохраняется автоматически. Ежедневные задания и достижения — в меню.',
     about_heading_more: 'Особенности',
-    about_p4: 'Десятки уровней, визуальные темы и детальная статистика. Полностью расслабленный геймплей.',
+    about_p4:
+      'Десятки уровней, визуальные темы и детальная статистика. Полностью расслабленный геймплей.',
     about_credits: 'Создано с любовью к умным играм. Код: github.com/Averixor/LostNumber',
 
     victory_title: '🎉 Поздравляем! 🎉',
-    victory_text: 'Вы дошли до финального уровня этой версии игры. Но всегда можно начать заново 🙂',
+    victory_text:
+      'Вы дошли до финального уровня этой версии игры. Но всегда можно начать заново 🙂',
 
     level_completed_title: 'Уровень пройден ✨',
     level_new_number: 'Открыто новое число:<br><b>2<sup>{power}</sup> = {target}</b>',
@@ -513,12 +522,15 @@ const I18N = {
     about_p3: 'No timers, no rush — just you, the numbers, and the joy of the process.',
     about_heading_howto: 'How to Play',
     about_howto_1: 'Start from any cell and draw a line to neighboring cells, including diagonals.',
-    about_howto_2: 'Add the same number, its double, or their sum. Highlights will guide your moves.',
+    about_howto_2:
+      'Add the same number, its double, or their sum. Highlights will guide your moves.',
     about_howto_3: 'Finish the chain with a power-of-two sum to gain XP and reach the level goal.',
     about_howto_4: 'Bonuses and the Fortune Wheel will help in tricky situations.',
-    about_howto_5: 'Progress is saved automatically. Daily tasks and achievements are available in the menu.',
+    about_howto_5:
+      'Progress is saved automatically. Daily tasks and achievements are available in the menu.',
     about_heading_more: 'Features',
-    about_p4: 'Dozens of levels, visual themes, and detailed stats. Fully relaxed gameplay with no time limits.',
+    about_p4:
+      'Dozens of levels, visual themes, and detailed stats. Fully relaxed gameplay with no time limits.',
     about_credits: 'Made with love for brainy games. Code: github.com/Averixor/LostNumber',
 
     victory_title: '🎉 Congratulations! 🎉',

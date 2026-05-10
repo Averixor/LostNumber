@@ -430,7 +430,10 @@ class BonusManager {
 
       const requiredBonuses = ['explosion', 'shuffle', 'destroy'];
       for (const bonus of requiredBonuses) {
-        if (typeof this.game.bonusInventory[bonus] !== 'number' || this.game.bonusInventory[bonus] < 0) {
+        if (
+          typeof this.game.bonusInventory[bonus] !== 'number' ||
+          this.game.bonusInventory[bonus] < 0
+        ) {
           issues.push(`Invalid bonus count for ${bonus}: ${this.game.bonusInventory[bonus]}`);
         }
       }
@@ -464,7 +467,10 @@ class BonusManager {
       } else {
         const defaultBonuses = { explosion: 0, shuffle: 0, destroy: 0 };
         for (const key in defaultBonuses) {
-          if (typeof this.game.bonusInventory[key] !== 'number' || this.game.bonusInventory[key] < 0) {
+          if (
+            typeof this.game.bonusInventory[key] !== 'number' ||
+            this.game.bonusInventory[key] < 0
+          ) {
             this.game.bonusInventory[key] = defaultBonuses[key];
             repaired = true;
           }

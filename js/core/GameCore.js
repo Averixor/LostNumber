@@ -261,7 +261,11 @@ class GameCore {
           }
 
           // Пустая клетка: number === null допустимо; undefined/мусор — нет
-          if (cell.number !== null && cell.number !== undefined && typeof cell.number !== 'number') {
+          if (
+            cell.number !== null &&
+            cell.number !== undefined &&
+            typeof cell.number !== 'number'
+          ) {
             return false;
           }
 

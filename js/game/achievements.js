@@ -15,7 +15,9 @@ class AchievementManager {
     if (achievement.progress >= achievement.max && !achievement.unlocked) {
       achievement.unlocked = true;
       this.game.showMessage(
-        this.game.formatTemplate('achievement_unlocked', { title: this.game.t('achievement_' + key) })
+        this.game.formatTemplate('achievement_unlocked', {
+          title: this.game.t('achievement_' + key),
+        }),
       );
     }
   }
