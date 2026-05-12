@@ -116,7 +116,7 @@ LostNumberGame.prototype.formatTemplate = function (key, params) {
     let text = this.t(key);
     Object.keys(params || {}).forEach((k) => {
       const v = params[k];
-      text = text.replace(`{${k}}`, v == null ? '' : String(v));
+      text = text.split(`{${k}}`).join(v == null ? '' : String(v));
     });
     return text;
   } catch (error) {
