@@ -106,14 +106,8 @@ LostNumberGame.prototype.mergeChain = function () {
         this.incrementStat('totalMerges', 1);
         this.setStatMax('longestChain', chainLen);
 
-        this.achievementManager.updateAchievementProgress(
-          'chain5',
-          chainLen >= 5 ? 1 : 0,
-        );
-        this.achievementManager.updateAchievementProgress(
-          'chain10',
-          chainLen >= 10 ? 1 : 0,
-        );
+        this.achievementManager.updateAchievementProgress('chain5', chainLen >= 5 ? 1 : 0);
+        this.achievementManager.updateAchievementProgress('chain10', chainLen >= 10 ? 1 : 0);
         this.achievementManager.updateAchievementProgress('xp1000', xpEarned);
         this.achievementManager.updateAchievementProgress('xp5000', xpEarned);
 
