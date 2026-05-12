@@ -201,11 +201,7 @@ LostNumberGame.prototype.restoreFromState = function (state) {
         const idx = Number(key);
         if (!Number.isInteger(idx) || idx < 0 || idx >= maxIdx) return;
         const turns =
-          typeof value === 'number'
-            ? value
-            : typeof value?.turns === 'number'
-              ? value.turns
-              : 0;
+          typeof value === 'number' ? value : typeof value?.turns === 'number' ? value.turns : 0;
         if (turns > 0) {
           normalizedFrozenCells.set(idx, turns);
         }
