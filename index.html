@@ -93,7 +93,7 @@
       type="image/webp"
       fetchpriority="high"
     />
-    <link rel="preload" as="image" href="./logo.png" type="image/png" />
+    <link rel="preload" as="image" href="./logo-363.webp" fetchpriority="high" type="image/webp" />
 
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -125,17 +125,44 @@
       })();
     </script>
 
-    <!-- CSS -->
+    <!-- CSS: критичне (блокує рендер) -->
     <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/critical.css" />
     <link rel="stylesheet" href="css/base.css" />
-    <link rel="stylesheet" href="css/ui.css" />
-    <link rel="stylesheet" href="css/grid.css" />
-    <link rel="stylesheet" href="css/overlays.css" />
+    <!-- CSS: некритичне (відкладене завантаження) -->
+    <link
+      rel="preload"
+      href="css/ui.css"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <link
+      rel="preload"
+      href="css/grid.css"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <link
+      rel="preload"
+      href="css/overlays.css"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <link
+      rel="preload"
+      href="css/low-performance.css"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link rel="stylesheet" href="css/ui.css" />
+      <link rel="stylesheet" href="css/grid.css" />
+      <link rel="stylesheet" href="css/overlays.css" />
+      <link rel="stylesheet" href="css/low-performance.css" />
+    </noscript>
     <!-- Runtime configuration -->
     <script src="js/bootstrap/env.js"></script>
-    <script src="js/system/debug.js"></script>
-    <link rel="stylesheet" href="css/critical.css" />
-    <link rel="stylesheet" href="css/low-performance.css" />
+    <script defer src="js/system/debug.js"></script>
   </head>
 
   <body>
@@ -234,11 +261,11 @@
       <h1 class="sr-only" data-i18n="game_logo">Lost Number</h1>
       <img
         class="main-logo"
-        src="./logo.png"
+        src="./logo-363.webp"
         alt="Lost Number"
-        width="707"
-        height="110"
-        decoding="async"
+        width="363"
+        height="56"
+        fetchpriority="high"
       />
       <div class="menu-buttons">
         <button class="menu-btn primary" id="continueBtn" data-i18n="btn_continue"></button>
@@ -471,62 +498,73 @@
 
     <!-- JS: системные и игровые модули -->
     <!-- Error handling core -->
-    <script src="js/system/errorHandler.js"></script>
-    <script src="js/system/errorHandlerFallback.js"></script>
+    <script src="js/system/errorHandler.js" defer></script>
+    <script src="js/system/errorHandlerFallback.js" defer></script>
 
     <!-- Core игровые системы -->
-    <script src="js/core/SeededRandom.js"></script>
-    <script src="js/core/ErrorBoundary.js"></script>
-    <script src="js/core/GameCore.js"></script>
-    <script src="js/core/Chain.js"></script>
-    <script src="js/core/rules.js"></script>
+    <script src="js/core/SeededRandom.js" defer></script>
+    <script src="js/core/ErrorBoundary.js" defer></script>
+    <script src="js/core/GameCore.js" defer></script>
+    <script src="js/core/Chain.js" defer></script>
+    <script src="js/core/rules.js" defer></script>
 
     <!-- System модули (debug.js уже в <head>, лог активується через AppEnv) -->
-    <script src="js/system/i18n.js"></script>
-    <script src="js/system/plural-helpers.js"></script>
-    <script src="js/system/storage.js"></script>
-    <script src="js/system/audio.js"></script>
+    <script src="js/system/i18n.js" defer></script>
+    <script src="js/system/plural-helpers.js" defer></script>
+    <script src="js/system/storage.js" defer></script>
+    <script src="js/system/audio.js" defer></script>
 
     <!-- system -->
-    <script src="js/system/freezeSystem.js"></script>
+    <script src="js/system/freezeSystem.js" defer></script>
 
     <!-- Game модули -->
-    <script src="js/game/state.js"></script>
-    <script src="js/game/achievements.js"></script>
-    <script src="js/game/bonuses.js"></script>
-    <script src="js/game/wheel.js"></script>
-    <script src="js/game/daily.js"></script>
-    <script src="js/game/grid/GridManager.js"></script>
-    <script src="js/game/grid/grid-init.js"></script>
-    <script src="js/game/grid/grid-freeze.js"></script>
-    <script src="js/game/grid/grid-physics.js"></script>
-    <script src="js/game/grid/grid-render.js"></script>
-    <script src="js/game/grid/grid-animations.js"></script>
-    <script src="js/game/grid/grid-safety.js"></script>
+    <script src="js/game/state.js" defer></script>
+    <script src="js/game/achievements.js" defer></script>
+    <script src="js/game/bonuses.js" defer></script>
+    <script src="js/game/wheel.js" defer></script>
+    <script src="js/game/daily.js" defer></script>
+    <script src="js/game/grid/GridManager.js" defer></script>
+    <script src="js/game/grid/grid-init.js" defer></script>
+    <script src="js/game/grid/grid-freeze.js" defer></script>
+    <script src="js/game/grid/grid-physics.js" defer></script>
+    <script src="js/game/grid/grid-render.js" defer></script>
+    <script src="js/game/grid/grid-animations.js" defer></script>
+    <script src="js/game/grid/grid-safety.js" defer></script>
 
     <!-- UI модули -->
-    <script src="js/ui/screens.js"></script>
-    <script src="js/ui/menu.js"></script>
-    <script src="js/ui/settings.js"></script>
-    <script src="js/ui/overlays.js"></script>
-    <script src="js/system/lazy-script.js"></script>
+    <script src="js/ui/screens.js" defer></script>
+    <script src="js/ui/menu.js" defer></script>
+    <script src="js/ui/settings.js" defer></script>
+    <script src="js/ui/overlays.js" defer></script>
+    <script src="js/system/lazy-script.js" defer></script>
 
     <!-- Главный класс и методы игры -->
-    <script src="js/app/LostNumberGame.js"></script>
-    <script src="js/app/error-runtime.js"></script>
-    <script src="js/app/dev-tools.js"></script>
-    <script src="js/app/random.js"></script>
-    <script src="js/app/inventory.js"></script>
-    <script src="js/app/i18n-theme.js"></script>
-    <script src="js/app/save-load.js"></script>
-    <script src="js/app/performance-monitor.js"></script>
-    <script src="js/app/ui-refresh.js"></script>
-    <script src="js/app/ui-events.js"></script>
-    <script src="js/app/game-flow.js"></script>
-    <script src="js/app/misc.js"></script>
-    <!-- Dev/cheats: консольні однослівні коди (лише isDev / ?cheats=1 / ?debug=…) -->
-    <script src="js/system/cheats.js"></script>
+    <script src="js/app/LostNumberGame.js" defer></script>
+    <script src="js/app/error-runtime.js" defer></script>
+    <script src="js/app/random.js" defer></script>
+    <script src="js/app/inventory.js" defer></script>
+    <script src="js/app/i18n-theme.js" defer></script>
+    <script src="js/app/save-load.js" defer></script>
+    <script src="js/app/ui-refresh.js" defer></script>
+    <script src="js/app/ui-events.js" defer></script>
+    <script src="js/app/game-flow.js" defer></script>
+    <script src="js/app/misc.js" defer></script>
+    <!-- Dev/debug: завантажуються лише при isDev / ?debug=… / ?cheats=1 -->
+    <script>
+      (function () {
+        var isDev = window.AppEnv && window.AppEnv.isDev;
+        var params = new URLSearchParams(window.location.search || '');
+        var cheatsRequested = params.has('cheats') || params.get('dev') === '1';
+
+        if (isDev || cheatsRequested) {
+          var load = window.LN_loadScriptOnce || function () {};
+          load('js/app/dev-tools.js');
+          load('js/app/performance-monitor.js');
+          load('js/system/cheats.js');
+        }
+      })();
+    </script>
     <!-- Глобальные обработчики и инициализация -->
-    <script src="js/bootstrap/boot.js"></script>
+    <script src="js/bootstrap/boot.js" defer></script>
   </body>
 </html>
