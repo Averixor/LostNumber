@@ -42,6 +42,10 @@ class FreezeSystem {
   }
 
   freezeByIdx(idx, turns = 5, type = 'wheel') {
+    if (!Number.isInteger(idx)) return false;
+    const width = this.game?.GRID_W || 5;
+    const height = this.game?.GRID_H || 8;
+    if (idx < 0 || idx >= width * height) return false;
     if (this.frozen.has(idx)) return false;
 
     this.frozen.set(idx, {

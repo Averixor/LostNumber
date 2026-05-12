@@ -133,11 +133,16 @@ LostNumberGame.prototype.handlePointerDown = function (e) {
       return;
     }
 
+    const cellNumber = this.grid?.[posCell.x]?.[posCell.y]?.number;
+    if (cellNumber == null || !Number.isFinite(Number(cellNumber))) {
+      return;
+    }
+
     this.isDragging = true;
     this._bubblePointerX = e.clientX;
     this._bubblePointerY = e.clientY;
     this.selected = [posCell];
-    Chain.numbers = [this.grid[posCell.x][posCell.y].number];
+    Chain.numbers = [cellNumber];
     updateChainSum();
     this._applySelectionHighlight?.(null, posCell);
     try {
