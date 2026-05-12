@@ -52,7 +52,6 @@ class GameState {
 
       this.screenState = 'mainMenu';
       this.gamePhase = 'idle';
-      this.setGamePhase('playing');
 
       this.core = new GameCore(this);
 
@@ -182,7 +181,9 @@ class GameState {
   getTodayKey() {
     try {
       const d = new Date();
-      return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${d.getFullYear()}-${month}-${day}`;
     } catch (error) {
       ErrorHandler.warn('getTodayKey failed', error);
       return '1970-01-01'; // Fallback дата

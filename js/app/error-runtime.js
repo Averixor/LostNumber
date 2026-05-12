@@ -97,7 +97,8 @@ LostNumberGame.prototype.wrapMethod = function (obj, methodName, label) {
       });
 
       // Возвращаем безопасное значение в зависимости от метода
-      if (methodName.includes('validate')) return { valid: false, reason: 'error' };
+      if (methodName.includes('validateMove')) return { valid: false, reason: 'error' };
+      if (methodName.includes('validate')) return false;
       if (methodName.includes('calculate')) return 0;
       if (methodName.includes('get')) return null;
 

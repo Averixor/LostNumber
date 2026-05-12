@@ -177,7 +177,7 @@ LostNumberGame.prototype.restoreFromState = function (state) {
     });
     this.pendingTransition = safePlainObject(state.pendingTransition, null);
     this.maxReachedNumber = safeNumber(state.maxReachedNumber, 8, { min: 2 });
-    this.carryNumber = state.carryNumber || null;
+    this.carryNumber = state.carryNumber ?? null;
     this.stats = safePlainObject(state.stats, this.defaultStats());
     this.achievements = safePlainObject(state.achievements, this.defaultAchievements());
     this.wheelSpinsToday = safeNumber(state.wheelSpinsToday, 0, {
@@ -192,15 +192,26 @@ LostNumberGame.prototype.restoreFromState = function (state) {
     // ВАЖНО: НЕ восстанавливаем настройки из сохранения
     // Они должны браться из текущих настроек пользователя
 
-    // Восстанавливаем frozenCells
+    // Восстанавливаем frozenCells (нормализация под формат freezeSystem)
     const frozenCellsSource = safePlainObject(state.frozenCells, null);
+    const normalizedFrozenCells = new Map();
     if (frozenCellsSource) {
-      this.frozenCells = new Map(
-        Object.entries(frozenCellsSource).map(([key, value]) => [Number(key), value]),
-      );
-    } else {
-      this.frozenCells = new Map();
+      const maxIdx = this.GRID_W * this.GRID_H;
+      Object.entries(frozenCellsSource).forEach(([key, value]) => {
+        const idx = Number(key);
+        if (!Number.isInteger(idx) || idx < 0 || idx >= maxIdx) return;
+        const turns =
+          typeof value === 'number'
+            ? value
+            : typeof value?.turns === 'number'
+              ? value.turns
+              : 0;
+        if (turns > 0) {
+          normalizedFrozenCells.set(idx, turns);
+        }
+      });
     }
+    this.frozenCells = normalizedFrozenCells;
 
     this.dailyQuests = this.dailyQuestManager.loadDailyQuests();
     this.checkWheelDailyReset();

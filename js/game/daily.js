@@ -1,7 +1,14 @@
 class DailyQuestManager {
   constructor(game) {
     this.game = game;
-    this.storage = new StorageManager();
+    try {
+      this.storage = game.storageManager || new StorageManager();
+    } catch (error) {
+      this.storage = null;
+      if (typeof ErrorHandler !== 'undefined') {
+        ErrorHandler.handle(error, { type: 'daily_storage_init' });
+      }
+    }
     this.quests = null;
   }
 
@@ -56,10 +63,11 @@ class DailyQuestManager {
     const container = document.getElementById('dailyQuestsList');
     if (!container) return;
 
-    // Убедимся, что quests загружены
     if (!this.quests) {
       this.loadDailyQuests();
     }
+
+    if (!this.quests || !Array.isArray(this.quests.list)) return;
 
     container.innerHTML = '';
 
@@ -96,11 +104,11 @@ class DailyQuestManager {
   }
 
   completeDailyQuest(id) {
-    // Убедимся, что quests загружены
     if (!this.quests) {
       this.loadDailyQuests();
     }
 
+    if (!this.quests || !Array.isArray(this.quests.list)) return false;
     if (this.quests.completed[id]) return false;
 
     this.quests.completed[id] = true;

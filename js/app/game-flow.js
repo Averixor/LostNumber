@@ -98,6 +98,7 @@ LostNumberGame.prototype.mergeChain = function () {
         // ВАЖНО: Вызываем гравитацию для заполнения пустых ячеек
         this.gridManager.applyLocalGravity(removedCells);
 
+        const oldXp = this.xp;
         const xpEarned = this.calculateXP(chainLen);
         this.xp += xpEarned;
 
@@ -120,7 +121,7 @@ LostNumberGame.prototype.mergeChain = function () {
           this.dailyQuestManager.completeDailyQuest('chain5');
         }
 
-        if (this.xp >= 100) {
+        if (this.xp >= 100 && oldXp < 100) {
           this.dailyQuestManager.completeDailyQuest('xp100');
         }
 
