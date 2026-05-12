@@ -68,17 +68,18 @@
       const original = obj[methodName];
       if (typeof original !== 'function') return;
 
+      const handler = this;
       obj[methodName] = function (...args) {
         try {
           return original.apply(this, args);
         } catch (error) {
-          this.handle(error, {
+          handler.handle(error, {
             where: label || methodName,
             args: args.slice(0, 3),
           });
-          return fallback ? fallback() : null;
+          return typeof fallback === 'function' ? fallback() : (fallback ?? null);
         }
-      }.bind(this);
+      };
     },
 
     setGame: function (game) {

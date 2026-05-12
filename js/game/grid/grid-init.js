@@ -39,9 +39,11 @@ GridManager.prototype.initGame = function (levelIndex = 0) {
         const genFunc = this.game?.generateCellNumber;
 
         try {
+          let guard = 0;
           do {
             num = genFunc ? genFunc.call(this.game, level) : 2;
-          } while (num >= level.target);
+          } while (num >= level.target && ++guard < 100);
+          if (num >= level.target) num = 2;
         } catch (error) {
           ErrorHandler.warn('Failed to generate cell number', { x, y, error });
           num = 2; // Fallback значение

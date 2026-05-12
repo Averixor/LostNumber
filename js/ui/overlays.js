@@ -21,14 +21,14 @@ class OverlayManager {
 
   setupOverlays() {
     document.getElementById('levelNextBtn')?.addEventListener('click', () => {
-      document.getElementById('levelOverlay').classList.add('hidden');
+      document.getElementById('levelOverlay')?.classList.add('hidden');
       this.game.completeLevelTransition();
     });
 
     document.getElementById('levelMenuBtn')?.addEventListener('click', () => {
       this.game.saveGameState();
       this.game.setGamePhase('blocked');
-      document.getElementById('levelOverlay').classList.add('hidden');
+      document.getElementById('levelOverlay')?.classList.add('hidden');
       this.game.screenManager.showScreen('mainMenu');
     });
 

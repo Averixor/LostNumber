@@ -48,10 +48,16 @@ LostNumberGame.prototype.updateMultiplierIndicator = function () {
       if (counter) {
         counter.textContent = this.xpMultiplierTurns;
       }
-      indicator.textContent = this.formatTemplate('xp_multiplier_active', {
+      const label = this.formatTemplate('xp_multiplier_active', {
         multiplier: this.xpMultiplier,
         turns: this.xpMultiplierTurns,
       });
+      const firstText = indicator.firstChild;
+      if (firstText && firstText.nodeType === Node.TEXT_NODE) {
+        firstText.textContent = label;
+      } else {
+        indicator.insertBefore(document.createTextNode(label), indicator.firstChild);
+      }
     } else {
       indicator.style.display = 'none';
     }

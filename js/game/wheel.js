@@ -347,9 +347,11 @@ class WheelManager {
       const randomIndex = this.getRandomInt(sectorCount);
       const selectedSector = this.wheelSectors[randomIndex];
 
-      // Расчет вращения
+      // Расчет вращения: сектор randomIndex должен оказаться под указателем (12 часов = 270° в canvas-координатах)
       const angle = 360 / sectorCount;
-      this.currentRotation += 360 * 5 + randomIndex * angle;
+      const targetMod = ((270 - randomIndex * angle - angle / 2) % 360 + 360) % 360;
+      const fullSpins = Math.ceil(this.currentRotation / 360) + 5;
+      this.currentRotation = fullSpins * 360 + targetMod;
 
       // Применение вращения
       const wheel = document.getElementById('fortuneWheel');
@@ -441,7 +443,7 @@ class WheelManager {
       switch (sector.effect) {
         case 'xp':
           if (typeof sector.value === 'number') {
-            this.game.xp += sector.value;
+            this.game.xp = Math.max(0, this.game.xp + sector.value);
             this.game.incrementStat('totalXP', Math.max(0, sector.value));
             this.game.showMessage(
               this.game.t(sector.messageKey) || `XP: ${sector.value > 0 ? '+' : ''}${sector.value}`,
@@ -705,7 +707,6 @@ class WheelManager {
     } catch (error) {
       ErrorHandler.handle(error, {
         type: 'wheel_ui_update',
-        cost,
         wheelSpinsToday: this.game.wheelSpinsToday,
         maxSpins: this.game.MAX_DAILY_SPINS,
       });

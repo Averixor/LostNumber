@@ -67,9 +67,6 @@ class ErrorHandler {
       });
     });
 
-    // Мониторинг производительности
-    this._setupPerformanceMonitoring();
-
     if (window.AppEnv?.isDev) {
       console.log('ErrorHandler installed successfully');
     }
@@ -90,18 +87,39 @@ class ErrorHandler {
     return true;
   }
 
+  static _perfMonitorActive = false;
+  static _perfMonitorRAF = 0;
+  static _perfMemoryTimer = 0;
+
+  static startPerformanceMonitoring() {
+    if (this._perfMonitorActive) return;
+    this._perfMonitorActive = true;
+    this._setupPerformanceMonitoring();
+  }
+
+  static stopPerformanceMonitoring() {
+    this._perfMonitorActive = false;
+    if (this._perfMonitorRAF) {
+      cancelAnimationFrame(this._perfMonitorRAF);
+      this._perfMonitorRAF = 0;
+    }
+    if (this._perfMemoryTimer) {
+      clearInterval(this._perfMemoryTimer);
+      this._perfMemoryTimer = 0;
+    }
+  }
+
   static _setupPerformanceMonitoring() {
-    // Мониторинг FPS - КОММЕНТИРУЕМ, так как вызывает проблемы
     if (typeof requestAnimationFrame === 'function') {
       let lastTime = performance.now();
       let frames = 0;
 
       const checkFPS = () => {
+        if (!this._perfMonitorActive) return;
         frames++;
         const current = performance.now();
         if (current >= lastTime + 1000) {
           const fps = Math.round((frames * 1000) / (current - lastTime));
-
           if (fps < 30) {
             this.warn(`Low FPS: ${fps}`, {
               type: 'performance',
@@ -109,19 +127,18 @@ class ErrorHandler {
               memory: performance.memory?.usedJSHeapSize,
             });
           }
-
           frames = 0;
           lastTime = current;
         }
-        requestAnimationFrame(checkFPS);
+        this._perfMonitorRAF = requestAnimationFrame(checkFPS);
       };
 
-      requestAnimationFrame(checkFPS);
+      this._perfMonitorRAF = requestAnimationFrame(checkFPS);
     }
 
-    // Мониторинг памяти (если доступен)
     if (performance.memory) {
-      setInterval(() => {
+      this._perfMemoryTimer = setInterval(() => {
+        if (!this._perfMonitorActive) return;
         const memory = performance.memory;
         if (memory.usedJSHeapSize > memory.jsHeapSizeLimit * 0.8) {
           this.warn('High memory usage', {
@@ -396,6 +413,8 @@ class ErrorHandler {
   }
 }
 
+window.ErrorHandler = ErrorHandler;
+
 // Автоматическая установка с настройками по умолчанию
 if (typeof ErrorHandler !== 'undefined') {
   const userConfig = window.ErrorHandlerConfig || {};
@@ -424,46 +443,3 @@ if (typeof ErrorHandler !== 'undefined') {
   }, 0);
 }
 
-// Fallback на случай если основной ErrorHandler не загрузился
-if (typeof ErrorHandler === 'undefined') {
-  console.warn('Main ErrorHandler not found, using fallback');
-
-  window.ErrorHandler = {
-    handle: function (error, context) {
-      console.error('[ErrorHandler fallback]', error, context);
-    },
-    setGame: function () {},
-    install: function () {},
-    warn: function (msg, data) {
-      console.warn('[WARN]', msg, data);
-    },
-    info: function (msg, data) {
-      console.info('[INFO]', msg, data);
-    },
-    debug: function (msg, data) {
-      console.debug('[DEBUG]', msg, data);
-    },
-    setConfig: function () {},
-    getErrorHistory: function () {
-      return [];
-    },
-    clearErrorHistory: function () {},
-    getErrorStats: function () {
-      return {};
-    },
-    safeExecute: function (fn, context, fallback) {
-      try {
-        return fn();
-      } catch (e) {
-        console.error('[safeExecute]', e);
-        return typeof fallback === 'function' ? fallback() : fallback;
-      }
-    },
-    safePromise: function (promise, context) {
-      return promise.catch((e) => {
-        console.error('[safePromise]', e, context);
-        throw e;
-      });
-    },
-  };
-}
