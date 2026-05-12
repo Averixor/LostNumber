@@ -4,6 +4,7 @@ window.Rules = {
   },
 
   isAdjacent: function (a, b) {
+    if (a.x === b.x && a.y === b.y) return false;
     return Math.abs(a.x - b.x) <= 1 && Math.abs(a.y - b.y) <= 1;
   },
 

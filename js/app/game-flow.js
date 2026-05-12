@@ -72,6 +72,10 @@ LostNumberGame.prototype.mergeChain = function () {
 
     const anchor = this.selected[this.selected.length - 1];
     const removedCells = this.selected.slice(0, -1);
+    const chainLen = this.selected.length;
+
+    // Блокуємо нову взаємодію поки йде анімація
+    this.setGamePhase('animating');
 
     // Сохраняем якорную клетку
     this.grid[anchor.x][anchor.y].number = resultNumber;
@@ -82,6 +86,11 @@ LostNumberGame.prototype.mergeChain = function () {
       this.grid[cell.x][cell.y].number = null;
     });
 
+    // Скидаємо вибір одразу, щоб уникнути конфлікту з наступним жестом
+    this.selected = [];
+    Chain.numbers = [];
+    Chain.sum = 0;
+
     this.gridManager.render();
 
     this.gridManager.animatePopping(removedCells, () => {
@@ -89,25 +98,25 @@ LostNumberGame.prototype.mergeChain = function () {
         // ВАЖНО: Вызываем гравитацию для заполнения пустых ячеек
         this.gridManager.applyLocalGravity(removedCells);
 
-        const xpEarned = this.calculateXP(this.selected.length);
+        const xpEarned = this.calculateXP(chainLen);
         this.xp += xpEarned;
 
         this.incrementStat('totalXP', xpEarned);
         this.incrementStat('totalMerges', 1);
-        this.setStatMax('longestChain', this.selected.length);
+        this.setStatMax('longestChain', chainLen);
 
         this.achievementManager.updateAchievementProgress(
           'chain5',
-          this.selected.length >= 5 ? 1 : 0,
+          chainLen >= 5 ? 1 : 0,
         );
         this.achievementManager.updateAchievementProgress(
           'chain10',
-          this.selected.length >= 10 ? 1 : 0,
+          chainLen >= 10 ? 1 : 0,
         );
         this.achievementManager.updateAchievementProgress('xp1000', xpEarned);
         this.achievementManager.updateAchievementProgress('xp5000', xpEarned);
 
-        if (this.selected.length >= 5) {
+        if (chainLen >= 5) {
           this.dailyQuestManager.completeDailyQuest('chain5');
         }
 
@@ -120,15 +129,6 @@ LostNumberGame.prototype.mergeChain = function () {
           this.incrementStat('totalXP', surplus);
           this.showMessage(this.formatTemplate('surplus_xp', { surplus }));
         }
-
-        // Очищаем выбранные клетки
-        const oldSelected = [...this.selected];
-        this.selected = [];
-        Chain.numbers = [];
-        Chain.sum = 0;
-
-        // Очищаем подсветку в DOM
-        this.clearSelectionHighlight(oldSelected);
 
         this.updatePreviewBubble();
 
@@ -151,11 +151,20 @@ LostNumberGame.prototype.mergeChain = function () {
         this.gridManager.render();
 
         this.saveGameState();
+
+        // Повертаємо можливість взаємодії
+        if (this.gamePhase === 'animating') {
+          this.setGamePhase('playing');
+        }
+
         this.checkWin();
       });
     });
   } catch (error) {
-    ErrorHandler.handle(error, { type: 'merge_chain', chainLength: Chain.numbers.length });
+    ErrorHandler.handle(error, { type: 'merge_chain', chainLength: Chain.numbers?.length ?? 0 });
+    if (this.gamePhase === 'animating') {
+      this.setGamePhase('playing');
+    }
     this.resetChain('error');
   }
 };

@@ -56,7 +56,7 @@ class SettingsManager {
         this.game.audioManager.playTap();
 
         // Получаем значения из UI
-        this.game.animationEnabled = document.getElementById('animationSelect').value === 'on';
+        this.game.animationEnabled = document.getElementById('animationSelect')?.value === 'on';
         {
           const on = document.getElementById('bgEffectsSelect')?.value !== 'off';
           this.game.floatingNumbersEnabled = on;
@@ -67,9 +67,9 @@ class SettingsManager {
           this.game.liteVisualMode =
             lite === 'on' || lite === 'off' || lite === 'auto' ? lite : 'auto';
         }
-        this.game.soundEnabled = document.getElementById('soundSelect').value === 'on';
+        this.game.soundEnabled = document.getElementById('soundSelect')?.value === 'on';
         this.game.theme = document.getElementById('themeSelect')?.value || 'dusk';
-        const newLang = document.getElementById('languageSelect').value || 'ua';
+        const newLang = document.getElementById('languageSelect')?.value || 'ua';
 
         // Применяем настройки анимаций
         if (this.game.animationEnabled) {
