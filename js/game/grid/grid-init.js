@@ -72,9 +72,23 @@ GridManager.prototype.initGame = function (levelIndex = 0) {
       }
 
       if (found.length > 1) {
+        const genFunc = this.game?.generateCellNumber;
+        const carryNumber = this.game.carryNumber;
         for (let i = 1; i < found.length; i++) {
           const p = found[i];
-          this.game.grid[p.x][p.y].number = null;
+          let replacement = 2;
+          let guard = 0;
+          do {
+            replacement = genFunc ? genFunc.call(this.game, level) : 2;
+            guard++;
+          } while (
+            (replacement == null || replacement >= level.target || replacement === carryNumber) &&
+            guard < 100
+          );
+          if (replacement == null || replacement >= level.target || replacement === carryNumber) {
+            replacement = 2;
+          }
+          this.game.grid[p.x][p.y].number = replacement;
           this.game.grid[p.x][p.y].merged = false;
         }
       }

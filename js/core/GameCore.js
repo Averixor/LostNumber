@@ -42,9 +42,16 @@ class GameCore {
             return { valid: false, reason: 'not_adjacent' };
           }
 
-          // Проверка чисел
           const prevNum = grid[prev.x][prev.y].number;
           const currNum = grid[cell.x][cell.y].number;
+
+          if (prevNum == null || currNum == null) {
+            return { valid: false, reason: 'empty_cell' };
+          }
+          if (!Number.isFinite(Number(prevNum)) || !Number.isFinite(Number(currNum))) {
+            return { valid: false, reason: 'invalid_number' };
+          }
+
           const currentSum = chain.numbers.slice(0, i).reduce((a, b) => a + b, 0);
 
           if (!Rules.isValidNextNumber(currNum, prevNum, currentSum)) {

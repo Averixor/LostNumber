@@ -24,13 +24,13 @@ GridManager.prototype.shuffleGrid = function () {
     for (let x = 0; x < this.game.GRID_W; x++) {
       for (let y = 0; y < this.game.GRID_H; y++) {
         if (this.game.grid[x]) {
-          // ✅ не ломаем флаги — оставляем объект, меняем только number/merged
           const cell = this.game.grid[x][y];
           cell.number = all[k++];
           cell.merged = false;
-          cell.frozen = cell.frozen || false;
-          cell.freezeTurns = cell.freezeTurns || 0;
-          cell.freezeMaxTurns = cell.freezeMaxTurns || 0;
+          cell.frozen = false;
+          cell.freezeTurns = 0;
+          cell.freezeMaxTurns = 0;
+          cell.freezeType = null;
         }
       }
     }
@@ -227,6 +227,7 @@ GridManager.prototype.applyPressureTransfer = function (
     const level = this.game.levels?.[this.game.currentLevel];
 
     let moves = 0;
+    const affectedColumns = new Set();
 
     // делаем несколько переносов за ход, но ограниченно
     while (moves < maxMovesPerTurn) {
@@ -279,6 +280,8 @@ GridManager.prototype.applyPressureTransfer = function (
           // ✅ переносим блок в бок
           grid[tx][y].number = srcCell.number;
           srcCell.number = null;
+          affectedColumns.add(tx);
+          affectedColumns.add(sx);
 
           // ✅ "схлопывание" источника: всё выше спускается на 1
           for (let yy = y; yy > 0; yy--) {
@@ -307,6 +310,30 @@ GridManager.prototype.applyPressureTransfer = function (
       }
 
       if (!moved) break;
+    }
+
+    // Settle affected columns so numbers don't float above empty cells
+    for (const cx of affectedColumns) {
+      if (!grid[cx]) continue;
+      const nums = [];
+      for (let y = H - 1; y >= 0; y--) {
+        const cell = grid[cx][y];
+        if (cell && cell.number != null && !cell.frozen) {
+          nums.push(cell.number);
+        }
+      }
+      let writeY = H - 1;
+      for (let y = H - 1; y >= 0; y--) {
+        if (grid[cx][y]?.frozen) continue;
+        grid[cx][y].number = null;
+        grid[cx][y].merged = false;
+      }
+      for (const n of nums) {
+        while (writeY >= 0 && grid[cx][writeY]?.frozen) writeY--;
+        if (writeY < 0) break;
+        grid[cx][writeY].number = n;
+        writeY--;
+      }
     }
 
     return moves;
