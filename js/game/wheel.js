@@ -349,7 +349,7 @@ class WheelManager {
 
       // Расчет вращения: сектор randomIndex должен оказаться под указателем (12 часов = 270° в canvas-координатах)
       const angle = 360 / sectorCount;
-      const targetMod = ((270 - randomIndex * angle - angle / 2) % 360 + 360) % 360;
+      const targetMod = (((270 - randomIndex * angle - angle / 2) % 360) + 360) % 360;
       const fullSpins = Math.ceil(this.currentRotation / 360) + 5;
       this.currentRotation = fullSpins * 360 + targetMod;
 
