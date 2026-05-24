@@ -2,33 +2,28 @@
 
 LostNumberGame.prototype.initializeErrorHandler = function () {
   try {
-    // Конфигурация в зависимости от режима
     const isDev =
-      window.location.search.includes('dev=1') ||
-      window.location.hostname === 'localhost' ||
-      window.location.hostname === '127.0.0.1';
+      (window.AppEnv && window.AppEnv.isDev === true) ||
+      (typeof window.LN_isLocalDevEnvironment === 'function' && window.LN_isLocalDevEnvironment());
 
-    const config = {
-      showUserMessages: !isDev, // В продакшне показываем, в дев - нет
-      logToConsole: isDev, // В дев логируем, в продакшне - только важное
-      maxErrorsPerMinute: isDev ? 100 : 50,
-      collectStackTraces: true,
-      onErrorReport: isDev ? null : this.reportErrorToAnalytics.bind(this),
-    };
+    if (window.ErrorHandlerConfig) {
+      ErrorHandler.setConfig(window.ErrorHandlerConfig);
+    } else {
+      ErrorHandler.setConfig({
+        showUserMessages: !isDev,
+        logToConsole: isDev,
+        maxErrorsPerMinute: isDev ? 100 : 50,
+        collectStackTraces: true,
+        onErrorReport: isDev ? null : this.reportErrorToAnalytics.bind(this),
+      });
+    }
 
-    // Устанавливаем конфигурацию
-    ErrorHandler.setConfig(config);
-
-    // Устанавливаем ссылку на игру
     ErrorHandler.setGame(this);
-
-    // Устанавливаем обработчики
     ErrorHandler.install();
 
-    // Обертываем критические методы
-    this.wrapCriticalMethods();
-
-    ErrorHandler.info('ErrorHandler initialized', { mode: isDev ? 'development' : 'production' });
+    ErrorHandler.info('ErrorHandler initialized', {
+      mode: isDev ? 'development' : 'production',
+    });
   } catch (error) {
     console.error('Failed to initialize ErrorHandler:', error);
     // Используем fallback если основной не загрузился
@@ -39,6 +34,11 @@ LostNumberGame.prototype.initializeErrorHandler = function () {
 };
 
 LostNumberGame.prototype.wrapCriticalMethods = function () {
+  if (this._criticalMethodsWrapped) {
+    return;
+  }
+  this._criticalMethodsWrapped = true;
+
   // Обертываем методы GameCore
   this.wrapMethod(this.core, 'validateMove', 'GameCore.validateMove');
   this.wrapMethod(this.core, 'canFinishChain', 'GameCore.canFinishChain');

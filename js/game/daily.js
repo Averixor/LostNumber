@@ -13,7 +13,10 @@ class DailyQuestManager {
   }
 
   loadDailyQuests() {
-    const saved = this.storage.loadDailyQuests();
+    const saved =
+      this.storage && typeof this.storage.loadDailyQuests === 'function'
+        ? this.storage.loadDailyQuests()
+        : null;
     const today = this.game.getTodayKey();
 
     if (saved && saved.date === today) {
@@ -55,7 +58,9 @@ class DailyQuestManager {
     };
 
     this.game.dailyQuests = this.quests;
-    this.storage.saveDailyQuests(this.quests);
+    if (this.storage && typeof this.storage.saveDailyQuests === 'function') {
+      this.storage.saveDailyQuests(this.quests);
+    }
     return this.quests;
   }
 
@@ -117,7 +122,9 @@ class DailyQuestManager {
     this.updateDailyIndicator();
     this.giveDailyQuestReward(id);
 
-    this.storage.saveDailyQuests(this.quests);
+    if (this.storage && typeof this.storage.saveDailyQuests === 'function') {
+      this.storage.saveDailyQuests(this.quests);
+    }
 
     return true;
   }

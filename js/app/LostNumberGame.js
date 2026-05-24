@@ -2,9 +2,6 @@
 
 class LostNumberGame {
   constructor() {
-    // === ИНИЦИАЛИЗАЦИЯ ERROR HANDLER В САМОМ НАЧАЛЕ ===
-    this.initializeErrorHandler();
-
     // Инициализация менеджеров
     this.storageManager = new StorageManager();
     this.audioManager = new AudioManager();
@@ -59,6 +56,9 @@ class LostNumberGame {
     this.showVictory = this.overlayManager.showVictory.bind(this.overlayManager);
     this.hideVictory = this.overlayManager.hideVictory.bind(this.overlayManager);
 
+    this.initializeErrorHandler();
+    this.wrapCriticalMethods();
+
     // Явное копирование методов из GameState
     this.formatNumber = this.state.formatNumber.bind(this.state);
     this.getWheelCost = this.wheelManager.getWheelCost.bind(this.wheelManager);
@@ -73,6 +73,8 @@ class LostNumberGame {
     this.generateAASuffix = this.state.generateAASuffix.bind(this.state);
     this.generateLevels = this.state.generateLevels.bind(this.state);
     this.getLevelConfig = this.state.getLevelConfig.bind(this.state);
+    this.getMinimumTileForLevel = this.state.getMinimumTileForLevel.bind(this.state);
+    this.getMinimumSpawnTile = this.state.getMinimumSpawnTile.bind(this.state);
     this.defaultStats = this.state.defaultStats.bind(this.state);
     this.defaultAchievements = this.state.defaultAchievements.bind(this.state);
     this.setGamePhase = this.state.setGamePhase.bind(this.state);

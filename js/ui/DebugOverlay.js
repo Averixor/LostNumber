@@ -198,11 +198,16 @@ class DebugOverlay {
     const levelConfig =
       typeof g.getLevelConfig === 'function' ? g.getLevelConfig(g.currentLevel) : null;
     const levelTarget = Number(levelConfig?.target);
+    const minTile =
+      typeof g.getMinimumSpawnTile === 'function' ? g.getMinimumSpawnTile(g.currentLevel) : null;
+
+    const targetStr = Number.isFinite(levelTarget) ? levelTarget : '-';
+    const minSpawnStr = Number.isFinite(minTile) ? minTile : '-';
 
     const lines = [
       `FPS: ${this.fps}`,
       `phase: ${g.gamePhase ?? '-'} screen: ${g.screenState ?? '-'}`,
-      `level: ${g.currentLevel ?? '-'} target: ${Number.isFinite(levelTarget) ? levelTarget : '-'}`,
+      `level: ${g.currentLevel ?? '-'} target: ${targetStr} minSpawn: ${minSpawnStr}`,
       `chain.sum: ${chainSum} sel: ${g.selected?.length ?? 0}`,
       `seed: ${(g.state && g.state.currentSeed) || g.currentSeed || '-'}`,
       `emptyCells: ${empty == null ? '-' : empty}`,

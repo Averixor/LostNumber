@@ -14,6 +14,7 @@ class StorageManager {
   saveGameState(state) {
     try {
       localStorage.setItem(this.SAVE_KEY, JSON.stringify(state));
+      this._memorySave = state;
       return true;
     } catch (e) {
       console.error('Save failed:', e);
@@ -24,15 +25,25 @@ class StorageManager {
   }
 
   loadGameState() {
+    let parsed = null;
     try {
       const raw = localStorage.getItem(this.SAVE_KEY);
-      if (!raw) return null;
-      return JSON.parse(raw);
+      if (raw) {
+        parsed = JSON.parse(raw);
+      }
     } catch (e) {
       console.error('Load failed:', e);
       this._usingMemory = true;
+    }
+
+    if (parsed) {
+      return parsed;
+    }
+    if (this._memorySave) {
+      this._usingMemory = true;
       return this._memorySave;
     }
+    return null;
   }
 
   saveSettings(settings) {

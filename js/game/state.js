@@ -314,28 +314,115 @@ class GameState {
     }
   }
 
+  /**
+   * Largest power of two <= n (minimum 2).
+   * @param {number} n
+   */
+  _floorPowerOfTwo(n) {
+    const v = Number(n);
+    if (!Number.isFinite(v) || v < 2) {
+      return 2;
+    }
+    const exp = Math.floor(Math.log2(v));
+    const p = Math.pow(2, Math.max(0, exp));
+    return Number.isFinite(p) && p >= 2 ? p : 2;
+  }
+
+  /**
+   * 0-based level index. Human level = levelIndex + 1.
+   * @param {number} levelIndex
+   * @param {number} [target] optional level target for cap
+   */
+  getMinimumTileForLevel(levelIndex, target) {
+    const idx = Math.max(0, Math.floor(Number(levelIndex) || 0));
+    const humanLevel = idx + 1;
+    let raw = 2;
+
+    if (humanLevel <= 6) {
+      raw = 2;
+    } else if (humanLevel <= 11) {
+      raw = 4;
+    } else if (humanLevel <= 15) {
+      raw = 8;
+    } else {
+      const bracket = Math.floor((humanLevel - 16) / 4);
+      const exponent = Math.min(4 + bracket, 52);
+      const stepped = Math.pow(2, exponent);
+      raw = Number.isFinite(stepped) && stepped >= 16 ? stepped : 16;
+    }
+
+    const safeTarget =
+      target != null && Number.isFinite(Number(target)) && Number(target) > 0
+        ? Number(target)
+        : this.getLevelConfig(idx).target;
+
+    return this._capMinimumTileToTarget(raw, safeTarget);
+  }
+
+  /**
+   * minSpawnTile <= target / 4096, power-of-two only.
+   */
+  _capMinimumTileToTarget(rawMin, target) {
+    let minTile = this._floorPowerOfTwo(rawMin);
+    if (!Number.isFinite(target) || target <= 4096) {
+      return minTile;
+    }
+
+    const capValue = target / 4096;
+    const capTile = this._floorPowerOfTwo(capValue);
+    if (capTile < minTile) {
+      minTile = capTile;
+    }
+    if (!Number.isFinite(minTile) || minTile < 2) {
+      return 2;
+    }
+    if (minTile > Number.MAX_SAFE_INTEGER) {
+      return this._floorPowerOfTwo(Number.MAX_SAFE_INTEGER);
+    }
+    return minTile;
+  }
+
+  getMinimumSpawnTile(levelIndex) {
+    const idx = Math.max(0, Math.floor(Number(levelIndex) || 0));
+    const target = this.getLevelConfig(idx).target;
+    return this.getMinimumTileForLevel(idx, target);
+  }
+
   getAllowedNumbers() {
     try {
       const WINDOW = 9;
-      const max = this.maxReachedNumber;
+      const levelIndex = Math.max(0, Math.floor(Number(this.currentLevel) || 0));
+      const minSpawn = this.getMinimumSpawnTile(levelIndex);
+      const max = Math.max(this.maxReachedNumber, minSpawn);
 
       const arr = [];
       let num = max;
 
-      while (arr.length < WINDOW && num >= 2) {
+      while (arr.length < WINDOW && num >= minSpawn) {
         arr.unshift(num);
         num /= 2;
       }
 
+      while (arr.length > 0 && arr[0] < minSpawn) {
+        arr.shift();
+      }
+
+      if (arr.length === 0 || arr[0] > minSpawn) {
+        arr.unshift(minSpawn);
+      }
+
       if (arr.length < WINDOW) {
-        let current = max;
+        let current = arr.length ? arr[arr.length - 1] : minSpawn;
         while (arr.length < WINDOW) {
           current *= 2;
+          if (!Number.isFinite(current)) {
+            break;
+          }
           arr.push(current);
         }
       }
 
-      return arr;
+      return arr.filter((n) => Number.isFinite(n) && n >= 2);
     } catch (error) {
       ErrorHandler.handle(error, {
         type: 'get_allowed_numbers',
@@ -350,11 +437,13 @@ class GameState {
       const allowed = this.getAllowedNumbers();
       const levelTarget = this.getLevelConfig(this.currentLevel).target;
 
-      const filtered = allowed.filter((n) => n !== this.carryNumber && n !== levelTarget);
+      const minSpawn = this.getMinimumSpawnTile(this.currentLevel);
+      const filtered = allowed.filter(
+        (n) => n >= minSpawn && n !== this.carryNumber && n !== levelTarget,
+      );
 
       if (filtered.length === 0) {
-        // Если нет доступных чисел, вернем минимальное
-        return 2;
+        return minSpawn;
       }
 
       const items = filtered.map((value, index) => ({

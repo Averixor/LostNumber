@@ -1,8 +1,33 @@
 // Runtime environment, debug tiers, ErrorHandler configuration.
 (function () {
-  const host = (window.location.hostname || '').toLowerCase();
   const isLocalHost =
-    host === 'localhost' || host === '127.0.0.1' || host === '[::1]' || host.endsWith('.local');
+    typeof window.LN_isLocalDevEnvironment === 'function'
+      ? window.LN_isLocalDevEnvironment()
+      : (function () {
+          const host = (window.location.hostname || '').toLowerCase();
+          if ((window.location.protocol || '').toLowerCase() === 'file:') {
+            return true;
+          }
+          if (
+            host === 'localhost' ||
+            host === '127.0.0.1' ||
+            host === '::1' ||
+            host === '[::1]' ||
+            host.endsWith('.local')
+          ) {
+            return true;
+          }
+          if (/^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(host)) {
+            return true;
+          }
+          if (/^192\.168\.\d{1,3}\.\d{1,3}$/.test(host)) {
+            return true;
+          }
+          if (/^172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}$/.test(host)) {
+            return true;
+          }
+          return false;
+        })();
 
   /** @type {'off' | 'dev' | 'full'} */
   let debugMode = 'off';
