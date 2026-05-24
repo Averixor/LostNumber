@@ -195,10 +195,14 @@ class DebugOverlay {
       }
     } catch (_) {}
 
+    const levelConfig =
+      typeof g.getLevelConfig === 'function' ? g.getLevelConfig(g.currentLevel) : null;
+    const levelTarget = Number(levelConfig?.target);
+
     const lines = [
       `FPS: ${this.fps}`,
       `phase: ${g.gamePhase ?? '-'} screen: ${g.screenState ?? '-'}`,
-      `level: ${g.currentLevel ?? '-'} target: ${g.levels?.[g.currentLevel]?.target ?? '-'}`,
+      `level: ${g.currentLevel ?? '-'} target: ${Number.isFinite(levelTarget) ? levelTarget : '-'}`,
       `chain.sum: ${chainSum} sel: ${g.selected?.length ?? 0}`,
       `seed: ${(g.state && g.state.currentSeed) || g.currentSeed || '-'}`,
       `emptyCells: ${empty == null ? '-' : empty}`,

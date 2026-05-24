@@ -52,6 +52,10 @@ npx serve .
 
 У Windows за бажанням можна користуватися **`format.ps1`** / **`lint.ps1`** поруч з npm-командами, або напряму **`node ./scripts/check.mjs`** (те саме, що `npm run check`, без залежності від cmd/npx у PATH).
 
+## Endless progression
+
+Ранні рівні беруться з preset-таблиці без зміни балансу. Після останнього preset-рівня гра використовує **`getLevelConfig(level)`**: ціль генерується детерміновано з номера рівня, без `Math.random()` і без прив’язки до платформи. Цілі лишаються валідними для правил злиття (safe power-of-two), тому рівні 20, 50, 100, 200, 500+ відновлюються після reload лише з `currentLevel`.
+
 ## Режими та дебаг
 
 ### Gated dev cheats tooling (`LN_CODES`)

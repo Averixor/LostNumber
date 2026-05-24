@@ -133,7 +133,7 @@ class GameState {
 
   /**
    * Deterministic target for level index (0-based). Preset levels 0..MANUAL-1 unchanged.
-   * Beyond safe integer doubling uses controlled multiplicative growth.
+   * Beyond safe power-of-two range clamps to the largest target the chain rules can finish.
    */
   getProceduralTarget(levelIndex) {
     const idx = Math.max(0, Math.floor(Number(levelIndex) || 0));
@@ -143,37 +143,13 @@ class GameState {
       return this.levels[idx].target;
     }
 
-    const doubled = 64 * Math.pow(2, idx);
-    if (Number.isFinite(doubled) && doubled >= 64 && doubled <= Number.MAX_SAFE_INTEGER) {
+    const MAX_SAFE_POWER_OF_TWO = 2 ** 52;
+    const doubled = 64 * 2 ** idx;
+    if (Number.isSafeInteger(doubled) && doubled >= 64 && doubled <= MAX_SAFE_POWER_OF_TWO) {
       return Math.floor(doubled);
     }
 
-    const SOFT_GROWTH = 1.12;
-    let target = this.levels[manualMax - 1]?.target || 64 * Math.pow(2, manualMax - 1);
-    if (!Number.isFinite(target) || target <= 0) {
-      target = 64;
-    }
-
-    for (let i = manualMax; i <= idx; i++) {
-      const stepDouble = 64 * Math.pow(2, i);
-      if (
-        Number.isFinite(stepDouble) &&
-        stepDouble >= 64 &&
-        stepDouble <= Number.MAX_SAFE_INTEGER
-      ) {
-        target = Math.floor(stepDouble);
-      } else {
-        target = Math.floor(target * SOFT_GROWTH);
-        if (!Number.isFinite(target) || target <= 0) {
-          return 64;
-        }
-        if (target >= Number.MAX_SAFE_INTEGER) {
-          return Number.MAX_SAFE_INTEGER;
-        }
-      }
-    }
-
-    return target;
+    return MAX_SAFE_POWER_OF_TWO;
   }
 
   buildLevelNumbers(levelIndex, target) {
