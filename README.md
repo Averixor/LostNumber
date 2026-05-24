@@ -40,15 +40,24 @@ npx serve .
 
 Після `npm install`:
 
-| Команда                       | Опис                                                                                 |
-| ----------------------------- | ------------------------------------------------------------------------------------ |
-| `npm run format`              | Prettier — запис усіх відповідних файлів                                             |
-| `npm run format:check`        | Prettier — лише перевірка без змін                                                   |
-| `npm run lint`                | ESLint                                                                               |
-| `npm run lint:fix`            | ESLint з автовиправленням де можливо                                                 |
-| `npm run check`               | **`format:check` + `lint`** через `scripts/check.mjs` (Node, без прив’язки до shell) |
-| `npm run cursor:audit`        | Допоміжний скрипт для локального аудиту з Cursor SDK                                 |
-| `npm run cursor:audit:stream` | Те саме з потоковим виводом (`cursor-audit-local.mjs --stream`)                      |
+| Команда                | Опис                                                                                 |
+| ---------------------- | ------------------------------------------------------------------------------------ |
+| `npm run format`       | Prettier — запис усіх відповідних файлів                                             |
+| `npm run format:check` | Prettier — лише перевірка без змін                                                   |
+| `npm run lint`         | ESLint                                                                               |
+| `npm run lint:fix`     | ESLint з автовиправленням де можливо                                                 |
+| `npm run check`        | **`format:check` + `lint`** через `scripts/check.mjs` (Node, без прив’язки до shell) |
+
+Додаткові Node-перевірки gameplay/reliability (без test framework, лише stdlib):
+
+```bash
+node ./scripts/test-min-tile.mjs
+node ./scripts/test-level-config.mjs
+node ./scripts/test-storage-fallback.mjs
+```
+
+| `npm run cursor:audit` | Допоміжний скрипт для локального аудиту з Cursor SDK |
+| `npm run cursor:audit:stream` | Те саме з потоковим виводом (`cursor-audit-local.mjs --stream`) |
 
 У Windows за бажанням можна користуватися **`format.ps1`** / **`lint.ps1`** поруч з npm-командами, або напряму **`node ./scripts/check.mjs`** (те саме, що `npm run check`, без залежності від cmd/npx у PATH).
 
