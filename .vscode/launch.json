@@ -1,29 +1,80 @@
 {
-  // Використовуйте IntelliSense, щоб дізнатися про можливі атрибути.
-  // Наведіть курсор, щоб переглянути описи існуючих атрибутів.
-  // Для отримання додаткової інформації відвідайте: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach to Chrome",
-      "port": 9222,
+      "name": "🎮 Play (local — cheats auto)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://127.0.0.1:5500/",
+      "webRoot": "${workspaceFolder}",
+      "sourceMaps": true,
+      "userDataDir": "${workspaceFolder}/.chrome-play",
+      "runtimeArgs": ["--disable-extensions", "--disable-background-timer-throttling"]
+    },
+    {
+      "name": "🛠 Dev + AppEnv debug",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://127.0.0.1:5500/?dev=1&debug=1",
+      "webRoot": "${workspaceFolder}",
+      "sourceMaps": true,
+      "userDataDir": "${workspaceFolder}/.chrome-debug",
+      "runtimeArgs": [
+        "--disable-extensions",
+        "--disable-background-timer-throttling",
+        "--auto-open-devtools-for-tabs"
+      ]
+    },
+    {
+      "name": "🔬 Debug Full",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://127.0.0.1:5500/?debug=full&dev=1",
+      "webRoot": "${workspaceFolder}",
+      "sourceMaps": true,
+      "userDataDir": "${workspaceFolder}/.chrome-debug-full",
+      "runtimeArgs": [
+        "--disable-extensions",
+        "--disable-background-timer-throttling",
+        "--auto-open-devtools-for-tabs"
+      ]
+    },
+    {
+      "name": "📱 Mobile 375×812 (local)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://127.0.0.1:5500/",
+      "webRoot": "${workspaceFolder}",
+      "sourceMaps": true,
+      "userDataDir": "${workspaceFolder}/.chrome-mobile",
+      "runtimeArgs": [
+        "--disable-extensions",
+        "--window-size=375,812",
+        "--auto-open-devtools-for-tabs"
+      ]
+    },
+    {
+      "name": "⚡ Lighthouse Clean",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://127.0.0.1:5500/",
+      "webRoot": "${workspaceFolder}",
+      "sourceMaps": false,
+      "userDataDir": "${workspaceFolder}/.chrome-lighthouse",
+      "runtimeArgs": [
+        "--disable-extensions",
+        "--disable-background-timer-throttling",
+        "--disable-backgrounding-occluded-windows",
+        "--disable-renderer-backgrounding"
+      ]
+    },
+    {
+      "name": "🔗 Attach",
+      "type": "chrome",
       "request": "attach",
-      "type": "chrome",
-      "webRoot": "${workspaceFolder}"
-    },
-    {
-      "name": "Launch Chrome",
-      "request": "launch",
-      "type": "chrome",
-      "url": "http://localhost:8080",
-      "webRoot": "${workspaceFolder}"
-    },
-    {
-      "type": "chrome",
-      "request": "launch",
-      "name": "Launch Chrome against localhost",
-      "url": "http://localhost:8080",
-      "webRoot": "${workspaceFolder}"
+      "port": 9222,
+      "webRoot": "${workspaceFolder}",
+      "sourceMaps": true
     }
   ]
 }

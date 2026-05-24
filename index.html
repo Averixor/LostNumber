@@ -160,6 +160,62 @@
       <link rel="stylesheet" href="css/overlays.css" />
       <link rel="stylesheet" href="css/low-performance.css" />
     </noscript>
+    <!-- Build / dev-tools gates (before AppEnv). Android debug may set window.LN_BUILD_FLAGS earlier. -->
+    <script>
+      (function () {
+        'use strict';
+
+        var flags = window.LN_BUILD_FLAGS;
+        if (!flags || typeof flags !== 'object') {
+          window.LN_BUILD_FLAGS = { cheatsEnabled: false };
+        } else if (flags.cheatsEnabled !== true) {
+          flags.cheatsEnabled = false;
+        }
+
+        function isLocalDevEnvironment() {
+          try {
+            var loc = window.location;
+            var protocol = (loc.protocol || '').toLowerCase();
+            if (protocol === 'file:') {
+              return true;
+            }
+
+            var host = (loc.hostname || '').toLowerCase();
+            if (
+              host === 'localhost' ||
+              host === '127.0.0.1' ||
+              host === '[::1]' ||
+              host.endsWith('.local')
+            ) {
+              return true;
+            }
+
+            if (/^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(host)) {
+              return true;
+            }
+            if (/^192\.168\.\d{1,3}\.\d{1,3}$/.test(host)) {
+              return true;
+            }
+            if (/^172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}$/.test(host)) {
+              return true;
+            }
+
+            return false;
+          } catch (_) {
+            return false;
+          }
+        }
+
+        window.LN_isLocalDevEnvironment = isLocalDevEnvironment;
+
+        window.LN_isDevToolsAllowed = function LN_isDevToolsAllowed() {
+          if (window.LN_BUILD_FLAGS.cheatsEnabled === true) {
+            return true;
+          }
+          return isLocalDevEnvironment();
+        };
+      })();
+    </script>
     <!-- Runtime configuration -->
     <script src="js/bootstrap/env.js"></script>
     <script defer src="js/system/debug.js"></script>
@@ -483,7 +539,7 @@
             <li data-i18n="about_howto_5"></li>
           </ul>
         </div>
-        <div class="setting-item about-section">
+        <div class="setting-item about-section" id="devModeEasterEgg">
           <div class="about-section-title" data-i18n="about_heading_more"></div>
           <p data-i18n="about_p4"></p>
         </div>
@@ -549,18 +605,38 @@
     <script src="js/app/ui-events.js" defer></script>
     <script src="js/app/game-flow.js" defer></script>
     <script src="js/app/misc.js" defer></script>
-    <!-- Dev/debug: завантажуються лише при isDev / ?debug=… / ?cheats=1 -->
+    <script src="js/system/dev-entry.js" defer></script>
+    <!-- Dev/cheats bundles: лише local dev або LN_BUILD_FLAGS.cheatsEnabled (не від ?cheats на проді) -->
     <script>
       (function () {
-        var isDev = window.AppEnv && window.AppEnv.isDev;
-        var params = new URLSearchParams(window.location.search || '');
-        var cheatsRequested = params.has('cheats') || params.get('dev') === '1';
+        function loadDevToolScripts() {
+          if (typeof window.LN_isDevToolsAllowed !== 'function' || !window.LN_isDevToolsAllowed()) {
+            return;
+          }
 
-        if (isDev || cheatsRequested) {
-          var load = window.LN_loadScriptOnce || function () {};
-          load('js/app/dev-tools.js');
-          load('js/app/performance-monitor.js');
-          load('js/system/cheats.js');
+          var sources = [
+            'js/app/dev-tools.js',
+            'js/app/performance-monitor.js',
+            'js/system/cheats.js',
+          ];
+          var load = window.LN_loadScriptOnce;
+
+          sources.forEach(function (src) {
+            if (typeof load === 'function') {
+              load(src).catch(function () {});
+              return;
+            }
+            var s = document.createElement('script');
+            s.src = src;
+            s.defer = true;
+            document.head.appendChild(s);
+          });
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', loadDevToolScripts, { once: true });
+        } else {
+          loadDevToolScripts();
         }
       })();
     </script>
