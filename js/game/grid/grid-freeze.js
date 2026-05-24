@@ -1,8 +1,5 @@
-// Grid Freeze: GridManager prototype methods.
-
 GridManager.prototype.updateFrozenCells = function () {
   try {
-    // ✅ Новая система
     if (
       this.game &&
       this.game.freezeSystem &&
@@ -13,7 +10,6 @@ GridManager.prototype.updateFrozenCells = function () {
       return changed || 0;
     }
 
-    // 🧯 Fallback: старая карта frozenCells (idx -> turns)
     if (this.game && this.game.frozenCells && typeof this.game.frozenCells.entries === 'function') {
       let anyChanged = 0;
       for (const [idx, turns] of this.game.frozenCells.entries()) {
@@ -75,7 +71,6 @@ GridManager.prototype.updateFrozenStates = function () {
             freezeTurns = freezeData.turns;
             freezeMaxTurns = freezeData.maxTurns;
 
-            // ✅ синхронизируем на данные клетки
             const cd = this.game.grid?.[x]?.[y];
             if (cd) {
               cd.frozen = true;

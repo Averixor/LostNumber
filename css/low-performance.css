@@ -1,5 +1,3 @@
-/* Defensive: allow disabling floating numbers by CSS class. */
-
 html.floating-numbers-disabled .floating-hearts,
 html.floating-numbers-disabled .floating-heart,
 html.floating-numbers-disabled [data-floating-number] {
@@ -12,7 +10,6 @@ html.no-bg-effects .floating-hearts {
   display: none !important;
 }
 
-/* Lite visual mode for buggy/slow mobile browsers (e.g. Xiaomi / MIUI). */
 html.low-performance *,
 html.low-performance *::before,
 html.low-performance *::after {
@@ -42,10 +39,6 @@ html.low-performance .preview-bubble {
   display: none !important;
 }
 
-/*
- * Після глобального «вимкни все анімації» залишаємо мінімальну плавність саме для гріда:
- * інакше гравітація виглядає «як на калькуляторі». Специфічність вища за html.low-performance *.
- */
 html.low-performance .cell {
   transition:
     transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1),

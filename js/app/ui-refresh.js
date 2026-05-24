@@ -1,5 +1,3 @@
-// Ui Refresh: LostNumberGame prototype methods.
-
 LostNumberGame.prototype.updateTargetInfo = function () {
   try {
     const levelIndex = Math.max(0, Math.floor(Number(this.currentLevel) || 0));

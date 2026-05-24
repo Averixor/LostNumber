@@ -1,4 +1,3 @@
-// ==================== GAME CORE ====================
 class GameCore {
   constructor(game) {
     this.game = game;
@@ -12,7 +11,6 @@ class GameCore {
           ? (idx) => this.game.isCellFrozen(idx)
           : (idx) => state.frozenCells?.has(idx);
 
-      // Запрет начинать цепочку с замороженной клетки
       if (selected.length > 0) {
         const firstCell = selected[0];
         const firstIdx = firstCell.y * this.game.GRID_W + firstCell.x;
@@ -25,17 +23,14 @@ class GameCore {
         return { valid: false, reason: 'chain_too_short' };
       }
 
-      // Проверка всех клеток в цепочке
       for (let i = 0; i < selected.length; i++) {
         const cell = selected[i];
         const idx = cell.y * this.game.GRID_W + cell.x;
 
-        // Запрет включать замороженные клетки в цепочку
         if (isFrozenFn(idx)) {
           return { valid: false, reason: 'cell_frozen' };
         }
 
-        // Проверка смежности (кроме первой клетки)
         if (i > 0) {
           const prev = selected[i - 1];
           if (!Rules.isAdjacent(prev, cell)) {
@@ -127,7 +122,6 @@ class GameCore {
       if (wm && typeof wm.getWheelCost === 'function') {
         return wm.getWheelCost();
       }
-      // Fallback: те саме, що в WheelManager (BASE 25, FREE 5, STEP 10).
       const BASE = 25;
       const STEP = 10;
       const FREE = 5;
@@ -139,9 +133,6 @@ class GameCore {
     }
   }
 
-  // === НОВЫЕ МЕТОДЫ ДЛЯ ОБРАБОТКИ ОШИБОК ===
-
-  // Валидация игрового состояния
   validateGameState() {
     try {
       const issues = [];
@@ -180,14 +171,12 @@ class GameCore {
     }
   }
 
-  // Восстановление после ошибки
   recoverFromError(errorType) {
     try {
       ErrorHandler.info('Attempting recovery from error', { errorType });
 
       switch (errorType) {
         case 'grid_corruption':
-          // Пересоздаем сетку
           if (this.game.gridManager && typeof this.game.gridManager.initGame === 'function') {
             this.game.gridManager.initGame(this.game.currentLevel);
             return true;
@@ -195,12 +184,10 @@ class GameCore {
           break;
 
         case 'state_corruption':
-          // Сбрасываем состояние игры
           this.game.resetRuntimeState();
           return true;
 
         case 'ui_corruption':
-          // Перерисовываем UI
           if (typeof this.game.renderDynamicUI === 'function') {
             this.game.renderDynamicUI();
             return true;
@@ -215,7 +202,6 @@ class GameCore {
     }
   }
 
-  // Проверка целостности данных
   checkDataIntegrity() {
     try {
       const checks = {
@@ -250,7 +236,6 @@ class GameCore {
         return false;
       }
 
-      // Проверяем размеры сетки
       if (this.game.grid.length !== this.game.GRID_W) {
         return false;
       }
@@ -260,14 +245,12 @@ class GameCore {
           return false;
         }
 
-        // Проверяем содержимое клеток
         for (let y = 0; y < this.game.GRID_H; y++) {
           const cell = this.game.grid[x][y];
           if (!cell || typeof cell !== 'object') {
             return false;
           }
 
-          // Пустая клетка: number === null допустимо; undefined/мусор — нет
           if (
             cell.number !== null &&
             cell.number !== undefined &&
@@ -302,7 +285,6 @@ class GameCore {
         }
       }
 
-      // Проверяем типы
       if (typeof this.game.currentLevel !== 'number' || this.game.currentLevel < 0) {
         return false;
       }
@@ -329,10 +311,9 @@ class GameCore {
 
       const saved = this.game.storageManager.loadGameState();
       if (!saved) {
-        return true; // Нет сохранения - это нормально
+        return true;
       }
 
-      // Проверяем основные поля сохранения
       const requiredSaveFields = ['version', 'currentLevel', 'xp', 'grid'];
       for (const field of requiredSaveFields) {
         if (saved[field] === undefined) {

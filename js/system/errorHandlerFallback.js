@@ -1,6 +1,4 @@
-// errorHandlerFallback.js - резервный обработчик ошибок
 (function () {
-  // Проверяем, не загружен ли уже ErrorHandler
   if (typeof window.ErrorHandler !== 'undefined' && window.ErrorHandler._installed) {
     if (window.AppEnv?.isDev) {
       console.log('Main ErrorHandler already installed, skipping fallback');
@@ -45,9 +43,7 @@
 
         addToHistory(error, context);
 
-        // Безопасная обработка ошибок
         try {
-          // Пытаемся показать сообщение пользователю
           if (window.game && typeof window.game.showMessage === 'function') {
             const message = window.game.t
               ? window.game.t('error_generic') || 'Произошла ошибка. Игра продолжается.'
@@ -92,7 +88,6 @@
           console.log('Fallback ErrorHandler installed with config:', config);
         }
 
-        // Базовые обработчики ошибок
         window.addEventListener('error', (e) => {
           this.handle(e.error || e.message, { type: 'global' });
         });
@@ -119,9 +114,7 @@
       console.debug('[LostNumber DEBUG]', msg, data);
     },
 
-    setConfig: function (config) {
-      // Игнорируем конфигурацию в fallback режиме
-    },
+    setConfig: function (config) {},
 
     getErrorHistory: function () {
       return [...errorHistory];
@@ -168,13 +161,9 @@
     },
   };
 
-  // Автоматически устанавливаем fallback с небольшой задержкой
-  // чтобы дать основному ErrorHandler время на установку
   setTimeout(() => {
     try {
-      // Проверяем, не установился ли основной ErrorHandler за это время
       if (typeof window.ErrorHandler !== 'undefined' && window.ErrorHandler._installed) {
-        // Основной установился - используем его
         if (window.AppEnv?.isDev) {
           console.log('Main ErrorHandler installed during timeout, using main');
         }
@@ -183,7 +172,6 @@
 
       window.ErrorHandler.install();
 
-      // Устанавливаем флаг что это fallback
       window.ErrorHandler._isFallback = true;
     } catch (e) {
       safeLog('Auto-install failed:', e);

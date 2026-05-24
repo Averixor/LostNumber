@@ -5,7 +5,6 @@ class StorageManager {
     this.FIRST_RUN_KEY = 'lostNumberFirstRun';
     this.DAILY_QUESTS_KEY = 'dailyQuests';
 
-    // Memory fallback (если localStorage запрещен/упал)
     this._memorySave = null;
     this._memorySettings = null;
     this._usingMemory = false;

@@ -93,7 +93,6 @@ class DailyQuestManager {
     const el = document.getElementById('dailyIndicator');
     if (!el) return;
 
-    // Убедимся, что quests загружены
     if (!this.quests) {
       this.loadDailyQuests();
     }

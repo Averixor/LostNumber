@@ -6,7 +6,6 @@ class BonusManager {
 
   activateBonus(type) {
     try {
-      // Під час анімацій бонусів (transitioning) та інших неігрових фаз — ігноруємо
       if (this.game.gamePhase === 'transitioning') {
         return;
       }
@@ -20,7 +19,6 @@ class BonusManager {
         return;
       }
 
-      // Валидация наличия бонуса
       if (!this.game.bonusInventory || typeof this.game.bonusInventory[type] !== 'number') {
         ErrorHandler.warn('Invalid bonus inventory', { type, inventory: this.game.bonusInventory });
         this.showMessage(this.game.t('bonus_error') || 'Бонус недоступний');
@@ -72,7 +70,6 @@ class BonusManager {
         return;
       }
 
-      // Активация бонуса для выбора клетки
       this.game.activeBonus = type;
       this.updateBonusesUI();
       this.showMessage(this.game.t('choose_cell_bonus'));
@@ -132,9 +129,7 @@ class BonusManager {
           cells.forEach((cell) => {
             try {
               cell.classList.remove('shuffle-anim');
-            } catch (e) {
-              // Ignore class removal errors.
-            }
+            } catch (e) {}
           });
 
           finish();
@@ -163,7 +158,6 @@ class BonusManager {
         return;
       }
 
-      // Проверка валидности координат
       if (x < 0 || x >= this.game.GRID_W || y < 0 || y >= this.game.GRID_H) {
         ErrorHandler.warn('Invalid coordinates for destroy bonus', {
           x,
@@ -198,24 +192,20 @@ class BonusManager {
         this.game.gridManager.animatePopping(removedCells, () => {
           this.game.gridManager.animateGravity(removedCells, () => {
             try {
-              // ВАЖНО: Вызываем гравитацию
               this.game.gridManager.applyLocalGravity(removedCells);
               this.game.activeBonus = null;
               this.updateBonusesUI();
               this.showMessage(this.game.t('destroy_done'));
               this.game.setGamePhase('playing');
 
-              // Обновление достижений
               if (this.game.achievementManager) {
                 this.game.achievementManager.updateAchievementProgress('useAllBonuses', 1);
               }
 
-              // Обновление ежедневных заданий
               if (this.game.dailyQuestManager) {
                 this.game.dailyQuestManager.completeDailyQuest('useBonus');
               }
 
-              // Автосохранение
               this.game.saveGameState();
             } catch (error) {
               ErrorHandler.handle(error, {
@@ -259,7 +249,6 @@ class BonusManager {
         return;
       }
 
-      // Проверка валидности координат
       if (x < 0 || x >= this.game.GRID_W || y < 0 || y >= this.game.GRID_H) {
         ErrorHandler.warn('Invalid coordinates for explosion bonus', {
           x,
@@ -303,24 +292,20 @@ class BonusManager {
         this.game.gridManager.animatePopping(removedCells, () => {
           this.game.gridManager.animateGravity(removedCells, () => {
             try {
-              // ВАЖНО: Вызываем гравитацию
               this.game.gridManager.applyLocalGravity(removedCells);
               this.game.activeBonus = null;
               this.updateBonusesUI();
               this.showMessage(this.game.t('explosion_done'));
               this.game.setGamePhase('playing');
 
-              // Обновление достижений
               if (this.game.achievementManager) {
                 this.game.achievementManager.updateAchievementProgress('useAllBonuses', 1);
               }
 
-              // Обновление ежедневных заданий
               if (this.game.dailyQuestManager) {
                 this.game.dailyQuestManager.completeDailyQuest('useBonus');
               }
 
-              // Автосохранение
               this.game.saveGameState();
             } catch (error) {
               ErrorHandler.handle(error, {
@@ -365,7 +350,6 @@ class BonusManager {
       const bonusShuffle = document.getElementById('bonus-shuffle');
       const bonusDestroy = document.getElementById('bonus-destroy');
 
-      // Безопасное получение данных бонусов через facade
       const b =
         typeof this.game.getBonusInventorySnapshot === 'function'
           ? this.game.getBonusInventorySnapshot()
@@ -416,9 +400,6 @@ class BonusManager {
     }
   }
 
-  // === НОВЫЕ МЕТОДЫ ДЛЯ ОБРАБОТКИ ОШИБОК ===
-
-  // Валидация состояния бонусов
   validateBonusState() {
     try {
       const issues = [];
@@ -454,7 +435,6 @@ class BonusManager {
     }
   }
 
-  // Исправление состояния бонусов
   repairBonusState() {
     try {
       ErrorHandler.info('Attempting to repair bonus state');
@@ -489,7 +469,6 @@ class BonusManager {
     }
   }
 
-  // Безопасное использование бонуса с fallback
   safeActivateBonus(type, fallbackAction = null) {
     try {
       return this.activateBonus(type);
@@ -499,7 +478,6 @@ class BonusManager {
         bonusType: type,
       });
 
-      // Fallback действия
       if (typeof fallbackAction === 'function') {
         try {
           return fallbackAction();

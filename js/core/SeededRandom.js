@@ -1,12 +1,8 @@
-// SeededRandom.js — детерминированный RNG (Xorshift32)
-// Использование: const rng = new SeededRandom(seed); rng.nextFloat(); rng.nextInt(max)
-
 class SeededRandom {
   constructor(seed) {
     this.seed = seed >>> 0 || 0xa5a5a5a5;
   }
 
-  // Xorshift32
   next() {
     let x = this.seed >>> 0;
     x ^= (x << 13) >>> 0;
@@ -17,7 +13,6 @@ class SeededRandom {
   }
 
   nextFloat() {
-    // [0,1)
     return (this.next() >>> 0) / 4294967296;
   }
 
@@ -37,7 +32,6 @@ class SeededRandom {
   }
 
   static hashToSeed(str) {
-    // FNV-1a 32-bit
     let h = 0x811c9dc5;
     const s = String(str);
     for (let i = 0; i < s.length; i++) {

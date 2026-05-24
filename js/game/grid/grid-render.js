@@ -1,6 +1,3 @@
-// Grid Render: GridManager prototype methods.
-
-/** Display-only classes for compact / high-contrast tile labels (not game logic). */
 GridManager.prototype._applyCellDisplayClasses = function (cell, num) {
   const readable = num != null && num >= 8192;
   const compact = num != null && num >= 1024;
@@ -10,7 +7,6 @@ GridManager.prototype._applyCellDisplayClasses = function (cell, num) {
 
 GridManager.prototype.getCellFromPoint = function (clientX, clientY) {
   try {
-    // ✅ Проверка на валидность координат
     if (
       typeof clientX !== 'number' ||
       typeof clientY !== 'number' ||
@@ -30,7 +26,6 @@ GridManager.prototype.getCellFromPoint = function (clientX, clientY) {
     const x = parseInt(cell.dataset.x, 10);
     const y = parseInt(cell.dataset.y, 10);
 
-    // ✅ Дополнительная проверка границ
     if (
       isNaN(x) ||
       isNaN(y) ||
@@ -48,7 +43,6 @@ GridManager.prototype.getCellFromPoint = function (clientX, clientY) {
       return null;
     }
 
-    // ✅ Проверка существования ячейки в гриде
     if (!this.game.grid || !this.game.grid[x] || this.game.grid[x][y] === undefined) {
       ErrorHandler.debug('Cell data not found in grid', { x, y });
       return null;
@@ -102,7 +96,6 @@ GridManager.prototype.performFullRender = function () {
       return;
     }
 
-    // Сохраняем текущее состояние выбранных клеток
     const selectedCells = [...(this.game.selected || [])];
 
     gridDiv.innerHTML = '';
@@ -111,7 +104,6 @@ GridManager.prototype.performFullRender = function () {
       for (let x = 0; x < this.game.GRID_W; x++) {
         let cellData = this.game.grid?.[x]?.[y];
 
-        // Если данные клетки повреждены, создаем новую
         if (!cellData || typeof cellData !== 'object') {
           cellData = {
             number: 2,
@@ -128,8 +120,6 @@ GridManager.prototype.performFullRender = function () {
 
         let num = cellData.number;
         if (num == null) {
-          // ✅ В каноне пустота ПОД льдом может быть реальной пустотой.
-          // Но в DOM мы всё равно рисуем клетку, просто без числа.
           num = null;
         }
 
@@ -142,7 +132,6 @@ GridManager.prototype.performFullRender = function () {
 
         const idx = y * this.game.GRID_W + x;
 
-        // ✅ Используем систему заморозки, если она есть
         let isFrozen = false;
         let freezeTurns = 0;
         let freezeMaxTurns = 0;
@@ -154,17 +143,13 @@ GridManager.prototype.performFullRender = function () {
             freezeTurns = freezeData.turns;
             freezeMaxTurns = freezeData.maxTurns;
 
-            // ✅ синхронизируем флаг на клетке, чтобы якорная гравитация работала
             cellData.frozen = true;
             cellData.freezeTurns = freezeTurns;
             cellData.freezeMaxTurns = freezeMaxTurns;
             cellData.freezeType = freezeData.type;
           } else {
-            // если в системе нет — снимаем флаг (но аккуратно)
-            // cellData.frozen = false;  // можно включить, если нужно
           }
         } else {
-          // Fallback для обратной совместимости
           isFrozen = this.game.isCellFrozen(idx) || cellData.frozen;
           freezeTurns = this.game.getFrozenTurns(idx) || cellData.freezeTurns || 5;
           freezeMaxTurns = cellData.freezeMaxTurns || 5;
@@ -193,7 +178,6 @@ GridManager.prototype.performFullRender = function () {
           }
         }
 
-        // Проверяем, выбрана ли клетка
         if (selectedCells.some((s) => s.x === x && s.y === y)) {
           cell.classList.add('selected');
         }
@@ -275,7 +259,6 @@ GridManager.prototype.syncGridDOMFromModel = function () {
   }
 };
 
-/** After model updates (merge, gravity): avoid rebuilding the whole grid if DOM is intact. */
 GridManager.prototype.preferSyncOrFullRender = function () {
   if (this.syncGridDOMFromModel()) return;
   this.performFullRender();

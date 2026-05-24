@@ -1,5 +1,3 @@
-// Grid Safety: GridManager prototype methods.
-
 GridManager.prototype.validateGrid = function () {
   try {
     const issues = [];

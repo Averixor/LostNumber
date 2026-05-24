@@ -1,5 +1,3 @@
-// Dev Tools: LostNumberGame prototype methods.
-
 LostNumberGame.prototype.forceError = function () {
   try {
     throw new Error('Forced error (debug)');

@@ -1,5 +1,3 @@
-// Однослівні «чити» для консолі браузера (DevTools → Console): натиснув слово й Enter.
-// Увімкнені лише коли LN_isDevToolsAllowed() (local dev або LN_BUILD_FLAGS.cheatsEnabled).
 (function () {
   'use strict';
 
@@ -64,7 +62,6 @@
 
     let TABLE = {};
 
-    /** @type {Record<string, () => unknown>} */
     const HANDLERS = {
       help: function () {
         console.info('[LN_CODES] Одне слово в консолі + Enter.');
@@ -367,7 +364,6 @@
       lowfps: 'Імітація low FPS для фону',
     };
 
-    /** @param {string} word */
     function runWord(word) {
       const n = typeof word === 'string' ? word.trim().toLowerCase() : '';
       const fn = n && HANDLERS[n];
@@ -380,7 +376,6 @@
 
     const registered = [];
 
-    /** @param {string} prop */
     function registerGlobalWord(prop) {
       const key = typeof prop === 'string' ? prop.trim().toLowerCase() : '';
       if (!key) {
@@ -419,7 +414,6 @@
     });
 
     window.LN_CODES = {
-      /** @param {string} name */
       run: function (name) {
         return runWord(String(name || ''));
       },
@@ -429,7 +423,6 @@
       },
     };
 
-    // ─── Cheat Panel UI ───
     (function buildPanel() {
       const panel = document.createElement('div');
       panel.id = 'cheatPanel';
@@ -512,7 +505,6 @@
         panel.style.display = 'none';
       });
 
-      // Drag header
       const hdr = panel.querySelector('#cheatPanelHeader');
       let dx = 0;
       let dy = 0;
@@ -542,7 +534,6 @@
         panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
       }
 
-      // Toggle: Ctrl+~ (лише коли gate дозволяє)
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey && (e.key === '~' || e.key === '`' || e.code === 'Backquote')) {
           e.preventDefault();

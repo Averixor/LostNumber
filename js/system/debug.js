@@ -1,4 +1,3 @@
-// debug.js — єдині прапорці з AppEnv + утиліти для всього проєкту.
 const Debug = {
   mode() {
     return window.AppEnv?.debugMode || 'off';
@@ -19,7 +18,6 @@ const Debug = {
     } catch (_) {}
   },
 
-  /** Лише в режимі senior / full — детальніші траси. */
   logFull(tag, ...args) {
     if (!this.isFull()) return;
     try {

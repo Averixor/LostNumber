@@ -1,4 +1,3 @@
-// Runtime environment, debug tiers, ErrorHandler configuration.
 (function () {
   const isLocalHost =
     typeof window.LN_isLocalDevEnvironment === 'function'
@@ -29,7 +28,6 @@
           return false;
         })();
 
-  /** @type {'off' | 'dev' | 'full'} */
   let debugMode = 'off';
   let persisted = null;
   try {

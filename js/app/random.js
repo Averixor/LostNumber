@@ -1,5 +1,3 @@
-// Random: LostNumberGame prototype methods.
-
 LostNumberGame.prototype.initSeededRandom = function (forceNew = false) {
   try {
     const KEY = 'lostNumberSessionSeed';
@@ -29,7 +27,6 @@ LostNumberGame.prototype.initSeededRandom = function (forceNew = false) {
     this.currentSeed = seed >>> 0;
     this.rng = new SeededRandom(this.currentSeed);
 
-    // daily seed (локальная дата, одинаковая для всех сегодня)
     try {
       const d = new Date();
       const yyyy = d.getFullYear();
@@ -46,7 +43,6 @@ LostNumberGame.prototype.initSeededRandom = function (forceNew = false) {
       this.dailyRng = new SeededRandom(this.dailySeed);
     }
 
-    // пробрасываем в state (его используют grid/wheel)
     try {
       if (this.state) {
         this.state.rng = this.rng;
@@ -55,7 +51,6 @@ LostNumberGame.prototype.initSeededRandom = function (forceNew = false) {
     } catch (_) {}
   } catch (error) {
     ErrorHandler.handle(error, { type: 'rng_init', forceNew });
-    // Fallback на Math.random если SeededRandom сломался
     this.rng = {
       nextFloat: () => Math.random(),
       nextInt: (max) => Math.floor(Math.random() * max),
@@ -63,8 +58,6 @@ LostNumberGame.prototype.initSeededRandom = function (forceNew = false) {
   }
 };
 
-// Facade RNG: единая точка входа для gameplay-кода.
-// Не читать state.rng напрямую — использовать только этот метод.
 LostNumberGame.prototype.nextRandomInt = function (maxExclusive) {
   const max = Math.max(1, maxExclusive | 0);
   try {

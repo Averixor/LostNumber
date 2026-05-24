@@ -3,7 +3,6 @@ class OverlayManager {
     this.game = game;
   }
 
-  /** Мобільний / lite: суму показуємо кольором клітинок ланцюга, бульбашку ховаємо. */
   static shouldHintChainOnCells() {
     try {
       if (document.documentElement.classList.contains('low-performance')) return true;
@@ -73,10 +72,6 @@ class OverlayManager {
     } catch (_) {}
   }
 
-  /**
-   * Компактне «віконце» між бонусами й колесом: лише число (canFinishChain при довжині ≥ 2).
-   * @param {boolean} forceIdle — приховати суму (кінець жесту / скидання прев’ю).
-   */
   updateChainSumHud(forceIdle = false) {
     const strip = document.getElementById('chainSumStrip');
     const valueEl = document.getElementById('chainSumValue');
@@ -163,7 +158,6 @@ class OverlayManager {
       return;
     }
 
-    // Обов’язково до будь-якого використання (уникнення ReferenceError у рантаймі)
     const containerRect = container.getBoundingClientRect();
     const gridRect = grid.getBoundingClientRect();
 
@@ -245,9 +239,6 @@ class OverlayManager {
     this.updateSelectedCells(null);
   }
 
-  /**
-   * @param {null | 'valid' | 'invalid'} chainHint — колір ланцюга (лише коли shouldHintChainOnCells)
-   */
   updateSelectedCells(chainHint = null) {
     const gridDiv = document.getElementById('grid');
     if (!gridDiv) return;

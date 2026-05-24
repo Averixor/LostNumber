@@ -1,5 +1,3 @@
-// I18N Theme: LostNumberGame prototype methods.
-
 LostNumberGame.prototype.applyLanguage = function (lang) {
   try {
     this.lang = lang;
@@ -125,7 +123,6 @@ LostNumberGame.prototype.formatTemplate = function (key, params) {
   }
 };
 
-/** «5 ходів» / «1 хід» тощо — для freeze-повідомлень за поточною мовою. */
 LostNumberGame.prototype.formatFrozenTurnsPhrase = function (turns) {
   try {
     const lang = this.lang === 'ru' ? 'ru' : this.lang === 'en' ? 'en' : 'ua';

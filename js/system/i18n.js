@@ -1,7 +1,4 @@
 const I18N = {
-  /* =========================
-    🇺🇦 УКРАЇНСЬКА
-    ========================= */
   ua: {
     app_title: 'Lost Number — числова головоломка',
     game_logo: 'Lost Number',
@@ -39,7 +36,6 @@ const I18N = {
     feature_3: 'Збереження прогресу',
     feature_4: 'Для всієї родини',
 
-    // debug/system
     error_generic: 'Сталася помилка',
     error_resource: 'Помилка завантаження ресурсу',
     error_async: 'Асинхронна помилка',
@@ -209,7 +205,6 @@ const I18N = {
 
     cell_frozen: 'Клітинка заморожена',
 
-    // Новые ключи для обработки ошибок
     recovery_in_progress: 'Відновлення…',
     recovery_completed: 'Відновлено!',
     recovery_failed: 'Не вдалося відновити',
@@ -226,9 +221,6 @@ const I18N = {
     safe_mode_enabled: 'Увімкнено безпечний режим',
   },
 
-  /* =========================
-    🇷🇺 РУССКИЙ
-    ========================= */
   ru: {
     app_title: 'Lost Number — числовая головоломка',
     game_logo: 'Lost Number',
@@ -424,7 +416,6 @@ const I18N = {
 
     cell_frozen: 'Клетка заморожена',
 
-    // Новые ключи для обработки ошибок
     error_generic: 'Произошла ошибка',
     error_resource: 'Ошибка загрузки ресурса',
     error_async: 'Асинхронная ошибка',
@@ -449,9 +440,6 @@ const I18N = {
     safe_mode_enabled: 'Включен безопасный режим',
   },
 
-  /* =========================
-    🇬🇧 ENGLISH
-    ========================= */
   en: {
     app_title: 'Lost Number — number puzzle',
     game_logo: 'Lost Number',
@@ -645,7 +633,6 @@ const I18N = {
 
     cell_frozen: 'Cell is frozen',
 
-    // Новые ключи для обработки ошибок
     error_generic: 'An error occurred',
     error_resource: 'Resource loading error',
     error_async: 'Async error',
@@ -671,7 +658,6 @@ const I18N = {
   },
 };
 
-// Безопасный геттер переводов
 if (typeof window !== 'undefined') {
   window.getSafeTranslation = function (lang, key) {
     try {
@@ -682,7 +668,6 @@ if (typeof window !== 'undefined') {
         return translation;
       }
 
-      // Fallback через другие языки
       const fallbackLangs = ['ua', 'ru', 'en'];
       for (const fallbackLang of fallbackLangs) {
         if (fallbackLang !== lang) {
@@ -698,7 +683,6 @@ if (typeof window !== 'undefined') {
         }
       }
 
-      // Если перевод не найден ни в одном языке
       ErrorHandler.warn('Translation not found', { lang, key });
       return I18N['ua']['no_translation'] || key;
     } catch (error) {

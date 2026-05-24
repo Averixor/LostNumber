@@ -1,5 +1,4 @@
 class PlatformDetector {
-  /** Xiaomi / MIUI browser and weak mobile heuristics for lite CSS (low-performance class). */
   static shouldPreferLiteVisual() {
     try {
       const ua = navigator.userAgent || '';

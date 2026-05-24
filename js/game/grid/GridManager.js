@@ -1,5 +1,3 @@
-// GridManager class shell. Grid behavior is attached from js/game/grid/*.js.
-
 class GridManager {
   constructor(game) {
     this.game = game;

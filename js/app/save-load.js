@@ -1,5 +1,3 @@
-// Save Load: LostNumberGame prototype methods.
-
 LostNumberGame.prototype.checkExistingSave = function () {
   try {
     const raw = this.storageManager.loadGameState();
@@ -47,12 +45,7 @@ LostNumberGame.prototype.resumeGame = function () {
     this.setGamePhase('playing');
     this.showScreen('game');
 
-    // ФИКСАЦИЯ: Восстанавливаем структуру grid, если она была сохранена как массив чисел
     this.fixGridStructure();
-
-    // Single source of truth для freeze после load:
-    // freezeSystem.frozen Map. Источники приоритетов: cell flags (v2) > legacy
-    // frozenCells Map (v1).
     this._syncFreezeSystemAfterLoad();
 
     if (this.gridManager) {
@@ -71,12 +64,10 @@ LostNumberGame.prototype.resumeGame = function () {
 LostNumberGame.prototype.fixGridStructure = function () {
   try {
     if (!this.grid || !Array.isArray(this.grid)) {
-      // Если grid не существует, создаем новую
       this.gridManager.initGame(this.currentLevel);
       return;
     }
 
-    // Проверяем каждый элемент grid
     for (let x = 0; x < this.GRID_W; x++) {
       if (!this.grid[x] || !Array.isArray(this.grid[x])) {
         this.grid[x] = [];
@@ -85,7 +76,6 @@ LostNumberGame.prototype.fixGridStructure = function () {
       for (let y = 0; y < this.GRID_H; y++) {
         const cellData = this.grid[x][y];
 
-        // Если это число, а не объект, преобразуем в объект
         if (typeof cellData === 'number' || cellData === null || cellData === undefined) {
           this.grid[x][y] = {
             number: typeof cellData === 'number' ? cellData : this.generateCellNumber(),
@@ -94,9 +84,7 @@ LostNumberGame.prototype.fixGridStructure = function () {
             freezeTurns: 0,
             freezeMaxTurns: 0,
           };
-        }
-        // Если это объект, но не имеет нужных свойств
-        else if (typeof cellData === 'object' && cellData !== null) {
+        } else if (typeof cellData === 'object' && cellData !== null) {
           if (cellData.number === undefined) {
             cellData.number = this.generateCellNumber();
           }
@@ -117,7 +105,6 @@ LostNumberGame.prototype.fixGridStructure = function () {
     }
   } catch (error) {
     ErrorHandler.handle(error, { type: 'grid_fix' });
-    // В случае ошибки создаем новую сетку
     if (this.gridManager) {
       this.gridManager.initGame(this.currentLevel);
     }
@@ -146,7 +133,6 @@ LostNumberGame.prototype.restoreFromState = function (state) {
       return value;
     }
 
-    // Восстанавливаем только игровые данные, НЕ настройки
     this.currentLevel = safeNumber(state.currentLevel, 0, {
       min: 0,
       integer: true,
@@ -159,13 +145,10 @@ LostNumberGame.prototype.restoreFromState = function (state) {
     });
 
     const gridSchemaVersion = Number(state.gridSchemaVersion) || 1;
-    // _syncFreezeSystemAfterLoad() читает это, чтобы для v2-сейвов отключить
-    // legacy fallback (там cell flags — authoritative источник).
     this._lastLoadedGridSchemaVersion = gridSchemaVersion;
     if (gridSchemaVersion >= 2 && Array.isArray(state.grid)) {
       this.grid = this._parseGridV2(state.grid);
     } else {
-      // legacy v1: 2D numbers; нормализуется fixGridStructure() позже.
       this.grid = state.grid || [];
     }
 
@@ -188,10 +171,6 @@ LostNumberGame.prototype.restoreFromState = function (state) {
         ? state.lastWheelDay
         : this.getTodayKey();
 
-    // ВАЖНО: НЕ восстанавливаем настройки из сохранения
-    // Они должны браться из текущих настроек пользователя
-
-    // Восстанавливаем frozenCells (нормализация под формат freezeSystem)
     const frozenCellsSource = safePlainObject(state.frozenCells, null);
     const normalizedFrozenCells = new Map();
     if (frozenCellsSource) {
@@ -232,17 +211,14 @@ LostNumberGame.prototype.restoreFromState = function (state) {
     }
   } catch (error) {
     ErrorHandler.handle(error, { type: 'state_restore', state });
-    throw error; // Пробрасываем дальше
+    throw error;
   }
 };
 
 LostNumberGame.prototype.saveGameState = function () {
   try {
-    // grid v2: cell objects с freeze/merged-флагами.
     const gridV2 = this._serializeGridV2();
 
-    // legacy compat поле {idx: turns}. Authoritative источник — freezeSystem.frozen.
-    // Падаем на legacy this.frozenCells только если freezeSystem недоступен.
     const legacyFrozenCells =
       this.freezeSystem && this.freezeSystem.frozen instanceof Map
         ? Object.fromEntries(
@@ -258,9 +234,7 @@ LostNumberGame.prototype.saveGameState = function () {
           ? Object.fromEntries(this.frozenCells)
           : {};
 
-    // ВАЖНО: Сохраняем ТОЛЬКО игровые данные, НЕ настройки
     const state = {
-      // version — legacy save-format marker; gridSchemaVersion управляет grid-структурой.
       version: 2,
       gridSchemaVersion: 2,
       currentLevel: this.currentLevel,
@@ -277,8 +251,6 @@ LostNumberGame.prototype.saveGameState = function () {
       achievements: this.achievements,
       wheelSpinsToday: this.wheelSpinsToday,
       lastWheelDay: this.lastWheelDay,
-      // НЕ сохраняем: animationEnabled, soundEnabled, theme, lang
-      // Эти настройки хранятся отдельно
     };
 
     this.storageManager.saveGameState(state);
@@ -287,12 +259,9 @@ LostNumberGame.prototype.saveGameState = function () {
     ErrorHandler.info('Game state saved', { level: this.currentLevel, xp: this.xp });
   } catch (error) {
     ErrorHandler.handle(error, { type: 'save_state' });
-    // Не бросаем ошибку дальше - потеря сохранения лучше чем краш игры
   }
 };
 
-// Helper: сериализует this.grid в v2-формат cell objects.
-// Все клетки нормализованы; freezeType пишется только если есть.
 LostNumberGame.prototype._serializeGridV2 = function () {
   const grid = [];
   if (!this.grid || !Array.isArray(this.grid)) return grid;
@@ -307,7 +276,6 @@ LostNumberGame.prototype._serializeGridV2 = function () {
         continue;
       }
       const obj = {
-        // save: value = runtime cell.number (мостик между runtime-полем и save-полем).
         value: Number.isFinite(cell.number) ? cell.number : null,
         merged: !!cell.merged,
         frozen: !!cell.frozen,
@@ -325,8 +293,6 @@ LostNumberGame.prototype._serializeGridV2 = function () {
   return grid;
 };
 
-// Helper: парсит v2-грид в runtime-формат cell objects.
-// Defensive: malformed клетки превращаются в безопасные default-объекты.
 LostNumberGame.prototype._parseGridV2 = function (rawGrid) {
   const grid = [];
   for (let x = 0; x < this.GRID_W; x++) {
@@ -345,7 +311,6 @@ LostNumberGame.prototype._parseGridV2 = function (rawGrid) {
         continue;
       }
       const cell = {
-        // load: runtime использует cell.number; v2 хранит value — конвертируем обратно.
         number: Number.isFinite(raw.value) ? raw.value : null,
         merged: !!raw.merged,
         frozen: !!raw.frozen,
@@ -360,9 +325,6 @@ LostNumberGame.prototype._parseGridV2 = function (rawGrid) {
   return grid;
 };
 
-// После load: восстанавливаем freezeSystem как single source of truth.
-// Приоритет: cell flags (v2 имеет полные данные turns/maxTurns/type).
-// Fallback: legacy frozenCells Map (v1 хранил только turns).
 LostNumberGame.prototype._syncFreezeSystemAfterLoad = function () {
   try {
     if (!this.freezeSystem || typeof this.freezeSystem.loadState !== 'function') return;
@@ -391,8 +353,6 @@ LostNumberGame.prototype._syncFreezeSystemAfterLoad = function () {
       }
     }
 
-    // legacy fallback только для v1-сейвов: в v2 cell flags — authoritative,
-    // а stale legacy frozenCells map может создать фантомные заморозки.
     const schemaVersion = Number(this._lastLoadedGridSchemaVersion) || 1;
     if (schemaVersion < 2 && this.frozenCells instanceof Map) {
       for (const [idxRaw, turnsRaw] of this.frozenCells.entries()) {

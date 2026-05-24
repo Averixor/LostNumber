@@ -1,4 +1,3 @@
-/* ===== ОСНОВНЫЕ ОВЕРЛЕИ ===== */
 .victory-overlay,
 .level-overlay,
 .wheel-overlay {
@@ -13,21 +12,18 @@
   padding: clamp(4px, 1vh, 10px);
 }
 
-/* Темная тема */
 html[data-theme='dusk'] .victory-overlay,
 html[data-theme='dusk'] .level-overlay,
 html[data-theme='dusk'] .wheel-overlay {
   background: rgba(26, 15, 27, 0.96);
 }
 
-/* Скрытие оверлеев */
 .victory-overlay.hidden,
 .level-overlay.hidden,
 .wheel-overlay.hidden {
   display: none !important;
 }
 
-/* ===== СТИЛИ КОНТЕНТА ОВЕРЛЕЕВ ===== */
 .victory-content,
 .level-content,
 .wheel-content {
@@ -43,7 +39,6 @@ html[data-theme='dusk'] .wheel-overlay {
   overflow: hidden;
 }
 
-/* ===== КОЛЕСО ФОРТУНЫ ===== */
 .wheel-overlay .wheel-content {
   display: flex;
   flex-direction: column;
@@ -56,7 +51,6 @@ html[data-theme='dusk'] .wheel-overlay {
   padding-top: clamp(28px, 5vh, 40px);
 }
 
-/* Кнопка закрытия колеса (крестик в правом верхнем углу) */
 .wheel-close-btn {
   position: absolute;
   top: 8px;
@@ -92,7 +86,6 @@ html[data-theme='dusk'] .wheel-overlay {
   transform: scale(0.92);
 }
 
-/* Заголовок колеса */
 .wheel-title {
   font-size: clamp(1rem, 2.4vh, 1.5rem);
   font-weight: 900;
@@ -102,7 +95,6 @@ html[data-theme='dusk'] .wheel-overlay {
   line-height: 1.1;
 }
 
-/* XP под заголовком */
 .wheel-xp {
   text-align: center;
   font-size: clamp(0.65rem, 1.3vh, 0.78rem);
@@ -113,7 +105,6 @@ html[data-theme='dusk'] .wheel-overlay {
   color: var(--text-color);
 }
 
-/* Канвас колеса (адаптивный квадрат) */
 #fortuneWheel {
   display: block;
   margin: 0 auto;
@@ -123,12 +114,10 @@ html[data-theme='dusk'] .wheel-overlay {
   flex-shrink: 0;
 }
 
-/* Центральная кнопка */
 .wheel-center-btn {
   margin: 0;
 }
 
-/* Информация о ежедневных прокрутках */
 .wheel-daily-info {
   margin: 0;
   text-align: center;
@@ -137,7 +126,6 @@ html[data-theme='dusk'] .wheel-overlay {
   line-height: 1.25;
 }
 
-/* Стрелка на колесе */
 .wheel-arrow {
   position: absolute;
   top: -25px;
@@ -149,7 +137,6 @@ html[data-theme='dusk'] .wheel-overlay {
   z-index: 101;
 }
 
-/* Подсветка сектора */
 .wheel-sector-highlight {
   position: absolute;
   width: 10px;
@@ -161,14 +148,12 @@ html[data-theme='dusk'] .wheel-overlay {
   z-index: 100;
 }
 
-/* Счетчик прокруток (скрыт) */
 .wheel-spin-counter,
 #wheelSpinsUsed,
 #wheelSpinsTotal {
   display: none !important;
 }
 
-/* ===== РЕЗУЛЬТАТ КОЛЕСА ===== */
 .wheel-result {
   font-weight: 700;
   font-size: clamp(0.85rem, 1.7vh, 1rem);
@@ -187,7 +172,6 @@ html[data-theme='dusk'] .wheel-overlay {
   word-wrap: break-word;
 }
 
-/* Пока без текста — не занимать место */
 .wheel-result:empty {
   display: none;
 }
@@ -196,7 +180,6 @@ html[data-theme='dusk'] .wheel-overlay {
   display: none;
 }
 
-/* ===== ОВЕРЛЕЙ УРОВНЯ ===== */
 .level-title {
   font-size: 1.5rem;
   color: var(--primary-color);
@@ -225,7 +208,6 @@ html[data-theme='dusk'] .wheel-overlay {
   color: var(--text-color);
 }
 
-/* ===== ОВЕРЛЕЙ ПОБЕДЫ ===== */
 .victory-title {
   font-size: 1.5rem;
   color: var(--primary-color);
@@ -239,8 +221,6 @@ html[data-theme='dusk'] .wheel-overlay {
   color: var(--text-color);
 }
 
-/* ===== АНИМАЦИИ ===== */
-/* Мигание сектора колеса */
 @keyframes sectorBlink {
   0%,
   100% {
@@ -251,7 +231,6 @@ html[data-theme='dusk'] .wheel-overlay {
   }
 }
 
-/* Анимация появления результата колеса */
 @keyframes wheelResultIn {
   from {
     opacity: 0;
@@ -267,7 +246,6 @@ html[data-theme='dusk'] .wheel-overlay {
   animation: wheelResultIn 160ms ease-out;
 }
 
-/* На очень низких экранах прячем второстепенное, чтобы всё помещалось */
 @media (max-height: 560px) {
   .wheel-xp,
   .wheel-daily-info {

@@ -1,4 +1,3 @@
-// DebugOverlay — Ctrl+D; увімкнено при AppEnv.isDev (dev або full).
 class DebugOverlay {
   constructor(game) {
     this.game = game;

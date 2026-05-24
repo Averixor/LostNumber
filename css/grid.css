@@ -50,7 +50,6 @@
     opacity 0.12s ease;
 }
 
-/* Телефони: менше тіней і без filter на «кризі» — дешевше для GPU */
 @media (pointer: coarse) and (max-width: 900px) {
   .grid {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -118,7 +117,6 @@
   border-radius: 7px;
 }
 
-/* Мобільний / lite: ланцюг «можна звести» — зелений, інакше (≥2 клітини) — червоний */
 .cell.selected.chain-preview-valid {
   border-color: #1b5e20;
   transform: scale(0.96);
@@ -161,7 +159,6 @@
   animation: carryIn 0.45s ease-out;
 }
 
-/* Заморозка: декор через .snowflake у JS (без ::after). */
 .cell.frozen {
   position: relative;
   background-color: #bdc3c7 !important;
@@ -261,7 +258,6 @@
   animation: shuffleWiggle 0.35s ease;
 }
 
-/* Цвета чисел */
 .cell[data-number='2'] {
   background: #9ee6a8;
 }
@@ -334,7 +330,6 @@
   background: linear-gradient(145deg, #f8bbd0 0%, #ec407a 50%, #880e4f 100%);
 }
 
-/* K/M+ tiles: compact label + high contrast (dusk theme defaults were too dark on dark cell) */
 .cell.cell-value-compact .cell-inner {
   font-size: clamp(0.62rem, 2.05vw, 0.88rem);
   line-height: 1.05;
@@ -353,7 +348,6 @@
     0 0 8px rgba(0, 0, 0, 0.45);
 }
 
-/* Carry / ✨ target tile — same readable stack when value is high */
 .cell.carry.cell-value-readable .cell-inner {
   font-weight: 800;
   text-shadow:

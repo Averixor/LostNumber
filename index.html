@@ -2,10 +2,8 @@
 <html lang="uk" data-theme="dusk">
   <head>
     <meta charset="utf-8" />
-    <!-- GitHub Pages: URL без завершального / ламає відносні ./assets; base виправляє розв’язання. -->
     <script>
       (function () {
-        /* Без `new URL(...)`: лише `pathname`, без зайвих об’єктів. */
         function computeBasePath() {
           var path = window.location.pathname || '/';
           if (!path.endsWith('/')) {
@@ -42,7 +40,6 @@
         }
 
         var path = computeBasePath();
-        /* Другий <base> не вставляємо — лише дописуємо href, якщо явного href ще немає. */
         var existingBase = document.querySelector('base');
         if (existingBase) {
           var existingHref = existingBase.getAttribute('href');
@@ -119,17 +116,13 @@
           ) {
             document.documentElement.classList.add('low-performance');
           }
-        } catch (e) {
-          /* best-effort only */
-        }
+        } catch (e) {}
       })();
     </script>
 
-    <!-- CSS: критичне (блокує рендер) -->
     <link rel="stylesheet" href="css/variables.css" />
     <link rel="stylesheet" href="css/critical.css" />
     <link rel="stylesheet" href="css/base.css" />
-    <!-- CSS: некритичне (відкладене завантаження) -->
     <link
       rel="preload"
       href="css/ui.css"
@@ -160,7 +153,6 @@
       <link rel="stylesheet" href="css/overlays.css" />
       <link rel="stylesheet" href="css/low-performance.css" />
     </noscript>
-    <!-- Gated dev cheats tooling: build/runtime flags (before AppEnv). Android debug may set LN_BUILD_FLAGS earlier. -->
     <script>
       (function () {
         'use strict';
@@ -217,13 +209,11 @@
         };
       })();
     </script>
-    <!-- Runtime configuration -->
     <script src="js/bootstrap/env.js"></script>
     <script defer src="js/system/debug.js"></script>
   </head>
 
   <body>
-    <!-- Заставка завантаження (splash + спінер; приховується після ініціалізації) -->
     <div id="appSplash" class="app-splash" aria-busy="true">
       <picture class="app-splash__picture">
         <source srcset="./splash-screen.webp" type="image/webp" />
@@ -243,7 +233,6 @@
       </div>
     </div>
 
-    <!-- Критическая ошибка -->
     <div id="criticalErrorContainer" class="critical-error" style="display: none">
       <h2>⚠️ LostNumber</h2>
       <div id="criticalErrorMessage" class="critical-error-message">
@@ -253,10 +242,8 @@
       <div class="error-id" id="criticalErrorId"></div>
     </div>
 
-    <!-- Декор/эффекты -->
     <div class="floating-hearts" id="floatingHearts"></div>
 
-    <!-- Победа -->
     <div class="victory-overlay hidden" id="victoryOverlay">
       <div class="victory-content">
         <div class="victory-title" data-i18n="victory_title"></div>
@@ -272,7 +259,6 @@
       </div>
     </div>
 
-    <!-- Экран уровня -->
     <div class="level-overlay hidden" id="levelOverlay">
       <div class="level-content">
         <div class="level-title" id="levelOverlayTitle" data-i18n="level_completed_title"></div>
@@ -290,7 +276,6 @@
       </div>
     </div>
 
-    <!-- Колесо фортуны -->
     <div class="wheel-overlay hidden" id="wheelOverlay">
       <div class="wheel-content">
         <button
@@ -313,7 +298,6 @@
       </div>
     </div>
 
-    <!-- Главное меню -->
     <div class="screen main-menu" id="mainMenuScreen">
       <h1 class="sr-only" data-i18n="game_logo">Lost Number</h1>
       <img
@@ -343,7 +327,6 @@
       </div>
     </div>
 
-    <!-- Достижения -->
     <div class="screen achievements-screen hidden" id="achievementsScreen">
       <div class="settings-title" data-i18n="achievements_title"></div>
       <div class="achievements-grid" id="achievementsGrid"></div>
@@ -356,7 +339,6 @@
       </div>
     </div>
 
-    <!-- Статистика -->
     <div class="screen stats-screen hidden" id="statsScreen">
       <div class="settings-title" data-i18n="stats_title"></div>
       <div class="stats-grid" id="statsGrid"></div>
@@ -365,7 +347,6 @@
       </div>
     </div>
 
-    <!-- Ежедневные задания -->
     <div class="screen daily-quests-screen hidden" id="dailyQuestsScreen">
       <div class="settings-title" data-i18n="daily_quests_title"></div>
       <div class="settings-options" id="dailyQuestsList"></div>
@@ -378,7 +359,6 @@
       </div>
     </div>
 
-    <!-- Игровой экран -->
     <div class="screen game-screen hidden" id="gameScreen">
       <div class="goal-box">
         <span id="levelLabel"></span>
@@ -446,7 +426,6 @@
       </div>
     </div>
 
-    <!-- Настройки -->
     <div class="screen settings-screen hidden" id="settingsScreen">
       <div class="settings-title" data-i18n="settings_title"></div>
       <div class="settings-options">
@@ -521,7 +500,6 @@
       </div>
     </div>
 
-    <!-- Об игре -->
     <div class="screen settings-screen hidden" id="aboutScreen">
       <div class="settings-title" data-i18n="about_title"></div>
       <div class="settings-options">
@@ -553,28 +531,22 @@
       </div>
     </div>
 
-    <!-- JS: системные и игровые модули -->
-    <!-- Error handling core -->
     <script src="js/system/errorHandler.js" defer></script>
     <script src="js/system/errorHandlerFallback.js" defer></script>
 
-    <!-- Core игровые системы -->
     <script src="js/core/SeededRandom.js" defer></script>
     <script src="js/core/ErrorBoundary.js" defer></script>
     <script src="js/core/GameCore.js" defer></script>
     <script src="js/core/Chain.js" defer></script>
     <script src="js/core/rules.js" defer></script>
 
-    <!-- System модули (debug.js уже в <head>, лог активується через AppEnv) -->
     <script src="js/system/i18n.js" defer></script>
     <script src="js/system/plural-helpers.js" defer></script>
     <script src="js/system/storage.js" defer></script>
     <script src="js/system/audio.js" defer></script>
 
-    <!-- system -->
     <script src="js/system/freezeSystem.js" defer></script>
 
-    <!-- Game модули -->
     <script src="js/game/state.js" defer></script>
     <script src="js/game/achievements.js" defer></script>
     <script src="js/game/bonuses.js" defer></script>
@@ -588,14 +560,12 @@
     <script src="js/game/grid/grid-animations.js" defer></script>
     <script src="js/game/grid/grid-safety.js" defer></script>
 
-    <!-- UI модули -->
     <script src="js/ui/screens.js" defer></script>
     <script src="js/ui/menu.js" defer></script>
     <script src="js/ui/settings.js" defer></script>
     <script src="js/ui/overlays.js" defer></script>
     <script src="js/system/lazy-script.js" defer></script>
 
-    <!-- Главный класс и методы игры -->
     <script src="js/app/LostNumberGame.js" defer></script>
     <script src="js/app/error-runtime.js" defer></script>
     <script src="js/app/random.js" defer></script>
@@ -607,7 +577,6 @@
     <script src="js/app/game-flow.js" defer></script>
     <script src="js/app/misc.js" defer></script>
     <script src="js/system/dev-entry.js" defer></script>
-    <!-- Gated dev cheats bundles: лише LN_isDevToolsAllowed() (local або cheatsEnabled; не від query на проді) -->
     <script>
       (function () {
         function loadDevToolScripts() {
@@ -648,7 +617,6 @@
         }
       })();
     </script>
-    <!-- Глобальные обработчики и инициализация -->
     <script src="js/bootstrap/boot.js" defer></script>
   </body>
 </html>

@@ -7,7 +7,6 @@ class GameState {
 
       this.MANUAL_LEVEL_COUNT = 40;
       this.levels = this.generateLevels(this.MANUAL_LEVEL_COUNT);
-      /** Preset level table size; progression is not capped at this value. */
       this.MAX_LEVEL = this.levels.length;
 
       this.currentLevel = 0;
@@ -43,10 +42,8 @@ class GameState {
       this.lang = 'ua';
       this.soundEnabled = true;
       this.theme = 'dusk';
-      /** 'auto' | 'on' | 'off' — lite CSS (html.low-performance) for MIUI / weak devices */
       this.liteVisualMode = 'auto';
 
-      // Seeded RNG (инициализируется в main.js)
       this.sessionSeed = 0;
       this.dailySeed = 0;
       this.currentSeed = 0;
@@ -65,13 +62,11 @@ class GameState {
       });
     } catch (error) {
       ErrorHandler.handle(error, { type: 'state_constructor' });
-      // Устанавливаем значения по умолчанию при ошибке
       this.setDefaults();
     }
   }
 
   setDefaults() {
-    // Значения по умолчанию на случай ошибки инициализации
     this.GRID_W = 5;
     this.GRID_H = 8;
     this.currentLevel = 0;
@@ -106,7 +101,6 @@ class GameState {
       return levels;
     } catch (error) {
       ErrorHandler.handle(error, { type: 'levels_generation', count });
-      // Возвращаем минимальный набор уровней при ошибке
       return [
         { target: 64, numbers: [2, 4, 8], newNumbers: [8, 16, 32] },
         { target: 128, numbers: [2, 4, 8, 16], newNumbers: [16, 32, 64] },
@@ -131,10 +125,6 @@ class GameState {
     }
   }
 
-  /**
-   * Deterministic target for level index (0-based). Preset levels 0..MANUAL-1 unchanged.
-   * Beyond safe power-of-two range clamps to the largest target the chain rules can finish.
-   */
   getProceduralTarget(levelIndex) {
     const idx = Math.max(0, Math.floor(Number(levelIndex) || 0));
     const manualMax = this.MANUAL_LEVEL_COUNT || this.levels?.length || 40;
@@ -193,10 +183,6 @@ class GameState {
     };
   }
 
-  /**
-   * Unified level config: preset table for early levels, procedural endless config after.
-   * @param {number} levelIndex 0-based level index
-   */
   getLevelConfig(levelIndex) {
     try {
       const idx = Math.max(0, Math.floor(Number(levelIndex) || 0));
@@ -282,7 +268,7 @@ class GameState {
       return `${d.getFullYear()}-${month}-${day}`;
     } catch (error) {
       ErrorHandler.warn('getTodayKey failed', error);
-      return '1970-01-01'; // Fallback дата
+      return '1970-01-01';
     }
   }
 
@@ -314,10 +300,6 @@ class GameState {
     }
   }
 
-  /**
-   * Largest power of two <= n (minimum 2).
-   * @param {number} n
-   */
   _floorPowerOfTwo(n) {
     const v = Number(n);
     if (!Number.isFinite(v) || v < 2) {
@@ -328,11 +310,6 @@ class GameState {
     return Number.isFinite(p) && p >= 2 ? p : 2;
   }
 
-  /**
-   * 0-based level index. Human level = levelIndex + 1.
-   * @param {number} levelIndex
-   * @param {number} [target] optional level target for cap
-   */
   getMinimumTileForLevel(levelIndex, target) {
     const idx = Math.max(0, Math.floor(Number(levelIndex) || 0));
     const humanLevel = idx + 1;
@@ -359,9 +336,6 @@ class GameState {
     return this._capMinimumTileToTarget(raw, safeTarget);
   }
 
-  /**
-   * minSpawnTile <= target / 4096, power-of-two only.
-   */
   _capMinimumTileToTarget(rawMin, target) {
     let minTile = this._floorPowerOfTwo(rawMin);
     if (!Number.isFinite(target) || target <= 4096) {
@@ -428,7 +402,7 @@ class GameState {
         type: 'get_allowed_numbers',
         maxReachedNumber: this.maxReachedNumber,
       });
-      return [2, 4, 8, 16, 32, 64, 128, 256, 512]; // Fallback значения
+      return [2, 4, 8, 16, 32, 64, 128, 256, 512];
     }
   }
 
@@ -459,13 +433,10 @@ class GameState {
         carryNumber: this.carryNumber,
         levelTarget: this.getLevelConfig(this.currentLevel).target,
       });
-      return 2; // Fallback значение
+      return 2;
     }
   }
 
-  // Внутренний RNG-helper. Зеркалит LostNumberGame.prototype.nextRandomFloat,
-  // но доступен у GameState (где нет this.game). Math.random() — только
-  // defensive fallback, если seeded rng недоступен или сломан.
   _nextRandomFloat() {
     try {
       if (this.rng && typeof this.rng.nextFloat === 'function') {
@@ -560,7 +531,7 @@ class GameState {
       return formatted + suffix;
     } catch (error) {
       ErrorHandler.warn('formatNumber failed', { num, error });
-      return String(num); // Просто строковое представление при ошибке
+      return String(num);
     }
   }
 
@@ -578,13 +549,11 @@ class GameState {
       return result;
     } catch (error) {
       ErrorHandler.warn('generateAASuffix failed', { index, error });
-      return 'X'; // Простой суффикс при ошибке
+      return 'X';
     }
   }
 
   getWheelCost() {
-    // Узгоджено з WheelManager.getWheelCost (BASE 25, FREE 5, STEP 10).
-    // Метод залишено для зворотної сумісності з прив'язками; реальна ціна — у WheelManager.
     try {
       const BASE = 25;
       const FREE = 5;
@@ -615,7 +584,7 @@ class GameState {
       return Rules.baseXPByLen(len);
     } catch (error) {
       ErrorHandler.warn('baseXPByLen failed', { len, error });
-      return len * 2; // Простая формула при ошибке
+      return len * 2;
     }
   }
 
@@ -645,7 +614,7 @@ class GameState {
         multiplier: this.xpMultiplier,
         turns: this.xpMultiplierTurns,
       });
-      return len * 2; // Простая формула при ошибке
+      return len * 2;
     }
   }
 
@@ -657,31 +626,24 @@ class GameState {
     }
   }
 
-  // === НОВЫЕ МЕТОДЫ ДЛЯ ОБРАБОТКИ ОШИБОК ===
-
-  // Валидация состояния
   validateState() {
     try {
       const issues = [];
 
-      // Проверка текущего уровня
       if (this.currentLevel < 0 || !Number.isFinite(this.currentLevel)) {
         issues.push(`Invalid current level: ${this.currentLevel}`);
       }
 
-      // Проверка XP
       if (this.xp < 0) {
         issues.push(`Negative XP: ${this.xp}`);
       }
 
-      // Проверка сетки
       if (!this.grid || !Array.isArray(this.grid)) {
         issues.push('Grid not initialized');
       } else if (this.grid.length !== this.GRID_W) {
         issues.push(`Grid width mismatch: expected ${this.GRID_W}, got ${this.grid.length}`);
       }
 
-      // Проверка инвентаря бонусов
       if (!this.bonusInventory || typeof this.bonusInventory !== 'object') {
         issues.push('Bonus inventory corrupted');
       } else {
@@ -711,14 +673,12 @@ class GameState {
     }
   }
 
-  // Исправление состояния
   repairState() {
     try {
       ErrorHandler.info('Attempting to repair game state');
 
       let repaired = false;
 
-      // Исправляем текущий уровень
       if (this.currentLevel < 0) {
         this.currentLevel = 0;
         repaired = true;
@@ -727,13 +687,11 @@ class GameState {
         repaired = true;
       }
 
-      // Исправляем XP
       if (this.xp < 0) {
         this.xp = 0;
         repaired = true;
       }
 
-      // Исправляем инвентарь бонусов
       if (!this.bonusInventory || typeof this.bonusInventory !== 'object') {
         this.bonusInventory = { destroy: 0, shuffle: 0, explosion: 0 };
         repaired = true;
@@ -747,7 +705,6 @@ class GameState {
         }
       }
 
-      // Исправляем статистику (глубоко: по ключам из шаблона)
       if (!this.stats || typeof this.stats !== 'object') {
         this.stats = this.defaultStats();
         repaired = true;
@@ -762,7 +719,6 @@ class GameState {
         }
       }
 
-      // Исправляем достижения (отсутствующие ключи и битые поля)
       if (!this.achievements || typeof this.achievements !== 'object') {
         this.achievements = this.defaultAchievements();
         repaired = true;

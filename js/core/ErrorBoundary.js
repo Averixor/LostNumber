@@ -1,4 +1,3 @@
-// ErrorBoundary.js — обёртка try/catch для методов (мягкий фолбэк)
 const ErrorBoundary = {
   wrap(obj, methodName, fallback, label) {
     try {

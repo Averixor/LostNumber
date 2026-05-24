@@ -1,8 +1,7 @@
-// ===== API =====
 class FreezeSystem {
   constructor(game) {
     this.game = game;
-    this.frozen = new Map(); // idx -> { turns, maxTurns, type }
+    this.frozen = new Map();
   }
 
   freezeRandomCell(turns = 5, type = 'wheel') {
@@ -68,15 +67,9 @@ class FreezeSystem {
     return true;
   }
 
-  // вызывается после правильного хода
-
   onCorrectMove() {
     return this.updateFrozenCells();
   }
-
-  // Lifecycle hook: вызывается из GridManager.onChainComplete.
-  // Делегирует на тот же tick-таймер, что и onCorrectMove, чтобы поведение
-  // оставалось предсказуемым: один завершённый ход === один шаг таймеров.
 
   onChainComplete(chainLength, chainSum) {
     try {
@@ -100,9 +93,6 @@ class FreezeSystem {
     }
   }
 
-  // JSON-safe serialization current freeze map.
-  // Возвращает плоский объект, не бросает.
-
   saveState() {
     try {
       const list = [];
@@ -120,10 +110,6 @@ class FreezeSystem {
       return { version: 1, frozenCells: [], error: error && error.message };
     }
   }
-
-  // Безопасное восстановление состояния.
-  // Принимает null/undefined/invalid без падений; нормализует своё состояние
-  // перед применением; восстанавливает только валидные клетки.
 
   loadState(state) {
     try {

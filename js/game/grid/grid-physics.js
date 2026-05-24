@@ -1,5 +1,3 @@
-// Grid Physics: GridManager prototype methods.
-
 GridManager.prototype.shuffleGrid = function () {
   try {
     const all = [];
@@ -9,12 +7,11 @@ GridManager.prototype.shuffleGrid = function () {
         if (cell && cell.number !== null && cell.number !== undefined) {
           all.push(cell.number);
         } else {
-          all.push(2); // Fallback значение
+          all.push(2);
         }
       }
     }
 
-    // Безопасное перемешивание (Fisher-Yates через facade RNG)
     for (let i = all.length - 1; i > 0; i--) {
       const j = this.game.nextRandomInt(i + 1);
       [all[i], all[j]] = [all[j], all[i]];
@@ -36,9 +33,9 @@ GridManager.prototype.shuffleGrid = function () {
     }
 
     if (this.game.freezeSystem) {
-      this.game.freezeSystem.clearAll(); // ✅ Используем систему заморозки
+      this.game.freezeSystem.clearAll();
     } else {
-      this.game.frozenCells?.clear(); // Fallback
+      this.game.frozenCells?.clear();
     }
 
     this.preferSyncOrFullRender();
@@ -80,7 +77,6 @@ GridManager.prototype.applyLocalGravity = function (removedCells) {
       try {
         let newNum = genFunc ? genFunc.call(this.game, level) : 2;
         if (level && level.target) {
-          // защита от бесконечного цикла
           let guard = 0;
           while (newNum >= level.target && guard++ < 50) {
             newNum = genFunc ? genFunc.call(this.game, level) : 2;
@@ -101,33 +97,26 @@ GridManager.prototype.applyLocalGravity = function (removedCells) {
       return !!grid?.[x]?.[y]?.frozen;
     };
 
-    // 1) Сначала “удаляем” числа (фризовые клетки сюда не попадают, но на всякий)
     for (let x = 0; x < W; x++) {
       for (let y = 0; y < H; y++) {
         if (removedMap[x]?.has(y)) {
           if (!grid[x] || !grid[x][y]) continue;
-          if (isFrozenAt(x, y)) continue; // замороженные не удаляем
+          if (isFrozenAt(x, y)) continue;
           grid[x][y].number = null;
           grid[x][y].merged = false;
         }
       }
     }
 
-    // 2) Якорная гравитация по колонкам (поддержка нескольких frozen в одном столбе)
     for (let x = 0; x < W; x++) {
       if (!grid[x]) continue;
 
-      // собираем все frozen Y в колонке
       const frozenYs = [];
       for (let y = 0; y < H; y++) {
         if (isFrozenAt(x, y)) frozenYs.push(y);
       }
       frozenYs.sort((a, b) => a - b);
 
-      // helper: применить гравитацию в сегменте [segTop..segBottom]
-      // spawnMode:
-      //   - 'spawn' => пустоты сверху сегмента заполняем новыми числами
-      //   - 'no_spawn' => пустоты остаются null (сегмент "мертв" до разморозки)
       const settleSegment = (segTop, segBottom, spawnMode) => {
         if (segBottom < segTop) return;
 
@@ -139,7 +128,6 @@ GridManager.prototype.applyLocalGravity = function (removedCells) {
           }
         }
 
-        // очищаем сегмент
         for (let y = segTop; y <= segBottom; y++) {
           if (!grid[x][y]) {
             grid[x][y] = {
@@ -150,17 +138,14 @@ GridManager.prototype.applyLocalGravity = function (removedCells) {
               freezeMaxTurns: 0,
             };
           }
-          // frozen внутри сегмента невозможны (мы сегменты режем по frozen), но на всякий
           if (isFrozenAt(x, y)) continue;
           grid[x][y].number = null;
           grid[x][y].merged = false;
-          // не трогаем frozen-мета здесь; визуал синхронизирует updateFrozenCells()
         }
 
-        // осаживаем вниз
         let writeY = segBottom;
         for (const n of nums) {
-          while (writeY >= segTop && isFrozenAt(x, writeY)) writeY--; // защита
+          while (writeY >= segTop && isFrozenAt(x, writeY)) writeY--;
           if (writeY < segTop) break;
           grid[x][writeY].number = n;
           grid[x][writeY].merged = false;
@@ -176,35 +161,27 @@ GridManager.prototype.applyLocalGravity = function (removedCells) {
             writeY--;
           }
         } else {
-          // no_spawn: оставляем null сверху сегмента
-          // ничего не делаем
         }
       };
 
       if (frozenYs.length === 0) {
-        // обычная колонка: всё осаживаем + спавним сверху
         settleSegment(0, H - 1, 'spawn');
         continue;
       }
 
-      // ТОП-сегмент (только он спавнит новые числа)
       const firstFrozen = frozenYs[0];
       settleSegment(0, firstFrozen - 1, 'spawn');
 
-      // МИД-сегменты между frozen (без спавна)
       for (let i = 0; i < frozenYs.length - 1; i++) {
         const segTop = frozenYs[i] + 1;
         const segBottom = frozenYs[i + 1] - 1;
         settleSegment(segTop, segBottom, 'no_spawn');
       }
 
-      // НИЖНИЙ сегмент под последним frozen (без спавна)
       const lastFrozen = frozenYs[frozenYs.length - 1];
       settleSegment(lastFrozen + 1, H - 1, 'no_spawn');
     }
 
-    // 3) ✅ После якорной гравитации делаем “подсыпку” (pressure transfer), чтобы поле не умирало
-    // Режим: переносим максимум несколько раз за ход
     this.applyPressureTransfer(2, 8);
 
     this.performFullRender();
@@ -235,15 +212,12 @@ GridManager.prototype.applyPressureTransfer = function (
     let moves = 0;
     const affectedColumns = new Set();
 
-    // делаем несколько переносов за ход, но ограниченно
     while (moves < maxMovesPerTurn) {
       let moved = false;
 
-      // ищем "живой" столб (без frozen) как источник
       for (let sx = 0; sx < W && !moved; sx++) {
         if (!grid[sx]) continue;
 
-        // источник должен быть живым: без frozen (иначе мы нарушим якорь)
         let srcHasFrozen = false;
         for (let y = 0; y < H; y++) {
           if (grid[sx][y]?.frozen) {
@@ -253,12 +227,10 @@ GridManager.prototype.applyPressureTransfer = function (
         }
         if (srcHasFrozen) continue;
 
-        // снизу вверх: "нижний блок решает"
         for (let y = H - 1; y >= 0 && !moved; y--) {
           const srcCell = grid[sx][y];
           if (!srcCell || srcCell.number == null) continue;
 
-          // смотрим влево/вправо
           const candidates = [];
           const lx = sx - 1;
           const rx = sx + 1;
@@ -276,25 +248,20 @@ GridManager.prototype.applyPressureTransfer = function (
 
           if (candidates.length === 0) continue;
 
-          // выбираем сторону: больше пустоты = приоритет
           candidates.sort((a, b) => b.depth - a.depth);
           const tx = candidates[0].tx;
 
-          // целевая клетка должна быть пустая
           if (grid[tx][y].number != null) continue;
 
-          // ✅ переносим блок в бок
           grid[tx][y].number = srcCell.number;
           srcCell.number = null;
           affectedColumns.add(tx);
           affectedColumns.add(sx);
 
-          // ✅ "схлопывание" источника: всё выше спускается на 1
           for (let yy = y; yy > 0; yy--) {
             grid[sx][yy].number = grid[sx][yy - 1].number;
           }
 
-          // ✅ спавним сверху В ЖИВОМ столбе
           let newNum;
           try {
             newNum = genFunc ? genFunc.call(this.game, level) : 2;
@@ -318,7 +285,6 @@ GridManager.prototype.applyPressureTransfer = function (
       if (!moved) break;
     }
 
-    // Settle affected columns so numbers don't float above empty cells
     for (const cx of affectedColumns) {
       if (!grid[cx]) continue;
       const nums = [];

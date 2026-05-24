@@ -1,5 +1,3 @@
-// Grid Animations: GridManager prototype methods.
-
 GridManager.prototype.animateCarryAppear = function (x, y) {
   try {
     const gridDiv = document.getElementById('grid');

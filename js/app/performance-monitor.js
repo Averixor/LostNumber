@@ -1,25 +1,20 @@
-// Performance monitor: auto-disable floating background numbers on severe FPS drops.
 (function () {
   function dispatchAutoDisable(detail) {
     try {
       window.dispatchEvent(new CustomEvent('lostnumber:floating-numbers-auto-disable', { detail }));
-    } catch (e) {
-      // ignore
-    }
+    } catch (e) {}
   }
 
   function startMonitor() {
-    // Prefer explicit game instance if available.
     const game = window.game;
     if (!game) return false;
 
     if (typeof requestAnimationFrame !== 'function' || typeof performance?.now !== 'function')
       return true;
 
-    // Rolling window of timestamps (ms) for FPS estimation.
     const times = [];
-    let low28Since = null; // avg < 28 for >= 2s
-    let low18Since = null; // avg < 18 for >= 0.7s
+    let low28Since = null;
+    let low18Since = null;
 
     function avgFpsOverWindow(now, windowMs) {
       const cutoff = now - windowMs;
@@ -67,7 +62,6 @@
 
       if (shouldDisable) {
         dispatchAutoDisable({ reason: 'fps', averageFps: avgFps, critical: critical });
-        // Do not stop the monitor; it may be re-enabled manually and can disable again later.
         low28Since = null;
         low18Since = null;
       }
@@ -79,12 +73,11 @@
     return true;
   }
 
-  // Start after init; retry a little while game bootstraps.
   let attempts = 0;
   (function retry() {
     attempts++;
     if (startMonitor()) return;
-    if (attempts > 60) return; // ~6s
+    if (attempts > 60) return;
     setTimeout(retry, 100);
   })();
 })();

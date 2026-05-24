@@ -55,7 +55,6 @@ class SettingsManager {
       saveSettingsBtn.addEventListener('click', () => {
         this.game.audioManager.playTap();
 
-        // Получаем значения из UI
         this.game.animationEnabled = document.getElementById('animationSelect')?.value === 'on';
         {
           const on = document.getElementById('bgEffectsSelect')?.value !== 'off';
@@ -71,29 +70,23 @@ class SettingsManager {
         this.game.theme = document.getElementById('themeSelect')?.value || 'dusk';
         const newLang = document.getElementById('languageSelect')?.value || 'ua';
 
-        // Применяем настройки анимаций
         if (this.game.animationEnabled) {
           document.body.classList.remove('no-animations');
         } else {
           document.body.classList.add('no-animations');
         }
 
-        // Применяем настройки звука
         this.game.audioManager.setSoundEnabled(this.game.soundEnabled);
         this.game.audioManager.updateSoundStateUI();
 
-        // Применяем язык
         this.game.applyLanguage(newLang);
 
-        // Применяем настройки плавающих фоновых чисел
         this.applyFloatingNumbers();
 
         this.applyLiteVisualMode();
 
-        // Сохраняем настройки
         this.saveSettings();
 
-        // Переходим в главное меню
         this.game.screenManager.showScreen('mainMenu');
       });
     }
@@ -135,9 +128,7 @@ class SettingsManager {
     const settings = this.game.storageManager.loadSettings();
 
     if (settings) {
-      // Загружаем настройки из хранилища
       this.game.animationEnabled = settings.animationEnabled !== false;
-      // Backward compat: previously saved as backgroundEffectsEnabled (boolean).
       const legacyBg = settings.backgroundEffectsEnabled;
       this.game.floatingNumbersEnabled =
         typeof settings.floatingNumbersEnabled === 'boolean'
@@ -156,10 +147,8 @@ class SettingsManager {
       const lv = settings.liteVisualMode;
       this.game.liteVisualMode = lv === 'on' || lv === 'off' || lv === 'auto' ? lv : 'auto';
 
-      // Обновляем UI настроек
       this.updateSettingsUI();
 
-      // Применяем настройки анимаций
       if (!this.game.animationEnabled) {
         document.body.classList.add('no-animations');
       } else {
@@ -172,7 +161,6 @@ class SettingsManager {
   }
 
   updateSettingsUI() {
-    // Обновляем элементы UI в соответствии с текущими настройками
     const animationSelect = document.getElementById('animationSelect');
     const bgEffectsSelect = document.getElementById('bgEffectsSelect');
     const liteVisualSelect = document.getElementById('liteVisualSelect');

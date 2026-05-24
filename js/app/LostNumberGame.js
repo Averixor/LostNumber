@@ -1,8 +1,5 @@
-// LostNumberGame class shell. Runtime methods are attached from js/app/*.js.
-
 class LostNumberGame {
   constructor() {
-    // Инициализация менеджеров
     this.storageManager = new StorageManager();
     this.audioManager = new AudioManager();
     this.screenManager = new ScreenManager(this);
@@ -10,18 +7,14 @@ class LostNumberGame {
     this.settingsManager = new SettingsManager(this);
     this.overlayManager = new OverlayManager(this);
 
-    // Floating background numbers state (can be disabled by user or auto-disabled by FPS).
     this.floatingNumbersEnabled = true;
-    this.floatingNumbersDisabledBy = null; // null | "user" | "fps"
+    this.floatingNumbersDisabledBy = null;
 
-    // Инициализация игрового состояния
     this.state = new GameState();
 
-    // Проксируем ТОЛЬКО state-data (без runtime/service полей).
     this._bindStateProxy();
     this._lockStateReference();
 
-    // Seeded RNG (инициализируется в main.js)
     this.sessionSeed = 0;
     this.dailySeed = 0;
     this.currentSeed = 0;
@@ -32,7 +25,6 @@ class LostNumberGame {
 
     this.initSeededRandom();
 
-    // Инициализация менеджеров игровых систем
     this.gridManager = new GridManager(this);
     if (typeof this.gridManager.initFreezeSystem === 'function') {
       this.gridManager.initFreezeSystem();
@@ -43,11 +35,9 @@ class LostNumberGame {
     this.dailyQuestManager = new DailyQuestManager(this);
     this.statsManager = null;
 
-    // Привязка менеджеров
     this.state.gridManager = this.gridManager;
     this.refreshContextRefs();
 
-    // Инициализация
     this.createFloatingNumbers = this.screenManager.createFloatingNumbers.bind(this.screenManager);
     this.showScreen = this.screenManager.showScreen.bind(this.screenManager);
     this.showMessage = this.overlayManager.showMessage.bind(this.overlayManager);
@@ -59,7 +49,6 @@ class LostNumberGame {
     this.initializeErrorHandler();
     this.wrapCriticalMethods();
 
-    // Явное копирование методов из GameState
     this.formatNumber = this.state.formatNumber.bind(this.state);
     this.getWheelCost = this.wheelManager.getWheelCost.bind(this.wheelManager);
     this.checkWheelDailyReset = this.state.checkWheelDailyReset.bind(this.state);
@@ -80,10 +69,8 @@ class LostNumberGame {
     this.setGamePhase = this.state.setGamePhase.bind(this.state);
     this.resetRuntimeState = this.state.resetRuntimeState.bind(this.state);
 
-    // Инициализация ежедневных заданий
     this.dailyQuests = this.dailyQuestManager.loadDailyQuests();
 
-    // ДОБАВЛЕНО: Методы для обратной совместимости
     this.updateAchievementProgress = this.updateAchievementProgress.bind(this);
     this.updateBonusesUI = this.updateBonusesUI.bind(this);
     this.completeDailyQuest = this.completeDailyQuest.bind(this);
@@ -93,25 +80,20 @@ class LostNumberGame {
       this.storageManager.markFirstRunComplete();
     }
 
-    // ЗАГРУЖАЕМ НАСТРОЙКИ ПЕРВЫМИ
     this.settingsManager.loadSettings();
 
-    // Применяем настройки к текущей сессии
     this.applyLanguage(this.lang || 'ua');
     this.applyTheme();
 
-    // Применяем настройки звука
     if (this.audioManager) {
       this.audioManager.setSoundEnabled(this.soundEnabled);
       this.audioManager.updateSoundStateUI();
     }
 
-    // Применяем настройки анимаций
     if (!this.animationEnabled) {
       document.body.classList.add('no-animations');
     }
 
-    // Создаем фоновые эффекты только если разрешены
     if (this.floatingNumbersEnabled !== false) {
       this.createFloatingNumbers();
     }
@@ -124,7 +106,6 @@ class LostNumberGame {
 
     this._scheduleLazySideModules();
 
-    // Error boundaries
     try {
       if (typeof ErrorBoundary !== 'undefined') {
         ErrorBoundary.wrap(this.core, 'validateMove', () => false, 'GameCore.validateMove');
@@ -301,10 +282,6 @@ class LostNumberGame {
     }
   }
 
-  /**
-   * Модулі, які не потрібні для першого кадру меню: stats (екран статистики), DebugOverlay (лише dev).
-   * daily/achievements/overlays лишаються синхронними — їх очікує конструктор, save-load і game-flow.
-   */
   _scheduleLazySideModules() {
     const run = () => {
       try {

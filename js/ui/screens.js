@@ -33,7 +33,6 @@ class ScreenManager {
       }
     } catch (error) {
       ErrorHandler.handle(error, { type: 'screen_manager', method: 'showScreen', name });
-      // Fallback: показываем главный экран
       const mainScreen = document.getElementById('mainMenuScreen');
       if (mainScreen) {
         mainScreen.classList.remove('hidden');
@@ -59,7 +58,6 @@ class ScreenManager {
         typeof PlatformDetector !== 'undefined' && PlatformDetector.isMobile?.() ? 6 : 14;
       const symbols = ['2', '4', '8', '16', '32', '64', '128'];
 
-      // Очищаем старые элементы
       container.innerHTML = '';
 
       for (let i = 0; i < count; i++) {
@@ -84,24 +82,18 @@ class ScreenManager {
     }
   }
 
-  // === НОВЫЕ МЕТОДЫ ДЛЯ ОБРАБОТКИ ОШИБОК ===
-
-  // Безопасное скрытие всех экранов
   hideAllScreens() {
     try {
       document.querySelectorAll('.screen').forEach((screen) => {
         try {
           screen.classList.add('hidden');
-        } catch (error) {
-          // Игнорируем ошибки скрытия
-        }
+        } catch (error) {}
       });
     } catch (error) {
       ErrorHandler.warn('hideAllScreens failed', error);
     }
   }
 
-  // Показ экрана с fallback
   safeShowScreen(name, fallbackName = 'mainMenu') {
     try {
       this.showScreen(name);
@@ -112,7 +104,6 @@ class ScreenManager {
         fallback: fallbackName,
       });
 
-      // Показываем fallback экран
       try {
         this.showScreen(fallbackName);
       } catch (fallbackError) {
@@ -121,7 +112,6 @@ class ScreenManager {
     }
   }
 
-  // Проверка существования экрана
   screenExists(name) {
     try {
       return !!document.getElementById(name + 'Screen');
@@ -131,7 +121,6 @@ class ScreenManager {
     }
   }
 
-  // Список доступных экранов
   getAvailableScreens() {
     try {
       const screens = [];
@@ -141,18 +130,15 @@ class ScreenManager {
           if (id && id.endsWith('Screen')) {
             screens.push(id.replace('Screen', ''));
           }
-        } catch (error) {
-          // Пропускаем ошибки
-        }
+        } catch (error) {}
       });
       return screens;
     } catch (error) {
       ErrorHandler.warn('getAvailableScreens failed', error);
-      return ['mainMenu', 'game']; // Минимальный набор
+      return ['mainMenu', 'game'];
     }
   }
 
-  // Восстановление UI после ошибки
   recoverUI() {
     try {
       ErrorHandler.info('Attempting UI recovery');

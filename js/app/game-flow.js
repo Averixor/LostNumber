@@ -1,5 +1,3 @@
-// Game Flow: LostNumberGame prototype methods.
-
 LostNumberGame.prototype.startNewGame = function () {
   try {
     this.currentLevel = 0;
@@ -22,13 +20,11 @@ LostNumberGame.prototype.startNewGame = function () {
 
     this.resetRuntimeState();
 
-    // ИНИЦИАЛИЗИРУЕМ ИГРОВОЕ ПОЛЕ
     this.gridManager.initGame(0);
 
     this.setGamePhase('playing');
     this.showScreen('game');
 
-    // ОБНОВЛЯЕМ UI ПОСЛЕ ИНИЦИАЛИЗАЦИИ
     this.updateTargetInfo();
     this.updateXPBar();
     if (this.bonusManager) {
@@ -42,7 +38,6 @@ LostNumberGame.prototype.startNewGame = function () {
     this.saveGameState();
   } catch (error) {
     ErrorHandler.handle(error, { type: 'new_game' });
-    // Пытаемся восстановиться
     this.showScreen('mainMenu');
     this.showMessage(this.t('error_start_game') || 'Не удалось начать игру');
   }
@@ -74,19 +69,15 @@ LostNumberGame.prototype.mergeChain = function () {
     const removedCells = this.selected.slice(0, -1);
     const chainLen = this.selected.length;
 
-    // Блокуємо нову взаємодію поки йде анімація
     this.setGamePhase('animating');
 
-    // Сохраняем якорную клетку
     this.grid[anchor.x][anchor.y].number = resultNumber;
     this.grid[anchor.x][anchor.y].merged = true;
 
-    // Удаляем остальные клетки из цепочки
     removedCells.forEach((cell) => {
       this.grid[cell.x][cell.y].number = null;
     });
 
-    // Скидаємо вибір одразу, щоб уникнути конфлікту з наступним жестом
     this.selected = [];
     Chain.numbers = [];
     Chain.sum = 0;
@@ -95,7 +86,6 @@ LostNumberGame.prototype.mergeChain = function () {
 
     this.gridManager.animatePopping(removedCells, () => {
       this.gridManager.animateGravity(removedCells, () => {
-        // ВАЖНО: Вызываем гравитацию для заполнения пустых ячеек
         this.gridManager.applyLocalGravity(removedCells);
 
         const oldXp = this.xp;
@@ -130,7 +120,6 @@ LostNumberGame.prototype.mergeChain = function () {
         this.updateXPBar();
         this.bonusManager.updateBonusesUI();
 
-        // Уменьшаем счетчик ходов для мультипликатора XP
         if (this.xpMultiplierTurns > 0) {
           this.xpMultiplierTurns--;
           if (this.xpMultiplierTurns <= 0) {
@@ -139,15 +128,12 @@ LostNumberGame.prototype.mergeChain = function () {
           this.updateMultiplierIndicator();
         }
 
-        // Обновляем замороженные клетки
         this.gridManager.updateFrozenCells();
 
-        // Обновляем отображение
         this.gridManager.render();
 
         this.saveGameState();
 
-        // Повертаємо можливість взаємодії
         if (this.gamePhase === 'animating') {
           this.setGamePhase('playing');
         }
@@ -246,7 +232,6 @@ LostNumberGame.prototype.handleLevelComplete = function () {
     this.gridManager.updateFrozenCells();
   } catch (error) {
     ErrorHandler.handle(error, { type: 'level_complete', level: this.currentLevel });
-    // Пытаемся продолжить игру даже если анимация завершения уровня сломалась
     this.completeLevelTransition();
   }
 };
@@ -269,7 +254,6 @@ LostNumberGame.prototype.completeLevelTransition = function () {
     this.saveGameState();
   } catch (error) {
     ErrorHandler.handle(error, { type: 'level_transition', pending: this.pendingTransition });
-    // Сбрасываем на главный экран если переход сломался
     this.showScreen('mainMenu');
   }
 };

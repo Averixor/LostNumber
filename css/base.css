@@ -25,7 +25,6 @@ body {
   color: var(--text-color);
 }
 
-/* Тільки для читачів екрана (заголовок меню поруч із логотипом-картинкою) */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -38,7 +37,6 @@ body {
   border: 0;
 }
 
-/* Глобальное отключение анимаций */
 body.no-animations *,
 body.no-animations *::before,
 body.no-animations *::after {
@@ -77,11 +75,11 @@ body.no-animations *::after {
 }
 .floating-heart {
   position: absolute;
-  font-size: 1.2rem; /* Увеличен размер */
-  font-weight: 700; /* Жирнее */
-  opacity: 0.25; /* Более видимы */
+  font-size: 1.2rem;
+  font-weight: 700;
+  opacity: 0.25;
   color: var(--primary-color);
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Тень для лучшей видимости */
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   animation: floatAround 14s linear infinite;
 }
 

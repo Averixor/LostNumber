@@ -1,14 +1,11 @@
-/* Main Menu */
 .main-menu {
   text-align: center;
   gap: clamp(4px, 1vh, 8px);
   justify-content: center;
-  /* Трохи нижче за голе вертикальне центрування — менше «повітря» над логотипом */
   padding-top: clamp(20px, 5vh, 56px);
   box-sizing: border-box;
 }
 
-/* Логотип головного меню (logo.png); текстовий заголовок — .sr-only для i18n/a11y */
 .main-menu .main-logo {
   display: block;
   width: min(88vw, 520px);
@@ -74,7 +71,6 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
 }
 
-/* Game Screen */
 .game-screen {
   justify-content: flex-start;
   padding: clamp(4px, 1vh, 10px) clamp(6px, 2vw, 12px);
@@ -164,7 +160,6 @@
   z-index: 10;
 }
 
-/* Адаптация для темной темы */
 html[data-theme='dusk'] .xp-multiplier-indicator {
   --xp-multiplier-start: #ffd54f;
   --xp-multiplier-end: #ffb74d;
@@ -172,7 +167,6 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
   box-shadow: 0 2px 6px rgba(255, 183, 77, 0.4);
 }
 
-/* Адаптация для мобильных */
 @media (max-width: 480px) {
   .xp-multiplier-indicator {
     font-size: 0.65rem;
@@ -363,7 +357,6 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
   font-size: 0.8rem;
 }
 
-/* Settings */
 .settings-screen {
   padding: clamp(12px, 3vh, 20px) clamp(12px, 3vw, 18px) clamp(24px, 8vh, 56px);
   text-align: center;
@@ -425,7 +418,6 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
   margin-top: 16px;
 }
 
-/* About screen */
 .about-intro p {
   font-size: 0.9rem;
   line-height: 1.45;
@@ -471,7 +463,6 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
   color: var(--muted-color, var(--text-color));
 }
 
-/* Achievements & Stats */
 .achievements-screen,
 .stats-screen,
 .daily-quests-screen {
@@ -570,7 +561,6 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
   color: var(--muted-color);
 }
 
-/* Toast */
 .system-toast {
   position: absolute;
   left: 50%;
@@ -595,7 +585,6 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
   opacity: 1;
 }
 
-/* Preview Bubble */
 .preview-bubble {
   position: absolute;
   padding: 6px 10px;
@@ -662,7 +651,6 @@ html[data-theme='dusk'] .preview-bubble {
   }
 }
 
-/* Очень короткие экраны: главное меню стискаем максимально */
 @media (max-height: 520px) {
   .main-menu {
     padding-top: clamp(8px, 2vh, 16px);

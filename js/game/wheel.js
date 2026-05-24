@@ -86,8 +86,6 @@ class WheelManager {
     ErrorHandler.info('WheelManager initialized', { sectorCount: this.wheelSectors.length });
   }
 
-  // Deterministic RNG facade for wheel/gift selection.
-  // Falls back to Math.random() only if the game RNG is unavailable.
   getRandomInt(max) {
     if (this.game && typeof this.game.nextRandomInt === 'function') {
       return this.game.nextRandomInt(max);
@@ -105,7 +103,7 @@ class WheelManager {
       return BASE + (this.game.wheelSpinsToday - FREE) * STEP;
     } catch (error) {
       ErrorHandler.warn('getWheelCost failed', error);
-      return 25; // Базовая стоимость при ошибке
+      return 25;
     }
   }
 
@@ -113,7 +111,6 @@ class WheelManager {
     try {
       this.game.checkWheelDailyReset();
 
-      // Проверка лимита прокруток
       if (this.game.wheelSpinsToday >= this.game.MAX_DAILY_SPINS) {
         this.game.showMessage(this.game.t('wheel_limit_reached'));
         return;
@@ -121,16 +118,13 @@ class WheelManager {
 
       const cost = this.getWheelCost();
 
-      // Проверка достаточности XP
       if (this.game.xp < cost) {
         this.game.showMessage(this.game.t('dice_not_enough'));
         return;
       }
 
-      // Инициализация колеса
       this.initWheel();
 
-      // Показ overlay
       const wheelOverlay = document.getElementById('wheelOverlay');
       if (wheelOverlay) {
         wheelOverlay.classList.remove('hidden');
@@ -191,12 +185,10 @@ class WheelManager {
       const centerY = this.wheelCenterY;
       const radius = this.wheelRadius;
 
-      // Очищаем canvas
       ctx.clearRect(0, 0, 300, 300);
 
       const anglePerSector = (2 * Math.PI) / this.wheelSectors.length;
 
-      // Рисуем сектора
       this.wheelSectors.forEach((sector, i) => {
         const startAngle = i * anglePerSector;
         const endAngle = (i + 1) * anglePerSector;
@@ -211,7 +203,6 @@ class WheelManager {
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Текст на секторе
         const midAngle = startAngle + anglePerSector / 2;
         const textX = centerX + radius * 0.7 * Math.cos(midAngle);
         const textY = centerY + radius * 0.7 * Math.sin(midAngle);
@@ -223,7 +214,6 @@ class WheelManager {
         ctx.fillStyle = '#FFF';
         ctx.font = 'bold 16px Arial';
 
-        // Безопасное получение текста
         let sectorText = '';
         try {
           sectorText = this.game.t(`wheel_sector_${sector.type}`) || sector.label;
@@ -235,14 +225,12 @@ class WheelManager {
         ctx.restore();
       });
 
-      // Рисуем подсветку выделенного сектора, если есть
       if (this.highlightedSectorIndex !== null) {
         const sectorIndex = this.highlightedSectorIndex;
         if (sectorIndex >= 0 && sectorIndex < this.wheelSectors.length) {
           const startAngle = sectorIndex * anglePerSector;
           const endAngle = (sectorIndex + 1) * anglePerSector;
 
-          // Подсветка градиентом
           const gradient = ctx.createRadialGradient(
             centerX,
             centerY,
@@ -261,7 +249,6 @@ class WheelManager {
           ctx.fillStyle = gradient;
           ctx.fill();
 
-          // Золотая обводка
           ctx.beginPath();
           ctx.moveTo(centerX, centerY);
           ctx.arc(centerX, centerY, radius + 6, startAngle, endAngle);
@@ -272,7 +259,6 @@ class WheelManager {
         }
       }
 
-      // Центральная точка
       ctx.beginPath();
       ctx.arc(centerX, centerY, 10, 0, 2 * Math.PI);
       ctx.fillStyle = '#FF4081';
@@ -294,13 +280,11 @@ class WheelManager {
 
       const cost = this.getWheelCost();
 
-      // Проверка достаточности XP
       if (this.game.xp < cost) {
         this.game.showMessage(this.game.t('dice_not_enough'));
         return;
       }
 
-      // Проверка лимита прокруток
       if (this.game.wheelSpinsToday >= this.game.MAX_DAILY_SPINS) {
         this.game.showMessage(this.game.t('wheel_limit_reached'));
         return;
@@ -308,12 +292,10 @@ class WheelManager {
 
       this.isSpinning = true;
 
-      // Списание XP
       this.game.xp -= cost;
       this.game.wheelSpinsToday = (this.game.wheelSpinsToday || 0) + 1;
       this.game.incrementStat('wheelSpins', 1);
 
-      // Обновление достижений
       if (this.game.achievementManager) {
         ErrorHandler.safeExecute(() => {
           this.game.achievementManager.updateAchievementProgress('spinWheel', 1);
@@ -321,7 +303,6 @@ class WheelManager {
         });
       }
 
-      // Обновление ежедневных заданий
       if (this.game.dailyQuestManager) {
         ErrorHandler.safeExecute(() => {
           this.game.dailyQuestManager.completeDailyQuest('spinWheel');
@@ -331,7 +312,6 @@ class WheelManager {
       this.game.updateXPBar();
       this.updateWheelUI();
 
-      // Обновление кнопки вращения
       const spinBtn = document.getElementById('spinWheelBtn');
       if (spinBtn) {
         spinBtn.disabled = true;
@@ -342,18 +322,15 @@ class WheelManager {
         }
       }
 
-      // Выбор случайного сектора
       const sectorCount = this.wheelSectors.length;
       const randomIndex = this.getRandomInt(sectorCount);
       const selectedSector = this.wheelSectors[randomIndex];
 
-      // Расчет вращения: сектор randomIndex должен оказаться под указателем (12 часов = 270° в canvas-координатах)
       const angle = 360 / sectorCount;
       const targetMod = (((270 - randomIndex * angle - angle / 2) % 360) + 360) % 360;
       const fullSpins = Math.ceil(this.currentRotation / 360) + 5;
       this.currentRotation = fullSpins * 360 + targetMod;
 
-      // Применение вращения
       const wheel = document.getElementById('fortuneWheel');
       if (wheel) {
         const transitionEnabled = this.game.animationEnabled !== false;
@@ -367,7 +344,6 @@ class WheelManager {
 
       setTimeout(() => {
         try {
-          // Показываем результат
           const resultEl = document.getElementById('wheelResult');
           if (resultEl) {
             try {
@@ -388,13 +364,10 @@ class WheelManager {
             }
           }
 
-          // Подсветка выпавшего сектора
           this.highlightWheelSector(randomIndex);
 
-          // Применяем результат
           this.applyWheelResult(selectedSector);
 
-          // Разблокируем кнопку
           const spinBtn2 = document.getElementById('spinWheelBtn');
           if (spinBtn2) {
             spinBtn2.disabled = false;
@@ -407,7 +380,6 @@ class WheelManager {
             }
           }
 
-          // Автосохранение
           ErrorHandler.safeExecute(() => {
             this.game.saveGameState();
           });
@@ -421,7 +393,6 @@ class WheelManager {
           });
           this.isSpinning = false;
 
-          // Fallback: даем XP при ошибке
           this.game.xp += 15;
           this.game.showMessage(this.game.t('wheel_fallback_xp') || '+15 XP');
         }
@@ -524,10 +495,8 @@ class WheelManager {
               }) || `❄️ ${this.game.formatFrozenTurnsPhrase(result.turns)}`,
             );
 
-            // 🔄 обновляем визуал
             this.game.gridManager.updateFrozenStates();
           } else if (sector.fallbackXP) {
-            // fallback — XP
             this.game.xp += sector.fallbackXP;
             this.game.incrementStat('totalXP', sector.fallbackXP);
             this.game.showMessage(`+${sector.fallbackXP} XP`);
@@ -538,7 +507,6 @@ class WheelManager {
 
         default:
           ErrorHandler.warn('Unknown wheel effect', { effect: sector.effect });
-          // Fallback по умолчанию
           this.game.xp += 10;
           this.game.showMessage('+10 XP (default prize)');
       }
@@ -550,7 +518,6 @@ class WheelManager {
         sector,
       });
 
-      // Fallback при ошибке применения результата
       this.game.xp += 15;
       this.game.showMessage(this.game.t('wheel_fallback_xp') || '+15 XP (error fallback)');
     }
@@ -579,7 +546,6 @@ class WheelManager {
             return;
           }
 
-          // Мигание: четный счет - подсветка, нечетный - нет
           if (blinkCount % 2 === 0) {
             this.highlightedSectorIndex = sectorIndex;
           } else {
@@ -624,7 +590,6 @@ class WheelManager {
         resultEl.classList.add('hidden');
       }
 
-      // Очищаем подсветку
       this.clearWheelHighlight();
 
       this.isSpinning = false;
@@ -642,7 +607,6 @@ class WheelManager {
         (this.game.MAX_DAILY_SPINS || 20) - (this.game.wheelSpinsToday || 0),
       );
 
-      // Удаляем счетчик опыта (проблема 4)
       const xpLabel = document.getElementById('wheelXpLabel');
       if (xpLabel) {
         xpLabel.style.display = 'none';
@@ -699,7 +663,6 @@ class WheelManager {
         }
       }
 
-      // Обновляем стоимость прокрутки на игровом поле
       const gameWheelCost = document.getElementById('gameWheelCost');
       if (gameWheelCost) {
         gameWheelCost.textContent = cost;
@@ -713,9 +676,6 @@ class WheelManager {
     }
   }
 
-  // === НОВЫЕ МЕТОДЫ ДЛЯ ОБРАБОТКИ ОШИБОК ===
-
-  // Валидация состояния колеса
   validateWheelState() {
     try {
       const issues = [];
@@ -751,26 +711,22 @@ class WheelManager {
     }
   }
 
-  // Исправление состояния колеса
   repairWheelState() {
     try {
       ErrorHandler.info('Attempting to repair wheel state');
 
       let repaired = false;
 
-      // Исправляем счетчик прокруток
       if (typeof this.game.wheelSpinsToday !== 'number' || this.game.wheelSpinsToday < 0) {
         this.game.wheelSpinsToday = 0;
         repaired = true;
       }
 
-      // Исправляем лимит прокруток
       if (typeof this.game.MAX_DAILY_SPINS !== 'number' || this.game.MAX_DAILY_SPINS <= 0) {
         this.game.MAX_DAILY_SPINS = 20;
         repaired = true;
       }
 
-      // Исправляем превышение лимита
       if (this.game.wheelSpinsToday > this.game.MAX_DAILY_SPINS) {
         this.game.wheelSpinsToday = this.game.MAX_DAILY_SPINS;
         repaired = true;
@@ -791,14 +747,12 @@ class WheelManager {
     }
   }
 
-  // Безопасное вращение колеса с fallback
   safeSpinWheel(fallbackPrize = 15) {
     try {
       return this.spinWheel();
     } catch (error) {
       ErrorHandler.handle(error, { type: 'safe_wheel_spin' });
 
-      // Fallback: даем фиксированный приз при ошибке
       this.game.xp += fallbackPrize;
       this.game.showMessage(`+${fallbackPrize} XP (fallback prize)`);
       this.game.updateXPBar();
@@ -806,7 +760,6 @@ class WheelManager {
     }
   }
 
-  // Проверка доступности колеса
   isWheelAvailable() {
     try {
       return (
@@ -819,7 +772,6 @@ class WheelManager {
     }
   }
 
-  // Сброс состояния колеса (для тестирования)
   resetWheelState() {
     try {
       this.isSpinning = false;

@@ -1,12 +1,9 @@
-// Global handlers and game bootstrap.
-// Аварійний блок до ініціалізації i18n: укр. / рос. / англ. (статичний HTML).
 const LN_FATAL_LOAD_HTML =
   '<p><strong>Гру не вдалося завантажити</strong><br />Оновіть сторінку або спробуйте пізніше.</p>' +
   '<hr />' +
   '<p>Игра не может быть загружена. Обновите страницу.</p>' +
   '<p>The game could not be loaded. Please refresh the page.</p>';
 
-// Показ критической ошибки
 window.showCriticalError = function (message, errorId, options) {
   try {
     const container = document.getElementById('criticalErrorContainer');
@@ -35,7 +32,6 @@ window.showCriticalError = function (message, errorId, options) {
   }
 };
 
-/** Мінімум показу заставки (мс), щоб не «мигнула» при швидкій ініціалізації */
 const SPLASH_MIN_MS = 600;
 
 let splashShownAt = 0;
@@ -98,7 +94,6 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// Ошибки ресурсов
 window.addEventListener(
   'error',
   function (e) {
@@ -116,7 +111,6 @@ window.addEventListener(
   true,
 );
 
-// Состояние сети: online/offline
 window.addEventListener('online', function () {
   if (window.game && typeof window.game.showMessage === 'function') {
     const msg = window.game.t ? window.game.t('online_status') : 'Соединение восстановлено';
@@ -131,7 +125,6 @@ window.addEventListener('offline', function () {
   }
 });
 
-// Предупреждение о несохранённых данных
 window.addEventListener('beforeunload', (e) => {
   try {
     if (window.game?.hasUnsavedChanges) {
@@ -141,7 +134,6 @@ window.addEventListener('beforeunload', (e) => {
   } catch (_) {}
 });
 
-// Кнопка перезагрузки на критическом экране
 document.addEventListener('click', function (e) {
   if (e.target && e.target.id === 'criticalReloadBtn') {
     window.location.reload();

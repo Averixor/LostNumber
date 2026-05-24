@@ -1,15 +1,11 @@
-// Ui Events: LostNumberGame prototype methods.
-
 LostNumberGame.prototype.ensureGridEventListeners = function () {
   try {
     const grid = document.getElementById('grid');
     if (!grid) return;
 
-    // Проверяем есть ли уже обработчики
     const hasListeners = grid._listenersAttached || false;
 
     if (!hasListeners) {
-      // Привязываем обработчики
       const onDown = (e) => this.handlePointerDown(e);
       const onMove = (e) => this.handlePointerMove(e);
       const onUp = (e) => this.handlePointerUp(e);
@@ -19,10 +15,8 @@ LostNumberGame.prototype.ensureGridEventListeners = function () {
       grid.addEventListener('pointerup', onUp, { passive: false });
       grid.addEventListener('pointercancel', onUp, { passive: false });
 
-      // сохраняем ссылки (на всякий)
       grid._lnHandlers = { onDown, onMove, onUp };
 
-      // Помечаем что обработчики привязаны
       grid._listenersAttached = true;
     }
   } catch (error) {
@@ -71,7 +65,6 @@ LostNumberGame.prototype.setupUI = function () {
     bindClickOnce(footerHomeBtn, () => {
       this.audioManager.playTap();
       this.setGamePhase('blocked');
-      // АВТОСОХРАНЕНИЕ ПРИ ВЫХОДЕ В ГЛАВНОЕ МЕНЮ
       this.saveGameState();
       this.showScreen('mainMenu');
     });
@@ -82,7 +75,7 @@ LostNumberGame.prototype.setupUI = function () {
       this.soundEnabled = !this.soundEnabled;
       this.audioManager.setSoundEnabled(this.soundEnabled);
       this.audioManager.updateSoundStateUI();
-      this.saveSettings(); // Сохраняем только настройки
+      this.saveSettings();
     });
 
     const footerSaveBtn = document.getElementById('footerSaveBtn');
@@ -92,7 +85,6 @@ LostNumberGame.prototype.setupUI = function () {
       this.showMessage(this.t('save_done'));
     });
 
-    // ВАЖНОЕ ИСПРАВЛЕНИЕ: Привязываем обработчики grid
     this.ensureGridEventListeners();
   } catch (error) {
     ErrorHandler.handle(error, { type: 'ui_setup' });
@@ -259,7 +251,6 @@ LostNumberGame.prototype.resetChain = function (reason = null) {
     this._bubblePointerX = null;
     this._bubblePointerY = null;
 
-    // HARD RESET визуала
     document
       .querySelectorAll('.cell.selected, .cell.highlight')
       .forEach((el) => el.classList.remove('selected', 'highlight'));
@@ -271,31 +262,25 @@ LostNumberGame.prototype.resetChain = function (reason = null) {
 
     this.hidePreviewBubble();
 
-    // Очищаем подсветку в DOM
     this.clearSelectionHighlight(oldSelected);
 
     if (reason === 'invalid') {
-      // ИСПРАВЛЕНИЕ: проверяем наличие метода playError или playSound
       if (this.audioManager) {
         if (typeof this.audioManager.playError === 'function') {
           this.audioManager.playError();
         } else if (typeof this.audioManager.playSound === 'function') {
           this.audioManager.playSound('error');
         } else if (typeof this.audioManager.playTap === 'function') {
-          this.audioManager.playTap(); // fallback на tap звук
+          this.audioManager.playTap();
         }
       }
       this.showMessage(this.t('chain_invalid'));
     }
-
-    // На мобільних повний re-render тут дорогий і не потрібен:
-    // ми вже очистили selected/highlight в DOM вище.
   } catch (error) {
     ErrorHandler.handle(error, { type: 'reset_chain', reason });
   }
 };
 
-/** rAF-throttled: зменшує виклики updatePreviewBubble під час pointermove (до 1 на кадр). */
 LostNumberGame.prototype._schedulePreviewBubbleUpdate = function () {
   try {
     if (this._previewBubbleRaf) return;
@@ -312,7 +297,6 @@ LostNumberGame.prototype._schedulePreviewBubbleUpdate = function () {
   }
 };
 
-/** Миттєва підсвітка клітинок без повного scan гріда в updateSelectedCells (дешевше на move). */
 LostNumberGame.prototype._applySelectionHighlight = function (removed, added) {
   try {
     const gridDiv = document.getElementById('grid');

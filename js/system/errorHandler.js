@@ -1,4 +1,3 @@
-// errorHandler.js — глобальный контроль ошибок (без сервера)
 if (window.AppEnv?.isDev) {
   console.log('ErrorHandler loaded');
 }
@@ -22,14 +21,12 @@ class ErrorHandler {
     this._installed = true;
     Object.assign(this._config, config);
 
-    // Обработчик ошибок выполнения
     window.addEventListener(
       'error',
       (ev) => {
         if (!this._shouldProcessError()) return;
 
         try {
-          // Resource loading error
           const t = ev.target || ev.srcElement;
           if (t && (t.src || t.href)) {
             this.handle(`Resource load failed: ${t.tagName} ${t.src || t.href}`, {
@@ -38,11 +35,10 @@ class ErrorHandler {
               url: t.src || t.href,
               timestamp: Date.now(),
             });
-            ev.preventDefault(); // предотвращаем стандартное сообщение браузера
+            ev.preventDefault();
             return;
           }
 
-          // Runtime error
           this.handle(ev.error || ev.message, {
             type: 'runtime',
             filename: ev.filename,
@@ -58,7 +54,6 @@ class ErrorHandler {
       true,
     );
 
-    // Unhandled promise rejections
     window.addEventListener('unhandledrejection', (ev) => {
       if (!this._shouldProcessError()) return;
       this.handle(ev.reason, {
@@ -73,7 +68,6 @@ class ErrorHandler {
   }
 
   static _shouldProcessError() {
-    // Ограничиваем частоту ошибок
     const now = Date.now();
     const minuteAgo = now - 60000;
     this._errorTimestamps = this._errorTimestamps.filter((t) => t > minuteAgo);
@@ -181,7 +175,6 @@ class ErrorHandler {
         viewport: `${window.innerWidth}x${window.innerHeight}`,
       };
 
-      // Добавляем игровой контекст если доступен
       if (g) {
         ctx.gamePhase = g.gamePhase;
         ctx.screenState = g.screenState;
@@ -189,7 +182,6 @@ class ErrorHandler {
         ctx.xp = g.xp;
         ctx.seed = g.currentSeed;
 
-        // Безопасно получаем свойства
         try {
           ctx.levelTarget =
             typeof g.getLevelConfig === 'function'
@@ -200,7 +192,6 @@ class ErrorHandler {
           ctx.lastSpinBonus = g.lastSpinBonus;
         } catch (_) {}
 
-        // Дополнительный контекст, если доступен
         if (g.getDebugContext && typeof g.getDebugContext === 'function') {
           try {
             Object.assign(ctx, g.getDebugContext());
@@ -236,10 +227,8 @@ class ErrorHandler {
     const e = err instanceof Error ? err : new Error(String(err));
     const ctx = this._ctx();
 
-    // Добавляем ID ошибки в объект
     e.errorId = id;
 
-    // Сохраняем в историю
     const errorData = {
       id,
       timestamp: Date.now(),
@@ -262,12 +251,10 @@ class ErrorHandler {
       console.groupEnd();
     }
 
-    // Мягкое уведомление игроку
     if (this._config.showUserMessages) {
       try {
         const g = this._game || window.game;
         if (g && typeof g.showMessage === 'function') {
-          // Можно добавить разные типы сообщений в зависимости от типа ошибки
           let message = `${g.t ? g.t('error_generic') : 'Помилка'}`;
           if (meta.type === 'resource') {
             message = g.t ? g.t('error_resource') : 'Помилка завантаження ресурсу';
@@ -275,11 +262,9 @@ class ErrorHandler {
             message = g.t ? g.t('error_async') : 'Асинхронна помилка';
           }
 
-          // Форматируем сообщение с ID ошибки
           const fullMessage = `${message} (${id})`;
           g.showMessage(fullMessage);
 
-          // Логируем показ сообщения
           this.info(`User notified: ${fullMessage}`);
         }
       } catch (error) {
@@ -287,17 +272,14 @@ class ErrorHandler {
       }
     }
 
-    // Отправка на сервер для сбора статистики
     this._reportToServer(errorData);
 
-    return id; // Возвращаем ID для отслеживания
+    return id;
   }
 
   static _reportToServer(errorData) {
-    // Проверяем, настроена ли отправка на сервер
     if (typeof this._config.onErrorReport === 'function') {
       try {
-        // Ограничиваем размер данных для отправки
         const reportData = {
           id: errorData.id,
           message: errorData.message.substring(0, 500),
@@ -320,14 +302,11 @@ class ErrorHandler {
     }
   }
 
-  // В errorHandler.js, в методе warn:
   static warn(message, data = {}) {
     const id = `WARN-${Date.now().toString(36).slice(-4)}`;
 
-    // Вместо groupCollapsed используем обычный console.warn для лучшей видимости
     console.warn(`%c[LostNumber WARN] ${id}: ${message}`, 'color:#ffa726;font-weight:bold', data);
 
-    // Сохраняем важные предупреждения в историю
     if (data.type && ['performance', 'memory', 'validation', 'i18n', 'grid'].includes(data.type)) {
       this._addToHistory({
         id,
@@ -355,7 +334,6 @@ class ErrorHandler {
     } catch (_) {}
   }
 
-  // Методы для диагностики
   static getErrorHistory() {
     return [...this._errorHistory];
   }
@@ -388,7 +366,6 @@ class ErrorHandler {
     };
   }
 
-  // Обертка для безопасного выполнения функции
   static safeExecute(fn, context = {}, fallback = null) {
     try {
       return fn();
@@ -402,7 +379,6 @@ class ErrorHandler {
     }
   }
 
-  // Обертка для промисов
   static safePromise(promise, context = {}) {
     return promise
       .then((result) => result)
@@ -418,7 +394,6 @@ class ErrorHandler {
 
 window.ErrorHandler = ErrorHandler;
 
-// Автоматическая установка с настройками по умолчанию
 if (typeof ErrorHandler !== 'undefined') {
   const userConfig = window.ErrorHandlerConfig || {};
 

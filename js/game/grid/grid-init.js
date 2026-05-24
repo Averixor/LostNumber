@@ -1,8 +1,5 @@
-// Grid Init: GridManager prototype methods.
-
 GridManager.prototype.initGame = function (levelIndex = 0) {
   try {
-    // Валидация уровня
     if (levelIndex < 0 || !Number.isFinite(levelIndex)) {
       ErrorHandler.warn('Invalid level index in initGame', { levelIndex });
       levelIndex = 0;
@@ -25,7 +22,6 @@ GridManager.prototype.initGame = function (levelIndex = 0) {
     this.game.setGamePhase('playing');
     this.game.activeBonus = null;
 
-    // Инициализация сетки с проверкой
     this.game.grid = [];
 
     for (let x = 0; x < this.game.GRID_W; x++) {
@@ -42,7 +38,7 @@ GridManager.prototype.initGame = function (levelIndex = 0) {
           if (num >= level.target) num = 2;
         } catch (error) {
           ErrorHandler.warn('Failed to generate cell number', { x, y, error });
-          num = 2; // Fallback значение
+          num = 2;
         }
 
         this.game.grid[x][y] = {
@@ -55,7 +51,6 @@ GridManager.prototype.initGame = function (levelIndex = 0) {
       }
     }
 
-    // Обработка переносимого числа
     if (this.game.carryNumber) {
       const found = [];
 
@@ -117,7 +112,6 @@ GridManager.prototype.initGame = function (levelIndex = 0) {
       gridSize: `${this.game.GRID_W}x${this.game.GRID_H}`,
     });
 
-    // Fallback: создаем минимальную рабочую сетку
     this.createFallbackGrid();
   }
 };

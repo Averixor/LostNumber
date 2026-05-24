@@ -1,16 +1,3 @@
-// Inventory: facade-методы для bonusInventory и stats у LostNumberGame.
-// Не читать/писать state.bonusInventory или game.bonusInventory[...] напрямую в gameplay-коде.
-// API (bonus):
-//   getBonusCount(type)            -> number (0 если нет/невалидно)
-//   grantBonus(type, amount=1)     -> new count (никогда не отрицательное)
-//   consumeBonus(type, amount=1)   -> boolean (true если count > 0 и списано)
-//   getBonusInventorySnapshot()    -> { destroy, shuffle, explosion }
-//   resetBonusInventory()          -> void (в zero-значения)
-// API (stats):
-//   getStat(key)                   -> number (0 если нет)
-//   incrementStat(key, delta=1)    -> void
-//   setStatMax(key, value)         -> void (ставит max(current, value))
-
 (function () {
   const BONUS_TYPES = ['destroy', 'shuffle', 'explosion'];
 
@@ -113,8 +100,6 @@
     }
   };
 
-  // --- Stats facade ---
-
   function ensureStats(game) {
     if (!game.stats || typeof game.stats !== 'object') {
       game.stats = {};
@@ -163,10 +148,6 @@
     }
   };
 
-  // --- Achievements read-only facade ---
-  // Source of truth: this.achievements (owner: state.js / save-load.js).
-  // Не добавлять write-методы — прогресс пишет только AchievementManager.
-
   LostNumberGame.prototype.getAchievement = function (key) {
     try {
       const a = this.achievements;
@@ -198,10 +179,6 @@
       return {};
     }
   };
-
-  // --- Frozen cells read-only facade ---
-  // Source of truth: this.freezeSystem (FreezeSystem), fallback: this.frozenCells (Map).
-  // Не добавлять методы записи — owner grid-freeze.js / freezeSystem.js.
 
   LostNumberGame.prototype.isCellFrozen = function (idx) {
     try {

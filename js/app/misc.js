@@ -1,5 +1,3 @@
-// Miscellaneous LostNumberGame prototype methods.
-
 LostNumberGame.prototype.showAchievementsScreen = function () {
   try {
     if (this.achievementManager) {
