@@ -2,6 +2,15 @@
 
 node_modules/
 
+# Local browser/debug profiles
+.chrome-*/
+
+# Local project/cache databases
+.project/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
 # Персональні налаштування редактора (не застосовувати git.enabled тощо для всіх)
 .vscode/settings.json
 

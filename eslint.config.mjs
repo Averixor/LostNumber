@@ -6,7 +6,17 @@
 import globals from 'globals';
 
 export default [
-  { ignores: ['node_modules/**', 'dist/**', 'coverage/**'] },
+  {
+    ignores: [
+      'node_modules/**',
+      '.git/**',
+      '.project/**',
+      '.chrome-*/**',
+      'coverage/**',
+      'dist/**',
+      'build/**',
+    ],
+  },
   {
     files: ['js/**/*.js'],
     languageOptions: {
