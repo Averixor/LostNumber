@@ -12,6 +12,20 @@
       "runtimeArgs": ["--disable-extensions", "--disable-background-timer-throttling"]
     },
     {
+      "name": "🎯 Cheats (local)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://127.0.0.1:5500/",
+      "webRoot": "${workspaceFolder}",
+      "sourceMaps": true,
+      "userDataDir": "${workspaceFolder}/.chrome-cheats",
+      "runtimeArgs": [
+        "--disable-extensions",
+        "--disable-background-timer-throttling",
+        "--auto-open-devtools-for-tabs"
+      ]
+    },
+    {
       "name": "🛠 Dev + AppEnv debug",
       "type": "chrome",
       "request": "launch",

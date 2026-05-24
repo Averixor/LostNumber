@@ -11,20 +11,6 @@
     );
   }
 
-  function hasDevToolsQuery() {
-    try {
-      const params = new URLSearchParams(window.location.search || '');
-      return (
-        params.get('dev') === '1' ||
-        params.has('cheats') ||
-        params.get('debug') === '1' ||
-        params.get('debug') === 'full'
-      );
-    } catch (_) {
-      return false;
-    }
-  }
-
   function isDevSessionActive() {
     if (!isDevToolsAllowed()) {
       return false;
@@ -38,10 +24,7 @@
     ) {
       return true;
     }
-    if (window.LN_BUILD_FLAGS && window.LN_BUILD_FLAGS.cheatsEnabled === true) {
-      return true;
-    }
-    return hasDevToolsQuery();
+    return !!(window.LN_BUILD_FLAGS && window.LN_BUILD_FLAGS.cheatsEnabled === true);
   }
 
   function buildDevUrl() {
@@ -69,11 +52,20 @@
     window.location.href = buildDevUrl();
   }
 
-  function initDevEntry() {
-    if (!isDevToolsAllowed()) {
-      return;
-    }
+  if (!isDevToolsAllowed()) {
+    window.LN_DEV_ENTRY = {
+      enter: function () {},
+      isAllowed: function () {
+        return false;
+      },
+      isActive: function () {
+        return false;
+      },
+    };
+    return;
+  }
 
+  function initDevEntry() {
     const trigger = document.getElementById(TRIGGER_ID);
     if (!trigger) {
       return;

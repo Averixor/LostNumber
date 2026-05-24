@@ -160,7 +160,7 @@
       <link rel="stylesheet" href="css/overlays.css" />
       <link rel="stylesheet" href="css/low-performance.css" />
     </noscript>
-    <!-- Build / dev-tools gates (before AppEnv). Android debug may set window.LN_BUILD_FLAGS earlier. -->
+    <!-- Gated dev cheats tooling: build/runtime flags (before AppEnv). Android debug may set LN_BUILD_FLAGS earlier. -->
     <script>
       (function () {
         'use strict';
@@ -184,6 +184,7 @@
             if (
               host === 'localhost' ||
               host === '127.0.0.1' ||
+              host === '::1' ||
               host === '[::1]' ||
               host.endsWith('.local')
             ) {
@@ -606,13 +607,17 @@
     <script src="js/app/game-flow.js" defer></script>
     <script src="js/app/misc.js" defer></script>
     <script src="js/system/dev-entry.js" defer></script>
-    <!-- Dev/cheats bundles: лише local dev або LN_BUILD_FLAGS.cheatsEnabled (не від ?cheats на проді) -->
+    <!-- Gated dev cheats bundles: лише LN_isDevToolsAllowed() (local або cheatsEnabled; не від query на проді) -->
     <script>
       (function () {
         function loadDevToolScripts() {
+          if (window.__LN_DEV_BUNDLES_REQUESTED__) {
+            return;
+          }
           if (typeof window.LN_isDevToolsAllowed !== 'function' || !window.LN_isDevToolsAllowed()) {
             return;
           }
+          window.__LN_DEV_BUNDLES_REQUESTED__ = true;
 
           var sources = [
             'js/app/dev-tools.js',
@@ -624,6 +629,9 @@
           sources.forEach(function (src) {
             if (typeof load === 'function') {
               load(src).catch(function () {});
+              return;
+            }
+            if (document.querySelector('script[src="' + src + '"]')) {
               return;
             }
             var s = document.createElement('script');

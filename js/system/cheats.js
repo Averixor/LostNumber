@@ -537,17 +537,22 @@
 
       document.body.appendChild(panel);
 
-      // Toggle: Ctrl+~
+      function toggleCheatPanel() {
+        if (typeof window.LN_isDevToolsAllowed !== 'function' || !window.LN_isDevToolsAllowed()) {
+          return;
+        }
+        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+      }
+
+      // Toggle: Ctrl+~ (лише коли gate дозволяє)
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey && (e.key === '~' || e.key === '`' || e.code === 'Backquote')) {
           e.preventDefault();
-          panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+          toggleCheatPanel();
         }
       });
 
-      window.LN_CODES.panel = function () {
-        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-      };
+      window.LN_CODES.panel = toggleCheatPanel;
     })();
 
     window.__LN_CODES_INSTALLED__ = true;
