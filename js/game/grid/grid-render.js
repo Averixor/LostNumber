@@ -1,5 +1,13 @@
 // Grid Render: GridManager prototype methods.
 
+/** Display-only classes for compact / high-contrast tile labels (not game logic). */
+GridManager.prototype._applyCellDisplayClasses = function (cell, num) {
+  const readable = num != null && num >= 8192;
+  const compact = num != null && num >= 1024;
+  cell.classList.toggle('cell-value-readable', readable);
+  cell.classList.toggle('cell-value-compact', compact);
+};
+
 GridManager.prototype.getCellFromPoint = function (clientX, clientY) {
   try {
     // ✅ Проверка на валидность координат
@@ -130,6 +138,7 @@ GridManager.prototype.performFullRender = function () {
         cell.dataset.x = x;
         cell.dataset.y = y;
         cell.dataset.number = num == null ? '' : num;
+        this._applyCellDisplayClasses(cell, num);
 
         const idx = y * this.game.GRID_W + x;
 
@@ -296,6 +305,7 @@ GridManager.prototype._syncSingleCellDOM = function (cellEl, x, y, selectedCells
     }
 
     cellEl.dataset.number = num == null ? '' : num;
+    this._applyCellDisplayClasses(cellEl, num);
 
     const idx = y * this.game.GRID_W + x;
 
