@@ -72,6 +72,7 @@ class LostNumberGame {
     this.getTodayKey = this.state.getTodayKey.bind(this.state);
     this.generateAASuffix = this.state.generateAASuffix.bind(this.state);
     this.generateLevels = this.state.generateLevels.bind(this.state);
+    this.getLevelConfig = this.state.getLevelConfig.bind(this.state);
     this.defaultStats = this.state.defaultStats.bind(this.state);
     this.defaultAchievements = this.state.defaultAchievements.bind(this.state);
     this.setGamePhase = this.state.setGamePhase.bind(this.state);

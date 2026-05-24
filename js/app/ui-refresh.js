@@ -2,19 +2,21 @@
 
 LostNumberGame.prototype.updateTargetInfo = function () {
   try {
-    const level = this.levels[this.currentLevel];
-    if (level && level.target) {
-      const targetValue = document.getElementById('targetValue');
-      const levelLabel = document.getElementById('levelLabel');
+    const levelIndex = Math.max(0, Math.floor(Number(this.currentLevel) || 0));
+    const level = this.getLevelConfig(levelIndex);
+    const target = Number(level?.target);
+    const targetValue = document.getElementById('targetValue');
+    const levelLabel = document.getElementById('levelLabel');
 
-      if (targetValue) {
-        targetValue.textContent = this.formatNumber(level.target);
-      }
-      if (levelLabel) {
-        levelLabel.textContent = this.formatTemplate('level_label', {
-          level: this.currentLevel + 1,
-        });
-      }
+    if (targetValue && Number.isFinite(target) && target > 0) {
+      targetValue.textContent = this.formatNumber(target);
+    } else if (targetValue) {
+      targetValue.textContent = this.formatNumber(64);
+    }
+    if (levelLabel) {
+      levelLabel.textContent = this.formatTemplate('level_label', {
+        level: levelIndex + 1,
+      });
     }
   } catch (error) {
     ErrorHandler.warn('updateTargetInfo failed', error);
@@ -67,24 +69,7 @@ LostNumberGame.prototype.updateMultiplierIndicator = function () {
 };
 
 LostNumberGame.prototype.updateGoal = function () {
-  try {
-    if (this.currentLevel !== undefined && this.levels && this.levels[this.currentLevel]) {
-      const level = this.levels[this.currentLevel];
-      const targetValue = document.getElementById('targetValue');
-      const levelLabel = document.getElementById('levelLabel');
-
-      if (targetValue) {
-        targetValue.textContent = this.formatNumber(level.target);
-      }
-      if (levelLabel) {
-        levelLabel.textContent = this.formatTemplate('level_label', {
-          level: this.currentLevel + 1,
-        });
-      }
-    }
-  } catch (error) {
-    ErrorHandler.warn('updateGoal failed', error);
-  }
+  this.updateTargetInfo();
 };
 
 LostNumberGame.prototype.updateAchievementProgress = function (key, value = 1) {

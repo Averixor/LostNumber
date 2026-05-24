@@ -51,8 +51,7 @@
       if (!game || !game.gridManager) {
         return undefined;
       }
-      const maxIx = typeof game.MAX_LEVEL === 'number' ? game.MAX_LEVEL - 1 : 0;
-      const idx = Math.max(0, Math.min(maxIx, Number(humanLevel) - 1));
+      const idx = Math.max(0, Math.floor(Number(humanLevel) - 1));
       game.currentLevel = idx;
       game.gridManager.initGame(idx);
       refreshGame(game);
@@ -142,8 +141,7 @@
         if (!game || !game.gridManager) {
           return;
         }
-        const maxIx = typeof game.MAX_LEVEL === 'number' ? game.MAX_LEVEL - 1 : 0;
-        const next = Math.min(maxIx, Number(game.currentLevel || 0) + 1);
+        const next = Number(game.currentLevel || 0) + 1;
         game.currentLevel = next;
         game.gridManager.initGame(next);
         refreshGame(game);

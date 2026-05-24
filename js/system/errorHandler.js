@@ -191,7 +191,10 @@ class ErrorHandler {
 
         // Безопасно получаем свойства
         try {
-          ctx.levelTarget = g.levels?.[g.currentLevel]?.target;
+          ctx.levelTarget =
+            typeof g.getLevelConfig === 'function'
+              ? g.getLevelConfig(g.currentLevel).target
+              : g.levels?.[g.currentLevel]?.target;
         } catch (_) {}
         try {
           ctx.lastSpinBonus = g.lastSpinBonus;

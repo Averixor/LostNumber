@@ -149,7 +149,6 @@ LostNumberGame.prototype.restoreFromState = function (state) {
     // Восстанавливаем только игровые данные, НЕ настройки
     this.currentLevel = safeNumber(state.currentLevel, 0, {
       min: 0,
-      max: this.MAX_LEVEL - 1,
       integer: true,
     });
     this.xp = safeNumber(state.xp, 0, { min: 0 });
@@ -215,7 +214,6 @@ LostNumberGame.prototype.restoreFromState = function (state) {
     if (this.pendingTransition && this.pendingTransition.active) {
       this.currentLevel = safeNumber(this.pendingTransition.nextLevel, this.currentLevel, {
         min: 0,
-        max: this.MAX_LEVEL - 1,
         integer: true,
       });
       this.carryNumber = this.pendingTransition.carryNumber ?? null;

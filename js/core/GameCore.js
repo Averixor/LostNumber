@@ -154,7 +154,7 @@ class GameCore {
         issues.push('Levels not properly defined');
       }
 
-      if (this.game.currentLevel < 0 || this.game.currentLevel >= this.game.MAX_LEVEL) {
+      if (this.game.currentLevel < 0 || !Number.isFinite(this.game.currentLevel)) {
         issues.push(`Invalid current level: ${this.game.currentLevel}`);
       }
 

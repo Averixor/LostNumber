@@ -3,23 +3,19 @@
 GridManager.prototype.initGame = function (levelIndex = 0) {
   try {
     // Валидация уровня
-    if (levelIndex < 0 || levelIndex >= this.game.MAX_LEVEL) {
-      ErrorHandler.warn('Invalid level index in initGame', {
-        levelIndex,
-        MAX_LEVEL: this.game.MAX_LEVEL,
-      });
-      levelIndex = Math.max(0, Math.min(levelIndex, this.game.MAX_LEVEL - 1));
+    if (levelIndex < 0 || !Number.isFinite(levelIndex)) {
+      ErrorHandler.warn('Invalid level index in initGame', { levelIndex });
+      levelIndex = 0;
     }
 
-    this.game.currentLevel = levelIndex;
-    const level = this.game.levels?.[this.game.currentLevel];
+    this.game.currentLevel = Math.max(0, Math.floor(levelIndex));
+    const level =
+      typeof this.game.getLevelConfig === 'function'
+        ? this.game.getLevelConfig(this.game.currentLevel)
+        : this.game.levels?.[this.game.currentLevel];
 
-    if (!level) {
+    if (!level || !Number.isFinite(level.target) || level.target <= 0) {
       ErrorHandler.warn('Level data not found', { currentLevel: this.game.currentLevel });
-      // Создаем fallback уровень
-      this.game.levels = this.game.levels || [
-        { target: 64, numbers: [2, 4, 8], newNumbers: [8, 16, 32] },
-      ];
       return;
     }
 

@@ -50,7 +50,7 @@ LostNumberGame.prototype.startNewGame = function () {
 
 LostNumberGame.prototype.mergeChain = function () {
   try {
-    const level = this.levels[this.currentLevel];
+    const level = this.getLevelConfig(this.currentLevel);
     const sum = Chain.sum;
     const target = level.target;
     const isLevelComplete = sum >= target;
@@ -166,7 +166,7 @@ LostNumberGame.prototype.mergeChain = function () {
 
 LostNumberGame.prototype.checkWin = function () {
   try {
-    const level = this.levels[this.currentLevel];
+    const level = this.getLevelConfig(this.currentLevel);
     for (let x = 0; x < this.GRID_W; x++) {
       for (let y = 0; y < this.GRID_H; y++) {
         if (this.grid[x][y].number === level.target) {
@@ -184,7 +184,7 @@ LostNumberGame.prototype.checkWin = function () {
 LostNumberGame.prototype.handleLevelComplete = function () {
   try {
     const oldXp = this.xp;
-    const level = this.levels[this.currentLevel];
+    const level = this.getLevelConfig(this.currentLevel);
     const carryNumber = level.target;
 
     this.xp = oldXp;
@@ -193,7 +193,7 @@ LostNumberGame.prototype.handleLevelComplete = function () {
 
     const prevLevelIndex = this.currentLevel;
     const prevLevelNumber = prevLevelIndex + 1;
-    const nextLevelIndex = Math.min(prevLevelIndex + 1, this.MAX_LEVEL - 1);
+    const nextLevelIndex = prevLevelIndex + 1;
     const nextLevelNumber = nextLevelIndex + 1;
 
     this.carryNumber = carryNumber;
@@ -218,7 +218,13 @@ LostNumberGame.prototype.handleLevelComplete = function () {
     const text = document.getElementById('levelOverlayText');
     const stats = document.getElementById('levelStats');
     const countdown = document.getElementById('levelCountdown');
-    const power = Math.log2(level.target);
+    let power = 0;
+    if (level.target > 0 && Number.isFinite(level.target)) {
+      power = Math.round(Math.log2(level.target));
+      if (!Number.isFinite(power) || power < 0) {
+        power = 0;
+      }
+    }
 
     if (title) title.textContent = this.formatTemplate('level_completed_title');
     if (text)
@@ -256,22 +262,11 @@ LostNumberGame.prototype.completeLevelTransition = function () {
         : Math.max(0, nextLevelIndex - 1);
     this.pendingTransition = null;
 
-    /* Победа только после завершения последнего уровня, а не при входе на него. */
-    if (completedLevelIndex >= this.MAX_LEVEL - 1) {
-      this.currentLevel = this.MAX_LEVEL - 1;
-      this.carryNumber = carry;
-      this.gridManager.initGame(this.currentLevel);
-      this.refreshLevelUI();
-      this.saveGameState();
-      this.achievementManager.updateAchievementProgress('firstGame', 1);
-      this.showVictory();
-    } else {
-      this.currentLevel = nextLevelIndex;
-      this.carryNumber = carry;
-      this.gridManager.initGame(this.currentLevel);
-      this.refreshLevelUI();
-      this.saveGameState();
-    }
+    this.currentLevel = nextLevelIndex;
+    this.carryNumber = carry;
+    this.gridManager.initGame(this.currentLevel);
+    this.refreshLevelUI();
+    this.saveGameState();
   } catch (error) {
     ErrorHandler.handle(error, { type: 'level_transition', pending: this.pendingTransition });
     // Сбрасываем на главный экран если переход сломался

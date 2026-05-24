@@ -54,7 +54,8 @@
 
 Ігровий стан і системи:
 
-- **`state.js`**, **`bonuses.js`**, **`wheel.js`**, **`daily.js`**, **`achievements.js`**, **`stats.js`**
+- **`state.js`** — стан, **`generateLevels`**, **`getLevelConfig`** (endless progression після 40 preset-рівнів), **`formatNumber`**
+- **`bonuses.js`**, **`wheel.js`**, **`daily.js`**, **`achievements.js`**, **`stats.js`**
 
 ### `js/game/grid/`
 

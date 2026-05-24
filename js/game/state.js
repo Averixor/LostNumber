@@ -5,7 +5,9 @@ class GameState {
       this.GRID_H = 8;
       this.MAX_DAILY_SPINS = 20;
 
-      this.levels = this.generateLevels(40);
+      this.MANUAL_LEVEL_COUNT = 40;
+      this.levels = this.generateLevels(this.MANUAL_LEVEL_COUNT);
+      /** Preset level table size; progression is not capped at this value. */
       this.MAX_LEVEL = this.levels.length;
 
       this.currentLevel = 0;
@@ -126,6 +128,124 @@ class GameState {
     } catch (error) {
       ErrorHandler.warn('generateNewNumbers failed', { target, error });
       return [target / 4, target / 2, target];
+    }
+  }
+
+  /**
+   * Deterministic target for level index (0-based). Preset levels 0..MANUAL-1 unchanged.
+   * Beyond safe integer doubling uses controlled multiplicative growth.
+   */
+  getProceduralTarget(levelIndex) {
+    const idx = Math.max(0, Math.floor(Number(levelIndex) || 0));
+    const manualMax = this.MANUAL_LEVEL_COUNT || this.levels?.length || 40;
+
+    if (idx < manualMax && this.levels[idx] && Number.isFinite(this.levels[idx].target)) {
+      return this.levels[idx].target;
+    }
+
+    const doubled = 64 * Math.pow(2, idx);
+    if (Number.isFinite(doubled) && doubled >= 64 && doubled <= Number.MAX_SAFE_INTEGER) {
+      return Math.floor(doubled);
+    }
+
+    const SOFT_GROWTH = 1.12;
+    let target = this.levels[manualMax - 1]?.target || 64 * Math.pow(2, manualMax - 1);
+    if (!Number.isFinite(target) || target <= 0) {
+      target = 64;
+    }
+
+    for (let i = manualMax; i <= idx; i++) {
+      const stepDouble = 64 * Math.pow(2, i);
+      if (
+        Number.isFinite(stepDouble) &&
+        stepDouble >= 64 &&
+        stepDouble <= Number.MAX_SAFE_INTEGER
+      ) {
+        target = Math.floor(stepDouble);
+      } else {
+        target = Math.floor(target * SOFT_GROWTH);
+        if (!Number.isFinite(target) || target <= 0) {
+          return 64;
+        }
+        if (target >= Number.MAX_SAFE_INTEGER) {
+          return Number.MAX_SAFE_INTEGER;
+        }
+      }
+    }
+
+    return target;
+  }
+
+  buildLevelNumbers(levelIndex, target) {
+    const idx = Math.max(0, Math.floor(Number(levelIndex) || 0));
+    const baseNumbers = [2, 4, 8];
+    let n = 8;
+    const maxLen = Math.min(7, Math.floor(idx / 3) + 1);
+
+    while (baseNumbers.length < maxLen) {
+      n *= 2;
+      if (!Number.isFinite(n) || n > target) {
+        break;
+      }
+      baseNumbers.push(n);
+    }
+
+    return baseNumbers;
+  }
+
+  generateProceduralLevel(levelIndex) {
+    const idx = Math.max(0, Math.floor(Number(levelIndex) || 0));
+    const manualMax = this.MANUAL_LEVEL_COUNT || this.levels?.length || 40;
+
+    if (idx < manualMax && this.levels[idx]) {
+      return {
+        target: this.levels[idx].target,
+        numbers: this.levels[idx].numbers?.slice() || [2, 4, 8],
+        newNumbers:
+          this.levels[idx].newNumbers?.slice() || this.generateNewNumbers(this.levels[idx].target),
+      };
+    }
+
+    const target = this.getProceduralTarget(idx);
+    const safeTarget =
+      Number.isFinite(target) && target > 0 ? target : this.levels[0]?.target || 64;
+
+    return {
+      target: safeTarget,
+      numbers: this.buildLevelNumbers(idx, safeTarget),
+      newNumbers: this.generateNewNumbers(safeTarget),
+    };
+  }
+
+  /**
+   * Unified level config: preset table for early levels, procedural endless config after.
+   * @param {number} levelIndex 0-based level index
+   */
+  getLevelConfig(levelIndex) {
+    try {
+      const idx = Math.max(0, Math.floor(Number(levelIndex) || 0));
+      const config = this.generateProceduralLevel(idx);
+      const target = Number(config.target);
+
+      if (!Number.isFinite(target) || target <= 0) {
+        const fallback = this.levels[0]?.target || 64;
+        return {
+          target: fallback,
+          numbers: this.levels[0]?.numbers?.slice() || [2, 4, 8],
+          newNumbers: this.generateNewNumbers(fallback),
+        };
+      }
+
+      return {
+        target,
+        numbers: Array.isArray(config.numbers) ? config.numbers : [2, 4, 8],
+        newNumbers: Array.isArray(config.newNumbers)
+          ? config.newNumbers
+          : this.generateNewNumbers(target),
+      };
+    } catch (error) {
+      ErrorHandler.warn('getLevelConfig failed', { levelIndex, error });
+      return { target: 64, numbers: [2, 4, 8], newNumbers: [8, 16, 32] };
     }
   }
 
@@ -252,7 +372,7 @@ class GameState {
   generateCellNumber() {
     try {
       const allowed = this.getAllowedNumbers();
-      const levelTarget = this.levels?.[this.currentLevel]?.target;
+      const levelTarget = this.getLevelConfig(this.currentLevel).target;
 
       const filtered = allowed.filter((n) => n !== this.carryNumber && n !== levelTarget);
 
@@ -272,7 +392,7 @@ class GameState {
         type: 'generate_cell_number',
         allowed: this.getAllowedNumbers(),
         carryNumber: this.carryNumber,
-        levelTarget: this.levels?.[this.currentLevel]?.target,
+        levelTarget: this.getLevelConfig(this.currentLevel).target,
       });
       return 2; // Fallback значение
     }
@@ -480,7 +600,7 @@ class GameState {
       const issues = [];
 
       // Проверка текущего уровня
-      if (this.currentLevel < 0 || this.currentLevel >= this.MAX_LEVEL) {
+      if (this.currentLevel < 0 || !Number.isFinite(this.currentLevel)) {
         issues.push(`Invalid current level: ${this.currentLevel}`);
       }
 
@@ -537,8 +657,8 @@ class GameState {
       if (this.currentLevel < 0) {
         this.currentLevel = 0;
         repaired = true;
-      } else if (this.currentLevel >= this.MAX_LEVEL) {
-        this.currentLevel = this.MAX_LEVEL - 1;
+      } else if (!Number.isFinite(this.currentLevel)) {
+        this.currentLevel = 0;
         repaired = true;
       }
 

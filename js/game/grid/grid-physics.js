@@ -71,7 +71,10 @@ GridManager.prototype.applyLocalGravity = function (removedCells) {
     const grid = this.game.grid;
 
     const genFunc = this.game?.generateCellNumber;
-    const level = this.game.levels?.[this.game.currentLevel];
+    const level =
+      typeof this.game.getLevelConfig === 'function'
+        ? this.game.getLevelConfig(this.game.currentLevel)
+        : this.game.levels?.[this.game.currentLevel];
 
     const genNewNumber = () => {
       try {
@@ -224,7 +227,10 @@ GridManager.prototype.applyPressureTransfer = function (
     const W = this.game.GRID_W;
     const H = this.game.GRID_H;
     const genFunc = this.game?.generateCellNumber;
-    const level = this.game.levels?.[this.game.currentLevel];
+    const level =
+      typeof this.game.getLevelConfig === 'function'
+        ? this.game.getLevelConfig(this.game.currentLevel)
+        : this.game.levels?.[this.game.currentLevel];
 
     let moves = 0;
     const affectedColumns = new Set();
