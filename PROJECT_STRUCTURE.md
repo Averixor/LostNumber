@@ -16,19 +16,20 @@
 
 Стилі за зонами відповідальності:
 
-| Файл                  | Призначення                                     |
-| --------------------- | ----------------------------------------------- |
-| `variables.css`       | Токени теми й кольорів                          |
-| `base.css`            | Базова типографіка та глобальні правила         |
-| `ui.css`              | Кнопки, панелі, налаштування                    |
-| `grid.css`            | Ігрове поле та клітини                          |
-| `overlays.css`        | Перемога, рівень, колесо тощо                   |
-| `critical.css`        | Екран завантаження (splash) та критична помилка |
-| `low-performance.css` | Спрощення для слабких пристроїв                 |
+| Файл                  | Призначення                                                                                                          |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `variables.css`       | Токени теми й кольорів                                                                                               |
+| `base.css`            | Базова типографіка та глобальні правила                                                                              |
+| `ui.css`              | Кнопки, панелі, налаштування                                                                                         |
+| `grid.css`            | Ігрове поле та клітини (кольори за `data-number`, класи `cell-value-readable` / `cell-value-compact` для K+ значень) |
+| `overlays.css`        | Перемога, рівень, колесо тощо                                                                                        |
+| `critical.css`        | Екран завантаження (splash) та критична помилка                                                                      |
+| `low-performance.css` | Спрощення для слабких пристроїв                                                                                      |
 
 ## `js/bootstrap/`
 
-- **`env.js`** — `AppEnv`, режими дебагу (`?debug=`, `localStorage`).
+- У **`index.html`** (перед `env.js`) — **gated dev cheats tooling**: `LN_BUILD_FLAGS`, `LN_isLocalDevEnvironment()`, `LN_isDevToolsAllowed()`; умовне завантаження `dev-tools.js`, `performance-monitor.js`, `cheats.js`.
+- **`env.js`** — `AppEnv`, режими дебагу (`?debug=`, `localStorage`); **окремо** від gate читів.
 - **`boot.js`** — ініціалізація після завантаження сторінки.
 
 ## `js/core/`
@@ -44,8 +45,9 @@
 Платформа, периферія, глобальні сервіси:
 
 - **`storage.js`**, **`audio.js`**, **`platform.js`**, **`i18n.js`**, **`plural-helpers.js`**
-- **`errorHandler.js`**, **`errorHandlerFallback.js`**, **`debug.js`**
-- **`cheats.js`** — однослівні тест-коди в консолі браузера (лише `AppEnv.isDev` або `?cheats=1` / `?debug=`).
+- **`errorHandler.js`**, **`errorHandlerFallback.js`**, **`debug.js`** (`LN_DEBUG`)
+- **`dev-entry.js`** — five-click entry у About (лише коли `LN_isDevToolsAllowed()`).
+- **`cheats.js`** — gated dev cheats tooling: `LN_CODES`, панель `LN_CODES.panel()`; завантажується лише при `LN_isDevToolsAllowed()` (local dev або `LN_BUILD_FLAGS.cheatsEnabled`).
 - **`lazy-script.js`**, **`freezeSystem.js`**
 
 ## `js/game/`
@@ -58,7 +60,7 @@
 
 Поле та його життєвий цикл:
 
-- **`GridManager.js`**, **`grid-init.js`**, **`grid-physics.js`**, **`grid-render.js`**
+- **`GridManager.js`**, **`grid-init.js`**, **`grid-physics.js`**, **`grid-render.js`** (у т.ч. `_applyCellDisplayClasses` — лише UI-класи клітинок)
 - **`grid-animations.js`**, **`grid-freeze.js`**, **`grid-safety.js`**
 
 ## `js/ui/`

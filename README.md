@@ -50,7 +50,7 @@ npx serve .
 | `npm run cursor:audit`        | Допоміжний скрипт для локального аудиту з Cursor SDK                                 |
 | `npm run cursor:audit:stream` | Те саме з потоковим виводом (`cursor-audit-local.mjs --stream`)                      |
 
-У Windows за бажанням можна користуватися **`format.ps1`** / **`lint.ps1`** поруч з npm-командами.
+У Windows за бажанням можна користуватися **`format.ps1`** / **`lint.ps1`** поруч з npm-командами, або напряму **`node ./scripts/check.mjs`** (те саме, що `npm run check`, без залежності від cmd/npx у PATH).
 
 ## Режими та дебаг
 
@@ -59,7 +59,7 @@ npx serve .
 Чит-панель і консольні команди — **не** частина звичайного production-релізу. Увімкнення **не** залежить лише від `?dev=1`, `?cheats=1` або `?debug=…` на публічному хості.
 
 - **`window.LN_isDevToolsAllowed()`** — головний gate: `true` лише на **локальній** dev-середовищі (`localhost`, `127.0.0.1`, `::1`, `[::1]`, `file://`, `*.local`, private LAN `10.x` / `192.168.x` / `172.16–31.x`) **або** якщо збірка явно встановила **`window.LN_BUILD_FLAGS.cheatsEnabled === true`** (майбутній Android debug).
-- API: **`window.LN_CODES`** (консольні «слова»), панель — **`window.LN_CODES.panel()`** або **Ctrl+`** після завантаження `js/system/cheats.js`.
+- API: **`window.LN_CODES`** (консольні «слова»), панель — **`window.LN_CODES.panel()`** або **Ctrl+Backquote** / **`Ctrl+`** після завантаження `js/system/cheats.js`.
 - На **GitHub Pages** ([демо](https://averixor.github.io/LostNumber/)) gated dev cheats tooling **вимкнено**; query-параметри самі по собі чити **не вмикають**.
 - П’ять кліків по блоку «Ще» в About — лише коли gate дозволяє (`js/system/dev-entry.js`).
 
