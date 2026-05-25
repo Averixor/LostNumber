@@ -80,6 +80,7 @@
 ## `scripts/`
 
 - **`check.mjs`** — Prettier `--check` + ESLint (див. `npm run check`).
+- **`test-min-tile.mjs`**, **`test-level-config.mjs`**, **`test-storage-fallback.mjs`** — Node smoke-перевірки progression/storage (без test framework).
 - **`cursor-audit-local.mjs`** — допоміжний скрипт під Cursor SDK: `npm run cursor:audit` або `npm run cursor:audit:stream` (режим `--stream`).
 
 ## `docs/`

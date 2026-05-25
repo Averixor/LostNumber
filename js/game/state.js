@@ -1,3 +1,5 @@
+// @ts-check
+
 class GameState {
   constructor() {
     try {
@@ -6,6 +8,7 @@ class GameState {
       this.MAX_DAILY_SPINS = 20;
 
       this.MANUAL_LEVEL_COUNT = 40;
+      /** @type {LevelConfig[]} */
       this.levels = this.generateLevels(this.MANUAL_LEVEL_COUNT);
       this.MAX_LEVEL = this.levels.length;
 
@@ -17,21 +20,27 @@ class GameState {
       this.maxReachedNumber = 8;
       this.carryNumber = null;
 
+      /** @type {LostNumberCell[][]} */
       this.grid = [];
+      /** @type {GridPoint[]} */
       this.selected = [];
       this.isDragging = false;
+      /** @type {BonusType | null} */
       this.activeBonus = null;
 
+      /** @type {BonusInventory} */
       this.bonusInventory = {
         destroy: 0,
         shuffle: 0,
         explosion: 0,
       };
 
+      /** @type {Map<number, unknown>} */
       this.frozenCells = new Map();
       this.stats = this.defaultStats();
       this.achievements = this.defaultAchievements();
 
+      /** @type {PendingTransition | null} */
       this.pendingTransition = null;
       this.hasSave = false;
 
@@ -54,6 +63,7 @@ class GameState {
 
       this.core = new GameCore(this);
 
+      /** @type {unknown} */
       this.dailyQuests = null;
 
       ErrorHandler.info('GameState initialized', {
@@ -71,6 +81,7 @@ class GameState {
     this.GRID_H = 8;
     this.currentLevel = 0;
     this.xp = 0;
+    /** @type {LostNumberCell[][]} */
     this.grid = [];
     this.bonusInventory = { destroy: 0, shuffle: 0, explosion: 0 };
     this.frozenCells = new Map();
@@ -79,6 +90,10 @@ class GameState {
     this.liteVisualMode = 'auto';
   }
 
+  /**
+   * @param {number} count
+   * @returns {LevelConfig[]}
+   */
   generateLevels(count) {
     try {
       const levels = [];
@@ -108,6 +123,10 @@ class GameState {
     }
   }
 
+  /**
+   * @param {number} target
+   * @returns {number[]}
+   */
   generateNewNumbers(target) {
     try {
       const arr = [];
@@ -125,6 +144,10 @@ class GameState {
     }
   }
 
+  /**
+   * @param {number} levelIndex
+   * @returns {number}
+   */
   getProceduralTarget(levelIndex) {
     const idx = Math.max(0, Math.floor(Number(levelIndex) || 0));
     const manualMax = this.MANUAL_LEVEL_COUNT || this.levels?.length || 40;
@@ -142,6 +165,11 @@ class GameState {
     return MAX_SAFE_POWER_OF_TWO;
   }
 
+  /**
+   * @param {number} levelIndex
+   * @param {number} target
+   * @returns {number[]}
+   */
   buildLevelNumbers(levelIndex, target) {
     const idx = Math.max(0, Math.floor(Number(levelIndex) || 0));
     const baseNumbers = [2, 4, 8];
@@ -159,6 +187,10 @@ class GameState {
     return baseNumbers;
   }
 
+  /**
+   * @param {number} levelIndex
+   * @returns {LevelConfig}
+   */
   generateProceduralLevel(levelIndex) {
     const idx = Math.max(0, Math.floor(Number(levelIndex) || 0));
     const manualMax = this.MANUAL_LEVEL_COUNT || this.levels?.length || 40;
@@ -183,6 +215,10 @@ class GameState {
     };
   }
 
+  /**
+   * @param {number} levelIndex
+   * @returns {LevelConfig}
+   */
   getLevelConfig(levelIndex) {
     try {
       const idx = Math.max(0, Math.floor(Number(levelIndex) || 0));

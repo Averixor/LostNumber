@@ -1,3 +1,5 @@
+// @ts-check
+
 GridManager.prototype.shuffleGrid = function () {
   try {
     const all = [];
@@ -48,6 +50,10 @@ GridManager.prototype.shuffleGrid = function () {
   }
 };
 
+/**
+ * @param {GridPoint[]} removedCells
+ * @returns {boolean}
+ */
 GridManager.prototype.applyLocalGravity = function (removedCells) {
   try {
     if (!removedCells || !Array.isArray(removedCells)) {
@@ -195,6 +201,11 @@ GridManager.prototype.applyLocalGravity = function (removedCells) {
   }
 };
 
+/**
+ * @param {number} [requiredEmptyDepth]
+ * @param {number} [maxMovesPerTurn]
+ * @returns {number}
+ */
 GridManager.prototype.applyPressureTransfer = function (
   requiredEmptyDepth = 2,
   maxMovesPerTurn = 8,
@@ -315,6 +326,11 @@ GridManager.prototype.applyPressureTransfer = function (
   }
 };
 
+/**
+ * @param {number} x
+ * @param {number} y
+ * @returns {number}
+ */
 GridManager.prototype.countEmptyBelow = function (x, y) {
   try {
     if (x < 0 || x >= this.game.GRID_W) return 0;

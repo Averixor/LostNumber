@@ -1,7 +1,13 @@
+// @ts-check
+/// <reference path="./LostNumberGame.js" />
+
 LostNumberGame.prototype.checkExistingSave = function () {
   try {
     const raw = this.storageManager.loadGameState();
-    const continueBtn = document.getElementById('continueBtn');
+    /** @type {HTMLButtonElement | null} */
+    const continueBtn = /** @type {HTMLButtonElement | null} */ (
+      document.getElementById('continueBtn')
+    );
 
     if (!raw) {
       this.hasSave = false;
@@ -111,8 +117,16 @@ LostNumberGame.prototype.fixGridStructure = function () {
   }
 };
 
+/**
+ * @param {SaveData} state
+ */
 LostNumberGame.prototype.restoreFromState = function (state) {
   try {
+    /**
+     * @param {unknown} value
+     * @param {number} fallback
+     * @param {{ min?: number, max?: number, integer?: boolean }} [options]
+     */
     function safeNumber(value, fallback, options = {}) {
       const min = options.min ?? -Infinity;
       const max = options.max ?? Infinity;
@@ -125,12 +139,18 @@ LostNumberGame.prototype.restoreFromState = function (state) {
       return integer ? Math.floor(clamped) : clamped;
     }
 
+    /**
+     * @template T
+     * @param {unknown} value
+     * @param {T} fallback
+     * @returns {Record<string, unknown> | T}
+     */
     function safePlainObject(value, fallback) {
       if (!value || typeof value !== 'object' || Array.isArray(value)) {
         return fallback;
       }
 
-      return value;
+      return /** @type {Record<string, unknown>} */ (value);
     }
 
     this.currentLevel = safeNumber(state.currentLevel, 0, {
@@ -234,6 +254,7 @@ LostNumberGame.prototype.saveGameState = function () {
           ? Object.fromEntries(this.frozenCells)
           : {};
 
+    /** @type {SaveData} */
     const state = {
       version: 2,
       gridSchemaVersion: 2,
@@ -262,6 +283,9 @@ LostNumberGame.prototype.saveGameState = function () {
   }
 };
 
+/**
+ * @returns {(SerializedGridCell | null)[][]}
+ */
 LostNumberGame.prototype._serializeGridV2 = function () {
   const grid = [];
   if (!this.grid || !Array.isArray(this.grid)) return grid;
@@ -293,6 +317,10 @@ LostNumberGame.prototype._serializeGridV2 = function () {
   return grid;
 };
 
+/**
+ * @param {unknown} rawGrid
+ * @returns {LostNumberCell[][]}
+ */
 LostNumberGame.prototype._parseGridV2 = function (rawGrid) {
   const grid = [];
   for (let x = 0; x < this.GRID_W; x++) {

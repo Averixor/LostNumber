@@ -5,7 +5,8 @@
     "@cursor/sdk": "^1.0.12",
     "eslint": "^10.3.0",
     "globals": "^17.6.0",
-    "prettier": "3.5.3"
+    "prettier": "3.5.3",
+    "typescript": "^5.9.3"
   },
   "scripts": {
     "format": "node ./node_modules/prettier/bin/prettier.cjs --write .",
@@ -13,6 +14,7 @@
     "lint": "node ./node_modules/eslint/bin/eslint.js .",
     "lint:fix": "node ./node_modules/eslint/bin/eslint.js . --fix",
     "check": "node ./scripts/check.mjs",
+    "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit -p tsconfig.json",
     "cursor:audit": "node ./scripts/cursor-audit-local.mjs",
     "cursor:audit:stream": "node ./scripts/cursor-audit-local.mjs --stream"
   }

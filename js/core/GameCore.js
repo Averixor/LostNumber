@@ -1,8 +1,14 @@
+// @ts-check
+
 class GameCore {
   constructor(game) {
     this.game = game;
   }
 
+  /**
+   * @param {MoveValidationState} state
+   * @returns {MoveValidationResult}
+   */
   validateMove(state) {
     try {
       const { selected, grid, chain } = state;
@@ -76,6 +82,10 @@ class GameCore {
     }
   }
 
+  /**
+   * @param {GridPoint} a
+   * @param {GridPoint} b
+   */
   isAdjacent(a, b) {
     try {
       return Rules.isAdjacent(a, b);

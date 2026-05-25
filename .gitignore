@@ -5,6 +5,9 @@ node_modules/
 # Local browser/debug profiles
 .chrome-*/
 
+# Local review artifacts (saved diffs, not part of the game)
+_review-diff*.patch
+
 # Local project/cache databases
 .project/
 *.sqlite
