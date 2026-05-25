@@ -662,11 +662,6 @@ class WheelManager {
           }
         }
       }
-
-      const gameWheelCost = document.getElementById('gameWheelCost');
-      if (gameWheelCost) {
-        gameWheelCost.textContent = cost;
-      }
     } catch (error) {
       ErrorHandler.handle(error, {
         type: 'wheel_ui_update',

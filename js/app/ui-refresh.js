@@ -39,15 +39,11 @@ LostNumberGame.prototype.updateXPBar = function () {
 LostNumberGame.prototype.updateMultiplierIndicator = function () {
   try {
     const indicator = document.getElementById('xpMultiplierIndicator');
-    const counter = document.getElementById('xpMultiplierCount');
 
     if (!indicator) return;
 
     if (this.xpMultiplier > 1 && this.xpMultiplierTurns > 0) {
       indicator.style.display = 'block';
-      if (counter) {
-        counter.textContent = this.xpMultiplierTurns;
-      }
       const label = this.formatTemplate('xp_multiplier_active', {
         multiplier: this.xpMultiplier,
         turns: this.xpMultiplierTurns,

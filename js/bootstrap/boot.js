@@ -9,12 +9,12 @@ window.showCriticalError = function (message, errorId, options) {
     const container = document.getElementById('criticalErrorContainer');
     const msg = document.getElementById('criticalErrorMessage');
     const idEl = document.getElementById('criticalErrorId');
-    const asHtml = options && options.html === true;
+    const allowFatalHtml = options && options.html === true && message === LN_FATAL_LOAD_HTML;
 
     if (container && msg) {
       const fallbackText = 'Не вдалося завантажити гру. Оновіть сторінку або спробуйте пізніше.';
-      if (asHtml) {
-        msg.innerHTML = message || '';
+      if (allowFatalHtml) {
+        msg.innerHTML = LN_FATAL_LOAD_HTML;
       } else {
         msg.textContent = message != null && message !== '' ? message : fallbackText;
       }
@@ -129,7 +129,6 @@ window.addEventListener('beforeunload', (e) => {
   try {
     if (window.game?.hasUnsavedChanges) {
       e.preventDefault();
-      e.returnValue = 'Есть несохраненные изменения. Вы уверены?';
     }
   } catch (_) {}
 });

@@ -89,24 +89,6 @@ class DailyQuestManager {
     });
   }
 
-  updateDailyIndicator() {
-    const el = document.getElementById('dailyIndicator');
-    if (!el) return;
-
-    if (!this.quests) {
-      this.loadDailyQuests();
-    }
-
-    const total = this.quests.list.length;
-    const done = Object.keys(this.quests.completed).length;
-
-    if (done >= total) {
-      el.textContent = '✅';
-    } else {
-      el.textContent = '●';
-    }
-  }
-
   completeDailyQuest(id) {
     if (!this.quests) {
       this.loadDailyQuests();
@@ -118,7 +100,6 @@ class DailyQuestManager {
     this.quests.completed[id] = true;
 
     this.game.showMessage(this.game.t('daily_completed'));
-    this.updateDailyIndicator();
     this.giveDailyQuestReward(id);
 
     if (this.storage && typeof this.storage.saveDailyQuests === 'function') {
