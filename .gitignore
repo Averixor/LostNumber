@@ -1,3 +1,8 @@
+# Android signing (never commit)
+android/keystore/
+android/keystore.properties
+*.jks
+
 # Sync .project/sourceTexts/ folder (source text files)
 
 node_modules/
