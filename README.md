@@ -19,10 +19,21 @@ npx serve .
 
 ## Брендинг та графіка
 
-Лише **два** растрові файли:
+**Фони** (чергуються раз на календарний день при вході в головне меню):
 
-- `assets/images/background.jpg` — єдиний статичний фон для всіх екранів (завантаження, меню, гра, налаштування).
-- `assets/icons/icon.png` — іконка застосунку (512×512; PWA, браузер, Android Studio Image Asset).
+- `assets/images/background.png` — фон №1
+- `assets/images/background-alt.png` — фон №2
+
+Логіка: `js/system/platform/background.js` (`BackgroundRotator`), стан у `localStorage` ключ `lostNumberBackground`.
+
+**Іконки:**
+
+- `assets/icons/icon.png` — 512×512 (PWA, favicon, браузер)
+- `assets/icons/icon-1024.png` — 1024×1024 (Android adaptive icon, PWA maskable)
+
+Android mipmap: `python3 scripts/generate-android-icons.py` (джерело — `icon-1024.png`).
+
+Назва застосунку на пристрої: **Lost Number** (`capacitor.config.json`, `android/.../strings.xml`).
 
 Колір оболонки PWA / `theme-color`: **`#1b1028`**.
 
@@ -57,7 +68,7 @@ npm run android:open      # Android Studio
 Після `npm install`:
 
 | Команда                       | Опис                                                                                                                                                 |
-|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `npm run format`              | Prettier — запис усіх відповідних файлів                                                                                                             |
 | `npm run format:check`        | Prettier — лише перевірка без змін                                                                                                                   |
 | `npm run lint`                | ESLint                                                                                                                                               |
@@ -81,6 +92,8 @@ node ./scripts/test-min-tile.mjs
 node ./scripts/test-level-config.mjs
 node ./scripts/test-storage-fallback.mjs
 node ./scripts/test-error-handler-fallback.mjs
+node ./scripts/test-grid-dom-sync.mjs
+node ./scripts/test-android-assets.mjs   # build:pages + cap sync + перевірка assets
 ```
 
 У Windows за бажанням можна користуватися **`format.ps1`** / **`lint.ps1`** поруч з npm-командами, або напряму **`node ./scripts/check.mjs`** (те саме, що `npm run check`, без залежності від cmd/npx у PATH).

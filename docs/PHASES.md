@@ -10,10 +10,12 @@
 
 ## Мобільний UX (реалізовано)
 
-- Єдиний шаблон кнопок меню: іконка 32px + текст (`css/ui.css`, `index.html`).
+- Єдиний шаблон кнопок меню: іконка 32px + текст (`css/ui.css`, `index.html`); головне меню — по центру екрана.
+- Два фони: чергування раз на день при вході в головне меню (`background.js`).
 - Збереження партії: `lostNumberSave`, кнопка «Продовжити», автозбереження при виході з гри.
-- Android «Назад»: `js/app/navigation/back-navigation.js`, `@capacitor/app`.
+- Android «Назад»: `js/app/navigation/back-navigation.js`, confirm «Нова гра» — `menu.js`.
 - Аудіо: `docs/AUDIO.md`.
+- Smoke DOM↔модель: `scripts/test-grid-dom-sync.mjs`.
 
 ## Фаза 6 — Firebase (ще не впроваджувати до закриття фази 5)
 

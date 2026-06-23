@@ -4,14 +4,14 @@
 
 ## Що вже налаштовано
 
-| Компонент                              | Призначення                                               |
-| -------------------------------------- | --------------------------------------------------------- |
-| `capacitor.config.json`                | `appId`, `webDir: _site`, portrait, темна status bar      |
-| `android/`                             | Gradle-проєкт Android Studio                              |
-| `js/bootstrap/capacitor-bridge.js`     | Status bar, `ln-native-app`, автозбереження при згортанні |
-| `js/app/navigation/back-navigation.js` | Системна кнопка «Назад» (`@capacitor/app`)                |
-| `public/audio/` → `_site/audio/`       | Музика та SFX у APK (див. `docs/AUDIO.md`)                |
-| `npm run android:prepare`              | `build:pages` + `cap sync android`                        |
+| Компонент                              | Призначення                                                |
+| -------------------------------------- | ---------------------------------------------------------- |
+| `capacitor.config.json`                | `appId`, `appName`: Lost Number, `webDir: _site`, portrait |
+| `android/`                             | Gradle-проєкт Android Studio                               |
+| `js/bootstrap/capacitor-bridge.js`     | Status bar, `ln-native-app`, автозбереження при згортанні  |
+| `js/app/navigation/back-navigation.js` | Системна кнопка «Назад» (`@capacitor/app`)                 |
+| `public/audio/` → `_site/audio/`       | Музика та SFX у APK (див. `docs/AUDIO.md`)                 |
+| `npm run android:prepare`              | `build:pages` + `cap sync android`                         |
 
 **Capacitor-плагіни:** `@capacitor/status-bar`, `@capacitor/app`.
 
@@ -19,12 +19,12 @@
 
 ### Кнопка «Назад» (Android)
 
-| Екран                               | Дія                                |
-| ----------------------------------- | ---------------------------------- |
-| Колесо / оверлей рівня / перемога   | Закрити оверлей або перейти в меню |
-| Ігрове поле                         | Зберегти → головне меню            |
-| Налаштування, статистика, завдання… | Головне меню                       |
-| Головне меню                        | `App.exitApp()`                    |
+| Екран                                                  | Дія                                |
+| ------------------------------------------------------ | ---------------------------------- |
+| Колесо / оверлей рівня / перемога / confirm «Нова гра» | Закрити оверлей або перейти в меню |
+| Ігрове поле                                            | Зберегти → головне меню            |
+| Налаштування, статистика, завдання…                    | Головне меню                       |
+| Головне меню                                           | `App.exitApp()`                    |
 
 Реалізація: `handleBackNavigation()` + `setupNativeBackButton()` у `back-navigation.js`, виклик з `boot.js`.
 
@@ -87,13 +87,19 @@ cd android
 
 ## Іконка застосунку
 
-За замовчуванням — стандартна іконка Capacitor. Щоб поставити брендову:
+Брендовані іконки вже в проєкті. Після зміни `assets/icons/icon-1024.png`:
 
-1. Android Studio → **app** → правий клік → **New** → **Image Asset**.
-2. Source: `assets/icons/icon.png`.
-3. Згенерувати `mipmap` для всіх щільностей.
+```bash
+python3 scripts/generate-android-icons.py
+cd android && ./gradlew assembleDebug
+```
 
-Або використати [@capacitor/assets](https://github.com/ionic-team/capacitor-assets) (опційно).
+- **512×512** — `assets/icons/icon.png` (PWA, favicon)
+- **1024×1024** — `assets/icons/icon-1024.png` (мастер для Android adaptive icon)
+
+Скрипт генерує `mipmap-*/ic_launcher.png`, `ic_launcher_round.png`, `ic_launcher_foreground.png`; фон adaptive icon — `#1B1028`.
+
+Альтернатива: Android Studio → Image Asset з `assets/icons/icon.png`, або [@capacitor/assets](https://github.com/ionic-team/capacitor-assets).
 
 ## PWA без магазину
 

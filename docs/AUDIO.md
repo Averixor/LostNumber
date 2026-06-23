@@ -34,6 +34,8 @@ public/audio/  →  npm run build:pages  →  _site/audio/  →  Capacitor Andro
 - `musicVolume` — 0.25 / 0.5 / 0.75 / 1.0;
 - `musicTrack` — один із ключів таблиці вище.
 
+Застосування налаштувань: **`AudioManager.applySettings()`** (`settings.js`, constructor `LostNumberGame`). Окремо **`setSoundEnabled()`** — перемикач 🔊 у футері гри (`ui-events.js`).
+
 ## Звукові ефекти (`public/audio/sfx/`)
 
 | Файл                 | Метод                 | Коли грає                                                                |
