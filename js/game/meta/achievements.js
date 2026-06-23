@@ -22,6 +22,16 @@ class AchievementManager {
     }
   }
 
+  trackBonusTypeUsed(type) {
+    if (!type) return;
+    if (!this._bonusTypesUsed) {
+      this._bonusTypesUsed = new Set();
+    }
+    if (this._bonusTypesUsed.has(type)) return;
+    this._bonusTypesUsed.add(type);
+    this.updateAchievementProgress('useAllBonuses', 1);
+  }
+
   renderAchievementsScreen() {
     const grid = document.getElementById('achievementsGrid');
     if (!grid) return;

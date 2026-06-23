@@ -284,7 +284,7 @@ class GameState {
         xp5000: { unlocked: false, progress: 0, max: 5000 },
         chain5: { unlocked: false, progress: 0, max: 5 },
         chain10: { unlocked: false, progress: 0, max: 10 },
-        useAllBonuses: { unlocked: false, progress: 0, max: 5 },
+        useAllBonuses: { unlocked: false, progress: 0, max: 3 },
         spinWheel: { unlocked: false, progress: 0, max: 1 },
         spinWheel10: { unlocked: false, progress: 0, max: 10 },
       };

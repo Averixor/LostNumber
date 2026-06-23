@@ -113,24 +113,14 @@ window.addEventListener(
 
 window.addEventListener('online', function () {
   if (window.game && typeof window.game.showMessage === 'function') {
-    const msg = window.game.t ? window.game.t('online_status') : 'Соединение восстановлено';
-    window.game.showMessage(msg);
+    window.game.showMessage(window.game.t('online_status'));
   }
 });
 
 window.addEventListener('offline', function () {
   if (window.game && typeof window.game.showMessage === 'function') {
-    const msg = window.game.t ? window.game.t('offline_status') : 'Режим офлайн';
-    window.game.showMessage(msg);
+    window.game.showMessage(window.game.t('offline_status'));
   }
-});
-
-window.addEventListener('beforeunload', (e) => {
-  try {
-    if (window.game?.hasUnsavedChanges) {
-      e.preventDefault();
-    }
-  } catch (_) {}
 });
 
 document.addEventListener('click', function (e) {

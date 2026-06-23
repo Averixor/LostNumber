@@ -273,7 +273,7 @@
         <div class="level-title" id="levelOverlayTitle" data-i18n="level_completed_title"></div>
         <div class="level-text" id="levelOverlayText"></div>
         <div class="level-stats" id="levelStats"></div>
-        <div class="level-countdown" id="levelCountdown"></div>
+        <div class="level-countdown hidden" id="levelCountdown" aria-hidden="true"></div>
         <div class="menu-buttons">
           <button
             class="menu-btn secondary"
@@ -423,13 +423,28 @@
       </div>
 
       <div class="game-footer" id="gameFooter">
-        <button class="footer-btn" id="footerHomeBtn" data-i18n-title="btn_home">
+        <button
+          class="footer-btn"
+          id="footerHomeBtn"
+          data-i18n-title="btn_home"
+          data-i18n-aria-label="btn_home"
+        >
           <span data-i18n="icon_home"></span>
         </button>
-        <button class="footer-btn" id="footerSoundBtn" data-i18n-title="btn_sound">
+        <button
+          class="footer-btn"
+          id="footerSoundBtn"
+          data-i18n-title="btn_sound"
+          data-i18n-aria-label="btn_sound"
+        >
           <span data-i18n="icon_sound"></span>
         </button>
-        <button class="footer-btn" id="footerSaveBtn" data-i18n-title="btn_save">
+        <button
+          class="footer-btn"
+          id="footerSaveBtn"
+          data-i18n-title="btn_save"
+          data-i18n-aria-label="btn_save"
+        >
           <span data-i18n="icon_save"></span>
         </button>
       </div>

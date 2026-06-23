@@ -153,6 +153,14 @@ class ErrorHandler {
     Object.assign(this._config, config);
   }
 
+  static _shouldShowUserMessage(meta) {
+    if (this._config.showUserMessages) {
+      return true;
+    }
+    const types = this._config.userVisibleErrorTypes;
+    return Array.isArray(types) && types.includes(meta.type);
+  }
+
   static _id() {
     this._counter++;
     return `LN-${Date.now().toString(36).slice(-6)}-${this._counter.toString(36).toUpperCase()}`;
@@ -251,7 +259,7 @@ class ErrorHandler {
       console.groupEnd();
     }
 
-    if (this._config.showUserMessages) {
+    if (this._shouldShowUserMessage(meta)) {
       try {
         const g = this._game || window.game;
         if (g && typeof g.showMessage === 'function') {
@@ -260,6 +268,12 @@ class ErrorHandler {
             message = g.t ? g.t('error_resource') : 'Помилка завантаження ресурсу';
           } else if (meta.type === 'promise') {
             message = g.t ? g.t('error_async') : 'Асинхронна помилка';
+          } else if (
+            meta.type === 'game_resume' ||
+            meta.type === 'save_state' ||
+            meta.type === 'save_error'
+          ) {
+            message = g.t ? g.t('error_load') : message;
           }
 
           const fullMessage = `${message} (${id})`;

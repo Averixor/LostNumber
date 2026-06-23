@@ -24,9 +24,6 @@ LostNumberGame.prototype.initializeErrorHandler = function () {
     });
   } catch (error) {
     console.error('Failed to initialize ErrorHandler:', error);
-    if (typeof ErrorHandlerFallback !== 'undefined') {
-      window.ErrorHandler = ErrorHandlerFallback;
-    }
   }
 };
 

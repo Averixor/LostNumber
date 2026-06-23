@@ -77,9 +77,9 @@ node ./scripts/test-error-handler-fallback.mjs
 Чит-панель і консольні команди — **не** частина звичайного production-релізу. Увімкнення **не** залежить лише від `?dev=1`, `?cheats=1` або `?debug=…` на публічному хості.
 
 - **`window.LN_isDevToolsAllowed()`** — головний gate: `true` лише на **локальній** dev-середовищі (`localhost`, `127.0.0.1`, `::1`, `[::1]`, `file://`, `*.local`, private LAN `10.x` / `192.168.x` / `172.16–31.x`) **або** якщо збірка явно встановила **`window.LN_BUILD_FLAGS.cheatsEnabled === true`** (майбутній Android debug).
-- API: **`window.LN_CODES`** (консольні «слова»), панель — **`window.LN_CODES.panel()`** або **Ctrl+Backquote** / **`Ctrl+`** після завантаження `js/system/cheats.js`.
+- API: **`window.LN_CODES`** (консольні «слова»), панель — **`window.LN_CODES.panel()`** або **Ctrl+Backquote** / **`Ctrl+`** після завантаження `js/system/dev/cheats.js`.
 - На **GitHub Pages** ([демо](https://averixor.github.io/LostNumber/)) gated dev cheats tooling **вимкнено**; query-параметри самі по собі чити **не вмикають**.
-- П’ять кліків по блоку «Ще» в About — лише коли gate дозволяє (`js/system/dev-entry.js`).
+- П’ять кліків по блоку «Ще» в About — лише коли gate дозволяє (`js/system/dev/dev-entry.js`).
 
 Android debug (приклад у `index.html` перед іншими скриптами):
 

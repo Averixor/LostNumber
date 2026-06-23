@@ -131,3 +131,23 @@ body.no-animations *::after {
     transform: scale(1);
   }
 }
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-color, #c4a0ff);
+  outline-offset: 2px;
+}
+
+button:focus:not(:focus-visible),
+select:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.cell:focus-visible {
+  outline: 2px solid var(--accent-color, #c4a0ff);
+  outline-offset: -1px;
+  z-index: 2;
+}

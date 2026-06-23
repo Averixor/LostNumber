@@ -1,6 +1,47 @@
 // @ts-check
 /// <reference path="../core/LostNumberGame.js" />
 
+LostNumberGame.prototype.validateAndRepairLoadedState = function () {
+  let repaired = false;
+
+  try {
+    if (this.state && typeof this.state.validateState === 'function') {
+      if (!this.state.validateState()) {
+        this.showMessage(this.t('game_corrupted'));
+        if (typeof this.state.repairState === 'function') {
+          repaired = this.state.repairState() || repaired;
+        }
+      }
+    }
+
+    if (this.gridManager && typeof this.gridManager.validateGrid === 'function') {
+      if (!this.gridManager.validateGrid()) {
+        this.showMessage(this.t('grid_corrupted'));
+        if (typeof this.gridManager.repairGrid === 'function') {
+          repaired = this.gridManager.repairGrid() || repaired;
+        }
+      }
+    }
+
+    if (repaired) {
+      this.showMessage(this.t('state_repaired'));
+      this.saveGameState();
+    }
+  } catch (error) {
+    ErrorHandler.handle(error, { type: 'state_restore' });
+  }
+
+  return repaired;
+};
+
+LostNumberGame.prototype.checkStorageHealth = function () {
+  try {
+    if (this.storageManager?.isStorageDegraded?.()) {
+      this.showMessage(this.t('storage_degraded'));
+    }
+  } catch (_) {}
+};
+
 LostNumberGame.prototype.checkExistingSave = function () {
   try {
     const raw = this.storageManager.loadGameState();
@@ -41,6 +82,7 @@ LostNumberGame.prototype.resumeGame = function () {
     }
 
     this.restoreFromState(data);
+    this.validateAndRepairLoadedState();
 
     this.applyLanguage(this.lang || 'ua');
     this.applyTheme();
@@ -60,10 +102,24 @@ LostNumberGame.prototype.resumeGame = function () {
     if (this.wheelManager) {
       this.wheelManager.updateWheelUI();
     }
+
+    if (this._levelSkipResumeMessage) {
+      this.showMessage(this._levelSkipResumeMessage);
+      this._levelSkipResumeMessage = null;
+    }
+
+    this.checkStorageHealth();
   } catch (error) {
-    ErrorHandler.handle(error, { type: 'game_resume', data: arguments[0] });
-    console.error('Resume fail, starting new:', error);
-    this.startNewGame();
+    ErrorHandler.handle(error, { type: 'game_resume' });
+    const ok = confirm(this.t('confirm_resume_failed'));
+    if (ok) {
+      this.storageManager.clearSave();
+      this.hasSave = false;
+      this.startNewGame();
+    } else {
+      this.showScreen('mainMenu');
+      this.checkExistingSave();
+    }
   }
 };
 
@@ -83,8 +139,10 @@ LostNumberGame.prototype.fixGridStructure = function () {
         const cellData = this.grid[x][y];
 
         if (typeof cellData === 'number' || cellData === null || cellData === undefined) {
+          const fallbackNumber =
+            typeof cellData === 'number' ? cellData : this.getMinimumSpawnTile(this.currentLevel);
           this.grid[x][y] = {
-            number: typeof cellData === 'number' ? cellData : this.generateCellNumber(),
+            number: fallbackNumber,
             merged: false,
             frozen: false,
             freezeTurns: 0,
@@ -92,7 +150,7 @@ LostNumberGame.prototype.fixGridStructure = function () {
           };
         } else if (typeof cellData === 'object' && cellData !== null) {
           if (cellData.number === undefined) {
-            cellData.number = this.generateCellNumber();
+            cellData.number = this.getMinimumSpawnTile(this.currentLevel);
           }
           if (cellData.merged === undefined) {
             cellData.merged = false;
@@ -211,6 +269,14 @@ LostNumberGame.prototype.restoreFromState = function (state) {
     this.checkWheelDailyReset();
 
     if (this.pendingTransition && this.pendingTransition.active) {
+      const completedLevelNumber =
+        (typeof this.pendingTransition.completedLevelIndex === 'number'
+          ? this.pendingTransition.completedLevelIndex
+          : this.currentLevel) + 1;
+      this._levelSkipResumeMessage = this.formatTemplate('level_skip_resume', {
+        level: completedLevelNumber,
+      });
+
       this.currentLevel = safeNumber(this.pendingTransition.nextLevel, this.currentLevel, {
         min: 0,
         integer: true,
@@ -276,6 +342,7 @@ LostNumberGame.prototype.saveGameState = function () {
 
     this.storageManager.saveGameState(state);
     this.hasSave = true;
+    this.checkStorageHealth();
 
     ErrorHandler.info('Game state saved', { level: this.currentLevel, xp: this.xp });
   } catch (error) {

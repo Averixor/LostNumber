@@ -46,7 +46,7 @@ class BonusManager {
 
             if (this.game.achievementManager) {
               ErrorHandler.safeExecute(() => {
-                this.game.achievementManager.updateAchievementProgress('useAllBonuses', 1);
+                this.game.achievementManager.trackBonusTypeUsed('shuffle');
               });
             }
 
@@ -199,7 +199,7 @@ class BonusManager {
               this.game.setGamePhase('playing');
 
               if (this.game.achievementManager) {
-                this.game.achievementManager.updateAchievementProgress('useAllBonuses', 1);
+                this.game.achievementManager.trackBonusTypeUsed('destroy');
               }
 
               if (this.game.dailyQuestManager) {
@@ -299,7 +299,7 @@ class BonusManager {
               this.game.setGamePhase('playing');
 
               if (this.game.achievementManager) {
-                this.game.achievementManager.updateAchievementProgress('useAllBonuses', 1);
+                this.game.achievementManager.trackBonusTypeUsed('explosion');
               }
 
               if (this.game.dailyQuestManager) {

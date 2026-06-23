@@ -10,6 +10,10 @@ class StorageManager {
     this._usingMemory = false;
   }
 
+  isStorageDegraded() {
+    return this._usingMemory === true;
+  }
+
   saveGameState(state) {
     try {
       localStorage.setItem(this.SAVE_KEY, JSON.stringify(state));

@@ -89,7 +89,7 @@ class MenuManager {
       soundSelect.value = this.game.soundEnabled ? 'on' : 'off';
     }
     if (themeSelect) {
-      themeSelect.value = this.game.theme || 'dawn';
+      themeSelect.value = this.game.theme || 'dusk';
     }
     if (languageSelect) {
       languageSelect.value = this.game.lang || 'ua';

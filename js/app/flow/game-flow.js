@@ -1,5 +1,8 @@
 LostNumberGame.prototype.startNewGame = function () {
   try {
+    this.initSeededRandom(true);
+    this._bonusTypesUsed = new Set();
+
     this.currentLevel = 0;
     this.xp = 0;
     this.xpMultiplier = 1;
@@ -39,7 +42,7 @@ LostNumberGame.prototype.startNewGame = function () {
   } catch (error) {
     ErrorHandler.handle(error, { type: 'new_game' });
     this.showScreen('mainMenu');
-    this.showMessage(this.t('error_start_game') || 'Не удалось начать игру');
+    this.showMessage(this.t('error_start_game'));
   }
 };
 
@@ -196,6 +199,7 @@ LostNumberGame.prototype.handleLevelComplete = function () {
 
     this.achievementManager.updateAchievementProgress('level10', 1);
     this.achievementManager.updateAchievementProgress('level25', 1);
+    this.achievementManager.updateAchievementProgress('firstGame', 1);
 
     this.dailyQuestManager.completeDailyQuest('completeLevel');
 
@@ -203,7 +207,7 @@ LostNumberGame.prototype.handleLevelComplete = function () {
     const title = document.getElementById('levelOverlayTitle');
     const text = document.getElementById('levelOverlayText');
     const stats = document.getElementById('levelStats');
-    const countdown = document.getElementById('levelCountdown');
+
     let power = 0;
     if (level.target > 0 && Number.isFinite(level.target)) {
       power = Math.round(Math.log2(level.target));

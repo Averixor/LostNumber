@@ -145,7 +145,9 @@ class LostNumberGame {
       ErrorHandler.warn('ErrorBoundary setup failed', e);
     }
 
-    document.addEventListener('contextmenu', (e) => e.preventDefault());
+    document.getElementById('grid')?.addEventListener('contextmenu', (e) => {
+      if (this.isDragging) e.preventDefault();
+    });
   }
 
   _bindStateProxy() {
@@ -271,7 +273,7 @@ class LostNumberGame {
             reason: 'fps',
           });
           try {
-            this.showMessage?.('FPS просів — фонові цифри вимкнено');
+            this.showMessage?.(this.t('lite_fps_disabled'));
           } catch (_) {}
         } catch (err) {
           ErrorHandler.warn('Auto-disable floating numbers failed', { err });

@@ -84,7 +84,15 @@
   } catch (_) {}
 
   window.ErrorHandlerConfig = {
-    showUserMessages: true,
+    showUserMessages: isDev,
+    userVisibleErrorTypes: [
+      'fatal_init',
+      'game_resume',
+      'save_state',
+      'save_error',
+      'state_restore',
+      'new_game',
+    ],
     logToConsole: isDev,
     collectStackTraces: true,
     maxErrorsPerMinute: isDebugFull ? 250 : isDev ? 120 : 50,
