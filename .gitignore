@@ -3,6 +3,14 @@
 node_modules/
 _site/
 
+# Capacitor / Android build artifacts
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+*.apk
+*.aab
+
 # Local browser/debug profiles
 .chrome-*/
 

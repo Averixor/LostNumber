@@ -13,46 +13,19 @@
   "categories": ["games", "puzzle", "casual"],
   "icons": [
     {
-      "src": "./assets/icons/icon-192.png",
-      "sizes": "192x192",
+      "src": "./assets/icons/icon.png",
+      "sizes": "48x48",
       "type": "image/png",
       "purpose": "any"
-    },
-    {
-      "src": "./assets/icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./assets/icons/icon-maskable-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
     }
   ],
   "screenshots": [
     {
-      "src": "./assets/images/splash-screen.png",
-      "sizes": "720x1280",
-      "type": "image/png",
+      "src": "./assets/images/background.jpg",
+      "sizes": "576x1024",
+      "type": "image/jpeg",
       "form_factor": "narrow",
-      "label": "Lost Number loading screen"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Грати",
-      "short_name": "Грати",
-      "description": "Запустити Lost Number",
-      "url": "./",
-      "icons": [
-        {
-          "src": "./assets/icons/icon-192.png",
-          "sizes": "192x192",
-          "type": "image/png"
-        }
-      ]
+      "label": "Lost Number"
     }
   ],
   "prefer_related_applications": false

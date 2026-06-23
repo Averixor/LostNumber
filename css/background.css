@@ -1,0 +1,20 @@
+.app-background {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  background-color: #1b1028;
+  background-image: url('../assets/images/background.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+html,
+body {
+  background: transparent;
+}
+
+.screen {
+  background: transparent;
+}

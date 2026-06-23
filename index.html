@@ -67,7 +67,7 @@
         }
       })();
     </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta
       name="description"
       content="Lost Number — легка логічна puzzle-гра з рівнями, бонусами, колесом фортуни та локальним збереженням прогресу."
@@ -76,8 +76,8 @@
 
     <link rel="manifest" href="./manifest.json" />
 
-    <link rel="icon" href="./assets/icons/favicon.ico" sizes="any" />
-    <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png" />
+    <link rel="icon" href="./assets/icons/icon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="./assets/icons/icon.png" />
 
     <meta name="theme-color" content="#1b1028" />
     <meta name="background-color" content="#1b1028" />
@@ -86,16 +86,9 @@
     <link
       rel="preload"
       as="image"
-      href="./assets/images/splash-screen.webp"
-      type="image/webp"
+      href="./assets/images/background.jpg"
+      type="image/jpeg"
       fetchpriority="high"
-    />
-    <link
-      rel="preload"
-      as="image"
-      href="./assets/images/logo-363.webp"
-      fetchpriority="high"
-      type="image/webp"
     />
 
     <meta name="mobile-web-app-capable" content="yes" />
@@ -110,7 +103,7 @@
     />
     <meta
       property="og:image"
-      content="https://averixor.github.io/LostNumber/assets/icons/icon-512.png"
+      content="https://averixor.github.io/LostNumber/assets/images/background.jpg"
     />
     <meta property="og:type" content="website" />
 
@@ -130,6 +123,7 @@
     </script>
 
     <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/background.css" />
     <link rel="stylesheet" href="css/critical.css" />
     <link rel="stylesheet" href="css/base.css" />
     <link
@@ -173,8 +167,24 @@
           flags.cheatsEnabled = false;
         }
 
+        function isCapacitorNative() {
+          try {
+            return !!(
+              window.Capacitor &&
+              typeof window.Capacitor.isNativePlatform === 'function' &&
+              window.Capacitor.isNativePlatform()
+            );
+          } catch (_) {
+            return false;
+          }
+        }
+
         function isLocalDevEnvironment() {
           try {
+            if (isCapacitorNative()) {
+              return false;
+            }
+
             var loc = window.location;
             var protocol = (loc.protocol || '').toLowerCase();
             if (protocol === 'file:') {
@@ -223,19 +233,9 @@
   </head>
 
   <body>
+    <div id="appBackground" class="app-background" aria-hidden="true"></div>
+
     <div id="appSplash" class="app-splash" aria-busy="true">
-      <picture class="app-splash__picture">
-        <source srcset="./assets/images/splash-screen.webp" type="image/webp" />
-        <img
-          class="app-splash__image"
-          src="./assets/images/splash-screen.png"
-          alt="Lost Number"
-          width="720"
-          height="1280"
-          decoding="async"
-          fetchpriority="high"
-        />
-      </picture>
       <div class="loading-overlay__footer">
         <div class="loading-spinner"></div>
         <div class="loading-text" data-i18n="loading">Завантаження…</div>
@@ -250,8 +250,6 @@
       <button id="criticalReloadBtn">Оновити сторінку</button>
       <div class="error-id" id="criticalErrorId"></div>
     </div>
-
-    <div class="floating-hearts" id="floatingHearts"></div>
 
     <div class="victory-overlay hidden" id="victoryOverlay">
       <div class="victory-content">
@@ -309,15 +307,7 @@
 
     <div class="screen main-menu" id="mainMenuScreen">
       <h1 class="sr-only" data-i18n="game_logo">Lost Number</h1>
-      <img
-        class="main-logo"
-        src="./assets/images/logo-363.webp"
-        alt="Lost Number"
-        width="363"
-        height="56"
-        fetchpriority="high"
-      />
-      <div class="menu-buttons">
+      <div class="menu-buttons main-menu__buttons">
         <button class="menu-btn primary" id="continueBtn" data-i18n="btn_continue"></button>
         <button class="menu-btn secondary" id="newGameBtn" data-i18n="btn_new_game"></button>
         <button class="menu-btn secondary" id="settingsBtn" data-i18n="btn_settings"></button>
@@ -462,17 +452,6 @@
           <select class="setting-control" id="animationSelect">
             <option value="on" selected data-i18n="settings_animations_on"></option>
             <option value="off" data-i18n="settings_animations_off"></option>
-          </select>
-        </div>
-        <div class="setting-item">
-          <label
-            class="setting-label"
-            for="bgEffectsSelect"
-            data-i18n="settings_bg_effects_label"
-          ></label>
-          <select class="setting-control" id="bgEffectsSelect">
-            <option value="on" selected data-i18n="settings_state_on"></option>
-            <option value="off" data-i18n="settings_state_off"></option>
           </select>
         </div>
         <div class="setting-item">
@@ -641,6 +620,7 @@
         }
       })();
     </script>
+    <script src="js/bootstrap/capacitor-bridge.js" defer></script>
     <script src="js/bootstrap/boot.js" defer></script>
   </body>
 </html>

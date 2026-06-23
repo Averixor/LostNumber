@@ -215,7 +215,7 @@ class DebugOverlay {
 
     if (isFull) {
       lines.push(
-        `liteVisual: ${g.liteVisualMode ?? '-'} anim: ${g.animationEnabled !== false} float#: ${g.floatingNumbersEnabled !== false}`,
+        `liteVisual: ${g.liteVisualMode ?? '-'} anim: ${g.animationEnabled !== false}`,
         `carry: ${g.carryNumber ?? '-'} mult: ${g.xpMultiplier ?? 1} (turns ${g.xpMultiplierTurns ?? 0})`,
       );
       try {

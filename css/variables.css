@@ -38,13 +38,13 @@
 }
 
 html[data-theme='dusk'] {
-  /* закат - исправленная иерархия */
-  --bg-color: #1b1412;
-  --bg2-color: #231916;
-  --panel-bg: #2c1e1a;
-  --panel-border: rgba(246, 232, 222, 0.15);
-  --cell-color: #362822;
-  --btn-bg: #3f2a24;
+  /* закат — напівпрозорі панелі поверх єдиного фонового зображення */
+  --bg-color: transparent;
+  --bg2-color: transparent;
+  --panel-bg: rgba(36, 22, 48, 0.82);
+  --panel-border: rgba(246, 232, 222, 0.18);
+  --cell-color: rgba(54, 40, 62, 0.9);
+  --btn-bg: rgba(63, 42, 72, 0.88);
   --btn-border: rgba(246, 232, 222, 0.15);
   --primary-color: #ff6b9d;
   --secondary-color: #ff8f6b;

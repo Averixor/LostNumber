@@ -7,9 +7,6 @@ class LostNumberGame {
     this.settingsManager = new SettingsManager(this);
     this.overlayManager = new OverlayManager(this);
 
-    this.floatingNumbersEnabled = true;
-    this.floatingNumbersDisabledBy = null;
-
     this.state = new GameState();
 
     this._bindStateProxy();
@@ -38,7 +35,7 @@ class LostNumberGame {
     this.state.gridManager = this.gridManager;
     this.refreshContextRefs();
 
-    this.createFloatingNumbers = this.screenManager.createFloatingNumbers.bind(this.screenManager);
+    this.createFloatingNumbers = function () {};
     this.showScreen = this.screenManager.showScreen.bind(this.screenManager);
     this.showMessage = this.overlayManager.showMessage.bind(this.overlayManager);
     this.updatePreviewBubble = this.overlayManager.updatePreviewBubble.bind(this.overlayManager);
@@ -94,15 +91,9 @@ class LostNumberGame {
       document.body.classList.add('no-animations');
     }
 
-    if (this.floatingNumbersEnabled !== false) {
-      this.createFloatingNumbers();
-    }
-
     this.setupUI();
     this.checkExistingSave();
     this.showScreen('mainMenu');
-
-    this._installFloatingNumbersAutoDisableListener();
 
     this._scheduleLazySideModules();
 
@@ -245,43 +236,6 @@ class LostNumberGame {
 
   getContext() {
     return this.context || this.refreshContextRefs();
-  }
-
-  _installFloatingNumbersAutoDisableListener() {
-    try {
-      window.addEventListener('lostnumber:floating-numbers-auto-disable', (e) => {
-        try {
-          if (this.floatingNumbersEnabled === false) return;
-          this.floatingNumbersEnabled = false;
-          this.floatingNumbersDisabledBy = 'fps';
-
-          if (
-            this.settingsManager &&
-            typeof this.settingsManager.applyFloatingNumbers === 'function'
-          ) {
-            this.settingsManager.applyFloatingNumbers();
-          }
-          if (this.settingsManager && typeof this.settingsManager.saveSettings === 'function') {
-            this.settingsManager.saveSettings();
-          }
-
-          const averageFps = e?.detail?.averageFps;
-          const critical = !!e?.detail?.critical;
-          ErrorHandler.info('Floating numbers auto-disabled due to low FPS', {
-            averageFps,
-            critical,
-            reason: 'fps',
-          });
-          try {
-            this.showMessage?.(this.t('lite_fps_disabled'));
-          } catch (_) {}
-        } catch (err) {
-          ErrorHandler.warn('Auto-disable floating numbers failed', { err });
-        }
-      });
-    } catch (error) {
-      ErrorHandler.warn('_installFloatingNumbersAutoDisableListener failed', { error });
-    }
   }
 
   _scheduleLazySideModules() {

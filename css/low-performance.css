@@ -1,15 +1,3 @@
-html.floating-numbers-disabled .floating-hearts,
-html.floating-numbers-disabled .floating-heart,
-html.floating-numbers-disabled [data-floating-number] {
-  display: none !important;
-  animation: none !important;
-  transition: none !important;
-}
-
-html.no-bg-effects .floating-hearts {
-  display: none !important;
-}
-
 html.low-performance *,
 html.low-performance *::before,
 html.low-performance *::after {
@@ -34,7 +22,6 @@ html.low-performance .cell.frozen {
   filter: none !important;
 }
 
-html.low-performance .floating-hearts,
 html.low-performance .preview-bubble {
   display: none !important;
 }

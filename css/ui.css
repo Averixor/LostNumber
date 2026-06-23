@@ -1,19 +1,14 @@
 .main-menu {
   text-align: center;
   gap: clamp(4px, 1vh, 8px);
-  justify-content: center;
-  padding-top: clamp(20px, 5vh, 56px);
+  justify-content: flex-end;
+  padding-top: clamp(42vh, 48vh, 54vh);
+  padding-bottom: clamp(24px, 6vh, 48px);
   box-sizing: border-box;
 }
 
-.main-menu .main-logo {
-  display: block;
-  width: min(88vw, 520px);
-  height: auto;
-  margin: 0 auto 2rem;
-  object-fit: contain;
-  animation: titleBreathe 5.2s ease-in-out infinite;
-  transform-origin: center;
+.main-menu__buttons {
+  margin-top: auto;
 }
 
 .subtitle {
@@ -653,12 +648,8 @@ html[data-theme='dusk'] .preview-bubble {
 
 @media (max-height: 520px) {
   .main-menu {
-    padding-top: clamp(8px, 2vh, 16px);
-  }
-
-  .main-menu .main-logo {
-    width: min(72vw, 380px);
-    margin-bottom: 4px;
+    padding-top: clamp(36vh, 40vh, 44vh);
+    padding-bottom: clamp(12px, 3vh, 24px);
   }
 
   .subtitle {

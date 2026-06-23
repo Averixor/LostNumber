@@ -1,6 +1,19 @@
 (function () {
+  function isCapacitorNative() {
+    try {
+      return !!(
+        window.Capacitor &&
+        typeof window.Capacitor.isNativePlatform === 'function' &&
+        window.Capacitor.isNativePlatform()
+      );
+    } catch (_) {
+      return false;
+    }
+  }
+
   const isLocalHost =
-    typeof window.LN_isLocalDevEnvironment === 'function'
+    !isCapacitorNative() &&
+    (typeof window.LN_isLocalDevEnvironment === 'function'
       ? window.LN_isLocalDevEnvironment()
       : (function () {
           const host = (window.location.hostname || '').toLowerCase();
@@ -26,7 +39,7 @@
             return true;
           }
           return false;
-        })();
+        })());
 
   let debugMode = 'off';
   let persisted = null;

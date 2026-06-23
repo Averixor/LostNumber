@@ -49,7 +49,7 @@ function normalizeLocalUrl(rawUrl) {
 
   const looksLikeLocalFile =
     /^(?:assets|audio|css|js)\//.test(value) ||
-    /^[^/]+\.(?:css|html|ico|js|json|mp3|png|svg|txt|webmanifest|webp)$/i.test(value);
+    /^[^/]+\.(?:css|html|ico|js|json|jpe?g|mp3|png|svg|txt|webmanifest|webp)$/i.test(value);
   if (!looksLikeLocalFile) {
     return null;
   }

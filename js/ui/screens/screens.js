@@ -40,48 +40,6 @@ class ScreenManager {
     }
   }
 
-  createFloatingNumbers() {
-    try {
-      if (this.game && this.game.floatingNumbersEnabled === false) {
-        const container = document.getElementById('floatingHearts');
-        if (container) container.innerHTML = '';
-        return;
-      }
-
-      const container = document.getElementById('floatingHearts');
-      if (!container) {
-        ErrorHandler.warn('Floating numbers container not found');
-        return;
-      }
-
-      const count =
-        typeof PlatformDetector !== 'undefined' && PlatformDetector.isMobile?.() ? 6 : 14;
-      const symbols = ['2', '4', '8', '16', '32', '64', '128'];
-
-      container.innerHTML = '';
-
-      for (let i = 0; i < count; i++) {
-        const h = document.createElement('div');
-        h.className = 'floating-heart';
-        h.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-        h.style.left = Math.random() * 100 + 'vw';
-        h.style.top = Math.random() * 100 + 'vh';
-        h.style.animationDelay = Math.random() * 7 + 's';
-        h.style.fontSize = 0.9 + Math.random() * 1.2 + 'rem';
-
-        try {
-          container.appendChild(h);
-        } catch (error) {
-          ErrorHandler.warn('Failed to append floating number', error);
-        }
-      }
-
-      ErrorHandler.debug('Floating numbers created', { count });
-    } catch (error) {
-      ErrorHandler.handle(error, { type: 'screen_manager', method: 'createFloatingNumbers' });
-    }
-  }
-
   hideAllScreens() {
     try {
       document.querySelectorAll('.screen').forEach((screen) => {
@@ -144,7 +102,6 @@ class ScreenManager {
       ErrorHandler.info('Attempting UI recovery');
 
       this.showScreen('mainMenu');
-      this.createFloatingNumbers();
 
       ErrorHandler.info('UI recovery completed');
       return true;

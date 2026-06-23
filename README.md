@@ -17,24 +17,34 @@
 npx serve .
 ```
 
-## Брендинг та PWA-асети
+## Брендинг та графіка
 
-- `assets/images/logo.png` — основний широкий логотип для головного екрана / промо (не в `manifest` icons).
-- `assets/images/splash-screen.webp` — основна заставка завантаження у HTML (`<picture>` + preload).
-- `assets/images/splash-screen.png` — fallback для заставки та PNG-скріншот у `manifest.json`.
-- `assets/icons/favicon.ico` — іконка вкладки браузера.
-- `assets/icons/icon-192.png` — PWA-іконка 192×192 для встановлення на Android / install prompt.
-- `assets/icons/icon-512.png` — PWA-іконка 512×512 для Android / stores / install (**purpose**: `any`).
-- `assets/icons/icon-maskable-512.png` — окремий **maskable** 512×512 з безпечними полями (Android adaptive icon).
-- `assets/icons/apple-touch-icon.png` — іконка для додавання на головний екран iOS (лише `<link rel="apple-touch-icon">`, не в `manifest` icons).
+Лише **два** растрові файли:
 
-Колір оболонки PWA / `theme-color`: **`#1b1028`** (узгоджено з `manifest`, мета-тегами в `index.html` та `--pwa-theme-color` у `css/variables.css`).
+- `assets/images/background.jpg` — єдиний статичний фон для всіх екранів (завантаження, меню, гра, налаштування).
+- `assets/icons/icon.png` — іконка застосунку (PWA, вкладка браузера, Android).
+
+Колір оболонки PWA / `theme-color`: **`#1b1028`**.
 
 ## PWA та публічний демо
 
 Живий приклад на GitHub Pages: <https://averixor.github.io/LostNumber/>
 
 Деплой налаштований через GitHub Pages як статичний сайт без Jekyll. Workflow запускає `npm run release:check`, готує `_site/` командою `npm run build:pages` і публікує лише runtime-асети гри.
+
+## Android (APK / Google Play)
+
+Нативна збірка через **Capacitor 7** — той самий код, що в браузері, у WebView-обгортці.
+
+```bash
+npm install
+npm run android:prepare   # зібрати web + sync у android/
+npm run android:open      # Android Studio
+```
+
+Детально: **[docs/ANDROID.md](docs/ANDROID.md)** (JDK, SDK, debug/release APK, іконка, типові помилки).
+
+Без магазину можна просто встановити PWA з GitHub Pages («Додати на головний екран»).
 
 ## Скрипти npm
 
@@ -52,6 +62,9 @@ npx serve .
 | `npm run test:smoke`          | Gameplay/storage/error-handler smoke-перевірки без test framework                                                                                    |
 | `npm run release:check`       | Повний предрелізний gate: format, lint, typecheck, static verifier і smoke-тести                                                                     |
 | `npm run build:pages`         | Готує `_site/` для GitHub Pages з `index.html`, `manifest.json`, `assets/`, `audio/`, `css/`, `js/`                                                  |
+| `npm run android:prepare`     | `build:pages` + синхронізація web-асетів у `android/` (Capacitor)                                                                                    |
+| `npm run android:open`        | Відкрити Gradle-проєкт у Android Studio                                                                                                              |
+| `npm run android:run`         | prepare + `cap run android` (потрібен SDK + пристрій/емулятор)                                                                                       |
 | `npm run cursor:audit`        | Допоміжний скрипт для локального аудиту з Cursor SDK                                                                                                 |
 | `npm run cursor:audit:stream` | Те саме з потоковим виводом (`cursor-audit-local.mjs --stream`)                                                                                      |
 

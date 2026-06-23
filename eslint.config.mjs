@@ -16,6 +16,8 @@ export default [
       'coverage/**',
       'dist/**',
       'build/**',
+      'android/**',
+      'android/app/src/main/assets/**',
     ],
   },
   {

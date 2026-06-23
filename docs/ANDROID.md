@@ -1,0 +1,123 @@
+# Lost Number — Android (Capacitor)
+
+Гра збирається як **нативна Android-обгортка** навколо того ж HTML/CSS/JS, що й веб-версія. Движок — [Capacitor 7](https://capacitorjs.com/).
+
+## Що вже налаштовано
+
+| Компонент                          | Призначення                                              |
+| ---------------------------------- | -------------------------------------------------------- |
+| `capacitor.config.json`            | `appId`, `webDir: _site`, portrait, темна status bar     |
+| `android/`                         | Gradle-проєкт Android Studio                             |
+| `js/bootstrap/capacitor-bridge.js` | Status bar, клас `ln-native-app`, прапор `LN_NATIVE_APP` |
+| `npm run android:prepare`          | `build:pages` + `cap sync android`                       |
+
+**Важливо:** у нативному APK чити **вимкнені** (Capacitor `localhost` не вважається dev-середовищем).
+
+## Вимоги
+
+1. **Node.js** 18+ і `npm install` у корені репозиторію.
+2. **JDK 17** (рекомендовано для Android Gradle Plugin).
+3. **Android Studio** Ladybug / Koala або новіша з Android SDK 34+.
+4. Змінна **`ANDROID_HOME`** або SDK через Android Studio → Settings → Android SDK.
+
+Перевірка:
+
+```bash
+java -version
+# Android Studio → SDK Manager → Android 14 (API 34) + Build-Tools
+```
+
+## Швидкий старт
+
+```bash
+npm install
+npm run android:prepare    # зібрати _site/ і скопіювати в android/
+npm run android:open       # відкрити проєкт у Android Studio
+```
+
+У Android Studio: **Run ▶** на емуляторі або підключеному телефоні.
+
+## CLI без Android Studio (якщо SDK налаштований)
+
+```bash
+npm run android:run
+```
+
+Або вручну:
+
+```bash
+cd android
+./gradlew assembleDebug
+# APK: android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+Release AAB для Google Play:
+
+```bash
+cd android
+./gradlew bundleRelease
+# android/app/build/outputs/bundle/release/app-release.aab
+```
+
+Для release потрібен підписаний keystore (Android Studio → Build → Generate Signed Bundle).
+
+## Робочий цикл розробки
+
+1. Змінюєте `index.html`, `js/`, `css/` у корені репозиторію.
+2. `npm run android:prepare` — оновлює assets у `android/`.
+3. Знову Run у Android Studio (або `android:run`).
+
+Під час розробки UI можна тестувати в браузері (`npx serve .` або Live Server) — швидше, ніж кожен раз збирати APK.
+
+## Іконка застосунку
+
+За замовчуванням — стандартна іконка Capacitor. Щоб поставити брендову:
+
+1. Android Studio → **app** → правий клік → **New** → **Image Asset**.
+2. Source: `assets/icons/icon.png`.
+3. Згенерувати `mipmap` для всіх щільностей.
+
+Або використати [@capacitor/assets](https://github.com/ionic-team/capacitor-assets) (опційно).
+
+## PWA без магазину
+
+Якщо APK не потрібен — гра вже PWA: відкрийте на телефоні  
+<https://averixor.github.io/LostNumber/> → «Додати на головний екран».
+
+## Дебаг-збірка з читами
+
+У `capacitor.config.json` для debug можна тимчасово:
+
+```json
+"android": {
+  "webContentsDebuggingEnabled": true
+}
+```
+
+У `index.html` перед gate (лише для внутрішніх build):
+
+```html
+<script>
+  window.LN_BUILD_FLAGS = { cheatsEnabled: true };
+</script>
+```
+
+Не включайте `cheatsEnabled` у release для Play Store.
+
+## Структура
+
+```
+_site/              ← web-артефакт (npm run build:pages)
+android/            ← нативний проєкт
+capacitor.config.json
+js/bootstrap/capacitor-bridge.js
+```
+
+## Типові проблеми
+
+| Проблема                 | Рішення                                                             |
+| ------------------------ | ------------------------------------------------------------------- |
+| Білий екран              | `npm run android:prepare`, перевірити Logcat                        |
+| Старий UI після змін     | Знову `android:prepare`                                             |
+| `SDK location not found` | Створити `android/local.properties`: `sdk.dir=/path/to/Android/sdk` |
+| Gradle fails             | File → Invalidate Caches у Android Studio                           |

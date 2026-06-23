@@ -6,7 +6,7 @@
 
 - **`index.html`** — точка входу, послідовне підключення `<script>` без `type="module"`.
 - **`manifest.json`** — PWA (іконки, `start_url`, знімок екрана тощо).
-- **Ассети UI / PWA:** `assets/icons/` (`favicon.ico`, `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, `apple-touch-icon.png`) та `assets/images/` (`logo.png`, `logo.webp`, `logo-363.webp`, заставка **`splash-screen.webp`** + **`splash-screen.png`** fallback).
+- **Ассети:** `assets/images/background.jpg` (єдиний фон), `assets/icons/icon.png` (іконка).
 - **Node-інструменти:** `package.json`, `eslint.config.mjs`, `scripts/` (див. `README.md`).
 - **Перевірка орфографії в IDE:** `cspell.json` (en, uk, ru; словник + **ігнор суцільних фрагментів кирилиці** в коді, щоб не засмічувати панель), **`.vscode/extensions.json`** — рекомендовані розширення.
 - **Документація:** `README.md`, цей файл, **`docs/PHASES.md`**.

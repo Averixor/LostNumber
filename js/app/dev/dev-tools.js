@@ -31,7 +31,6 @@ LostNumberGame.prototype.getDebugContext = function () {
       ...base,
       animationEnabled: this.animationEnabled,
       liteVisualMode: this.liteVisualMode,
-      floatingNumbersEnabled: this.floatingNumbersEnabled,
       xpMultiplier: this.xpMultiplier,
       xpMultiplierTurns: this.xpMultiplierTurns,
       bonusInventory: this.bonusInventory ? { ...this.bonusInventory } : null,

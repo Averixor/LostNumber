@@ -21,26 +21,6 @@ class SettingsManager {
     }
   }
 
-  applyFloatingNumbers() {
-    try {
-      if (this.game.floatingNumbersEnabled === false) {
-        document.documentElement.classList.add('floating-numbers-disabled');
-        const container = document.getElementById('floatingHearts');
-        if (container) container.innerHTML = '';
-      } else {
-        document.documentElement.classList.remove('floating-numbers-disabled');
-        if (
-          this.game.screenManager &&
-          typeof this.game.screenManager.createFloatingNumbers === 'function'
-        ) {
-          this.game.screenManager.createFloatingNumbers();
-        }
-      }
-    } catch (error) {
-      ErrorHandler.warn('applyFloatingNumbers failed', { error });
-    }
-  }
-
   setupSettings() {
     const backFromSettingsBtn = document.getElementById('backFromSettingsBtn');
     if (backFromSettingsBtn) {
@@ -56,11 +36,6 @@ class SettingsManager {
         this.game.audioManager.playTap();
 
         this.game.animationEnabled = document.getElementById('animationSelect')?.value === 'on';
-        {
-          const on = document.getElementById('bgEffectsSelect')?.value !== 'off';
-          this.game.floatingNumbersEnabled = on;
-          this.game.floatingNumbersDisabledBy = on ? null : 'user';
-        }
         {
           const lite = document.getElementById('liteVisualSelect')?.value;
           this.game.liteVisualMode =
@@ -80,8 +55,6 @@ class SettingsManager {
         this.game.audioManager.updateSoundStateUI();
 
         this.game.applyLanguage(newLang);
-
-        this.applyFloatingNumbers();
 
         this.applyLiteVisualMode();
 
@@ -129,18 +102,6 @@ class SettingsManager {
 
     if (settings) {
       this.game.animationEnabled = settings.animationEnabled !== false;
-      const legacyBg = settings.backgroundEffectsEnabled;
-      this.game.floatingNumbersEnabled =
-        typeof settings.floatingNumbersEnabled === 'boolean'
-          ? settings.floatingNumbersEnabled
-          : legacyBg !== false;
-      this.game.floatingNumbersDisabledBy =
-        settings.floatingNumbersDisabledBy === 'fps' ||
-        settings.floatingNumbersDisabledBy === 'user'
-          ? settings.floatingNumbersDisabledBy
-          : this.game.floatingNumbersEnabled
-            ? null
-            : 'user';
       this.game.soundEnabled = settings.soundEnabled !== false;
       this.game.theme = settings.theme || this.game.theme || 'dusk';
       this.game.lang = settings.lang || this.game.lang || 'ua';
@@ -155,14 +116,12 @@ class SettingsManager {
         document.body.classList.remove('no-animations');
       }
 
-      this.applyFloatingNumbers();
       this.applyLiteVisualMode();
     }
   }
 
   updateSettingsUI() {
     const animationSelect = document.getElementById('animationSelect');
-    const bgEffectsSelect = document.getElementById('bgEffectsSelect');
     const liteVisualSelect = document.getElementById('liteVisualSelect');
     const soundSelect = document.getElementById('soundSelect');
     const themeSelect = document.getElementById('themeSelect');
@@ -170,10 +129,6 @@ class SettingsManager {
 
     if (animationSelect) {
       animationSelect.value = this.game.animationEnabled ? 'on' : 'off';
-    }
-
-    if (bgEffectsSelect) {
-      bgEffectsSelect.value = this.game.floatingNumbersEnabled === false ? 'off' : 'on';
     }
 
     if (liteVisualSelect) {
@@ -197,8 +152,6 @@ class SettingsManager {
   saveSettings() {
     const settings = {
       animationEnabled: this.game.animationEnabled !== false,
-      floatingNumbersEnabled: this.game.floatingNumbersEnabled !== false,
-      floatingNumbersDisabledBy: this.game.floatingNumbersDisabledBy || null,
       soundEnabled: this.game.soundEnabled !== false,
       theme: this.game.theme || 'dusk',
       lang: this.game.lang || 'ua',
