@@ -76,8 +76,8 @@
 
     <link rel="manifest" href="./manifest.json" />
 
-    <link rel="icon" href="./favicon.ico" sizes="any" />
-    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="icon" href="./assets/icons/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png" />
 
     <meta name="theme-color" content="#1b1028" />
     <meta name="background-color" content="#1b1028" />
@@ -86,11 +86,17 @@
     <link
       rel="preload"
       as="image"
-      href="./splash-screen.webp"
+      href="./assets/images/splash-screen.webp"
       type="image/webp"
       fetchpriority="high"
     />
-    <link rel="preload" as="image" href="./logo-363.webp" fetchpriority="high" type="image/webp" />
+    <link
+      rel="preload"
+      as="image"
+      href="./assets/images/logo-363.webp"
+      fetchpriority="high"
+      type="image/webp"
+    />
 
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -102,10 +108,13 @@
       property="og:description"
       content="Спокійна головоломка з числами. Грайте у своєму темпі, без таймерів і поспіху."
     />
-    <meta property="og:image" content="https://averixor.github.io/LostNumber/icon-512.png" />
+    <meta
+      property="og:image"
+      content="https://averixor.github.io/LostNumber/assets/icons/icon-512.png"
+    />
     <meta property="og:type" content="website" />
 
-    <script src="js/system/platform.js"></script>
+    <script src="js/system/platform/platform.js"></script>
     <script>
       (function bootstrapLiteVisualEarly() {
         try {
@@ -210,16 +219,16 @@
       })();
     </script>
     <script src="js/bootstrap/env.js"></script>
-    <script defer src="js/system/debug.js"></script>
+    <script defer src="js/system/dev/debug.js"></script>
   </head>
 
   <body>
     <div id="appSplash" class="app-splash" aria-busy="true">
       <picture class="app-splash__picture">
-        <source srcset="./splash-screen.webp" type="image/webp" />
+        <source srcset="./assets/images/splash-screen.webp" type="image/webp" />
         <img
           class="app-splash__image"
-          src="./splash-screen.png"
+          src="./assets/images/splash-screen.png"
           alt="Lost Number"
           width="720"
           height="1280"
@@ -302,7 +311,7 @@
       <h1 class="sr-only" data-i18n="game_logo">Lost Number</h1>
       <img
         class="main-logo"
-        src="./logo-363.webp"
+        src="./assets/images/logo-363.webp"
         alt="Lost Number"
         width="363"
         height="56"
@@ -531,8 +540,8 @@
       </div>
     </div>
 
-    <script src="js/system/errorHandler.js" defer></script>
-    <script src="js/system/errorHandlerFallback.js" defer></script>
+    <script src="js/system/error/errorHandler.js" defer></script>
+    <script src="js/system/error/errorHandlerFallback.js" defer></script>
 
     <script src="js/core/SeededRandom.js" defer></script>
     <script src="js/core/ErrorBoundary.js" defer></script>
@@ -540,18 +549,18 @@
     <script src="js/core/Chain.js" defer></script>
     <script src="js/core/rules.js" defer></script>
 
-    <script src="js/system/i18n.js" defer></script>
-    <script src="js/system/plural-helpers.js" defer></script>
-    <script src="js/system/storage.js" defer></script>
-    <script src="js/system/audio.js" defer></script>
+    <script src="js/system/i18n/i18n.js" defer></script>
+    <script src="js/system/i18n/plural-helpers.js" defer></script>
+    <script src="js/system/platform/storage.js" defer></script>
+    <script src="js/system/platform/audio.js" defer></script>
 
-    <script src="js/system/freezeSystem.js" defer></script>
+    <script src="js/system/platform/freezeSystem.js" defer></script>
 
     <script src="js/game/state.js" defer></script>
-    <script src="js/game/achievements.js" defer></script>
-    <script src="js/game/bonuses.js" defer></script>
-    <script src="js/game/wheel.js" defer></script>
-    <script src="js/game/daily.js" defer></script>
+    <script src="js/game/meta/achievements.js" defer></script>
+    <script src="js/game/mechanics/bonuses.js" defer></script>
+    <script src="js/game/mechanics/wheel.js" defer></script>
+    <script src="js/game/meta/daily.js" defer></script>
     <script src="js/game/grid/GridManager.js" defer></script>
     <script src="js/game/grid/grid-init.js" defer></script>
     <script src="js/game/grid/grid-freeze.js" defer></script>
@@ -560,23 +569,23 @@
     <script src="js/game/grid/grid-animations.js" defer></script>
     <script src="js/game/grid/grid-safety.js" defer></script>
 
-    <script src="js/ui/screens.js" defer></script>
-    <script src="js/ui/menu.js" defer></script>
-    <script src="js/ui/settings.js" defer></script>
-    <script src="js/ui/overlays.js" defer></script>
-    <script src="js/system/lazy-script.js" defer></script>
+    <script src="js/ui/screens/screens.js" defer></script>
+    <script src="js/ui/screens/menu.js" defer></script>
+    <script src="js/ui/overlays/settings.js" defer></script>
+    <script src="js/ui/overlays/overlays.js" defer></script>
+    <script src="js/system/platform/lazy-script.js" defer></script>
 
-    <script src="js/app/LostNumberGame.js" defer></script>
-    <script src="js/app/error-runtime.js" defer></script>
-    <script src="js/app/random.js" defer></script>
-    <script src="js/app/inventory.js" defer></script>
-    <script src="js/app/i18n-theme.js" defer></script>
-    <script src="js/app/save-load.js" defer></script>
-    <script src="js/app/ui-refresh.js" defer></script>
-    <script src="js/app/ui-events.js" defer></script>
-    <script src="js/app/game-flow.js" defer></script>
-    <script src="js/app/misc.js" defer></script>
-    <script src="js/system/dev-entry.js" defer></script>
+    <script src="js/app/core/LostNumberGame.js" defer></script>
+    <script src="js/app/runtime/error-runtime.js" defer></script>
+    <script src="js/app/random/random.js" defer></script>
+    <script src="js/app/inventory/inventory.js" defer></script>
+    <script src="js/app/ui/i18n-theme.js" defer></script>
+    <script src="js/app/persistence/save-load.js" defer></script>
+    <script src="js/app/ui/ui-refresh.js" defer></script>
+    <script src="js/app/ui/ui-events.js" defer></script>
+    <script src="js/app/flow/game-flow.js" defer></script>
+    <script src="js/app/runtime/misc.js" defer></script>
+    <script src="js/system/dev/dev-entry.js" defer></script>
     <script>
       (function () {
         function loadDevToolScripts() {
@@ -589,9 +598,9 @@
           window.__LN_DEV_BUNDLES_REQUESTED__ = true;
 
           var sources = [
-            'js/app/dev-tools.js',
-            'js/app/performance-monitor.js',
-            'js/system/cheats.js',
+            'js/app/dev/dev-tools.js',
+            'js/app/dev/performance-monitor.js',
+            'js/system/dev/cheats.js',
           ];
           var load = window.LN_loadScriptOnce;
 

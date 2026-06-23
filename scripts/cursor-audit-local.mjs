@@ -35,7 +35,7 @@ try {
 
 const defaultPrompt =
   'You audit the LostNumber browser game repo (vanilla JS under js/). Focus on reliability and UX continuity.\n' +
-  '- Read primarily: js/system/errorHandler.js, js/system/errorHandlerFallback.js, js/system/freezeSystem.js, js/system/i18n.js, js/system/storage.js, js/ui/.\n' +
+  '- Read primarily: js/system/error/errorHandler.js, js/system/error/errorHandlerFallback.js, js/system/platform/freezeSystem.js, js/system/i18n/i18n.js, js/system/platform/storage.js, js/ui/.\n' +
   '- Output exactly: (1) three highest-impact concrete improvements with file paths and why; (2) one i18n or user-facing consistency note.\n' +
   '- Advisory only: do not propose editing files in this run.';
 

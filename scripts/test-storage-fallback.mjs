@@ -64,7 +64,7 @@ function createMockLocalStorage() {
 }
 
 function loadStorageManager(localStorage) {
-  const code = readFileSync(join(root, 'js/system/storage.js'), 'utf8');
+  const code = readFileSync(join(root, 'js/system/platform/storage.js'), 'utf8');
   const factory = new Function('localStorage', 'console', `${code}\nreturn StorageManager;`);
   const StorageManager = factory(localStorage, console);
   return new StorageManager();

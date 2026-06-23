@@ -14,7 +14,11 @@
     "lint": "node ./node_modules/eslint/bin/eslint.js .",
     "lint:fix": "node ./node_modules/eslint/bin/eslint.js . --fix",
     "check": "node ./scripts/check.mjs",
+    "verify:static": "node ./scripts/verify-static-assets.mjs",
+    "test:smoke": "node ./scripts/smoke-tests.mjs",
     "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit -p tsconfig.json",
+    "release:check": "node ./scripts/release-check.mjs",
+    "build:pages": "node ./scripts/build-pages.mjs",
     "cursor:audit": "node ./scripts/cursor-audit-local.mjs",
     "cursor:audit:stream": "node ./scripts/cursor-audit-local.mjs --stream"
   }

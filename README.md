@@ -19,14 +19,14 @@ npx serve .
 
 ## Брендинг та PWA-асети
 
-- `logo.png` — основний широкий логотип для головного екрана / промо (не в `manifest` icons).
-- `splash-screen.webp` — основна заставка завантаження у HTML (`<picture>` + preload).
-- `splash-screen.png` — fallback для заставки та PNG-скріншот у `manifest.json`.
-- `favicon.ico` — іконка вкладки браузера.
-- `icon-192.png` — PWA-іконка 192×192 для встановлення на Android / install prompt.
-- `icon-512.png` — PWA-іконка 512×512 для Android / stores / install (**purpose**: `any`).
-- `icon-maskable-512.png` — окремий **maskable** 512×512 з безпечними полями (Android adaptive icon).
-- `apple-touch-icon.png` — іконка для додавання на головний екран iOS (лише `<link rel="apple-touch-icon">`, не в `manifest` icons).
+- `assets/images/logo.png` — основний широкий логотип для головного екрана / промо (не в `manifest` icons).
+- `assets/images/splash-screen.webp` — основна заставка завантаження у HTML (`<picture>` + preload).
+- `assets/images/splash-screen.png` — fallback для заставки та PNG-скріншот у `manifest.json`.
+- `assets/icons/favicon.ico` — іконка вкладки браузера.
+- `assets/icons/icon-192.png` — PWA-іконка 192×192 для встановлення на Android / install prompt.
+- `assets/icons/icon-512.png` — PWA-іконка 512×512 для Android / stores / install (**purpose**: `any`).
+- `assets/icons/icon-maskable-512.png` — окремий **maskable** 512×512 з безпечними полями (Android adaptive icon).
+- `assets/icons/apple-touch-icon.png` — іконка для додавання на головний екран iOS (лише `<link rel="apple-touch-icon">`, не в `manifest` icons).
 
 Колір оболонки PWA / `theme-color`: **`#1b1028`** (узгоджено з `manifest`, мета-тегами в `index.html` та `--pwa-theme-color` у `css/variables.css`).
 
@@ -34,7 +34,7 @@ npx serve .
 
 Живий приклад на GitHub Pages: <https://averixor.github.io/LostNumber/>
 
-Деплой налаштований через GitHub Pages.
+Деплой налаштований через GitHub Pages як статичний сайт без Jekyll. Workflow запускає `npm run release:check`, готує `_site/` командою `npm run build:pages` і публікує лише runtime-асети гри.
 
 ## Скрипти npm
 
@@ -47,7 +47,11 @@ npx serve .
 | `npm run lint`                | ESLint                                                                                                                                               |
 | `npm run lint:fix`            | ESLint з автовиправленням де можливо                                                                                                                 |
 | `npm run check`               | **`format:check` + `lint`** через `scripts/check.mjs` (Node, без прив’язки до shell)                                                                 |
+| `npm run verify:static`       | Перевіряє локальні посилання з `index.html`, `manifest.json`, CSS/JS string refs та синхронність PWA-кольорів                                        |
 | `npm run typecheck`           | TypeScript **`tsc --noEmit`** — baseline перевірка типів без збірки й без emit (див. `tsconfig.json`, `js/types.d.ts`; `checkJs` глобально вимкнено) |
+| `npm run test:smoke`          | Gameplay/storage/error-handler smoke-перевірки без test framework                                                                                    |
+| `npm run release:check`       | Повний предрелізний gate: format, lint, typecheck, static verifier і smoke-тести                                                                     |
+| `npm run build:pages`         | Готує `_site/` для GitHub Pages з `index.html`, `manifest.json`, `assets/`, `audio/`, `css/`, `js/`                                                  |
 | `npm run cursor:audit`        | Допоміжний скрипт для локального аудиту з Cursor SDK                                                                                                 |
 | `npm run cursor:audit:stream` | Те саме з потоковим виводом (`cursor-audit-local.mjs --stream`)                                                                                      |
 
@@ -57,6 +61,7 @@ npx serve .
 node ./scripts/test-min-tile.mjs
 node ./scripts/test-level-config.mjs
 node ./scripts/test-storage-fallback.mjs
+node ./scripts/test-error-handler-fallback.mjs
 ```
 
 У Windows за бажанням можна користуватися **`format.ps1`** / **`lint.ps1`** поруч з npm-командами, або напряму **`node ./scripts/check.mjs`** (те саме, що `npm run check`, без залежності від cmd/npx у PATH).

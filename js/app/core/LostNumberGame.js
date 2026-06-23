@@ -289,7 +289,7 @@ class LostNumberGame {
           typeof StatsManager !== 'undefined'
             ? Promise.resolve()
             : typeof window.LN_loadScriptOnce === 'function'
-              ? window.LN_loadScriptOnce('js/game/stats.js')
+              ? window.LN_loadScriptOnce('js/game/meta/stats.js')
               : Promise.resolve();
 
         statsPromise
@@ -311,7 +311,7 @@ class LostNumberGame {
 
         if (window.AppEnv?.isDev === true && typeof window.LN_loadScriptOnce === 'function') {
           window
-            .LN_loadScriptOnce('js/ui/DebugOverlay.js')
+            .LN_loadScriptOnce('js/ui/overlays/DebugOverlay.js')
             .then(() => {
               try {
                 if (typeof DebugOverlay !== 'undefined') {

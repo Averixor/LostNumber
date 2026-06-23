@@ -6,7 +6,7 @@
 
 - **`index.html`** — точка входу, послідовне підключення `<script>` без `type="module"`.
 - **`manifest.json`** — PWA (іконки, `start_url`, знімок екрана тощо).
-- **Ассети UI / PWA:** `favicon.ico`, `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, `apple-touch-icon.png`, `logo.png`, заставка **`splash-screen.webp`** + **`splash-screen.png`** (fallback).
+- **Ассети UI / PWA:** `assets/icons/` (`favicon.ico`, `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, `apple-touch-icon.png`) та `assets/images/` (`logo.png`, `logo.webp`, `logo-363.webp`, заставка **`splash-screen.webp`** + **`splash-screen.png`** fallback).
 - **Node-інструменти:** `package.json`, `eslint.config.mjs`, `scripts/` (див. `README.md`).
 - **Перевірка орфографії в IDE:** `cspell.json` (en, uk, ru; словник + **ігнор суцільних фрагментів кирилиці** в коді, щоб не засмічувати панель), **`.vscode/extensions.json`** — рекомендовані розширення.
 - **Документація:** `README.md`, цей файл, **`docs/PHASES.md`**.
@@ -80,7 +80,10 @@
 ## `scripts/`
 
 - **`check.mjs`** — Prettier `--check` + ESLint (див. `npm run check`).
-- **`test-min-tile.mjs`**, **`test-level-config.mjs`**, **`test-storage-fallback.mjs`** — Node smoke-перевірки progression/storage (без test framework).
+- **`verify-static-assets.mjs`** — перевірка локальних HTML/manifest/CSS/JS посилань і PWA-кольорів.
+- **`release-check.mjs`** — повний предрелізний gate для CI та локальної перевірки.
+- **`build-pages.mjs`** — підготовка `_site/` для GitHub Pages без Jekyll.
+- **`test-min-tile.mjs`**, **`test-level-config.mjs`**, **`test-storage-fallback.mjs`**, **`test-error-handler-fallback.mjs`** — Node smoke-перевірки progression/storage/error-handler (без test framework).
 - **`cursor-audit-local.mjs`** — допоміжний скрипт під Cursor SDK: `npm run cursor:audit` або `npm run cursor:audit:stream` (режим `--stream`).
 
 ## `docs/`

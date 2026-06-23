@@ -1,7 +1,7 @@
 (function () {
-  if (typeof window.ErrorHandler !== 'undefined' && window.ErrorHandler._installed) {
+  if (typeof window.ErrorHandler !== 'undefined') {
     if (window.AppEnv?.isDev) {
-      console.log('Main ErrorHandler already installed, skipping fallback');
+      console.log('Main ErrorHandler available, skipping fallback');
     }
     return;
   }

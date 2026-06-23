@@ -1,5 +1,5 @@
 // @ts-check
-/// <reference path="./LostNumberGame.js" />
+/// <reference path="../core/LostNumberGame.js" />
 
 LostNumberGame.prototype.checkExistingSave = function () {
   try {

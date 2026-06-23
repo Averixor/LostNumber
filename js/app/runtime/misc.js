@@ -29,7 +29,7 @@ LostNumberGame.prototype.showStatsScreen = function () {
 
     if (typeof window.LN_loadScriptOnce === 'function') {
       window
-        .LN_loadScriptOnce('js/game/stats.js')
+        .LN_loadScriptOnce('js/game/meta/stats.js')
         .then(() => {
           try {
             if (!this.statsManager && typeof StatsManager !== 'undefined') {
