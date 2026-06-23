@@ -1,5 +1,9 @@
 LostNumberGame.prototype.handleBackNavigation = function () {
   try {
+    if (this.menuManager?.dismissNewGameConfirmFromBack?.()) {
+      return;
+    }
+
     const wheelOverlay = document.getElementById('wheelOverlay');
     if (wheelOverlay && !wheelOverlay.classList.contains('hidden')) {
       this.wheelManager?.closeWheel?.();

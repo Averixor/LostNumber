@@ -139,7 +139,7 @@ LostNumberGame.prototype.handlePointerDown = function (e) {
     this.selected = [posCell];
     Chain.numbers = [cellNumber];
     updateChainSum();
-    this.audioManager?.playGridTap?.();
+    this.audioManager?.playChainLink?.();
     this._applySelectionHighlight?.(null, posCell);
     try {
       this.updatePreviewBubble();
@@ -201,7 +201,7 @@ LostNumberGame.prototype.handlePointerMove = function (e) {
     this.selected.push(posCell);
     Chain.numbers.push(newNum);
     updateChainSum();
-    this.audioManager?.playConnect?.(Chain.numbers.length);
+    this.audioManager?.playChainLink?.();
 
     this._schedulePreviewBubbleUpdate?.();
     this._applySelectionHighlight?.(null, posCell);

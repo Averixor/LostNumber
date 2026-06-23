@@ -23,6 +23,7 @@
     "test:smoke": "node ./scripts/smoke-tests.mjs",
     "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit -p tsconfig.json",
     "release:check": "node ./scripts/release-check.mjs",
+    "build": "npm run build:pages",
     "build:pages": "node ./scripts/build-pages.mjs",
     "android:prepare": "node ./scripts/prepare-android.mjs",
     "android:sync": "node ./scripts/prepare-android.mjs",

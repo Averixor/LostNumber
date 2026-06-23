@@ -266,3 +266,58 @@ html[data-theme='dusk'] .wheel-overlay {
     width: min(220px, 60vw, 32vh);
   }
 }
+
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(12px, 4vw, 24px);
+}
+
+.confirm-overlay.hidden {
+  display: none !important;
+}
+
+.confirm-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: rgba(0, 0, 0, 0.58);
+  cursor: default;
+}
+
+.confirm-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 320px);
+  background: var(--panel-bg);
+  border: 2px solid var(--panel-border);
+  border-radius: 18px;
+  padding: clamp(16px, 3vh, 22px) clamp(14px, 3vw, 20px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  text-align: center;
+}
+
+.confirm-dialog__title {
+  margin: 0 0 10px;
+  font-size: clamp(1rem, 2.2vh, 1.2rem);
+  font-weight: 800;
+  color: var(--primary-color);
+}
+
+.confirm-dialog__text {
+  margin: 0 0 16px;
+  font-size: clamp(0.85rem, 1.8vh, 0.95rem);
+  line-height: 1.45;
+  color: var(--text-color);
+}
+
+.confirm-dialog__actions {
+  max-width: none;
+  width: 100%;
+}

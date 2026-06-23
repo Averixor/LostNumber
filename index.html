@@ -320,6 +320,37 @@
       </div>
     </div>
 
+    <div
+      class="confirm-overlay hidden"
+      id="newGameConfirmOverlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="newGameConfirmTitle"
+    >
+      <button
+        type="button"
+        class="confirm-overlay__backdrop"
+        id="newGameConfirmBackdrop"
+        data-i18n-aria-label="cancel"
+      ></button>
+      <div class="confirm-dialog">
+        <h2
+          class="confirm-dialog__title"
+          id="newGameConfirmTitle"
+          data-i18n="confirm_new_game_title"
+        ></h2>
+        <p class="confirm-dialog__text" data-i18n="confirm_new_game_text"></p>
+        <div class="confirm-dialog__actions menu-buttons">
+          <button type="button" class="menu-btn primary" id="newGameConfirmCancel">
+            <span class="menu-btn__label" data-i18n="cancel"></span>
+          </button>
+          <button type="button" class="menu-btn danger" id="newGameConfirmOk">
+            <span class="menu-btn__label" data-i18n="start_new_game_confirm"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="screen main-menu" id="mainMenuScreen">
       <h1 class="sr-only" data-i18n="game_logo">Lost Number</h1>
       <div class="menu-buttons main-menu__buttons">

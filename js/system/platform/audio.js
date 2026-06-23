@@ -1,9 +1,7 @@
 const LN_SFX_FILES = {
   connect: 'audio/sfx/connect.mp3',
   chainComplete: 'audio/sfx/chain-complete.mp3',
-  bigChain: 'audio/sfx/big-chain.mp3',
   button: 'audio/sfx/button.mp3',
-  tap: 'audio/sfx/tap.mp3',
   bonus: 'audio/sfx/bonus.mp3',
   xp: 'audio/sfx/xp.mp3',
   error: 'audio/sfx/error.mp3',
@@ -121,8 +119,7 @@ class AudioManager {
   }
 
   _getSfxVolume(name) {
-    const base =
-      name === 'bigChain' ? 0.65 : name === 'victory' ? 0.7 : name === 'button' ? 0.45 : 0.55;
+    const base = name === 'victory' ? 0.7 : name === 'button' ? 0.45 : 0.55;
     return Math.max(0, Math.min(1, base * this.sfxVolume));
   }
 
@@ -152,23 +149,12 @@ class AudioManager {
     this.playSound('button');
   }
 
-  playGridTap() {
-    this.playSound('tap');
-  }
-
   playError() {
     this.playSound('error');
   }
 
-  playConnect(chainLength) {
-    const len = Number(chainLength) || 0;
-    if (len < 2) return;
-
+  playChainLink() {
     this.playSound('connect');
-
-    if (len >= 8) {
-      this.playSound('bigChain');
-    }
   }
 
   playChainComplete() {

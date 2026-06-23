@@ -1,95 +1,110 @@
 # LostNumber — структура проєкту
 
-Збірка не потрібна: відкривай **`index.html`** або обслуговуй корінь репозиторію як статичний сайт.
+Збірка web-артефакту: **`npm run build:pages`** → `_site/`. Для розробки UI можна відкрити **`index.html`** або `npx serve .` (аудіо — з `public/audio/` або після `build:pages`).
 
 ## Корінь репозиторію
 
-- **`index.html`** — точка входу, послідовне підключення `<script>` без `type="module"`.
-- **`manifest.json`** — PWA (іконки, `start_url`, знімок екрана тощо).
-- **Ассети:** `assets/images/background.jpg` (єдиний фон), `assets/icons/icon.png` (іконка).
-- **Node-інструменти:** `package.json`, `eslint.config.mjs`, `scripts/` (див. `README.md`).
-- **Перевірка орфографії в IDE:** `cspell.json` (en, uk, ru; словник + **ігнор суцільних фрагментів кирилиці** в коді, щоб не засмічувати панель), **`.vscode/extensions.json`** — рекомендовані розширення.
-- **Документація:** `README.md`, цей файл, **`docs/PHASES.md`**.
-- **Допоміжно:** `format.ps1`, `lint.ps1` (Windows, обхід обмежень на cmd/npx).
+| Шлях                           | Призначення                                            |
+| ------------------------------ | ------------------------------------------------------ |
+| `index.html`                   | Точка входу, послідовні `<script>` без `type="module"` |
+| `manifest.json`                | PWA                                                    |
+| `capacitor.config.json`        | Capacitor 7, `webDir: _site`                           |
+| `assets/images/background.jpg` | Єдиний статичний фон                                   |
+| `assets/icons/icon.png`        | Іконка 512×512                                         |
+| `public/audio/`                | Музика та SFX (копіюється в `_site/audio/`)            |
+| `css/`                         | Стилі                                                  |
+| `js/`                          | Логіка гри                                             |
+| `android/`                     | Gradle-проєкт Android (після `cap sync`)               |
+| `scripts/`                     | Збірка, перевірки, `install-android-studio.sh`         |
+| `docs/`                        | `ANDROID.md`, `AUDIO.md`, `PHASES.md`                  |
+
+## `public/audio/`
+
+```
+public/audio/
+├── music/          ambient.mp3, Crystal Flow.mp3, Digital Horizon.mp3, Neon Drift.mp3, Stellar Logic.mp3
+└── sfx/            connect, chain-complete, button, bonus, xp, error, quest-complete, victory (8 файлів)
+```
+
+Детально: **`docs/AUDIO.md`**.
 
 ## `css/`
 
-Стилі за зонами відповідальності:
-
-| Файл                  | Призначення                                                                                                          |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `variables.css`       | Токени теми й кольорів                                                                                               |
-| `base.css`            | Базова типографіка та глобальні правила                                                                              |
-| `ui.css`              | Кнопки, панелі, налаштування                                                                                         |
-| `grid.css`            | Ігрове поле та клітини (кольори за `data-number`, класи `cell-value-readable` / `cell-value-compact` для K+ значень) |
-| `overlays.css`        | Перемога, рівень, колесо тощо                                                                                        |
-| `critical.css`        | Екран завантаження (splash) та критична помилка                                                                      |
-| `low-performance.css` | Спрощення для слабких пристроїв                                                                                      |
+| Файл                  | Призначення                                     |
+| --------------------- | ----------------------------------------------- |
+| `variables.css`       | Токени теми                                     |
+| `background.css`      | Статичний фон `#appBackground`                  |
+| `base.css`            | Базова типографіка                              |
+| `ui.css`              | Меню, кнопки (іконка + текст), HUD суми ланцюга |
+| `grid.css`            | Поле, клітини, підсвітка ланцюга                |
+| `overlays.css`        | Перемога, рівень, колесо                        |
+| `critical.css`        | Splash, критична помилка                        |
+| `low-performance.css` | Lite-режим                                      |
 
 ## `js/bootstrap/`
 
-- У **`index.html`** (перед `env.js`) — **gated dev cheats tooling**: `LN_BUILD_FLAGS`, `LN_isLocalDevEnvironment()`, `LN_isDevToolsAllowed()`; умовне завантаження `dev-tools.js`, `performance-monitor.js`, `cheats.js`.
-- **`env.js`** — `AppEnv`, режими дебагу (`?debug=`, `localStorage`); **окремо** від gate читів.
-- **`boot.js`** — ініціалізація після завантаження сторінки.
+| Файл                  | Призначення                                                                  |
+| --------------------- | ---------------------------------------------------------------------------- |
+| `index.html` (inline) | `LN_BUILD_FLAGS`, `LN_isDevToolsAllowed()`, умовне завантаження dev-скриптів |
+| `env.js`              | `AppEnv`, режими дебагу                                                      |
+| `boot.js`             | `new LostNumberGame()`, `setupNativeBackButton()`                            |
+| `capacitor-bridge.js` | Status bar, `LN_NATIVE_APP`, автозбереження при згортанні                    |
 
 ## `js/core/`
 
-Правила й низькорівнева логіка без прив’язки до DOM:
-
-- **`rules.js`**, **`GameCore.js`**, **`Chain.js`** — правила гри, ядро, ланцюг клітинок.
-- **`SeededRandom.js`** — детермінований RNG.
-- **`ErrorBoundary.js`** — обгортка try/catch для критичних викликів.
+`rules.js`, `GameCore.js`, `Chain.js`, `SeededRandom.js`, `ErrorBoundary.js`
 
 ## `js/system/`
 
-Платформа, периферія, глобальні сервіси:
-
-- **`storage.js`**, **`audio.js`**, **`platform.js`**, **`i18n.js`**, **`plural-helpers.js`**
-- **`errorHandler.js`**, **`errorHandlerFallback.js`**, **`debug.js`** (`LN_DEBUG`)
-- **`dev-entry.js`** — five-click entry у About (лише коли `LN_isDevToolsAllowed()`).
-- **`cheats.js`** — gated dev cheats tooling: `LN_CODES`, панель `LN_CODES.panel()`; завантажується лише при `LN_isDevToolsAllowed()` (local dev або `LN_BUILD_FLAGS.cheatsEnabled`).
-- **`lazy-script.js`**, **`freezeSystem.js`**
+| Файл                                               | Призначення                                          |
+| -------------------------------------------------- | ---------------------------------------------------- |
+| `platform/storage.js`                              | `lostNumberSave`, `lostNumberSettings`, daily quests |
+| `platform/audio.js`                                | **AudioManager** — музика + SFX                      |
+| `platform/freezeSystem.js`, `lazy-script.js`       | Заморозка, lazy load                                 |
+| `i18n/i18n.js`                                     | UA / RU / EN                                         |
+| `error/errorHandler.js`, `errorHandlerFallback.js` | Помилки                                              |
+| `dev/cheats.js`, `dev-entry.js`                    | Gated dev cheats                                     |
 
 ## `js/game/`
 
-Ігровий стан і системи:
-
-- **`state.js`** — стан, **`generateLevels`**, **`getLevelConfig`** (endless progression після 40 preset-рівнів), **`formatNumber`**
-- **`bonuses.js`**, **`wheel.js`**, **`daily.js`**, **`achievements.js`**, **`stats.js`**
-
-### `js/game/grid/`
-
-Поле та його життєвий цикл:
-
-- **`GridManager.js`**, **`grid-init.js`**, **`grid-physics.js`**, **`grid-render.js`** (у т.ч. `_applyCellDisplayClasses` — лише UI-класи клітинок)
-- **`grid-animations.js`**, **`grid-freeze.js`**, **`grid-safety.js`**
+`state.js`, `mechanics/bonuses.js`, `mechanics/wheel.js`, `meta/daily.js`, `meta/achievements.js`, `meta/stats.js`, `grid/*`
 
 ## `js/ui/`
 
-- **`screens.js`**, **`menu.js`**, **`settings.js`**, **`overlays.js`**
-- **`DebugOverlay.js`** — дев-панель (наприклад **Ctrl+D** на десктопі)
+`screens/screens.js`, `screens/menu.js`, `overlays/settings.js`, `overlays/overlays.js`, `overlays/DebugOverlay.js`
 
 ## `js/app/`
 
-Головний клас **`LostNumberGame.js`** і розбита по файлах логіка:
-
-- флоу, збереження, UI-події: **`game-flow.js`**, **`save-load.js`**, **`ui-events.js`**, **`ui-refresh.js`**
-- тема / мова в UI: **`i18n-theme.js`**
-- **`dev-tools.js`**, **`error-runtime.js`**, **`performance-monitor.js`**, **`inventory.js`**, **`random.js`**, **`misc.js`**
+| Файл                                   | Призначення                                      |
+| -------------------------------------- | ------------------------------------------------ |
+| `core/LostNumberGame.js`               | Головний клас                                    |
+| `flow/game-flow.js`                    | Ходи, злиття, рівні                              |
+| `persistence/save-load.js`             | Збереження, «Продовжити», `updateContinueButton` |
+| `navigation/back-navigation.js`        | Android «Назад», логіка екранів                  |
+| `ui/ui-events.js`                      | Поле, цепочка, футер                             |
+| `ui/i18n-theme.js`, `ui/ui-refresh.js` | Мова, тема, HUD                                  |
 
 ## `scripts/`
 
-- **`check.mjs`** — Prettier `--check` + ESLint (див. `npm run check`).
-- **`verify-static-assets.mjs`** — перевірка локальних HTML/manifest/CSS/JS посилань і PWA-кольорів.
-- **`release-check.mjs`** — повний предрелізний gate для CI та локальної перевірки.
-- **`build-pages.mjs`** — підготовка `_site/` для GitHub Pages без Jekyll.
-- **`test-min-tile.mjs`**, **`test-level-config.mjs`**, **`test-storage-fallback.mjs`**, **`test-error-handler-fallback.mjs`** — Node smoke-перевірки progression/storage/error-handler (без test framework).
-- **`cursor-audit-local.mjs`** — допоміжний скрипт під Cursor SDK: `npm run cursor:audit` або `npm run cursor:audit:stream` (режим `--stream`).
+| Скрипт                          | Призначення                                                     |
+| ------------------------------- | --------------------------------------------------------------- |
+| `build-pages.mjs`               | `_site/` = index + assets + css + js + **public/audio → audio** |
+| `prepare-android.mjs`           | `build:pages` + `cap sync android`                              |
+| `release-check.mjs`             | format, lint, typecheck, verify, smoke                          |
+| `verify-static-assets.mjs`      | Посилання на `audio/`, `assets/`, PWA-кольори                   |
+| `install-android-studio.sh`     | Установка Studio / JDK (Linux)                                  |
+| `test-*.mjs`, `smoke-tests.mjs` | Node smoke без test framework                                   |
+
+## Збереження (localStorage)
+
+| Ключ                 | Вміст                                                                                                                           |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `lostNumberSave`     | Стан активної партії (сітка, рівень, XP, бонуси…)                                                                               |
+| `lostNumberSettings` | `soundEnabled`, `musicEnabled`, `sfxVolume`, `musicVolume`, `musicTrack`, `theme`, `lang`, `animationEnabled`, `liteVisualMode` |
+| `dailyQuests`        | Щоденні завдання                                                                                                                |
 
 ## `docs/`
 
-- **`PHASES.md`** — етапи / нотатки розвитку.
-
-## `.project/fonts/`
-
-- Файли шрифтів у репозиторії (наприклад **`Charis-Regular.ttf`**); у поточних `css/` `@font-face` для них може бути відсутнім — перевір перед використанням.
+- **`AUDIO.md`** — музика, SFX, налаштування
+- **`ANDROID.md`** — Capacitor, APK, Studio
+- **`PHASES.md`** — етапи розвитку

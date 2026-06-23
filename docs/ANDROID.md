@@ -4,14 +4,29 @@
 
 ## Що вже налаштовано
 
-| Компонент                          | Призначення                                              |
-| ---------------------------------- | -------------------------------------------------------- |
-| `capacitor.config.json`            | `appId`, `webDir: _site`, portrait, темна status bar     |
-| `android/`                         | Gradle-проєкт Android Studio                             |
-| `js/bootstrap/capacitor-bridge.js` | Status bar, клас `ln-native-app`, прапор `LN_NATIVE_APP` |
-| `npm run android:prepare`          | `build:pages` + `cap sync android`                       |
+| Компонент                              | Призначення                                               |
+| -------------------------------------- | --------------------------------------------------------- |
+| `capacitor.config.json`                | `appId`, `webDir: _site`, portrait, темна status bar      |
+| `android/`                             | Gradle-проєкт Android Studio                              |
+| `js/bootstrap/capacitor-bridge.js`     | Status bar, `ln-native-app`, автозбереження при згортанні |
+| `js/app/navigation/back-navigation.js` | Системна кнопка «Назад» (`@capacitor/app`)                |
+| `public/audio/` → `_site/audio/`       | Музика та SFX у APK (див. `docs/AUDIO.md`)                |
+| `npm run android:prepare`              | `build:pages` + `cap sync android`                        |
+
+**Capacitor-плагіни:** `@capacitor/status-bar`, `@capacitor/app`.
 
 **Важливо:** у нативному APK чити **вимкнені** (Capacitor `localhost` не вважається dev-середовищем).
+
+### Кнопка «Назад» (Android)
+
+| Екран                               | Дія                                |
+| ----------------------------------- | ---------------------------------- |
+| Колесо / оверлей рівня / перемога   | Закрити оверлей або перейти в меню |
+| Ігрове поле                         | Зберегти → головне меню            |
+| Налаштування, статистика, завдання… | Головне меню                       |
+| Головне меню                        | `App.exitApp()`                    |
+
+Реалізація: `handleBackNavigation()` + `setupNativeBackButton()` у `back-navigation.js`, виклик з `boot.js`.
 
 ## Вимоги
 
@@ -108,11 +123,15 @@ cd android
 ## Структура
 
 ```
+public/audio/       ← джерело звуків (не в корені репо)
 _site/              ← web-артефакт (npm run build:pages)
 android/            ← нативний проєкт
 capacitor.config.json
 js/bootstrap/capacitor-bridge.js
+js/app/navigation/back-navigation.js
 ```
+
+Аудіо в APK: після `build:pages` файли лежать у `_site/audio/` і потрапляють у assets WebView. Шляхи в коді: `audio/sfx/...`, `audio/music/...`.
 
 ## Типові проблеми
 

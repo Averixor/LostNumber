@@ -42,9 +42,15 @@ npm run android:prepare   # зібрати web + sync у android/
 npm run android:open      # Android Studio
 ```
 
-Детально: **[docs/ANDROID.md](docs/ANDROID.md)** (JDK, SDK, debug/release APK, іконка, типові помилки).
+Детально: **[docs/ANDROID.md](docs/ANDROID.md)** (JDK, SDK, кнопка «Назад», debug/release APK).
 
 Без магазину можна просто встановити PWA з GitHub Pages («Додати на головний екран»).
+
+## Звук і збереження
+
+- **Аудіо:** `public/audio/` → `_site/audio/`; менеджер — `js/system/platform/audio.js`. Детально: **[docs/AUDIO.md](docs/AUDIO.md)**.
+- **Збереження партії:** `localStorage` ключ `lostNumberSave`; «Продовжити» активна при наявності збереження; автозбереження при виході з ігрового екрана та згортанні застосунку.
+- **Меню:** кнопки з єдиним шаблоном [іконка 32px | текст]; Android «Назад» — гра → меню → вихід (`js/app/navigation/back-navigation.js`).
 
 ## Скрипти npm
 
@@ -131,9 +137,10 @@ localStorage.setItem('lostnumber_debug', 'full');
 - **`js/system/`** — платформа, сховище, звук, i18n, обробка помилок.
 - **`js/ui/`** — екрани, меню, оверлеї, дебаг-панель.
 - **`js/app/`** — `LostNumberGame` та логіка флоу, збережень, UI-подій.
-- **`js/bootstrap/`** — `env.js` (режими середовища), `boot.js` (запуск).
+- **`js/bootstrap/`** — `env.js`, `boot.js`, `capacitor-bridge.js` (запуск, native).
+- **`js/app/navigation/`** — Android «Назад», навігація між екранами.
 
-Додаткові нотатки про етапи розвитку — у **`docs/PHASES.md`**.
+Додаткові нотатки: **`docs/PHASES.md`**, **`docs/AUDIO.md`**, **`docs/ANDROID.md`**.
 
 ## Ліцензія та внесок
 
