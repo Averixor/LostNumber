@@ -1,9 +1,6 @@
 GridManager.prototype.animateCarryAppear = function (x, y) {
   try {
-    const gridDiv = document.getElementById('grid');
-    if (!gridDiv) return;
-
-    const cell = gridDiv.querySelector(`.cell[data-x="${x}"][data-y="${y}"]`);
+    const cell = this.cellCache?.[x]?.[y];
     if (!cell) return;
 
     cell.classList.add('carry');
@@ -24,28 +21,19 @@ GridManager.prototype.animatePopping = function (cells, callback) {
       return;
     }
 
-    const gridDiv = document.getElementById('grid');
-    if (!gridDiv) {
-      if (callback) callback();
-      return;
-    }
-
     cells.forEach((s) => {
-      try {
-        const cell = gridDiv.querySelector(`.cell[data-x="${s.x}"][data-y="${s.y}"]`);
-        if (cell) cell.classList.add('popping');
-      } catch (e) {}
+      const cell = this.cellCache?.[s.x]?.[s.y];
+      if (cell) cell.classList.add('popping');
     });
 
     setTimeout(() => {
       try {
         if (callback) callback();
       } catch (error) {
-        ErrorHandler.warn('Popping callback failed', error);
+        if (callback) callback();
       }
-    }, 270);
+    }, 275);
   } catch (error) {
-    ErrorHandler.handle(error, { type: 'animate_popping', cellsCount: cells?.length });
     if (callback) callback();
   }
 };
@@ -53,12 +41,6 @@ GridManager.prototype.animatePopping = function (cells, callback) {
 GridManager.prototype.animateGravity = function (removedCells, callback) {
   try {
     if (!this.game.animationEnabled) {
-      if (callback) callback();
-      return;
-    }
-
-    const gridDiv = document.getElementById('grid');
-    if (!gridDiv) {
       if (callback) callback();
       return;
     }
@@ -71,48 +53,47 @@ GridManager.prototype.animateGravity = function (removedCells, callback) {
       }
     });
 
-    for (let x = 0; x < this.game.GRID_W; x++) {
+    const W = this.game.GRID_W;
+    const H = this.game.GRID_H;
+    const movedCells = [];
+
+    for (let x = 0; x < W; x++) {
       const ys = removedMap[x] ? removedMap[x].slice().sort((a, b) => a - b) : [];
       if (!ys.length) continue;
 
-      for (let y = 0; y < this.game.GRID_H; y++) {
-        const isRemoved = ys.includes(y);
-        if (isRemoved) continue;
+      for (let y = 0; y < H; y++) {
+        if (ys.includes(y)) continue;
 
         let holesBelow = 0;
-        ys.forEach((ry) => {
-          if (ry > y) holesBelow++;
-        });
+        for (let i = 0; i < ys.length; i++) {
+          if (ys[i] > y) holesBelow++;
+        }
 
         if (holesBelow > 0) {
-          try {
-            const cell = gridDiv.querySelector(`.cell[data-x="${x}"][data-y="${y}"]`);
-            if (cell) {
-              cell.style.transition = 'transform 0.25s ease';
-              cell.style.transform = `translateY(${holesBelow * 100}%)`;
-            }
-          } catch (e) {}
+          const cell = this.cellCache?.[x]?.[y];
+          if (cell) {
+            cell.style.willChange = 'transform';
+            cell.style.transition = 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)';
+            cell.style.transform = `translateY(${holesBelow * 100}%)`;
+            movedCells.push(cell);
+          }
         }
       }
     }
 
     setTimeout(() => {
       try {
-        const cells = gridDiv.querySelectorAll('.cell');
-        cells.forEach((c) => {
-          try {
-            c.style.transition = '';
-            c.style.transform = '';
-          } catch (e) {}
+        movedCells.forEach((cell) => {
+          cell.style.transition = '';
+          cell.style.transform = '';
+          cell.style.willChange = '';
         });
         if (callback) callback();
       } catch (error) {
-        ErrorHandler.warn('Gravity cleanup failed', error);
         if (callback) callback();
       }
     }, 260);
   } catch (error) {
-    ErrorHandler.handle(error, { type: 'animate_gravity', removedCells: removedCells?.length });
     if (callback) callback();
   }
 };

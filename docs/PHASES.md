@@ -2,11 +2,18 @@
 
 ## Фаза 5 — performance (локально завершувати перед хмарними збереженнями)
 
-- **5.6 FPS / плаваючі числа** — моніторинг FPS, подія `lostnumber:floating-numbers-auto-disable`, збереження `floatingNumbersDisabledBy`, ручний оверрайд у налаштуваннях.
-- **5.7 Grid / інтеракція** — менше зайвих повних `render` під час взаємодії (`ui-events`, зокрема rAF для підказки ланцюга); синхронізація DOM з моделлю — `syncGridDOMFromModel` / `preferSyncOrFullRender` у `grid-render`; після **перемішування** викликається `preferSyncOrFullRender` у `grid-physics.js`, після **локальної гравітації** там же — `performFullRender`; `grid-safety` також може викликати `preferSyncOrFullRender`.
-- **5.8 Lite (MIUI / слабкі пристрої)** — `PlatformDetector.shouldPreferLiteVisual()`, ранній bootstrap у `index.html`, клас `html.low-performance` + `css/low-performance.css`, налаштування `liteVisualMode`: auto/on/off через `settings.js`.
+- **5.6 FPS** — моніторинг FPS у dev-інструментах (`performance-monitor.js`); **плаваючі числа на фоні прибрані** з продукту (`createFloatingNumbers` — no-op). Подія `lostnumber:floating-numbers-auto-disable` лишається в dev-коді для сумісності, але не керує UI гравця.
+- **5.7 Grid / інтеракція** — менше зайвих повних `render` під час взаємодії (`ui-events`, rAF для підказки ланцюга); `syncGridDOMFromModel` / `preferSyncOrFullRender` у `grid-render`; після перемішування та локальної гравітації — `grid-physics.js`; `grid-safety` — `preferSyncOrFullRender`.
+- **5.8 Lite (MIUI / слабкі пристрої)** — `PlatformDetector.shouldPreferLiteVisual()`, клас `html.low-performance` + `css/low-performance.css`, налаштування `liteVisualMode`: auto/on/off у `settings.js`.
 
-**Критерій «фаза 5 закрита»:** немає помітних регресій UI; після тривалої гри сітка синхронна з моделлю; lite і авто‑відключення фону працюють згідно збережених налаштувань.
+**Критерій «фаза 5 закрита»:** немає помітних регресій UI; після тривалої гри сітка синхронна з моделлю; lite-режим працює згідно збережених налаштувань.
+
+## Мобільний UX (реалізовано)
+
+- Єдиний шаблон кнопок меню: іконка 32px + текст (`css/ui.css`, `index.html`).
+- Збереження партії: `lostNumberSave`, кнопка «Продовжити», автозбереження при виході з гри.
+- Android «Назад»: `js/app/navigation/back-navigation.js`, `@capacitor/app`.
+- Аудіо: `docs/AUDIO.md`.
 
 ## Фаза 6 — Firebase (ще не впроваджувати до закриття фази 5)
 

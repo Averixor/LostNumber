@@ -190,7 +190,7 @@ GridManager.prototype.applyLocalGravity = function (removedCells) {
 
     this.applyPressureTransfer(2, 8);
 
-    this.performFullRender();
+    this.preferSyncOrFullRender();
     return true;
   } catch (error) {
     ErrorHandler.handle(error, {

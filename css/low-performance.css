@@ -1,3 +1,8 @@
+html.low-performance .app-background {
+  background-image: none !important;
+  background-color: #1b1028 !important;
+}
+
 html.low-performance *,
 html.low-performance *::before,
 html.low-performance *::after {
@@ -6,53 +11,21 @@ html.low-performance *::after {
   filter: none !important;
   backdrop-filter: none !important;
   text-shadow: none !important;
-}
-
-html.low-performance .grid,
-html.low-performance .cell,
-html.low-performance .system-toast,
-html.low-performance .preview-bubble,
-html.low-performance .wheel-content,
-html.low-performance .victory-content,
-html.low-performance .level-content {
   box-shadow: none !important;
 }
 
-html.low-performance .cell.frozen {
-  filter: none !important;
-}
-
-html.low-performance .preview-bubble {
-  display: none !important;
+html.low-performance .grid {
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 html.low-performance .cell {
-  transition:
-    transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1),
-    opacity 0.15s ease,
-    box-shadow 0.18s ease,
-    border-color 0.18s ease !important;
-}
-
-html.low-performance .cell-inner {
-  transition:
-    transform 0.18s ease,
-    background 0.2s ease,
-    color 0.15s ease !important;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 html.low-performance .cell.popping {
-  animation: bubbleOut 0.24s ease forwards !important;
+  opacity: 0 !important;
 }
 
 html.low-performance .cell.merged .cell-inner {
-  animation: pop 0.2s ease !important;
-}
-
-html.low-performance .cell.carry .cell-inner {
-  animation: carryIn 0.38s ease-out !important;
-}
-
-html.low-performance .cell.shuffle-anim .cell-inner {
-  animation: shuffleWiggle 0.32s ease !important;
+  transform: scale(1) !important;
 }

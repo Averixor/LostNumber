@@ -3,6 +3,12 @@ class GridManager {
     this.game = game;
     this.isRendering = false;
     this.renderCount = 0;
+    /** @type {HTMLElement[][]} */
+    this.cellCache = [];
     ErrorHandler.info('GridManager initialized');
+  }
+
+  clearCellCache() {
+    this.cellCache = [];
   }
 }

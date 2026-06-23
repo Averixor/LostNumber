@@ -136,6 +136,10 @@ const I18N = {
     level_countdown: 'Переходимо на рівень {level} через {seconds}…',
 
     dice_not_enough: 'Потрібно більше очок',
+    confirm_new_game_title: 'Почати нову гру?',
+    confirm_new_game_text: 'Весь поточний прогрес буде скинуто. Ви точно хочете почати нову гру?',
+    cancel: 'Скасувати',
+    start_new_game_confirm: 'Почати нову гру',
     confirm_new_game: 'Почати нову гру? Поточний прогрес буде втрачено.',
     save_done: 'Прогрес збережено.',
     online_status: "З'єднання відновлено",
@@ -387,6 +391,11 @@ const I18N = {
     level_countdown: 'Переход на уровень {level} через {seconds}…',
 
     dice_not_enough: 'Нужно больше очков',
+    confirm_new_game_title: 'Начать новую игру?',
+    confirm_new_game_text:
+      'Весь текущий прогресс будет сброшен. Вы точно хотите начать новую игру?',
+    cancel: 'Отмена',
+    start_new_game_confirm: 'Начать новую игру',
     confirm_new_game: 'Начать новую игру? Текущий прогресс будет потерян.',
     save_done: 'Прогресс сохранён.',
     online_status: 'Соединение восстановлено',
@@ -645,6 +654,11 @@ const I18N = {
     level_countdown: 'Moving to level {level} in {seconds}…',
 
     dice_not_enough: 'You need more XP',
+    confirm_new_game_title: 'Start a new game?',
+    confirm_new_game_text:
+      'All current progress will be reset. Are you sure you want to start a new game?',
+    cancel: 'Cancel',
+    start_new_game_confirm: 'Start new game',
     confirm_new_game: 'Start a new game? Current progress will be lost.',
     save_done: 'Progress saved.',
     online_status: 'Connection restored',

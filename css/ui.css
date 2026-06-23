@@ -42,10 +42,9 @@
   font-weight: 700;
   text-align: left;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(233, 30, 99, calc(var(--shadow) * 1.5));
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition:
     transform 0.15s ease,
-    box-shadow 0.15s ease,
     opacity 0.15s ease;
 }
 
@@ -110,7 +109,7 @@
   justify-content: center;
   font-size: 0.85rem;
   font-weight: 700;
-  box-shadow: 0 4px 15px rgba(233, 30, 99, calc(var(--shadow) * 1.2));
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   gap: 4px;
   flex-wrap: wrap;
   color: var(--text-color);
@@ -133,7 +132,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 4px 15px rgba(233, 30, 99, calc(var(--shadow) * 1.2));
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .xp-inner {
@@ -273,11 +272,10 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 15px rgba(233, 30, 99, calc(var(--shadow) * 1.2));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   transition:
     transform 0.12s ease,
     background 0.12s ease,
-    color 0.12s ease,
     opacity 0.12s ease;
   color: var(--text-color);
 }
@@ -410,7 +408,7 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
   background: var(--panel-bg);
   border-radius: 12px;
   padding: 10px 12px;
-  box-shadow: 0 4px 15px rgba(233, 30, 99, calc(var(--shadow) * 1.2));
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   text-align: left;
   border: 1px solid var(--panel-border);
 }
@@ -564,7 +562,7 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
   border-radius: 12px;
   padding: 12px;
   border: 1px solid var(--panel-border);
-  box-shadow: 0 4px 15px rgba(233, 30, 99, calc(var(--shadow) * 1.2));
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
   text-align: center;
 }
 
@@ -590,7 +588,7 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
   border-radius: 12px;
   background: var(--panel-bg);
   border: 2px solid var(--panel-border);
-  box-shadow: 0 4px 15px rgba(233, 30, 99, calc(var(--shadow) * 1.2));
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   font-size: 0.85rem;
   font-weight: 800;
   text-align: center;
@@ -614,14 +612,12 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
   font-weight: 800;
   pointer-events: none;
   white-space: nowrap;
-  box-shadow: 0 4px 15px rgba(233, 30, 99, calc(var(--shadow) * 1.2));
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
   opacity: 0;
   transform: translate(-50%, 0);
   transition:
     opacity 0.15s ease,
-    transform 0.2s ease,
-    border-color 0.2s ease,
-    background 0.2s ease;
+    transform 0.2s ease;
   z-index: 50;
   color: #3b2b23;
 }

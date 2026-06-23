@@ -9,6 +9,7 @@ const tests = [
   'scripts/test-level-config.mjs',
   'scripts/test-storage-fallback.mjs',
   'scripts/test-error-handler-fallback.mjs',
+  'scripts/test-grid-dom-sync.mjs',
 ];
 
 for (const test of tests) {

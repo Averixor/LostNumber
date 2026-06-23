@@ -30,21 +30,10 @@ GridManager.prototype.getCellFromPoint = function (clientX, clientY) {
       isNaN(x) ||
       isNaN(y) ||
       x < 0 ||
-      x >= (this.game.GRID_W || 6) ||
+      x >= (this.game.GRID_W || 5) ||
       y < 0 ||
-      y >= (this.game.GRID_H || 6)
+      y >= (this.game.GRID_H || 8)
     ) {
-      ErrorHandler.debug('Cell coordinates out of bounds', {
-        x,
-        y,
-        GRID_W: this.game.GRID_W,
-        GRID_H: this.game.GRID_H,
-      });
-      return null;
-    }
-
-    if (!this.game.grid || !this.game.grid[x] || this.game.grid[x][y] === undefined) {
-      ErrorHandler.debug('Cell data not found in grid', { x, y });
       return null;
     }
 
@@ -56,27 +45,23 @@ GridManager.prototype.getCellFromPoint = function (clientX, clientY) {
 };
 
 GridManager.prototype.render = function () {
-  if (this.isRendering) {
-    ErrorHandler.debug('Already rendering, skipping');
-    return;
-  }
-
+  if (this.isRendering) return;
   this.isRendering = true;
 
   try {
     const gridDiv = document.getElementById('grid');
     if (!gridDiv) {
-      ErrorHandler.warn('Grid div not found!');
       this.isRendering = false;
       return;
     }
 
     const expectedCells = this.game.GRID_W * this.game.GRID_H;
-    if (
-      gridDiv.childElementCount === expectedCells &&
-      gridDiv.querySelectorAll('.cell-inner').length === expectedCells &&
-      this.syncGridDOMFromModel()
-    ) {
+    const cacheValid =
+      this.cellCache &&
+      this.cellCache.length === this.game.GRID_W &&
+      this.cellCache[0]?.length === this.game.GRID_H;
+
+    if (cacheValid && gridDiv.childElementCount === expectedCells && this.syncGridDOMFromModel()) {
       return;
     }
 
@@ -91,14 +76,17 @@ GridManager.prototype.render = function () {
 GridManager.prototype.performFullRender = function () {
   try {
     const gridDiv = document.getElementById('grid');
-    if (!gridDiv) {
-      ErrorHandler.warn('Grid div not found for rendering');
-      return;
-    }
+    if (!gridDiv) return;
 
     const selectedCells = [...(this.game.selected || [])];
-
     gridDiv.innerHTML = '';
+    this.cellCache = [];
+
+    for (let x = 0; x < this.game.GRID_W; x++) {
+      this.cellCache[x] = [];
+    }
+
+    const fragment = document.createDocumentFragment();
 
     for (let y = 0; y < this.game.GRID_H; y++) {
       for (let x = 0; x < this.game.GRID_W; x++) {
@@ -112,71 +100,25 @@ GridManager.prototype.performFullRender = function () {
             freezeTurns: 0,
             freezeMaxTurns: 0,
           };
-
           if (this.game.grid && this.game.grid[x]) {
             this.game.grid[x][y] = cellData;
           }
         }
 
-        let num = cellData.number;
-        if (num == null) {
-          num = null;
-        }
-
+        const num = cellData.number;
         const cell = document.createElement('div');
         cell.className = 'cell';
-        cell.dataset.x = x;
-        cell.dataset.y = y;
-        cell.dataset.number = num == null ? '' : num;
+        cell.dataset.x = x.toString();
+        cell.dataset.y = y.toString();
+        cell.dataset.number = num == null ? '' : num.toString();
         this._applyCellDisplayClasses(cell, num);
 
-        const idx = y * this.game.GRID_W + x;
+        const inner = document.createElement('div');
+        inner.className = 'cell-inner';
+        inner.textContent = num == null ? '' : this.formatCarryVisual(num);
+        cell.appendChild(inner);
 
-        let isFrozen = false;
-        let freezeTurns = 0;
-        let freezeMaxTurns = 0;
-
-        if (this.game.freezeSystem) {
-          const freezeData = this.game.freezeSystem.getFreezeData?.(idx);
-          if (freezeData) {
-            isFrozen = true;
-            freezeTurns = freezeData.turns;
-            freezeMaxTurns = freezeData.maxTurns;
-
-            cellData.frozen = true;
-            cellData.freezeTurns = freezeTurns;
-            cellData.freezeMaxTurns = freezeMaxTurns;
-            cellData.freezeType = freezeData.type;
-          } else {
-          }
-        } else {
-          isFrozen = this.game.isCellFrozen(idx) || cellData.frozen;
-          freezeTurns = this.game.getFrozenTurns(idx) || cellData.freezeTurns || 5;
-          freezeMaxTurns = cellData.freezeMaxTurns || 5;
-        }
-
-        if (isFrozen || cellData.frozen) {
-          cell.classList.add('frozen');
-
-          const t = cellData.freezeTurns || freezeTurns || 1;
-          const mt = cellData.freezeMaxTurns || freezeMaxTurns || 1;
-          const opacity = Math.max(0.2, Math.min(1, t / Math.max(1, mt)));
-
-          const snowflake = document.createElement('div');
-          snowflake.className = 'snowflake';
-          snowflake.textContent = '❄️';
-          snowflake.style.opacity = opacity;
-          cell.appendChild(snowflake);
-
-          const counter = document.createElement('div');
-          counter.className = 'freeze-counter';
-          counter.textContent = t;
-          cell.appendChild(counter);
-
-          if (cellData.freezeType) {
-            cell.dataset.freezeType = cellData.freezeType;
-          }
-        }
+        this._updateFrozenVisuals(cell, cellData, x, y);
 
         if (selectedCells.some((s) => s.x === x && s.y === y)) {
           cell.classList.add('selected');
@@ -186,28 +128,13 @@ GridManager.prototype.performFullRender = function () {
           cell.classList.add('merged');
         }
 
-        const inner = document.createElement('div');
-        inner.className = 'cell-inner';
-        try {
-          inner.textContent = num == null ? '' : this.formatCarryVisual(num);
-        } catch (error) {
-          inner.textContent = num == null ? '' : num?.toString() || '2';
-        }
-        cell.appendChild(inner);
-
-        gridDiv.appendChild(cell);
+        this.cellCache[x][y] = cell;
+        fragment.appendChild(cell);
       }
     }
 
+    gridDiv.appendChild(fragment);
     this.renderCount++;
-
-    if (window.AppEnv?.isDev && this.renderCount % 50 === 0) {
-      ErrorHandler.debug('Grid rendered', {
-        count: this.renderCount,
-        cells: this.game.GRID_W * this.game.GRID_H,
-        frozenCells: this.game.getFrozenCount(),
-      });
-    }
   } catch (error) {
     ErrorHandler.handle(error, {
       type: 'full_render',
@@ -217,38 +144,79 @@ GridManager.prototype.performFullRender = function () {
   }
 };
 
-GridManager.prototype.formatCarryVisual = function (num) {
-  try {
-    if (num === this.game.carryNumber) {
-      return `✨${this.game.formatNumber?.(num) || num}✨`;
+GridManager.prototype._updateFrozenVisuals = function (cellEl, cellData, x, y) {
+  const idx = y * this.game.GRID_W + x;
+  let isFrozen = false;
+  let freezeTurns = 0;
+  let freezeMaxTurns = 0;
+
+  if (this.game.freezeSystem) {
+    const freezeData = this.game.freezeSystem.getFreezeData?.(idx);
+    if (freezeData) {
+      isFrozen = true;
+      freezeTurns = freezeData.turns;
+      freezeMaxTurns = freezeData.maxTurns;
+      cellData.freezeType = freezeData.type;
     }
-    return this.game.formatNumber?.(num) || num;
-  } catch (error) {
-    ErrorHandler.warn('formatCarryVisual failed', { num, error });
-    return num?.toString() || '2';
+  } else {
+    isFrozen = this.game.isCellFrozen(idx) || cellData.frozen;
+    freezeTurns = this.game.getFrozenTurns(idx) || cellData.freezeTurns || 5;
+    freezeMaxTurns = cellData.freezeMaxTurns || 5;
+  }
+
+  const showFreeze = !!(isFrozen || cellData.frozen);
+  cellEl.classList.toggle('frozen', showFreeze);
+
+  let snowflake = cellEl.querySelector('.snowflake');
+  let counter = cellEl.querySelector('.freeze-counter');
+
+  if (showFreeze) {
+    const t = cellData.freezeTurns || freezeTurns || 1;
+    const mt = cellData.freezeMaxTurns || freezeMaxTurns || 1;
+    const opacity = Math.max(0.2, Math.min(1, t / Math.max(1, mt)));
+
+    if (!snowflake) {
+      snowflake = document.createElement('div');
+      snowflake.className = 'snowflake';
+      snowflake.textContent = '❄️';
+      cellEl.insertBefore(snowflake, cellEl.firstChild);
+    }
+    snowflake.style.opacity = String(opacity);
+
+    if (!counter) {
+      counter = document.createElement('div');
+      counter.className = 'freeze-counter';
+      cellEl.insertBefore(counter, cellEl.firstChild);
+    }
+    counter.textContent = String(t);
+
+    if (cellData.freezeType) {
+      cellEl.dataset.freezeType = cellData.freezeType;
+    } else {
+      delete cellEl.dataset.freezeType;
+    }
+  } else {
+    if (snowflake) snowflake.remove();
+    if (counter) counter.remove();
+    delete cellEl.dataset.freezeType;
   }
 };
 
 GridManager.prototype.syncGridDOMFromModel = function () {
   try {
-    const gridDiv = document.getElementById('grid');
-    if (!gridDiv) return false;
-
     const W = this.game.GRID_W;
     const H = this.game.GRID_H;
-    const expected = W * H;
-    const cells = gridDiv.querySelectorAll('.cell');
 
-    if (cells.length !== expected) return false;
-    if (gridDiv.querySelectorAll('.cell-inner').length !== expected) return false;
+    if (!this.cellCache || this.cellCache.length !== W) return false;
 
     const selectedCells = [...(this.game.selected || [])];
 
-    for (let y = 0; y < H; y++) {
-      for (let x = 0; x < W; x++) {
-        const cellEl = gridDiv.querySelector(`.cell[data-x="${x}"][data-y="${y}"]`);
+    for (let x = 0; x < W; x++) {
+      if (!this.cellCache[x] || this.cellCache[x].length !== H) return false;
+      for (let y = 0; y < H; y++) {
+        const cellEl = this.cellCache[x][y];
         if (!cellEl) return false;
-        if (!this._syncSingleCellDOM(cellEl, x, y, selectedCells)) return false;
+        this._syncSingleCellDOM(cellEl, x, y, selectedCells);
       }
     }
 
@@ -276,80 +244,22 @@ GridManager.prototype._syncSingleCellDOM = function (cellEl, x, y, selectedCells
         freezeTurns: 0,
         freezeMaxTurns: 0,
       };
+    }
 
-      if (this.game.grid && this.game.grid[x]) {
-        this.game.grid[x][y] = cellData;
+    const num = cellData.number;
+    const numStr = num == null ? '' : num.toString();
+
+    if (cellEl.dataset.number !== numStr) {
+      cellEl.dataset.number = numStr;
+      this._applyCellDisplayClasses(cellEl, num);
+
+      const inner = cellEl.querySelector('.cell-inner');
+      if (inner) {
+        inner.textContent = num == null ? '' : this.formatCarryVisual(num);
       }
     }
 
-    let num = cellData.number;
-    if (num == null) {
-      num = null;
-    }
-
-    cellEl.dataset.number = num == null ? '' : num;
-    this._applyCellDisplayClasses(cellEl, num);
-
-    const idx = y * this.game.GRID_W + x;
-
-    let isFrozen = false;
-    let freezeTurns = 0;
-    let freezeMaxTurns = 0;
-
-    if (this.game.freezeSystem) {
-      const freezeData = this.game.freezeSystem.getFreezeData?.(idx);
-      if (freezeData) {
-        isFrozen = true;
-        freezeTurns = freezeData.turns;
-        freezeMaxTurns = freezeData.maxTurns;
-
-        cellData.frozen = true;
-        cellData.freezeTurns = freezeTurns;
-        cellData.freezeMaxTurns = freezeMaxTurns;
-        cellData.freezeType = freezeData.type;
-      }
-    } else {
-      isFrozen = this.game.isCellFrozen(idx) || cellData.frozen;
-      freezeTurns = this.game.getFrozenTurns(idx) || cellData.freezeTurns || 5;
-      freezeMaxTurns = cellData.freezeMaxTurns || 5;
-    }
-
-    const showFreeze = !!(isFrozen || cellData.frozen);
-
-    cellEl.classList.toggle('frozen', showFreeze);
-    cellEl.querySelectorAll('.snowflake, .freeze-counter').forEach((el) => el.remove());
-
-    if (showFreeze) {
-      const t = cellData.freezeTurns || freezeTurns || 1;
-      const mt = cellData.freezeMaxTurns || freezeMaxTurns || 1;
-      const opacity = Math.max(0.2, Math.min(1, t / Math.max(1, mt)));
-
-      const snowflake = document.createElement('div');
-      snowflake.className = 'snowflake';
-      snowflake.textContent = '❄️';
-      snowflake.style.opacity = String(opacity);
-
-      const counter = document.createElement('div');
-      counter.className = 'freeze-counter';
-      counter.textContent = String(t);
-
-      const innerBefore = cellEl.querySelector('.cell-inner');
-      if (innerBefore) {
-        cellEl.insertBefore(snowflake, innerBefore);
-        cellEl.insertBefore(counter, innerBefore);
-      } else {
-        cellEl.appendChild(snowflake);
-        cellEl.appendChild(counter);
-      }
-
-      if (cellData.freezeType) {
-        cellEl.dataset.freezeType = cellData.freezeType;
-      } else {
-        delete cellEl.dataset.freezeType;
-      }
-    } else {
-      delete cellEl.dataset.freezeType;
-    }
+    this._updateFrozenVisuals(cellEl, cellData, x, y);
 
     const isSel = selectedCells.some((s) => s.x === x && s.y === y);
     cellEl.classList.toggle('selected', isSel);
@@ -358,17 +268,20 @@ GridManager.prototype._syncSingleCellDOM = function (cellEl, x, y, selectedCells
     }
     cellEl.classList.toggle('merged', !!cellData.merged);
 
-    let inner = cellEl.querySelector('.cell-inner');
-    if (!inner) {
-      inner = document.createElement('div');
-      inner.className = 'cell-inner';
-      cellEl.appendChild(inner);
-    }
-    inner.textContent = num == null ? '' : this.formatCarryVisual(num);
-
     return true;
   } catch (error) {
     ErrorHandler.warn('_syncSingleCellDOM failed', { x, y, error });
     return false;
+  }
+};
+
+GridManager.prototype.formatCarryVisual = function (num) {
+  try {
+    if (num === this.game.carryNumber) {
+      return `✨${this.game.formatNumber?.(num) || num}✨`;
+    }
+    return this.game.formatNumber?.(num) || num;
+  } catch (error) {
+    return num?.toString() || '2';
   }
 };

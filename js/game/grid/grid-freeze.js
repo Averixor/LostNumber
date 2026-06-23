@@ -6,7 +6,7 @@ GridManager.prototype.updateFrozenCells = function () {
       typeof this.game.freezeSystem.updateFrozenCells === 'function'
     ) {
       const changed = this.game.freezeSystem.updateFrozenCells();
-      if (typeof this.updateFrozenStates === 'function') this.updateFrozenStates();
+      this.updateFrozenStates();
       return changed || 0;
     }
 
@@ -37,7 +37,7 @@ GridManager.prototype.updateFrozenCells = function () {
         }
       }
 
-      if (anyChanged && typeof this.updateFrozenStates === 'function') this.updateFrozenStates();
+      if (anyChanged) this.updateFrozenStates();
       return anyChanged;
     }
 
@@ -50,71 +50,20 @@ GridManager.prototype.updateFrozenCells = function () {
 
 GridManager.prototype.updateFrozenStates = function () {
   try {
-    const gridDiv = document.getElementById('grid');
-    if (!gridDiv) return;
+    const W = this.game.GRID_W;
+    const H = this.game.GRID_H;
 
-    const cells = gridDiv.querySelectorAll('.cell');
-    cells.forEach((cell) => {
-      try {
-        const x = parseInt(cell.dataset.x);
-        const y = parseInt(cell.dataset.y);
-        const idx = y * this.game.GRID_W + x;
+    if (!this.cellCache || this.cellCache.length !== W) return;
 
-        let isFrozen = false;
-        let freezeTurns = 0;
-        let freezeMaxTurns = 0;
-
-        if (this.game.freezeSystem) {
-          const freezeData = this.game.freezeSystem.getFreezeData?.(idx);
-          if (freezeData) {
-            isFrozen = true;
-            freezeTurns = freezeData.turns;
-            freezeMaxTurns = freezeData.maxTurns;
-
-            const cd = this.game.grid?.[x]?.[y];
-            if (cd) {
-              cd.frozen = true;
-              cd.freezeTurns = freezeTurns;
-              cd.freezeMaxTurns = freezeMaxTurns;
-              cd.freezeType = freezeData.type;
-            }
-          }
-        } else {
-          isFrozen = this.game.frozenCells?.has(idx);
-          if (isFrozen) {
-            freezeTurns = this.game.frozenCells.get(idx);
-            const cellData = this.game.grid?.[x]?.[y];
-            freezeMaxTurns = cellData?.freezeMaxTurns || 5;
-          }
+    for (let x = 0; x < W; x++) {
+      for (let y = 0; y < H; y++) {
+        const cell = this.cellCache[x]?.[y];
+        const cd = this.game.grid?.[x]?.[y];
+        if (cell && cd) {
+          this._updateFrozenVisuals(cell, cd, x, y);
         }
-
-        if (isFrozen) {
-          cell.classList.add('frozen');
-
-          const counter = cell.querySelector('.freeze-counter');
-          if (counter) {
-            counter.textContent = freezeTurns;
-          }
-
-          const snowflake = cell.querySelector('.snowflake');
-          if (snowflake) {
-            snowflake.style.opacity = Math.max(0.2, freezeTurns / Math.max(1, freezeMaxTurns));
-          } else {
-            const snowflake = document.createElement('div');
-            snowflake.className = 'snowflake';
-            snowflake.textContent = '❄️';
-            snowflake.style.opacity = Math.max(0.2, freezeTurns / Math.max(1, freezeMaxTurns));
-            cell.appendChild(snowflake);
-          }
-        } else {
-          cell.classList.remove('frozen');
-          const snowflake = cell.querySelector('.snowflake');
-          const counter = cell.querySelector('.freeze-counter');
-          if (snowflake) snowflake.remove();
-          if (counter) counter.remove();
-        }
-      } catch (error) {}
-    });
+      }
+    }
   } catch (error) {
     ErrorHandler.warn('updateFrozenStates failed', error);
   }
@@ -140,7 +89,6 @@ GridManager.prototype.onCorrectMove = function () {
       this.updateFrozenStates();
       return result;
     }
-
     return { unfrozen: 0 };
   } catch (error) {
     ErrorHandler.warn('onCorrectMove failed', error);
@@ -155,7 +103,6 @@ GridManager.prototype.onChainComplete = function (chainLength, chainSum) {
       this.updateFrozenStates();
       return result;
     }
-
     return { unfrozen: 0, affected: 0 };
   } catch (error) {
     ErrorHandler.warn('onChainComplete failed', error);
