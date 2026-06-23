@@ -71,6 +71,9 @@ window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       try {
         window.game = new LostNumberGame();
+        if (typeof window.game.setupNativeBackButton === 'function') {
+          window.game.setupNativeBackButton();
+        }
         hideLoadingScreen();
         if (typeof ErrorHandler !== 'undefined') {
           ErrorHandler.info('Game initialized successfully', { type: 'init' });

@@ -99,6 +99,7 @@ class DailyQuestManager {
 
     this.quests.completed[id] = true;
 
+    this.game.audioManager?.playQuestComplete?.();
     this.game.showMessage(this.game.t('daily_completed'));
     this.giveDailyQuestReward(id);
 
@@ -120,6 +121,7 @@ class DailyQuestManager {
         this.game.xp += 20;
         this.game.incrementStat('totalXP', 20);
         this.game.updateXPBar();
+        this.game.audioManager?.playXp?.();
         break;
       case 'chain5':
         this.game.grantBonus('explosion', 1);
@@ -129,6 +131,7 @@ class DailyQuestManager {
         this.game.xp += 30;
         this.game.incrementStat('totalXP', 30);
         this.game.updateXPBar();
+        this.game.audioManager?.playXp?.();
         break;
       case 'useBonus':
         this.game.grantBonus('shuffle', 1);
@@ -138,6 +141,7 @@ class DailyQuestManager {
         this.game.xp += 15;
         this.game.incrementStat('totalXP', 15);
         this.game.updateXPBar();
+        this.game.audioManager?.playXp?.();
         break;
     }
   }

@@ -256,12 +256,18 @@
         <div class="victory-title" data-i18n="victory_title"></div>
         <div class="victory-text" data-i18n="victory_text"></div>
         <div class="menu-buttons" style="margin-top: 8px">
-          <button class="menu-btn primary" id="playAgainBtn" data-i18n="btn_play_again"></button>
-          <button
-            class="menu-btn secondary"
-            id="backToMenuBtn"
-            data-i18n="btn_back_to_menu"
-          ></button>
+          <button class="menu-btn primary" id="playAgainBtn" type="button">
+            <span class="menu-btn__icon" data-i18n="icon_btn_play_again" aria-hidden="true"></span>
+            <span class="menu-btn__label" data-i18n="btn_play_again"></span>
+          </button>
+          <button class="menu-btn secondary" id="backToMenuBtn" type="button">
+            <span
+              class="menu-btn__icon"
+              data-i18n="icon_btn_back_to_menu"
+              aria-hidden="true"
+            ></span>
+            <span class="menu-btn__label" data-i18n="btn_back_to_menu"></span>
+          </button>
         </div>
       </div>
     </div>
@@ -273,12 +279,18 @@
         <div class="level-stats" id="levelStats"></div>
         <div class="level-countdown hidden" id="levelCountdown" aria-hidden="true"></div>
         <div class="menu-buttons">
-          <button
-            class="menu-btn secondary"
-            id="levelMenuBtn"
-            data-i18n="btn_back_to_menu"
-          ></button>
-          <button class="menu-btn primary" id="levelNextBtn" data-i18n="btn_next_level"></button>
+          <button class="menu-btn secondary" id="levelMenuBtn" type="button">
+            <span
+              class="menu-btn__icon"
+              data-i18n="icon_btn_back_to_menu"
+              aria-hidden="true"
+            ></span>
+            <span class="menu-btn__label" data-i18n="btn_back_to_menu"></span>
+          </button>
+          <button class="menu-btn primary" id="levelNextBtn" type="button">
+            <span class="menu-btn__icon" data-i18n="icon_btn_next_level" aria-hidden="true"></span>
+            <span class="menu-btn__label" data-i18n="btn_next_level"></span>
+          </button>
         </div>
       </div>
     </div>
@@ -298,7 +310,10 @@
         <div id="wheelXpLabel" class="wheel-xp"></div>
         <canvas id="fortuneWheel" width="300" height="300"></canvas>
         <div class="wheel-center-btn">
-          <button id="spinWheelBtn" class="menu-btn primary" data-i18n="btn_spin_wheel"></button>
+          <button id="spinWheelBtn" class="menu-btn primary" type="button">
+            <span class="menu-btn__icon" data-i18n="icon_btn_spin_wheel" aria-hidden="true"></span>
+            <span class="menu-btn__label" data-i18n="btn_spin_wheel"></span>
+          </button>
         </div>
         <div id="wheelResult" class="wheel-result"></div>
         <div class="wheel-daily-info" id="wheelDailyInfo"></div>
@@ -308,21 +323,40 @@
     <div class="screen main-menu" id="mainMenuScreen">
       <h1 class="sr-only" data-i18n="game_logo">Lost Number</h1>
       <div class="menu-buttons main-menu__buttons">
-        <button class="menu-btn primary" id="continueBtn" data-i18n="btn_continue"></button>
-        <button class="menu-btn secondary" id="newGameBtn" data-i18n="btn_new_game"></button>
-        <button class="menu-btn secondary" id="settingsBtn" data-i18n="btn_settings"></button>
         <button
-          class="menu-btn secondary"
-          id="dailyQuestsBtn"
-          data-i18n="btn_daily_quests"
-        ></button>
-        <button
-          class="menu-btn secondary"
-          id="achievementsBtn"
-          data-i18n="btn_achievements"
-        ></button>
-        <button class="menu-btn secondary" id="statsBtn" data-i18n="btn_stats"></button>
-        <button class="menu-btn secondary" id="aboutBtn" data-i18n="btn_about"></button>
+          class="menu-btn primary"
+          id="continueBtn"
+          type="button"
+          disabled
+          aria-disabled="true"
+        >
+          <span class="menu-btn__icon" data-i18n="icon_btn_continue" aria-hidden="true"></span>
+          <span class="menu-btn__label" data-i18n="btn_continue"></span>
+        </button>
+        <button class="menu-btn secondary" id="newGameBtn" type="button">
+          <span class="menu-btn__icon" data-i18n="icon_btn_new_game" aria-hidden="true"></span>
+          <span class="menu-btn__label" data-i18n="btn_new_game"></span>
+        </button>
+        <button class="menu-btn secondary" id="settingsBtn" type="button">
+          <span class="menu-btn__icon" data-i18n="icon_btn_settings" aria-hidden="true"></span>
+          <span class="menu-btn__label" data-i18n="btn_settings"></span>
+        </button>
+        <button class="menu-btn secondary" id="dailyQuestsBtn" type="button">
+          <span class="menu-btn__icon" data-i18n="icon_btn_daily_quests" aria-hidden="true"></span>
+          <span class="menu-btn__label" data-i18n="btn_daily_quests"></span>
+        </button>
+        <button class="menu-btn secondary" id="achievementsBtn" type="button">
+          <span class="menu-btn__icon" data-i18n="icon_btn_achievements" aria-hidden="true"></span>
+          <span class="menu-btn__label" data-i18n="btn_achievements"></span>
+        </button>
+        <button class="menu-btn secondary" id="statsBtn" type="button">
+          <span class="menu-btn__icon" data-i18n="icon_btn_stats" aria-hidden="true"></span>
+          <span class="menu-btn__label" data-i18n="btn_stats"></span>
+        </button>
+        <button class="menu-btn secondary" id="aboutBtn" type="button">
+          <span class="menu-btn__icon" data-i18n="icon_btn_about" aria-hidden="true"></span>
+          <span class="menu-btn__label" data-i18n="btn_about"></span>
+        </button>
       </div>
     </div>
 
@@ -330,11 +364,10 @@
       <div class="settings-title" data-i18n="achievements_title"></div>
       <div class="achievements-grid" id="achievementsGrid"></div>
       <div class="menu-buttons back-btn-menu">
-        <button
-          class="menu-btn secondary"
-          id="backFromAchievementsBtn"
-          data-i18n="btn_back"
-        ></button>
+        <button class="menu-btn secondary" id="backFromAchievementsBtn" type="button">
+          <span class="menu-btn__icon" data-i18n="icon_btn_back" aria-hidden="true"></span>
+          <span class="menu-btn__label" data-i18n="btn_back"></span>
+        </button>
       </div>
     </div>
 
@@ -342,7 +375,10 @@
       <div class="settings-title" data-i18n="stats_title"></div>
       <div class="stats-grid" id="statsGrid"></div>
       <div class="menu-buttons back-btn-menu">
-        <button class="menu-btn secondary" id="backFromStatsBtn" data-i18n="btn_back"></button>
+        <button class="menu-btn secondary" id="backFromStatsBtn" type="button">
+          <span class="menu-btn__icon" data-i18n="icon_btn_back" aria-hidden="true"></span>
+          <span class="menu-btn__label" data-i18n="btn_back"></span>
+        </button>
       </div>
     </div>
 
@@ -350,11 +386,10 @@
       <div class="settings-title" data-i18n="daily_quests_title"></div>
       <div class="settings-options" id="dailyQuestsList"></div>
       <div class="menu-buttons back-btn-menu">
-        <button
-          class="menu-btn secondary"
-          id="backFromDailyQuestsBtn"
-          data-i18n="btn_back"
-        ></button>
+        <button class="menu-btn secondary" id="backFromDailyQuestsBtn" type="button">
+          <span class="menu-btn__icon" data-i18n="icon_btn_back" aria-hidden="true"></span>
+          <span class="menu-btn__label" data-i18n="btn_back"></span>
+        </button>
       </div>
     </div>
 
@@ -474,6 +509,56 @@
           </select>
         </div>
         <div class="setting-item">
+          <label class="setting-label" for="musicSelect" data-i18n="settings_music_label"></label>
+          <select class="setting-control" id="musicSelect">
+            <option value="on" selected data-i18n="settings_music_on"></option>
+            <option value="off" data-i18n="settings_music_off"></option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label
+            class="setting-label"
+            for="sfxVolumeSelect"
+            data-i18n="settings_sfx_volume_label"
+          ></label>
+          <select class="setting-control" id="sfxVolumeSelect">
+            <option value="25" data-i18n="settings_volume_25"></option>
+            <option value="50" selected data-i18n="settings_volume_50"></option>
+            <option value="75" data-i18n="settings_volume_75"></option>
+            <option value="100" data-i18n="settings_volume_100"></option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label
+            class="setting-label"
+            for="musicVolumeSelect"
+            data-i18n="settings_music_volume_label"
+          ></label>
+          <select class="setting-control" id="musicVolumeSelect">
+            <option value="25" selected data-i18n="settings_volume_25"></option>
+            <option value="50" data-i18n="settings_volume_50"></option>
+            <option value="75" data-i18n="settings_volume_75"></option>
+            <option value="100" data-i18n="settings_volume_100"></option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label
+            class="setting-label"
+            for="musicTrackSelect"
+            data-i18n="settings_music_track_label"
+          ></label>
+          <select class="setting-control" id="musicTrackSelect">
+            <option value="ambient" data-i18n="settings_music_track_ambient"></option>
+            <option value="crystalFlow" data-i18n="settings_music_track_crystal_flow"></option>
+            <option
+              value="digitalHorizon"
+              data-i18n="settings_music_track_digital_horizon"
+            ></option>
+            <option value="neonDrift" data-i18n="settings_music_track_neon_drift"></option>
+            <option value="stellarLogic" data-i18n="settings_music_track_stellar_logic"></option>
+          </select>
+        </div>
+        <div class="setting-item">
           <label class="setting-label" for="themeSelect" data-i18n="settings_theme_label"></label>
           <select class="setting-control" id="themeSelect">
             <option value="dawn" data-i18n="settings_theme_dawn"></option>
@@ -494,12 +579,14 @@
         </div>
       </div>
       <div class="menu-buttons back-btn-menu">
-        <button
-          class="menu-btn primary"
-          id="saveSettingsBtn"
-          data-i18n="btn_save_settings"
-        ></button>
-        <button class="menu-btn secondary" id="backFromSettingsBtn" data-i18n="btn_back"></button>
+        <button class="menu-btn primary" id="saveSettingsBtn" type="button">
+          <span class="menu-btn__icon" data-i18n="icon_btn_save_settings" aria-hidden="true"></span>
+          <span class="menu-btn__label" data-i18n="btn_save_settings"></span>
+        </button>
+        <button class="menu-btn secondary" id="backFromSettingsBtn" type="button">
+          <span class="menu-btn__icon" data-i18n="icon_btn_back" aria-hidden="true"></span>
+          <span class="menu-btn__label" data-i18n="btn_back"></span>
+        </button>
       </div>
     </div>
 
@@ -530,7 +617,10 @@
         </div>
       </div>
       <div class="menu-buttons back-btn-menu">
-        <button class="menu-btn secondary" id="backFromAboutBtn" data-i18n="btn_back"></button>
+        <button class="menu-btn secondary" id="backFromAboutBtn" type="button">
+          <span class="menu-btn__icon" data-i18n="icon_btn_back" aria-hidden="true"></span>
+          <span class="menu-btn__label" data-i18n="btn_back"></span>
+        </button>
       </div>
     </div>
 
@@ -575,6 +665,7 @@
     <script src="js/app/inventory/inventory.js" defer></script>
     <script src="js/app/ui/i18n-theme.js" defer></script>
     <script src="js/app/persistence/save-load.js" defer></script>
+    <script src="js/app/navigation/back-navigation.js" defer></script>
     <script src="js/app/ui/ui-refresh.js" defer></script>
     <script src="js/app/ui/ui-events.js" defer></script>
     <script src="js/app/flow/game-flow.js" defer></script>

@@ -50,6 +50,10 @@ class GameState {
       this.animationEnabled = true;
       this.lang = 'ua';
       this.soundEnabled = true;
+      this.musicEnabled = true;
+      this.sfxVolume = 0.5;
+      this.musicVolume = 0.3;
+      this.musicTrack = 'ambient';
       this.theme = 'dusk';
       this.liteVisualMode = 'auto';
 

@@ -83,7 +83,13 @@ class LostNumberGame {
     this.applyTheme();
 
     if (this.audioManager) {
-      this.audioManager.setSoundEnabled(this.soundEnabled);
+      this.audioManager.applySettings({
+        soundEnabled: this.soundEnabled,
+        musicEnabled: this.musicEnabled,
+        sfxVolume: this.sfxVolume,
+        musicVolume: this.musicVolume,
+        musicTrack: this.musicTrack,
+      });
       this.audioManager.updateSoundStateUI();
     }
 
@@ -169,6 +175,10 @@ class LostNumberGame {
       'animationEnabled',
       'lang',
       'soundEnabled',
+      'musicEnabled',
+      'sfxVolume',
+      'musicVolume',
+      'musicTrack',
       'theme',
       'liteVisualMode',
       'sessionSeed',

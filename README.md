@@ -61,7 +61,7 @@ npm run android:open      # Android Studio
 | `npm run typecheck`           | TypeScript **`tsc --noEmit`** — baseline перевірка типів без збірки й без emit (див. `tsconfig.json`, `js/types.d.ts`; `checkJs` глобально вимкнено) |
 | `npm run test:smoke`          | Gameplay/storage/error-handler smoke-перевірки без test framework                                                                                    |
 | `npm run release:check`       | Повний предрелізний gate: format, lint, typecheck, static verifier і smoke-тести                                                                     |
-| `npm run build:pages`         | Готує `_site/` для GitHub Pages з `index.html`, `manifest.json`, `assets/`, `audio/`, `css/`, `js/`                                                  |
+| `npm run build:pages`         | Готує `_site/` для GitHub Pages / Capacitor: `index.html`, `manifest.json`, `assets/`, `public/audio/` → `_site/audio/`, `css/`, `js/`               |
 | `npm run android:prepare`     | `build:pages` + синхронізація web-асетів у `android/` (Capacitor)                                                                                    |
 | `npm run android:open`        | Відкрити Gradle-проєкт у Android Studio                                                                                                              |
 | `npm run android:run`         | prepare + `cap run android` (потрібен SDK + пристрій/емулятор)                                                                                       |

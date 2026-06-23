@@ -28,6 +28,11 @@
 }
 
 .menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  width: 100%;
   padding: clamp(7px, 1.4vh, 10px) 14px;
   border-radius: 14px;
   border: 2px solid var(--btn-border);
@@ -35,12 +40,31 @@
   color: var(--text-color);
   font-size: clamp(0.82rem, 1.7vh, 0.95rem);
   font-weight: 700;
+  text-align: left;
   cursor: pointer;
   box-shadow: 0 4px 15px rgba(233, 30, 99, calc(var(--shadow) * 1.5));
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease,
     opacity 0.15s ease;
+}
+
+.menu-btn__icon {
+  flex: 0 0 32px;
+  width: 32px;
+  text-align: center;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.menu-btn__label {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.menu-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .menu-btn.primary {

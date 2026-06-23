@@ -29,7 +29,14 @@ class ScreenManager {
       }
 
       if (wasGame && name !== 'game') {
+        if (typeof this.game.saveGameState === 'function') {
+          this.game.saveGameState();
+        }
         this.game.resetRuntimeState();
+      }
+
+      if (name === 'mainMenu' && typeof this.game.checkExistingSave === 'function') {
+        this.game.checkExistingSave();
       }
     } catch (error) {
       ErrorHandler.handle(error, { type: 'screen_manager', method: 'showScreen', name });

@@ -26,12 +26,14 @@ class BonusManager {
       }
 
       if (this.game.getBonusCount(type) <= 0) {
+        this.game.audioManager?.playError?.();
         this.showMessage(this.game.t('no_bonus'));
         return;
       }
 
       if (type === 'shuffle') {
         if (!this.game.consumeBonus('shuffle', 1)) {
+          this.game.audioManager?.playError?.();
           this.showMessage(this.game.t('no_bonus'));
           return;
         }
@@ -42,6 +44,7 @@ class BonusManager {
         this.animatedShuffleGrid(() => {
           try {
             this.updateBonusesUI();
+            this.game.audioManager?.playBonus?.();
             this.showMessage(this.game.t('shuffle_done'));
 
             if (this.game.achievementManager) {
@@ -170,6 +173,7 @@ class BonusManager {
       }
 
       if (this.game.getBonusCount('destroy') <= 0) {
+        this.game.audioManager?.playError?.();
         this.showMessage(this.game.t('no_bonus'));
         this.game.activeBonus = null;
         this.updateBonusesUI();
@@ -179,6 +183,7 @@ class BonusManager {
       if (!this.game.consumeBonus('destroy', 1)) {
         this.game.activeBonus = null;
         this.updateBonusesUI();
+        this.game.audioManager?.playError?.();
         this.showMessage(this.game.t('no_bonus'));
         return;
       }
@@ -195,6 +200,7 @@ class BonusManager {
               this.game.gridManager.applyLocalGravity(removedCells);
               this.game.activeBonus = null;
               this.updateBonusesUI();
+              this.game.audioManager?.playBonus?.();
               this.showMessage(this.game.t('destroy_done'));
               this.game.setGamePhase('playing');
 
@@ -261,6 +267,7 @@ class BonusManager {
       }
 
       if (this.game.getBonusCount('explosion') <= 0) {
+        this.game.audioManager?.playError?.();
         this.showMessage(this.game.t('no_bonus'));
         this.game.activeBonus = null;
         this.updateBonusesUI();
@@ -270,6 +277,7 @@ class BonusManager {
       if (!this.game.consumeBonus('explosion', 1)) {
         this.game.activeBonus = null;
         this.updateBonusesUI();
+        this.game.audioManager?.playError?.();
         this.showMessage(this.game.t('no_bonus'));
         return;
       }
@@ -295,6 +303,7 @@ class BonusManager {
               this.game.gridManager.applyLocalGravity(removedCells);
               this.game.activeBonus = null;
               this.updateBonusesUI();
+              this.game.audioManager?.playBonus?.();
               this.showMessage(this.game.t('explosion_done'));
               this.game.setGamePhase('playing');
 

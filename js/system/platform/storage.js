@@ -76,9 +76,11 @@ class StorageManager {
   clearSave() {
     try {
       localStorage.removeItem(this.SAVE_KEY);
+      this._memorySave = null;
       return true;
     } catch (e) {
       console.error('Clear save failed:', e);
+      this._memorySave = null;
       return false;
     }
   }

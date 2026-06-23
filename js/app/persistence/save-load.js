@@ -42,31 +42,33 @@ LostNumberGame.prototype.checkStorageHealth = function () {
   } catch (_) {}
 };
 
+LostNumberGame.prototype.updateContinueButton = function (hasSave) {
+  const enabled = hasSave === true;
+  const continueBtn = /** @type {HTMLButtonElement | null} */ (
+    document.getElementById('continueBtn')
+  );
+  if (!continueBtn) return;
+
+  continueBtn.disabled = !enabled;
+  continueBtn.setAttribute('aria-disabled', enabled ? 'false' : 'true');
+};
+
 LostNumberGame.prototype.checkExistingSave = function () {
   try {
     const raw = this.storageManager.loadGameState();
-    /** @type {HTMLButtonElement | null} */
-    const continueBtn = /** @type {HTMLButtonElement | null} */ (
-      document.getElementById('continueBtn')
-    );
 
     if (!raw) {
       this.hasSave = false;
-      if (continueBtn) {
-        continueBtn.disabled = true;
-        continueBtn.style.opacity = '0.5';
-      }
+      this.updateContinueButton(false);
       return;
     }
 
     this.hasSave = true;
-    if (continueBtn) {
-      continueBtn.disabled = false;
-      continueBtn.style.opacity = '1';
-    }
+    this.updateContinueButton(true);
   } catch (error) {
     ErrorHandler.handle(error, { type: 'save_check' });
     this.hasSave = false;
+    this.updateContinueButton(false);
   }
 };
 
@@ -342,6 +344,7 @@ LostNumberGame.prototype.saveGameState = function () {
 
     this.storageManager.saveGameState(state);
     this.hasSave = true;
+    this.updateContinueButton(true);
     this.checkStorageHealth();
 
     ErrorHandler.info('Game state saved', { level: this.currentLevel, xp: this.xp });

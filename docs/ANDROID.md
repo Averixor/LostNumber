@@ -16,16 +16,17 @@
 ## Вимоги
 
 1. **Node.js** 18+ і `npm install` у корені репозиторію.
-2. **JDK 17** (рекомендовано для Android Gradle Plugin).
-3. **Android Studio** Ladybug / Koala або новіша з Android SDK 34+.
-4. Змінна **`ANDROID_HOME`** або SDK через Android Studio → Settings → Android SDK.
+2. **JDK 17** — `openjdk-17-jdk` або SDKMAN (`sdk install java 17.0.13-tem`).
+3. **Android Studio** + Android SDK 34+.
 
-Перевірка:
+Швидка установка на Linux (у **своєму** терміналі, не в агенті без sudo):
 
 ```bash
-java -version
-# Android Studio → SDK Manager → Android 14 (API 34) + Build-Tools
+bash scripts/install-android-studio.sh
+source ~/.bashrc
 ```
+
+Скрипт ставить Studio у `~/Android/android-studio` (або через `snap`, якщо є sudo) і дописує в `~/.bashrc` змінні `CAPACITOR_ANDROID_STUDIO_PATH`, `JAVA_HOME`, `ANDROID_HOME`.
 
 ## Швидкий старт
 

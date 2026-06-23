@@ -39,6 +39,7 @@ class OverlayManager {
 
     document.getElementById('backToMenuBtn')?.addEventListener('click', () => {
       this.game.audioManager.playTap();
+      this.game.saveGameState();
       this.hideVictory();
       this.game.screenManager.showScreen('mainMenu');
     });

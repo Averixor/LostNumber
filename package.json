@@ -3,6 +3,7 @@
   "private": true,
   "devDependencies": {
     "@capacitor/android": "^7.6.7",
+    "@capacitor/app": "^7.1.2",
     "@capacitor/cli": "^7.6.7",
     "@capacitor/core": "^7.6.7",
     "@capacitor/status-bar": "^7.0.6",

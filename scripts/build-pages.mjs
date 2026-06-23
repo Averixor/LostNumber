@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const outDir = join(root, '_site');
-const releaseEntries = ['index.html', 'manifest.json', 'assets', 'audio', 'css', 'js'];
+const releaseEntries = ['index.html', 'manifest.json', 'assets', 'css', 'js'];
 
 rmSync(outDir, { recursive: true, force: true });
 mkdirSync(outDir, { recursive: true });
@@ -13,6 +13,8 @@ mkdirSync(outDir, { recursive: true });
 for (const entry of releaseEntries) {
   cpSync(join(root, entry), join(outDir, entry), { recursive: true });
 }
+
+cpSync(join(root, 'public', 'audio'), join(outDir, 'audio'), { recursive: true });
 
 writeFileSync(join(outDir, '.nojekyll'), 'Disable Jekyll processing for this static app.\n');
 

@@ -104,12 +104,14 @@ LostNumberGame.prototype.handlePointerDown = function (e) {
 
     const idx = posCell.y * this.GRID_W + posCell.x;
     if (this.isCellFrozen(idx)) {
+      this.audioManager?.playError?.();
       this.showMessage(this.t('cell_frozen'));
       return;
     }
 
     if (this.activeBonus === 'destroy') {
       if (this.getBonusCount('destroy') <= 0) {
+        this.audioManager?.playError?.();
         this.showMessage(this.t('no_bonus'));
         return;
       }
@@ -118,6 +120,7 @@ LostNumberGame.prototype.handlePointerDown = function (e) {
     }
     if (this.activeBonus === 'explosion') {
       if (this.getBonusCount('explosion') <= 0) {
+        this.audioManager?.playError?.();
         this.showMessage(this.t('no_bonus'));
         return;
       }
@@ -136,6 +139,7 @@ LostNumberGame.prototype.handlePointerDown = function (e) {
     this.selected = [posCell];
     Chain.numbers = [cellNumber];
     updateChainSum();
+    this.audioManager?.playGridTap?.();
     this._applySelectionHighlight?.(null, posCell);
     try {
       this.updatePreviewBubble();
@@ -197,6 +201,7 @@ LostNumberGame.prototype.handlePointerMove = function (e) {
     this.selected.push(posCell);
     Chain.numbers.push(newNum);
     updateChainSum();
+    this.audioManager?.playConnect?.(Chain.numbers.length);
 
     this._schedulePreviewBubbleUpdate?.();
     this._applySelectionHighlight?.(null, posCell);
@@ -268,10 +273,6 @@ LostNumberGame.prototype.resetChain = function (reason = null) {
       if (this.audioManager) {
         if (typeof this.audioManager.playError === 'function') {
           this.audioManager.playError();
-        } else if (typeof this.audioManager.playSound === 'function') {
-          this.audioManager.playSound('error');
-        } else if (typeof this.audioManager.playTap === 'function') {
-          this.audioManager.playTap();
         }
       }
       this.showMessage(this.t('chain_invalid'));

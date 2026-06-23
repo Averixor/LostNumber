@@ -41,9 +41,17 @@
   document.addEventListener(
     'visibilitychange',
     function () {
-      if (!document.hidden) {
-        applyStatusBar();
+      if (document.hidden) {
+        if (
+          window.game &&
+          window.game.screenState === 'game' &&
+          typeof window.game.saveGameState === 'function'
+        ) {
+          window.game.saveGameState();
+        }
+        return;
       }
+      applyStatusBar();
     },
     { passive: true },
   );

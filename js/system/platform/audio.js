@@ -1,64 +1,275 @@
+const LN_SFX_FILES = {
+  connect: 'audio/sfx/connect.mp3',
+  chainComplete: 'audio/sfx/chain-complete.mp3',
+  bigChain: 'audio/sfx/big-chain.mp3',
+  button: 'audio/sfx/button.mp3',
+  tap: 'audio/sfx/tap.mp3',
+  bonus: 'audio/sfx/bonus.mp3',
+  xp: 'audio/sfx/xp.mp3',
+  error: 'audio/sfx/error.mp3',
+  questComplete: 'audio/sfx/quest-complete.mp3',
+  victory: 'audio/sfx/victory.mp3',
+};
+
+const LN_MUSIC_FILES = {
+  ambient: 'audio/music/ambient.mp3',
+  crystalFlow: 'audio/music/Crystal Flow.mp3',
+  digitalHorizon: 'audio/music/Digital Horizon.mp3',
+  neonDrift: 'audio/music/Neon Drift.mp3',
+  stellarLogic: 'audio/music/Stellar Logic.mp3',
+};
+
+const LN_VALID_MUSIC_TRACKS = Object.keys(LN_MUSIC_FILES);
+
+function lnAudioUrl(relativePath) {
+  const parts = String(relativePath).split('/');
+  const file = parts.pop();
+  return `${parts.join('/')}/${encodeURIComponent(file)}`;
+}
+
+function lnNormalizeVolume(value, fallback) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return fallback;
+  if (number > 1) return Math.max(0, Math.min(1, number / 100));
+  return Math.max(0, Math.min(1, number));
+}
+
 class AudioManager {
   constructor() {
     this.soundEnabled = true;
-    this.music = null;
-    this.tapSound = null;
-    this.musicInitialized = false;
+    this.musicEnabled = true;
+    this.sfxVolume = 0.5;
+    this.musicVolume = 0.3;
+    this.musicTrack = 'ambient';
+
+    this.sfx = {};
+    this.music = {};
+    this._assetsReady = false;
+    this._unlocked = false;
+    this._currentMusic = null;
+    this._currentMusicKey = null;
   }
 
   init() {
-    if (this.musicInitialized) return;
-    this.musicInitialized = true;
+    if (this._assetsReady) return;
+    this._assetsReady = true;
 
-    try {
-      this.music = new Audio('audio/music/ambient.mp3');
-      this.music.loop = true;
-      this.music.volume = 0.35;
-    } catch (e) {
-      this.music = null;
+    Object.entries(LN_SFX_FILES).forEach(([key, path]) => {
+      try {
+        const clip = new Audio(lnAudioUrl(path));
+        clip.preload = 'auto';
+        this.sfx[key] = clip;
+      } catch (_) {
+        this.sfx[key] = null;
+      }
+    });
+
+    Object.entries(LN_MUSIC_FILES).forEach(([key, path]) => {
+      try {
+        const track = new Audio(lnAudioUrl(path));
+        track.preload = 'auto';
+        track.loop = true;
+        this.music[key] = track;
+      } catch (_) {
+        this.music[key] = null;
+      }
+    });
+  }
+
+  applySettings(settings = {}) {
+    if (settings.soundEnabled !== undefined) {
+      this.soundEnabled = settings.soundEnabled !== false;
+    }
+    if (settings.musicEnabled !== undefined) {
+      this.musicEnabled = settings.musicEnabled !== false;
+    }
+    if (settings.sfxVolume !== undefined) {
+      this.sfxVolume = lnNormalizeVolume(settings.sfxVolume, this.sfxVolume);
+    }
+    if (settings.musicVolume !== undefined) {
+      this.musicVolume = lnNormalizeVolume(settings.musicVolume, this.musicVolume);
+    }
+    if (settings.musicTrack !== undefined) {
+      const track = String(settings.musicTrack || '');
+      this.musicTrack = LN_VALID_MUSIC_TRACKS.includes(track) ? track : 'ambient';
     }
 
-    try {
-      this.tapSound = new Audio('audio/sfx/tap.mp3');
-      this.tapSound.volume = 0.45;
-    } catch (e) {
-      this.tapSound = null;
+    this._applyMusicVolume();
+
+    if (this.musicEnabled && this._unlocked) {
+      this.playMusic(this.musicTrack, true);
+    } else {
+      this.stopMusic();
     }
+  }
+
+  unlock() {
+    if (this._unlocked) return;
+    this._unlocked = true;
+    this.init();
+    if (this.musicEnabled) {
+      this.playMusic(this.musicTrack, false);
+    }
+  }
+
+  _ensureUnlocked() {
+    if (!this._unlocked) {
+      this.unlock();
+    } else {
+      this.init();
+    }
+  }
+
+  _getSfxVolume(name) {
+    const base =
+      name === 'bigChain' ? 0.65 : name === 'victory' ? 0.7 : name === 'button' ? 0.45 : 0.55;
+    return Math.max(0, Math.min(1, base * this.sfxVolume));
+  }
+
+  _applyMusicVolume() {
+    const volume = Math.max(0, Math.min(1, this.musicVolume));
+    Object.values(this.music).forEach((track) => {
+      if (track) track.volume = volume;
+    });
+  }
+
+  playSound(name) {
+    if (!this.soundEnabled) return;
+    this._ensureUnlocked();
+
+    const src = this.sfx[name];
+    if (!src) return;
+
+    try {
+      const clip = src.cloneNode();
+      clip.volume = this._getSfxVolume(name);
+      clip.currentTime = 0;
+      clip.play().catch(() => {});
+    } catch (_) {}
   }
 
   playTap() {
-    if (!this.soundEnabled || !this.tapSound) return;
-    try {
-      const clone = this.tapSound.cloneNode();
-      clone.volume = this.tapSound.volume;
-      clone.play().catch(() => {});
-    } catch (e) {}
+    this.playSound('button');
   }
 
-  playMusic() {
-    if (!this.soundEnabled || !this.music) return;
+  playGridTap() {
+    this.playSound('tap');
+  }
+
+  playError() {
+    this.playSound('error');
+  }
+
+  playConnect(chainLength) {
+    const len = Number(chainLength) || 0;
+    if (len < 2) return;
+
+    this.playSound('connect');
+
+    if (len >= 8) {
+      this.playSound('bigChain');
+    }
+  }
+
+  playChainComplete() {
+    this.playSound('chainComplete');
+  }
+
+  playXp() {
+    this.playSound('xp');
+  }
+
+  playBonus() {
+    this.playSound('bonus');
+  }
+
+  playQuestComplete() {
+    this.playSound('questComplete');
+  }
+
+  playVictory() {
+    this.playSound('victory');
+  }
+
+  playMusic(trackKey, forceRestart = false) {
+    if (!this.musicEnabled) return;
+    this.init();
+
+    const key = LN_VALID_MUSIC_TRACKS.includes(trackKey) ? trackKey : this.musicTrack || 'ambient';
+    const track = this.music[key];
+    if (!track) return;
+
+    if (
+      !forceRestart &&
+      this._currentMusicKey === key &&
+      this._currentMusic === track &&
+      !track.paused
+    ) {
+      track.volume = Math.max(0, Math.min(1, this.musicVolume));
+      return;
+    }
+
+    this.stopMusic();
+
+    this._currentMusic = track;
+    this._currentMusicKey = key;
+    track.loop = true;
+    track.volume = Math.max(0, Math.min(1, this.musicVolume));
+    track.currentTime = 0;
+
     try {
-      if (this.music.paused) {
-        this.music.play().catch(() => {});
-      }
-    } catch (e) {}
+      track.play().catch(() => {});
+    } catch (_) {}
+  }
+
+  stopMusic() {
+    if (this._currentMusic) {
+      try {
+        this._currentMusic.pause();
+        this._currentMusic.currentTime = 0;
+      } catch (_) {}
+    }
+    this._currentMusic = null;
+    this._currentMusicKey = null;
   }
 
   pauseMusic() {
-    if (!this.music) return;
+    if (!this._currentMusic) return;
     try {
-      if (!this.music.paused) {
-        this.music.pause();
+      if (!this._currentMusic.paused) {
+        this._currentMusic.pause();
       }
-    } catch (e) {}
+    } catch (_) {}
   }
 
   setSoundEnabled(enabled) {
-    this.soundEnabled = enabled;
-    if (!enabled) {
-      this.pauseMusic();
+    this.soundEnabled = enabled === true;
+  }
+
+  setMusicEnabled(enabled) {
+    this.musicEnabled = enabled === true;
+    if (this.musicEnabled && this._unlocked) {
+      this.playMusic(this.musicTrack, false);
     } else {
-      this.playMusic();
+      this.stopMusic();
+    }
+  }
+
+  setSfxVolume(level) {
+    this.sfxVolume = lnNormalizeVolume(level, this.sfxVolume);
+  }
+
+  setMusicVolume(level) {
+    this.musicVolume = lnNormalizeVolume(level, this.musicVolume);
+    this._applyMusicVolume();
+  }
+
+  setMusicTrack(trackKey) {
+    if (!LN_VALID_MUSIC_TRACKS.includes(trackKey)) return;
+    const changed = this.musicTrack !== trackKey;
+    this.musicTrack = trackKey;
+    if (this.musicEnabled && this._unlocked && changed) {
+      this.playMusic(trackKey, true);
     }
   }
 

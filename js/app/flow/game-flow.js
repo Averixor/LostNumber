@@ -73,6 +73,7 @@ LostNumberGame.prototype.mergeChain = function () {
     const chainLen = this.selected.length;
 
     this.setGamePhase('animating');
+    this.audioManager?.playChainComplete?.();
 
     this.grid[anchor.x][anchor.y].number = resultNumber;
     this.grid[anchor.x][anchor.y].merged = true;
@@ -94,6 +95,10 @@ LostNumberGame.prototype.mergeChain = function () {
         const oldXp = this.xp;
         const xpEarned = this.calculateXP(chainLen);
         this.xp += xpEarned;
+
+        if (xpEarned > 0) {
+          this.audioManager?.playXp?.();
+        }
 
         this.incrementStat('totalXP', xpEarned);
         this.incrementStat('totalMerges', 1);
@@ -172,6 +177,8 @@ LostNumberGame.prototype.checkWin = function () {
 
 LostNumberGame.prototype.handleLevelComplete = function () {
   try {
+    this.audioManager?.playVictory?.();
+
     const oldXp = this.xp;
     const level = this.getLevelConfig(this.currentLevel);
     const carryNumber = level.target;

@@ -10,8 +10,6 @@ class MenuManager {
     if (continueBtn) {
       continueBtn.addEventListener('click', () => {
         this.game.audioManager.playTap();
-        this.game.audioManager.init();
-        this.game.audioManager.playMusic();
         this.game.resumeGame();
       });
     }
@@ -19,8 +17,6 @@ class MenuManager {
     if (newGameBtn) {
       newGameBtn.addEventListener('click', () => {
         this.game.audioManager.playTap();
-        this.game.audioManager.init();
-        this.game.audioManager.playMusic();
 
         if (this.game.hasSave) {
           const ok = confirm(this.game.t('confirm_new_game'));
@@ -29,6 +25,7 @@ class MenuManager {
 
         this.game.storageManager.clearSave();
         this.game.hasSave = false;
+        this.game.updateContinueButton(false);
         this.game.startNewGame();
       });
     }
@@ -77,22 +74,8 @@ class MenuManager {
   }
 
   syncSettingsUI() {
-    const animationSelect = document.getElementById('animationSelect');
-    const soundSelect = document.getElementById('soundSelect');
-    const themeSelect = document.getElementById('themeSelect');
-    const languageSelect = document.getElementById('languageSelect');
-
-    if (animationSelect) {
-      animationSelect.value = this.game.animationEnabled ? 'on' : 'off';
-    }
-    if (soundSelect) {
-      soundSelect.value = this.game.soundEnabled ? 'on' : 'off';
-    }
-    if (themeSelect) {
-      themeSelect.value = this.game.theme || 'dusk';
-    }
-    if (languageSelect) {
-      languageSelect.value = this.game.lang || 'ua';
+    if (this.game.settingsManager) {
+      this.game.settingsManager.updateSettingsUI();
     }
   }
 }

@@ -255,8 +255,13 @@ for (const dir of ['css', 'js']) {
 }
 
 for (const [ref, sources] of [...references.entries()].sort(([a], [b]) => a.localeCompare(b))) {
-  const full = join(root, ref);
-  if (!existsSync(full)) {
+  const candidates = [join(root, ref)];
+  if (ref.startsWith('audio/')) {
+    candidates.push(join(root, 'public', ref));
+  }
+
+  const full = candidates.find((path) => existsSync(path));
+  if (!full) {
     fail(`${ref} referenced by ${[...sources].sort().join(', ')} does not exist`);
     continue;
   }
