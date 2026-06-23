@@ -219,44 +219,8 @@ class AudioManager {
     this._currentMusicKey = null;
   }
 
-  pauseMusic() {
-    if (!this._currentMusic) return;
-    try {
-      if (!this._currentMusic.paused) {
-        this._currentMusic.pause();
-      }
-    } catch (_) {}
-  }
-
   setSoundEnabled(enabled) {
     this.soundEnabled = enabled === true;
-  }
-
-  setMusicEnabled(enabled) {
-    this.musicEnabled = enabled === true;
-    if (this.musicEnabled && this._unlocked) {
-      this.playMusic(this.musicTrack, false);
-    } else {
-      this.stopMusic();
-    }
-  }
-
-  setSfxVolume(level) {
-    this.sfxVolume = lnNormalizeVolume(level, this.sfxVolume);
-  }
-
-  setMusicVolume(level) {
-    this.musicVolume = lnNormalizeVolume(level, this.musicVolume);
-    this._applyMusicVolume();
-  }
-
-  setMusicTrack(trackKey) {
-    if (!LN_VALID_MUSIC_TRACKS.includes(trackKey)) return;
-    const changed = this.musicTrack !== trackKey;
-    this.musicTrack = trackKey;
-    if (this.musicEnabled && this._unlocked && changed) {
-      this.playMusic(trackKey, true);
-    }
   }
 
   updateSoundStateUI() {

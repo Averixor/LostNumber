@@ -17,15 +17,28 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "./assets/icons/icon-1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
   "screenshots": [
     {
-      "src": "./assets/images/background.jpg",
-      "sizes": "576x1024",
-      "type": "image/jpeg",
+      "src": "./assets/images/background.png",
+      "sizes": "941x1672",
+      "type": "image/png",
       "form_factor": "narrow",
       "label": "Lost Number"
+    },
+    {
+      "src": "./assets/images/background-alt.png",
+      "sizes": "941x1672",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Lost Number — alt"
     }
   ],
   "prefer_related_applications": false

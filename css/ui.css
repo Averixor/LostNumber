@@ -1,14 +1,14 @@
 .main-menu {
   text-align: center;
-  gap: clamp(4px, 1vh, 8px);
-  justify-content: flex-end;
-  padding-top: clamp(42vh, 48vh, 54vh);
-  padding-bottom: clamp(24px, 6vh, 48px);
+  gap: clamp(8px, 2vh, 14px);
+  justify-content: center;
+  padding-top: clamp(10vh, 16vh, 22vh);
+  padding-bottom: max(clamp(20px, 5vh, 40px), env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
 }
 
 .main-menu__buttons {
-  margin-top: auto;
+  margin-top: 0;
 }
 
 .subtitle {
@@ -51,8 +51,12 @@
 .menu-btn__icon {
   flex: 0 0 32px;
   width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   line-height: 1;
 }
 
@@ -375,16 +379,16 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
 }
 
 .settings-screen {
-  padding: clamp(12px, 3vh, 20px) clamp(12px, 3vw, 18px) clamp(24px, 8vh, 56px);
+  padding: clamp(12px, 3vh, 20px) clamp(12px, 3vw, 18px)
+    max(clamp(20px, 5vh, 36px), env(safe-area-inset-bottom, 0px));
   text-align: center;
   justify-content: flex-start;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
 }
 
 .settings-screen > .settings-title,
-.settings-screen > .settings-options,
 .settings-screen > .menu-buttons {
   flex-shrink: 0;
 }
@@ -402,6 +406,13 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.settings-screen > .settings-options {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .setting-item {
@@ -432,7 +443,8 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
 }
 
 .back-btn-menu {
-  margin-top: 16px;
+  margin-top: clamp(12px, 2.5vh, 20px);
+  flex-shrink: 0;
 }
 
 .about-intro p {
@@ -483,11 +495,21 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
 .achievements-screen,
 .stats-screen,
 .daily-quests-screen {
-  padding: clamp(10px, 2.5vh, 20px) clamp(10px, 3vw, 18px) clamp(60px, 12vh, 90px);
+  padding: clamp(10px, 2.5vh, 20px) clamp(10px, 3vw, 18px)
+    max(clamp(20px, 5vh, 36px), env(safe-area-inset-bottom, 0px));
   text-align: center;
   justify-content: flex-start;
-  overflow-y: auto;
+  overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
+}
+
+.achievements-screen > .settings-title,
+.stats-screen > .settings-title,
+.daily-quests-screen > .settings-title,
+.achievements-screen > .menu-buttons,
+.stats-screen > .menu-buttons,
+.daily-quests-screen > .menu-buttons {
+  flex-shrink: 0;
 }
 
 .achievements-grid,
@@ -498,6 +520,15 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
   margin: 20px 0;
   max-width: 320px;
   width: 100%;
+}
+
+.achievements-screen > .achievements-grid,
+.stats-screen > .stats-grid,
+.daily-quests-screen > .settings-options {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .achievement-item {
@@ -668,8 +699,8 @@ html[data-theme='dusk'] .preview-bubble {
 
 @media (max-height: 520px) {
   .main-menu {
-    padding-top: clamp(36vh, 40vh, 44vh);
-    padding-bottom: clamp(12px, 3vh, 24px);
+    padding-top: clamp(6vh, 8vh, 12vh);
+    padding-bottom: max(clamp(12px, 3vh, 20px), env(safe-area-inset-bottom, 0px));
   }
 
   .subtitle {

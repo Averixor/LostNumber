@@ -72,12 +72,13 @@
       name="description"
       content="Lost Number — легка логічна puzzle-гра з рівнями, бонусами, колесом фортуни та локальним збереженням прогресу."
     />
-    <title>LostNumber</title>
+    <title>Lost Number</title>
 
     <link rel="manifest" href="./manifest.json" />
 
-    <link rel="icon" href="./assets/icons/icon.png" type="image/png" />
-    <link rel="apple-touch-icon" href="./assets/icons/icon.png" />
+    <link rel="icon" href="./assets/icons/icon.png" type="image/png" sizes="512x512" />
+    <link rel="icon" href="./assets/icons/icon-1024.png" type="image/png" sizes="1024x1024" />
+    <link rel="apple-touch-icon" href="./assets/icons/icon.png" sizes="512x512" />
 
     <meta name="theme-color" content="#1b1028" />
     <meta name="background-color" content="#1b1028" />
@@ -86,15 +87,22 @@
     <link
       rel="preload"
       as="image"
-      href="./assets/images/background.jpg"
-      type="image/jpeg"
+      href="./assets/images/background.png"
+      type="image/png"
       fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="./assets/images/background-alt.png"
+      type="image/png"
+      fetchpriority="low"
     />
 
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="LostNumber" />
+    <meta name="apple-mobile-web-app-title" content="Lost Number" />
 
     <meta property="og:title" content="Lost Number" />
     <meta
@@ -103,11 +111,12 @@
     />
     <meta
       property="og:image"
-      content="https://averixor.github.io/LostNumber/assets/images/background.jpg"
+      content="https://averixor.github.io/LostNumber/assets/images/background.png"
     />
     <meta property="og:type" content="website" />
 
     <script src="js/system/platform/platform.js"></script>
+    <script src="js/system/platform/background.js"></script>
     <script>
       (function bootstrapLiteVisualEarly() {
         try {
@@ -234,6 +243,15 @@
 
   <body>
     <div id="appBackground" class="app-background" aria-hidden="true"></div>
+    <script>
+      (function applyDailyBackgroundEarly() {
+        try {
+          if (typeof BackgroundRotator !== 'undefined') {
+            BackgroundRotator.init();
+          }
+        } catch (e) {}
+      })();
+    </script>
 
     <div id="appSplash" class="app-splash" aria-busy="true">
       <div class="loading-overlay__footer">
@@ -342,9 +360,11 @@
         <p class="confirm-dialog__text" data-i18n="confirm_new_game_text"></p>
         <div class="confirm-dialog__actions menu-buttons">
           <button type="button" class="menu-btn primary" id="newGameConfirmCancel">
+            <span class="menu-btn__icon" data-i18n="icon_btn_back" aria-hidden="true"></span>
             <span class="menu-btn__label" data-i18n="cancel"></span>
           </button>
           <button type="button" class="menu-btn danger" id="newGameConfirmOk">
+            <span class="menu-btn__icon" data-i18n="icon_btn_new_game" aria-hidden="true"></span>
             <span class="menu-btn__label" data-i18n="start_new_game_confirm"></span>
           </button>
         </div>

@@ -7,8 +7,4 @@ class GridManager {
     this.cellCache = [];
     ErrorHandler.info('GridManager initialized');
   }
-
-  clearCellCache() {
-    this.cellCache = [];
-  }
 }

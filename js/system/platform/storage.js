@@ -85,19 +85,6 @@ class StorageManager {
     }
   }
 
-  clearAll() {
-    try {
-      localStorage.removeItem(this.SAVE_KEY);
-      localStorage.removeItem(this.SETTINGS_KEY);
-      localStorage.removeItem(this.FIRST_RUN_KEY);
-      localStorage.removeItem(this.DAILY_QUESTS_KEY);
-      return true;
-    } catch (e) {
-      console.error('Clear all failed:', e);
-      return false;
-    }
-  }
-
   saveDailyQuests(quests) {
     try {
       localStorage.setItem(this.DAILY_QUESTS_KEY, JSON.stringify(quests));
