@@ -22,7 +22,7 @@ npx serve .
 Лише **два** растрові файли:
 
 - `assets/images/background.jpg` — єдиний статичний фон для всіх екранів (завантаження, меню, гра, налаштування).
-- `assets/icons/icon.png` — іконка застосунку (PWA, вкладка браузера, Android).
+- `assets/icons/icon.png` — іконка застосунку (512×512; PWA, браузер, Android Studio Image Asset).
 
 Колір оболонки PWA / `theme-color`: **`#1b1028`**.
 
