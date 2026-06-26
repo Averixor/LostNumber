@@ -82,3 +82,6 @@ copilot-messages.log
 # System files
 .DS_Store
 .project/attachments/files/**
+
+# Local/generated duplicate image exports
+public/images/
