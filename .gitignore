@@ -2,6 +2,7 @@
 android/keystore/
 android/keystore.properties
 *.jks
+*.keystore
 
 # Sync .project/sourceTexts/ folder (source text files)
 
