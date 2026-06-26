@@ -1,7 +1,6 @@
 LostNumberGame.prototype.startNewGame = function () {
   try {
     this.initSeededRandom(true);
-    this._bonusTypesUsed = new Set();
 
     this.currentLevel = 0;
     this.xp = 0;
@@ -38,7 +37,7 @@ LostNumberGame.prototype.startNewGame = function () {
     }
 
     this.incrementStat('gamesPlayed', 1);
-    this.saveGameState();
+    this.saveGameState({ force: true });
   } catch (error) {
     ErrorHandler.handle(error, { type: 'new_game' });
     this.showScreen('mainMenu');
@@ -47,6 +46,9 @@ LostNumberGame.prototype.startNewGame = function () {
 };
 
 LostNumberGame.prototype.mergeChain = function () {
+  let removedCells = null;
+  let mergeCellsCleared = false;
+
   try {
     const level = this.getLevelConfig(this.currentLevel);
     const sum = Chain.sum;
@@ -69,7 +71,7 @@ LostNumberGame.prototype.mergeChain = function () {
     }
 
     const anchor = this.selected[this.selected.length - 1];
-    const removedCells = this.selected.slice(0, -1);
+    removedCells = this.selected.slice(0, -1);
     const chainLen = this.selected.length;
 
     this.setGamePhase('animating');
@@ -81,17 +83,17 @@ LostNumberGame.prototype.mergeChain = function () {
     removedCells.forEach((cell) => {
       this.grid[cell.x][cell.y].number = null;
     });
+    mergeCellsCleared = true;
 
     this.selected = [];
     Chain.numbers = [];
     Chain.sum = 0;
 
+    this.hidePreviewBubble?.();
     this.gridManager.render();
 
-    this.gridManager.animatePopping(removedCells, () => {
-      this.gridManager.animateGravity(removedCells, () => {
-        this.gridManager.applyLocalGravity(removedCells);
-
+    this.gridManager.runPostMergeEffects(removedCells, () => {
+      try {
         const oldXp = this.xp;
         const xpEarned = this.calculateXP(chainLen);
         this.xp += xpEarned;
@@ -140,21 +142,32 @@ LostNumberGame.prototype.mergeChain = function () {
 
         this.gridManager.render();
 
-        this.saveGameState();
+        this.saveGameState({ force: true });
 
         if (this.gamePhase === 'animating') {
           this.setGamePhase('playing');
         }
 
         this.checkWin();
-      });
+      } catch (callbackError) {
+        ErrorHandler.handle(callbackError, { type: 'merge_chain_callback', chainLen });
+        this.repairMergeGridState(removedCells);
+        if (this.gamePhase === 'animating') {
+          this.setGamePhase('playing');
+        }
+      }
     });
   } catch (error) {
     ErrorHandler.handle(error, { type: 'merge_chain', chainLength: Chain.numbers?.length ?? 0 });
+    if (mergeCellsCleared) {
+      this.repairMergeGridState(removedCells);
+    }
+    this._postMergeEffectsPending = false;
     if (this.gamePhase === 'animating') {
       this.setGamePhase('playing');
     }
     this.resetChain('error');
+    this.flushDeferredSaveActions();
   }
 };
 
@@ -202,7 +215,7 @@ LostNumberGame.prototype.handleLevelComplete = function () {
 
     this.incrementStat('levelsCompleted', 1);
     this.setStatMax('highestLevel', nextLevelNumber);
-    this.saveGameState();
+    this.saveGameState({ force: true });
 
     this.achievementManager.updateAchievementProgress('level10', 1);
     this.achievementManager.updateAchievementProgress('level25', 1);
@@ -262,7 +275,7 @@ LostNumberGame.prototype.completeLevelTransition = function () {
     this.carryNumber = carry;
     this.gridManager.initGame(this.currentLevel);
     this.refreshLevelUI();
-    this.saveGameState();
+    this.saveGameState({ force: true });
   } catch (error) {
     ErrorHandler.handle(error, { type: 'level_transition', pending: this.pendingTransition });
     this.showScreen('mainMenu');

@@ -45,6 +45,12 @@
         if (
           window.game &&
           window.game.screenState === 'game' &&
+          typeof window.game.requestSaveGameState === 'function'
+        ) {
+          window.game.requestSaveGameState();
+        } else if (
+          window.game &&
+          window.game.screenState === 'game' &&
           typeof window.game.saveGameState === 'function'
         ) {
           window.game.saveGameState();

@@ -94,7 +94,7 @@ GridManager.prototype.performFullRender = function () {
 
         if (!cellData || typeof cellData !== 'object') {
           cellData = {
-            number: 2,
+            number: null,
             merged: false,
             frozen: false,
             freezeTurns: 0,
@@ -115,6 +115,9 @@ GridManager.prototype.performFullRender = function () {
 
         const inner = document.createElement('div');
         inner.className = 'cell-inner';
+        if (num === this.game.carryNumber) {
+          inner.classList.add('carry-special');
+        }
         inner.textContent = num == null ? '' : this.formatCarryVisual(num);
         cell.appendChild(inner);
 
@@ -178,8 +181,14 @@ GridManager.prototype._updateFrozenVisuals = function (cellEl, cellData, x, y) {
     if (!snowflake) {
       snowflake = document.createElement('div');
       snowflake.className = 'snowflake';
-      snowflake.textContent = '❄️';
+      const slot = document.createElement('span');
+      slot.className = 'freeze-icon-slot';
+      slot.setAttribute('data-ln-icon', 'lock');
+      snowflake.appendChild(slot);
       cellEl.insertBefore(snowflake, cellEl.firstChild);
+      if (typeof LostNumberIcons !== 'undefined') {
+        LostNumberIcons.mount(slot, 'lock');
+      }
     }
     snowflake.style.opacity = String(opacity);
 
@@ -238,7 +247,7 @@ GridManager.prototype._syncSingleCellDOM = function (cellEl, x, y, selectedCells
 
     if (!cellData || typeof cellData !== 'object') {
       cellData = {
-        number: 2,
+        number: null,
         merged: false,
         frozen: false,
         freezeTurns: 0,
@@ -247,7 +256,12 @@ GridManager.prototype._syncSingleCellDOM = function (cellEl, x, y, selectedCells
     }
 
     const num = cellData.number;
-    const numStr = num == null ? '' : num.toString();
+    const numStr = num == null || num === undefined ? '' : num.toString();
+
+    cellEl.classList.remove('popping', 'carry');
+    cellEl.style.transform = '';
+    cellEl.style.transition = '';
+    cellEl.style.willChange = '';
 
     if (cellEl.dataset.number !== numStr) {
       cellEl.dataset.number = numStr;
@@ -256,6 +270,7 @@ GridManager.prototype._syncSingleCellDOM = function (cellEl, x, y, selectedCells
       const inner = cellEl.querySelector('.cell-inner');
       if (inner) {
         inner.textContent = num == null ? '' : this.formatCarryVisual(num);
+        inner.classList.toggle('carry-special', num === this.game.carryNumber);
       }
     }
 
@@ -277,9 +292,6 @@ GridManager.prototype._syncSingleCellDOM = function (cellEl, x, y, selectedCells
 
 GridManager.prototype.formatCarryVisual = function (num) {
   try {
-    if (num === this.game.carryNumber) {
-      return `✨${this.game.formatNumber?.(num) || num}✨`;
-    }
     return this.game.formatNumber?.(num) || num;
   } catch (error) {
     return num?.toString() || '2';

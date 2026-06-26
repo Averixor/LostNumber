@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "🎮 Play (local — cheats auto)",
+      "name": "Play (local — cheats auto)",
       "type": "chrome",
       "request": "launch",
       "url": "http://127.0.0.1:5500/",
@@ -12,7 +12,7 @@
       "runtimeArgs": ["--disable-extensions", "--disable-background-timer-throttling"]
     },
     {
-      "name": "🎯 Cheats (local)",
+      "name": "Cheats (local)",
       "type": "chrome",
       "request": "launch",
       "url": "http://127.0.0.1:5500/",
@@ -26,7 +26,7 @@
       ]
     },
     {
-      "name": "🛠 Dev + AppEnv debug",
+      "name": "Dev + AppEnv debug",
       "type": "chrome",
       "request": "launch",
       "url": "http://127.0.0.1:5500/?dev=1&debug=1",
@@ -40,7 +40,7 @@
       ]
     },
     {
-      "name": "🔬 Debug Full",
+      "name": "Debug Full",
       "type": "chrome",
       "request": "launch",
       "url": "http://127.0.0.1:5500/?debug=full&dev=1",
@@ -54,7 +54,7 @@
       ]
     },
     {
-      "name": "📱 Mobile 375×812 (local)",
+      "name": "Mobile 375×812 (local)",
       "type": "chrome",
       "request": "launch",
       "url": "http://127.0.0.1:5500/",
@@ -68,7 +68,7 @@
       ]
     },
     {
-      "name": "⚡ Lighthouse Clean",
+      "name": "Lighthouse Clean",
       "type": "chrome",
       "request": "launch",
       "url": "http://127.0.0.1:5500/",
@@ -83,7 +83,7 @@
       ]
     },
     {
-      "name": "🔗 Attach",
+      "name": "Attach",
       "type": "chrome",
       "request": "attach",
       "port": 9222,

@@ -82,11 +82,23 @@ class DailyQuestManager {
       const div = document.createElement('div');
       div.className = 'setting-item';
       div.innerHTML = `
-        <strong>${done ? '✅' : '⬜'} ${this.game.t(q.textKey)}</strong>
+        <strong>
+          <span class="ln-icon-slot daily-task__status-icon" data-ln-icon="${done ? 'unlock' : 'lock'}" aria-hidden="true"></span>
+          ${this.game.t(q.textKey)}
+        </strong>
         <div style="font-size:0.8rem;opacity:0.8;">${this.game.t(q.rewardKey)}</div>
       `;
       container.appendChild(div);
     });
+
+    try {
+      if (
+        typeof LostNumberIcons !== 'undefined' &&
+        typeof LostNumberIcons.applyAll === 'function'
+      ) {
+        LostNumberIcons.applyAll(container);
+      }
+    } catch (_) {}
   }
 
   completeDailyQuest(id) {

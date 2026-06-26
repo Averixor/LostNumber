@@ -1,3 +1,93 @@
+GridManager.prototype.clearMergeAnimationState = function () {
+  try {
+    const W = this.game.GRID_W;
+    const H = this.game.GRID_H;
+    if (!this.cellCache) return;
+
+    for (let x = 0; x < W; x++) {
+      for (let y = 0; y < H; y++) {
+        const cell = this.cellCache[x]?.[y];
+        if (!cell) continue;
+        cell.classList.remove('popping', 'carry');
+        cell.style.transform = '';
+        cell.style.transition = '';
+        cell.style.willChange = '';
+      }
+    }
+  } catch (error) {
+    ErrorHandler.warn('clearMergeAnimationState failed', { error });
+  }
+};
+
+/**
+ * @param {GridPoint[]} removedCells
+ * @param {() => void} [done]
+ */
+GridManager.prototype.runPostMergeEffects = function (removedCells, done) {
+  const game = this.game;
+  if (game) {
+    game._postMergeEffectsPending = true;
+  }
+
+  const finishDone = () => {
+    try {
+      if (game) {
+        game._postMergeEffectsPending = false;
+      }
+      if (typeof done === 'function') {
+        done();
+      }
+    } finally {
+      if (game && typeof game.flushDeferredSaveActions === 'function') {
+        game.flushDeferredSaveActions();
+      }
+    }
+  };
+
+  const settle = () => {
+    try {
+      this.clearMergeAnimationState();
+      this.applyLocalGravity(removedCells);
+    } catch (error) {
+      ErrorHandler.handle(error, { type: 'post_merge_settle' });
+    } finally {
+      finishDone();
+    }
+  };
+
+  const skipAnim =
+    !this.game.animationEnabled ||
+    document.documentElement.classList.contains('low-performance') ||
+    document.body.classList.contains('no-animations');
+
+  if (skipAnim) {
+    settle();
+    return;
+  }
+
+  let settled = false;
+  const finish = () => {
+    if (settled) return;
+    settled = true;
+    settle();
+  };
+
+  const failsafe = setTimeout(finish, 900);
+
+  try {
+    this.animatePopping(removedCells, () => {
+      this.animateGravity(removedCells, () => {
+        clearTimeout(failsafe);
+        finish();
+      });
+    });
+  } catch (error) {
+    clearTimeout(failsafe);
+    ErrorHandler.handle(error, { type: 'post_merge_anim' });
+    finish();
+  }
+};
+
 GridManager.prototype.animateCarryAppear = function (x, y) {
   try {
     const cell = this.cellCache?.[x]?.[y];

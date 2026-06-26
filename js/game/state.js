@@ -286,9 +286,9 @@ class GameState {
         level25: { unlocked: false, progress: 0, max: 25 },
         xp1000: { unlocked: false, progress: 0, max: 1000 },
         xp5000: { unlocked: false, progress: 0, max: 5000 },
-        chain5: { unlocked: false, progress: 0, max: 5 },
-        chain10: { unlocked: false, progress: 0, max: 10 },
-        useAllBonuses: { unlocked: false, progress: 0, max: 3 },
+        chain5: { unlocked: false, progress: 0, max: 1 },
+        chain10: { unlocked: false, progress: 0, max: 1 },
+        useAllBonuses: { unlocked: false, progress: 0, max: 3, typesUsed: [] },
         spinWheel: { unlocked: false, progress: 0, max: 1 },
         spinWheel10: { unlocked: false, progress: 0, max: 10 },
       };
@@ -787,6 +787,27 @@ class GameState {
           if (typeof cur.max !== 'number' || !Number.isFinite(cur.max) || cur.max <= 0) {
             cur.max = tmpl.max;
             repaired = true;
+          }
+          if (cur.progress > cur.max) {
+            cur.progress = cur.max;
+            if (cur.progress >= cur.max) {
+              cur.unlocked = true;
+            }
+            repaired = true;
+          }
+          if (key === 'useAllBonuses') {
+            if (!Array.isArray(cur.typesUsed)) {
+              cur.typesUsed = [];
+              repaired = true;
+            }
+            const fromTypes = Math.min(cur.max, cur.typesUsed.length);
+            if (fromTypes > cur.progress) {
+              cur.progress = fromTypes;
+              if (cur.progress >= cur.max) {
+                cur.unlocked = true;
+              }
+              repaired = true;
+            }
           }
         }
       }

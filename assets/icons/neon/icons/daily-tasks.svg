@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="daily-tasks">
+  <defs>
+    <linearGradient id="ln_daily_tasks_stroke" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE6FF"/>
+      <stop offset="0.38" stop-color="#FF7AE6"/>
+      <stop offset="1" stop-color="#8D6BFF"/>
+    </linearGradient>
+    <filter id="ln_daily_tasks_glow" x="-45%" y="-45%" width="190%" height="190%">
+      <feGaussianBlur stdDeviation="1.6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <g fill="none" stroke="url(#ln_daily_tasks_stroke)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" filter="url(#ln_daily_tasks_glow)">
+<rect x="13" y="15" width="38" height="40" rx="7"/>
+<path d="M21 10 V20"/><path d="M43 10 V20"/>
+<path d="M13 27 H51"/>
+<path d="M22 38 L29 45 L43 33"/>
+  </g>
+</svg>

@@ -27,7 +27,8 @@ class WheelManager {
       {
         id: 2,
         type: 'shuffle',
-        label: '🔄',
+        label: 'SHUF',
+        iconSlug: 'reset',
         color: '#2196F3',
         effect: 'bonus',
         value: 'shuffle',
@@ -36,7 +37,8 @@ class WheelManager {
       {
         id: 3,
         type: 'destroy',
-        label: '🔨',
+        label: 'BRK',
+        iconSlug: 'lock',
         color: '#FF9800',
         effect: 'bonus',
         value: 'destroy',
@@ -45,7 +47,8 @@ class WheelManager {
       {
         id: 4,
         type: 'explosion',
-        label: '💥',
+        label: 'BLST',
+        iconSlug: 'bonus',
         color: '#9C27B0',
         effect: 'bonus',
         value: 'explosion',
@@ -65,7 +68,8 @@ class WheelManager {
       {
         id: 6,
         type: 'gift',
-        label: '🎁',
+        label: 'GIFT',
+        iconSlug: 'reward-xp',
         color: '#00BCD4',
         effect: 'gift',
         value: null,
@@ -74,7 +78,8 @@ class WheelManager {
       {
         id: 7,
         type: 'freeze',
-        label: '❄️',
+        label: 'ICE',
+        iconSlug: 'lock',
         color: '#607D8B',
         effect: 'freeze',
         value: 5,
@@ -167,6 +172,12 @@ class WheelManager {
       this.wheelCenterY = centerY;
       this.wheelRadius = radius;
 
+      if (typeof LostNumberIcons !== 'undefined') {
+        this.wheelSectors.forEach((sector) => {
+          if (sector.iconSlug) LostNumberIcons.getImage(sector.iconSlug);
+        });
+      }
+
       this.drawWheel();
     } catch (error) {
       ErrorHandler.handle(error, { type: 'wheel_init' });
@@ -221,7 +232,14 @@ class WheelManager {
           sectorText = sector.label;
         }
 
-        ctx.fillText(sectorText, 0, 0);
+        const drewIcon =
+          sector.iconSlug &&
+          typeof LostNumberIcons !== 'undefined' &&
+          LostNumberIcons.drawCentered(ctx, sector.iconSlug, 0, 0, 22);
+
+        if (!drewIcon) {
+          ctx.fillText(sectorText, 0, 0);
+        }
         ctx.restore();
       });
 
@@ -315,10 +333,10 @@ class WheelManager {
       const spinBtn = document.getElementById('spinWheelBtn');
       if (spinBtn) {
         spinBtn.disabled = true;
-        try {
-          spinBtn.textContent = this.game.t('wheel_spinning');
-        } catch (e) {
-          spinBtn.textContent = 'Spinning...';
+        const spinLabel = spinBtn.querySelector('.menu-btn__label');
+        const spinningText = this.game.t('wheel_spinning');
+        if (spinLabel) {
+          spinLabel.textContent = spinningText;
         }
       }
 
@@ -371,12 +389,15 @@ class WheelManager {
           const spinBtn2 = document.getElementById('spinWheelBtn');
           if (spinBtn2) {
             spinBtn2.disabled = false;
-            try {
-              spinBtn2.textContent = this.game.formatTemplate('btn_spin_wheel', {
-                cost: this.getWheelCost(),
-              });
-            } catch (e) {
-              spinBtn2.textContent = `Spin (${this.getWheelCost()} XP)`;
+            const spinLabel = spinBtn2.querySelector('.menu-btn__label');
+            if (spinLabel) {
+              try {
+                spinLabel.textContent = this.game.formatTemplate('btn_spin_wheel', {
+                  cost: this.getWheelCost(),
+                });
+              } catch (e) {
+                spinLabel.textContent = `Spin (${this.getWheelCost()} XP)`;
+              }
             }
           }
 
@@ -492,7 +513,7 @@ class WheelManager {
             this.game.showMessage(
               this.game.formatTemplate('wheel_freeze_message', {
                 turns: this.game.formatFrozenTurnsPhrase(result.turns),
-              }) || `❄️ ${this.game.formatFrozenTurnsPhrase(result.turns)}`,
+              }) || this.game.formatFrozenTurnsPhrase(result.turns),
             );
 
             this.game.gridManager.updateFrozenStates();
@@ -622,10 +643,13 @@ class WheelManager {
 
       const spinBtn = document.getElementById('spinWheelBtn');
       if (spinBtn) {
-        try {
-          spinBtn.textContent = this.game.formatTemplate('btn_spin_wheel', { cost });
-        } catch (e) {
-          spinBtn.textContent = `Spin (${cost} XP)`;
+        const spinLabel = spinBtn.querySelector('.menu-btn__label');
+        if (spinLabel) {
+          try {
+            spinLabel.textContent = this.game.formatTemplate('btn_spin_wheel', { cost });
+          } catch (e) {
+            spinLabel.textContent = `Spin (${cost} XP)`;
+          }
         }
         spinBtn.disabled =
           this.isSpinning || (this.game.wheelSpinsToday || 0) >= (this.game.MAX_DAILY_SPINS || 20);

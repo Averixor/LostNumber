@@ -51,6 +51,122 @@ GridManager.prototype.shuffleGrid = function () {
 };
 
 /**
+ * @returns {number}
+ */
+GridManager.prototype._genSpawnNumber = function () {
+  const genFunc = this.game?.generateCellNumber;
+  const level =
+    typeof this.game.getLevelConfig === 'function'
+      ? this.game.getLevelConfig(this.game.currentLevel)
+      : this.game.levels?.[this.game.currentLevel];
+
+  try {
+    let newNum = genFunc ? genFunc.call(this.game, level) : 2;
+    if (level?.target) {
+      let guard = 0;
+      while (newNum >= level.target && guard++ < 50) {
+        newNum = genFunc ? genFunc.call(this.game, level) : 2;
+      }
+      if (newNum >= level.target) newNum = 2;
+    }
+    return newNum;
+  } catch (_) {
+    return 2;
+  }
+};
+
+/**
+ * Collapse each column and spawn new tiles in empty top cells.
+ */
+GridManager.prototype._settleAllColumns = function () {
+  const W = this.game.GRID_W;
+  const H = this.game.GRID_H;
+  const grid = this.game.grid;
+  const genNewNumber = () => this._genSpawnNumber();
+
+  const isFrozenAt = (x, y) => {
+    const idx = y * W + x;
+    if (this.game.freezeSystem && typeof this.game.freezeSystem.getFreezeData === 'function') {
+      return !!this.game.freezeSystem.getFreezeData(idx);
+    }
+    return !!grid?.[x]?.[y]?.frozen;
+  };
+
+  for (let x = 0; x < W; x++) {
+    if (!grid[x]) continue;
+
+    const frozenYs = [];
+    for (let y = 0; y < H; y++) {
+      if (isFrozenAt(x, y)) frozenYs.push(y);
+    }
+    frozenYs.sort((a, b) => a - b);
+
+    const settleSegment = (segTop, segBottom, spawnMode) => {
+      if (segBottom < segTop) return;
+
+      const nums = [];
+      for (let y = segBottom; y >= segTop; y--) {
+        const cell = grid[x][y];
+        if (cell && cell.number !== null && cell.number !== undefined) {
+          nums.push(cell.number);
+        }
+      }
+
+      for (let y = segTop; y <= segBottom; y++) {
+        if (!grid[x][y]) {
+          grid[x][y] = {
+            number: null,
+            merged: false,
+            frozen: false,
+            freezeTurns: 0,
+            freezeMaxTurns: 0,
+          };
+        }
+        if (isFrozenAt(x, y)) continue;
+        grid[x][y].number = null;
+        grid[x][y].merged = false;
+      }
+
+      let writeY = segBottom;
+      for (const n of nums) {
+        while (writeY >= segTop && isFrozenAt(x, writeY)) writeY--;
+        if (writeY < segTop) break;
+        grid[x][writeY].number = n;
+        grid[x][writeY].merged = false;
+        writeY--;
+      }
+
+      if (spawnMode === 'spawn') {
+        while (writeY >= segTop) {
+          if (!isFrozenAt(x, writeY)) {
+            grid[x][writeY].number = genNewNumber();
+            grid[x][writeY].merged = false;
+          }
+          writeY--;
+        }
+      }
+    };
+
+    if (frozenYs.length === 0) {
+      settleSegment(0, H - 1, 'spawn');
+      continue;
+    }
+
+    const firstFrozen = frozenYs[0];
+    settleSegment(0, firstFrozen - 1, 'spawn');
+
+    for (let i = 0; i < frozenYs.length - 1; i++) {
+      const segTop = frozenYs[i] + 1;
+      const segBottom = frozenYs[i + 1] - 1;
+      settleSegment(segTop, segBottom, 'no_spawn');
+    }
+
+    const lastFrozen = frozenYs[frozenYs.length - 1];
+    settleSegment(lastFrozen + 1, H - 1, 'no_spawn');
+  }
+};
+
+/**
  * @param {GridPoint[]} removedCells
  * @returns {boolean}
  */
@@ -73,28 +189,6 @@ GridManager.prototype.applyLocalGravity = function (removedCells) {
     const H = this.game.GRID_H;
     const grid = this.game.grid;
 
-    const genFunc = this.game?.generateCellNumber;
-    const level =
-      typeof this.game.getLevelConfig === 'function'
-        ? this.game.getLevelConfig(this.game.currentLevel)
-        : this.game.levels?.[this.game.currentLevel];
-
-    const genNewNumber = () => {
-      try {
-        let newNum = genFunc ? genFunc.call(this.game, level) : 2;
-        if (level && level.target) {
-          let guard = 0;
-          while (newNum >= level.target && guard++ < 50) {
-            newNum = genFunc ? genFunc.call(this.game, level) : 2;
-          }
-          if (newNum >= level.target) newNum = 2;
-        }
-        return newNum;
-      } catch (_) {
-        return 2;
-      }
-    };
-
     const isFrozenAt = (x, y) => {
       const idx = y * W + x;
       if (this.game.freezeSystem && typeof this.game.freezeSystem.getFreezeData === 'function') {
@@ -114,82 +208,11 @@ GridManager.prototype.applyLocalGravity = function (removedCells) {
       }
     }
 
-    for (let x = 0; x < W; x++) {
-      if (!grid[x]) continue;
-
-      const frozenYs = [];
-      for (let y = 0; y < H; y++) {
-        if (isFrozenAt(x, y)) frozenYs.push(y);
-      }
-      frozenYs.sort((a, b) => a - b);
-
-      const settleSegment = (segTop, segBottom, spawnMode) => {
-        if (segBottom < segTop) return;
-
-        const nums = [];
-        for (let y = segBottom; y >= segTop; y--) {
-          const cell = grid[x][y];
-          if (cell && cell.number !== null && cell.number !== undefined) {
-            nums.push(cell.number);
-          }
-        }
-
-        for (let y = segTop; y <= segBottom; y++) {
-          if (!grid[x][y]) {
-            grid[x][y] = {
-              number: null,
-              merged: false,
-              frozen: false,
-              freezeTurns: 0,
-              freezeMaxTurns: 0,
-            };
-          }
-          if (isFrozenAt(x, y)) continue;
-          grid[x][y].number = null;
-          grid[x][y].merged = false;
-        }
-
-        let writeY = segBottom;
-        for (const n of nums) {
-          while (writeY >= segTop && isFrozenAt(x, writeY)) writeY--;
-          if (writeY < segTop) break;
-          grid[x][writeY].number = n;
-          grid[x][writeY].merged = false;
-          writeY--;
-        }
-
-        if (spawnMode === 'spawn') {
-          while (writeY >= segTop) {
-            if (!isFrozenAt(x, writeY)) {
-              grid[x][writeY].number = genNewNumber();
-              grid[x][writeY].merged = false;
-            }
-            writeY--;
-          }
-        } else {
-        }
-      };
-
-      if (frozenYs.length === 0) {
-        settleSegment(0, H - 1, 'spawn');
-        continue;
-      }
-
-      const firstFrozen = frozenYs[0];
-      settleSegment(0, firstFrozen - 1, 'spawn');
-
-      for (let i = 0; i < frozenYs.length - 1; i++) {
-        const segTop = frozenYs[i] + 1;
-        const segBottom = frozenYs[i + 1] - 1;
-        settleSegment(segTop, segBottom, 'no_spawn');
-      }
-
-      const lastFrozen = frozenYs[frozenYs.length - 1];
-      settleSegment(lastFrozen + 1, H - 1, 'no_spawn');
-    }
-
+    this._settleAllColumns();
     this.applyPressureTransfer(2, 8);
+    this._settleAllColumns();
 
+    this.clearMergeAnimationState?.();
     this.preferSyncOrFullRender();
     return true;
   } catch (error) {
@@ -315,6 +338,13 @@ GridManager.prototype.applyPressureTransfer = function (
         while (writeY >= 0 && grid[cx][writeY]?.frozen) writeY--;
         if (writeY < 0) break;
         grid[cx][writeY].number = n;
+        writeY--;
+      }
+      while (writeY >= 0) {
+        while (writeY >= 0 && grid[cx][writeY]?.frozen) writeY--;
+        if (writeY < 0) break;
+        grid[cx][writeY].number = this._genSpawnNumber();
+        grid[cx][writeY].merged = false;
         writeY--;
       }
     }

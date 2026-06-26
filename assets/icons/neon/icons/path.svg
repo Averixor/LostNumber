@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="path">
+  <defs>
+    <linearGradient id="ln_path_stroke" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE6FF"/>
+      <stop offset="0.38" stop-color="#FF7AE6"/>
+      <stop offset="1" stop-color="#8D6BFF"/>
+    </linearGradient>
+    <filter id="ln_path_glow" x="-45%" y="-45%" width="190%" height="190%">
+      <feGaussianBlur stdDeviation="1.6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <g fill="none" stroke="url(#ln_path_stroke)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" filter="url(#ln_path_glow)">
+<path d="M13 50 C18 38 28 41 31 31 C34 21 43 22 51 13"/>
+<circle cx="13" cy="50" r="4"/>
+<circle cx="31" cy="31" r="4"/>
+<circle cx="51" cy="13" r="4"/>
+<path d="M45 13 H51 V19"/>
+  </g>
+</svg>

@@ -98,6 +98,13 @@
       type="image/png"
       fetchpriority="low"
     />
+    <link
+      rel="preload"
+      as="image"
+      href="./assets/images/background-alt2.png"
+      type="image/png"
+      fetchpriority="low"
+    />
 
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -135,6 +142,7 @@
     <link rel="stylesheet" href="css/background.css" />
     <link rel="stylesheet" href="css/critical.css" />
     <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/lostnumber-icons.css" />
     <link
       rel="preload"
       href="css/ui.css"
@@ -261,7 +269,7 @@
     </div>
 
     <div id="criticalErrorContainer" class="critical-error" style="display: none">
-      <h2>⚠️ LostNumber</h2>
+      <h2>LostNumber</h2>
       <div id="criticalErrorMessage" class="critical-error-message">
         <p>Не вдалося завантажити гру. Оновіть сторінку або спробуйте пізніше.</p>
       </div>
@@ -275,15 +283,11 @@
         <div class="victory-text" data-i18n="victory_text"></div>
         <div class="menu-buttons" style="margin-top: 8px">
           <button class="menu-btn primary" id="playAgainBtn" type="button">
-            <span class="menu-btn__icon" data-i18n="icon_btn_play_again" aria-hidden="true"></span>
+            <span class="menu-btn__icon" data-ln-icon="reset" aria-hidden="true"></span>
             <span class="menu-btn__label" data-i18n="btn_play_again"></span>
           </button>
           <button class="menu-btn secondary" id="backToMenuBtn" type="button">
-            <span
-              class="menu-btn__icon"
-              data-i18n="icon_btn_back_to_menu"
-              aria-hidden="true"
-            ></span>
+            <span class="menu-btn__icon" data-ln-icon="home" aria-hidden="true"></span>
             <span class="menu-btn__label" data-i18n="btn_back_to_menu"></span>
           </button>
         </div>
@@ -298,15 +302,11 @@
         <div class="level-countdown hidden" id="levelCountdown" aria-hidden="true"></div>
         <div class="menu-buttons">
           <button class="menu-btn secondary" id="levelMenuBtn" type="button">
-            <span
-              class="menu-btn__icon"
-              data-i18n="icon_btn_back_to_menu"
-              aria-hidden="true"
-            ></span>
+            <span class="menu-btn__icon" data-ln-icon="home" aria-hidden="true"></span>
             <span class="menu-btn__label" data-i18n="btn_back_to_menu"></span>
           </button>
           <button class="menu-btn primary" id="levelNextBtn" type="button">
-            <span class="menu-btn__icon" data-i18n="icon_btn_next_level" aria-hidden="true"></span>
+            <span class="menu-btn__icon" data-ln-icon="level" aria-hidden="true"></span>
             <span class="menu-btn__label" data-i18n="btn_next_level"></span>
           </button>
         </div>
@@ -322,14 +322,14 @@
           data-i18n-title="btn_close"
           data-i18n-aria-label="btn_close"
         >
-          ✕
+          <span class="ln-icon-slot" data-ln-icon="close" aria-hidden="true"></span>
         </button>
         <div class="wheel-title" id="wheelTitle" data-i18n="wheel_title"></div>
         <div id="wheelXpLabel" class="wheel-xp"></div>
         <canvas id="fortuneWheel" width="300" height="300"></canvas>
         <div class="wheel-center-btn">
           <button id="spinWheelBtn" class="menu-btn primary" type="button">
-            <span class="menu-btn__icon" data-i18n="icon_btn_spin_wheel" aria-hidden="true"></span>
+            <span class="menu-btn__icon" data-ln-icon="wheel" aria-hidden="true"></span>
             <span class="menu-btn__label" data-i18n="btn_spin_wheel"></span>
           </button>
         </div>
@@ -360,11 +360,11 @@
         <p class="confirm-dialog__text" data-i18n="confirm_new_game_text"></p>
         <div class="confirm-dialog__actions menu-buttons">
           <button type="button" class="menu-btn primary" id="newGameConfirmCancel">
-            <span class="menu-btn__icon" data-i18n="icon_btn_back" aria-hidden="true"></span>
+            <span class="menu-btn__icon" data-ln-icon="back" aria-hidden="true"></span>
             <span class="menu-btn__label" data-i18n="cancel"></span>
           </button>
           <button type="button" class="menu-btn danger" id="newGameConfirmOk">
-            <span class="menu-btn__icon" data-i18n="icon_btn_new_game" aria-hidden="true"></span>
+            <span class="menu-btn__icon" data-ln-icon="new-game" aria-hidden="true"></span>
             <span class="menu-btn__label" data-i18n="start_new_game_confirm"></span>
           </button>
         </div>
@@ -381,31 +381,31 @@
           disabled
           aria-disabled="true"
         >
-          <span class="menu-btn__icon" data-i18n="icon_btn_continue" aria-hidden="true"></span>
+          <span class="menu-btn__icon" data-ln-icon="continue" aria-hidden="true"></span>
           <span class="menu-btn__label" data-i18n="btn_continue"></span>
         </button>
         <button class="menu-btn secondary" id="newGameBtn" type="button">
-          <span class="menu-btn__icon" data-i18n="icon_btn_new_game" aria-hidden="true"></span>
+          <span class="menu-btn__icon" data-ln-icon="new-game" aria-hidden="true"></span>
           <span class="menu-btn__label" data-i18n="btn_new_game"></span>
         </button>
         <button class="menu-btn secondary" id="settingsBtn" type="button">
-          <span class="menu-btn__icon" data-i18n="icon_btn_settings" aria-hidden="true"></span>
+          <span class="menu-btn__icon" data-ln-icon="settings" aria-hidden="true"></span>
           <span class="menu-btn__label" data-i18n="btn_settings"></span>
         </button>
         <button class="menu-btn secondary" id="dailyQuestsBtn" type="button">
-          <span class="menu-btn__icon" data-i18n="icon_btn_daily_quests" aria-hidden="true"></span>
+          <span class="menu-btn__icon" data-ln-icon="daily-tasks" aria-hidden="true"></span>
           <span class="menu-btn__label" data-i18n="btn_daily_quests"></span>
         </button>
         <button class="menu-btn secondary" id="achievementsBtn" type="button">
-          <span class="menu-btn__icon" data-i18n="icon_btn_achievements" aria-hidden="true"></span>
+          <span class="menu-btn__icon" data-ln-icon="achievements" aria-hidden="true"></span>
           <span class="menu-btn__label" data-i18n="btn_achievements"></span>
         </button>
         <button class="menu-btn secondary" id="statsBtn" type="button">
-          <span class="menu-btn__icon" data-i18n="icon_btn_stats" aria-hidden="true"></span>
+          <span class="menu-btn__icon" data-ln-icon="statistics" aria-hidden="true"></span>
           <span class="menu-btn__label" data-i18n="btn_stats"></span>
         </button>
         <button class="menu-btn secondary" id="aboutBtn" type="button">
-          <span class="menu-btn__icon" data-i18n="icon_btn_about" aria-hidden="true"></span>
+          <span class="menu-btn__icon" data-ln-icon="about" aria-hidden="true"></span>
           <span class="menu-btn__label" data-i18n="btn_about"></span>
         </button>
       </div>
@@ -416,7 +416,7 @@
       <div class="achievements-grid" id="achievementsGrid"></div>
       <div class="menu-buttons back-btn-menu">
         <button class="menu-btn secondary" id="backFromAchievementsBtn" type="button">
-          <span class="menu-btn__icon" data-i18n="icon_btn_back" aria-hidden="true"></span>
+          <span class="menu-btn__icon" data-ln-icon="back" aria-hidden="true"></span>
           <span class="menu-btn__label" data-i18n="btn_back"></span>
         </button>
       </div>
@@ -427,7 +427,7 @@
       <div class="stats-grid" id="statsGrid"></div>
       <div class="menu-buttons back-btn-menu">
         <button class="menu-btn secondary" id="backFromStatsBtn" type="button">
-          <span class="menu-btn__icon" data-i18n="icon_btn_back" aria-hidden="true"></span>
+          <span class="menu-btn__icon" data-ln-icon="back" aria-hidden="true"></span>
           <span class="menu-btn__label" data-i18n="btn_back"></span>
         </button>
       </div>
@@ -438,7 +438,7 @@
       <div class="settings-options" id="dailyQuestsList"></div>
       <div class="menu-buttons back-btn-menu">
         <button class="menu-btn secondary" id="backFromDailyQuestsBtn" type="button">
-          <span class="menu-btn__icon" data-i18n="icon_btn_back" aria-hidden="true"></span>
+          <span class="menu-btn__icon" data-ln-icon="back" aria-hidden="true"></span>
           <span class="menu-btn__label" data-i18n="btn_back"></span>
         </button>
       </div>
@@ -462,15 +462,15 @@
       <div class="bonuses">
         <div class="bonuses-left">
           <button class="bonus-btn" id="bonus-explosion" data-i18n-title="bonus_explosion_title">
-            <span data-i18n="icon_bonus_explosion"></span>
+            <span class="ln-icon-slot" data-ln-icon="bonus" aria-hidden="true"></span>
             <span class="bonus-count" id="count-explosion">0</span>
           </button>
           <button class="bonus-btn" id="bonus-shuffle" data-i18n-title="bonus_shuffle_title">
-            <span data-i18n="icon_bonus_shuffle"></span>
+            <span class="ln-icon-slot" data-ln-icon="reset" aria-hidden="true"></span>
             <span class="bonus-count" id="count-shuffle">0</span>
           </button>
           <button class="bonus-btn" id="bonus-destroy" data-i18n-title="bonus_destroy_title">
-            <span data-i18n="icon_bonus_destroy"></span>
+            <span class="ln-icon-slot" data-ln-icon="lock" aria-hidden="true"></span>
             <span class="bonus-count" id="count-destroy">0</span>
           </button>
         </div>
@@ -479,7 +479,7 @@
         </div>
         <div class="bonus-wheel-container">
           <button class="bonus-btn" id="bonus-wheel" data-i18n-title="bonus_wheel_title">
-            <span data-i18n="icon_bonus_wheel"></span>
+            <span class="ln-icon-slot" data-ln-icon="wheel" aria-hidden="true"></span>
           </button>
           <span class="bonus-count" id="wheelCostLabel">25</span>
           <span
@@ -505,7 +505,7 @@
           data-i18n-title="btn_home"
           data-i18n-aria-label="btn_home"
         >
-          <span data-i18n="icon_home"></span>
+          <span class="ln-icon-slot" data-ln-icon="home" aria-hidden="true"></span>
         </button>
         <button
           class="footer-btn"
@@ -513,7 +513,12 @@
           data-i18n-title="btn_sound"
           data-i18n-aria-label="btn_sound"
         >
-          <span data-i18n="icon_sound"></span>
+          <span
+            class="ln-icon-slot"
+            id="footerSoundIcon"
+            data-ln-icon="sound"
+            aria-hidden="true"
+          ></span>
         </button>
         <button
           class="footer-btn"
@@ -521,7 +526,7 @@
           data-i18n-title="btn_save"
           data-i18n-aria-label="btn_save"
         >
-          <span data-i18n="icon_save"></span>
+          <span class="ln-icon-slot" data-ln-icon="save" aria-hidden="true"></span>
         </button>
       </div>
     </div>
@@ -631,11 +636,11 @@
       </div>
       <div class="menu-buttons back-btn-menu">
         <button class="menu-btn primary" id="saveSettingsBtn" type="button">
-          <span class="menu-btn__icon" data-i18n="icon_btn_save_settings" aria-hidden="true"></span>
+          <span class="menu-btn__icon" data-ln-icon="save" aria-hidden="true"></span>
           <span class="menu-btn__label" data-i18n="btn_save_settings"></span>
         </button>
         <button class="menu-btn secondary" id="backFromSettingsBtn" type="button">
-          <span class="menu-btn__icon" data-i18n="icon_btn_back" aria-hidden="true"></span>
+          <span class="menu-btn__icon" data-ln-icon="back" aria-hidden="true"></span>
           <span class="menu-btn__label" data-i18n="btn_back"></span>
         </button>
       </div>
@@ -669,7 +674,7 @@
       </div>
       <div class="menu-buttons back-btn-menu">
         <button class="menu-btn secondary" id="backFromAboutBtn" type="button">
-          <span class="menu-btn__icon" data-i18n="icon_btn_back" aria-hidden="true"></span>
+          <span class="menu-btn__icon" data-ln-icon="back" aria-hidden="true"></span>
           <span class="menu-btn__label" data-i18n="btn_back"></span>
         </button>
       </div>
@@ -686,6 +691,7 @@
 
     <script src="js/system/i18n/i18n.js" defer></script>
     <script src="js/system/i18n/plural-helpers.js" defer></script>
+    <script src="js/ui/icons.js" defer></script>
     <script src="js/system/platform/storage.js" defer></script>
     <script src="js/system/platform/audio.js" defer></script>
 

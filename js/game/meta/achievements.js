@@ -24,11 +24,19 @@ class AchievementManager {
 
   trackBonusTypeUsed(type) {
     if (!type) return;
-    if (!this._bonusTypesUsed) {
-      this._bonusTypesUsed = new Set();
+
+    const achievement =
+      typeof this.game.getAchievement === 'function'
+        ? this.game.getAchievement('useAllBonuses')
+        : this.game.achievements?.useAllBonuses || null;
+    if (!achievement) return;
+
+    if (!Array.isArray(achievement.typesUsed)) {
+      achievement.typesUsed = [];
     }
-    if (this._bonusTypesUsed.has(type)) return;
-    this._bonusTypesUsed.add(type);
+    if (achievement.typesUsed.includes(type)) return;
+
+    achievement.typesUsed.push(type);
     this.updateAchievementProgress('useAllBonuses', 1);
   }
 
@@ -39,16 +47,16 @@ class AchievementManager {
     grid.innerHTML = '';
 
     const achievementsList = [
-      { key: 'firstGame', icon: '👣' },
-      { key: 'level10', icon: '📈' },
-      { key: 'level25', icon: '🎯' },
-      { key: 'xp1000', icon: '⭐' },
-      { key: 'xp5000', icon: '🏆' },
-      { key: 'chain5', icon: '🔗' },
-      { key: 'chain10', icon: '⛓️' },
-      { key: 'useAllBonuses', icon: '✨' },
-      { key: 'spinWheel', icon: '🌀' },
-      { key: 'spinWheel10', icon: '🎰' },
+      { key: 'firstGame', icon: 'path' },
+      { key: 'level10', icon: 'level' },
+      { key: 'level25', icon: 'high-score' },
+      { key: 'xp1000', icon: 'reward-xp' },
+      { key: 'xp5000', icon: 'achievements' },
+      { key: 'chain5', icon: 'chain' },
+      { key: 'chain10', icon: 'path' },
+      { key: 'useAllBonuses', icon: 'bonus' },
+      { key: 'spinWheel', icon: 'wheel' },
+      { key: 'spinWheel10', icon: 'wheel' },
     ];
 
     for (const { key, icon } of achievementsList) {
@@ -57,13 +65,17 @@ class AchievementManager {
       const item = document.createElement('div');
       item.className = `achievement-item ${achievement.unlocked ? '' : 'locked'}`;
       item.innerHTML = `
-        <div class="achievement-icon">${achievement.unlocked ? icon : '🔒'}</div>
+        <div class="achievement-icon"></div>
         <div class="achievement-title">${this.game.t('achievement_' + key)}</div>
         <div class="achievement-desc">${this.game.t('achievement_desc_' + key)}</div>
         <div class="achievement-progress">
           <div class="achievement-progress-bar" style="width: ${(achievement.progress / achievement.max) * 100}%"></div>
         </div>
       `;
+      const iconHost = item.querySelector('.achievement-icon');
+      if (iconHost && typeof LostNumberIcons !== 'undefined') {
+        LostNumberIcons.mount(iconHost, achievement.unlocked ? icon : 'lock');
+      }
       grid.appendChild(item);
     }
   }

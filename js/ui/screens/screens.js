@@ -29,7 +29,9 @@ class ScreenManager {
       }
 
       if (wasGame && name !== 'game') {
-        if (typeof this.game.saveGameState === 'function') {
+        if (typeof this.game.requestSaveGameState === 'function') {
+          this.game.requestSaveGameState();
+        } else if (typeof this.game.saveGameState === 'function') {
           this.game.saveGameState();
         }
         this.game.resetRuntimeState();

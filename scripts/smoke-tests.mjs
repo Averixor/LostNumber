@@ -10,6 +10,7 @@ const tests = [
   'scripts/test-storage-fallback.mjs',
   'scripts/test-error-handler-fallback.mjs',
   'scripts/test-grid-dom-sync.mjs',
+  'scripts/test-critical-fixes.mjs',
 ];
 
 for (const test of tests) {

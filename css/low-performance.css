@@ -1,6 +1,5 @@
 html.low-performance .app-background {
-  background-image: none !important;
-  background-color: #1b1028 !important;
+  background-color: #1b1028;
 }
 
 html.low-performance *,

@@ -233,6 +233,7 @@ function loadGridStack(document) {
     'js/game/grid/grid-render.js',
     'js/game/grid/grid-physics.js',
     'js/game/grid/grid-init.js',
+    'js/game/grid/grid-animations.js',
   ];
   const code = files.map((f) => readFileSync(join(root, f), 'utf8')).join('\n\n');
   const factory = new Function('document', 'ErrorHandler', 'Chain', `${code}\nreturn GridManager;`);
@@ -295,9 +296,6 @@ function fillGrid(game, fn) {
 
 function expectedInnerText(game, gm, num) {
   if (num == null) return '';
-  if (num === game.carryNumber) {
-    return `✨${game.formatNumber(num)}✨`;
-  }
   return gm.formatCarryVisual(num);
 }
 
@@ -423,6 +421,43 @@ for (let y = 0; y < game.GRID_H; y++) {
   }
 }
 assertGridDOMMatchesModel(game, gm, 'after applyLocalGravity + preferSyncOrFullRender');
+
+game.grid[1][3].number = null;
+game.grid[1][4].number = null;
+game.grid[0][3].number = 16;
+gm.applyPressureTransfer(2, 8);
+gm._settleAllColumns();
+assertEq(gm.countEmptyCells(), 0, 'settle fills pressure-transfer gaps');
+for (let y = 0; y < game.GRID_H; y++) {
+  if (game.grid[1][y].number == null) {
+    fail(`pressure settle: null at column 1 row ${y}`);
+  }
+}
+
+let postMergeDone = false;
+game.grid[1][0].number = null;
+game.grid[1][1].number = null;
+game.grid[1][2].number = 8;
+const cellAbove = gm.cellCache[1][0];
+cellAbove.style.transform = 'translateY(200%)';
+cellAbove.classList.add('popping');
+gm.runPostMergeEffects(
+  [
+    { x: 1, y: 0 },
+    { x: 1, y: 1 },
+  ],
+  () => {
+    postMergeDone = true;
+  },
+);
+assert(postMergeDone, 'runPostMergeEffects invokes callback');
+assertEq(cellAbove.style.transform, '', 'runPostMergeEffects clears stuck transform');
+for (let y = 0; y < game.GRID_H; y++) {
+  if (game.grid[1][y].number == null) {
+    fail(`runPostMergeEffects model: null at column 1 row ${y}`);
+  }
+}
+assertGridDOMMatchesModel(game, gm, 'after runPostMergeEffects');
 
 html.classList.add('low-performance');
 game.grid[3][4].number = 64;

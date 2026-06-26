@@ -64,9 +64,7 @@ LostNumberGame.prototype.setupUI = function () {
     const footerHomeBtn = document.getElementById('footerHomeBtn');
     bindClickOnce(footerHomeBtn, () => {
       this.audioManager.playTap();
-      this.setGamePhase('blocked');
-      this.saveGameState();
-      this.showScreen('mainMenu');
+      this.requestSaveAndExitToMenu();
     });
 
     const footerSoundBtn = document.getElementById('footerSoundBtn');
@@ -81,8 +79,7 @@ LostNumberGame.prototype.setupUI = function () {
     const footerSaveBtn = document.getElementById('footerSaveBtn');
     bindClickOnce(footerSaveBtn, () => {
       this.audioManager.playTap();
-      this.saveGameState();
-      this.showMessage(this.t('save_done'));
+      this.requestSaveGameState({ showToast: true });
     });
 
     this.ensureGridEventListeners();

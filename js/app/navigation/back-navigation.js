@@ -12,10 +12,8 @@ LostNumberGame.prototype.handleBackNavigation = function () {
 
     const levelOverlay = document.getElementById('levelOverlay');
     if (levelOverlay && !levelOverlay.classList.contains('hidden')) {
-      this.saveGameState();
-      this.setGamePhase('blocked');
       levelOverlay.classList.add('hidden');
-      this.showScreen('mainMenu');
+      this.requestSaveAndExitToMenu();
       return;
     }
 
@@ -30,9 +28,7 @@ LostNumberGame.prototype.handleBackNavigation = function () {
 
     if (screen === 'game') {
       this.audioManager?.playTap?.();
-      this.setGamePhase('blocked');
-      this.saveGameState();
-      this.showScreen('mainMenu');
+      this.requestSaveAndExitToMenu();
       return;
     }
 

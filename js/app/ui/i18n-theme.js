@@ -18,6 +18,7 @@ LostNumberGame.prototype.renderStaticI18n = function () {
     document.querySelectorAll('[data-i18n]').forEach((el) => {
       const key = el.getAttribute('data-i18n');
       if (!key) return;
+      if (el.hasAttribute('data-ln-icon')) return;
       el.textContent = this.t(key);
     });
 
@@ -32,6 +33,10 @@ LostNumberGame.prototype.renderStaticI18n = function () {
       if (!key) return;
       el.setAttribute('aria-label', this.t(key));
     });
+
+    if (typeof LostNumberIcons !== 'undefined') {
+      LostNumberIcons.applyAll(document);
+    }
   } catch (error) {
     ErrorHandler.warn('renderStaticI18n failed', error);
   }

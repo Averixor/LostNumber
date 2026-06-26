@@ -25,7 +25,7 @@ LostNumberGame.prototype.validateAndRepairLoadedState = function () {
 
     if (repaired) {
       this.showMessage(this.t('state_repaired'));
-      this.saveGameState();
+      this.saveGameState({ force: true });
     }
   } catch (error) {
     ErrorHandler.handle(error, { type: 'state_restore' });
@@ -97,6 +97,15 @@ LostNumberGame.prototype.resumeGame = function () {
 
     this.fixGridStructure();
     this._syncFreezeSystemAfterLoad();
+
+    if (
+      this.gridManager &&
+      typeof this.gridManager.countEmptyCells === 'function' &&
+      this.gridManager.countEmptyCells() > 0 &&
+      typeof this.gridManager._settleAllColumns === 'function'
+    ) {
+      this.gridManager._settleAllColumns();
+    }
 
     if (this.gridManager) {
       this.gridManager.render();
@@ -303,7 +312,118 @@ LostNumberGame.prototype.restoreFromState = function (state) {
   }
 };
 
-LostNumberGame.prototype.saveGameState = function () {
+LostNumberGame.prototype.isSaveSnapshotBlocked = function () {
+  const phase = this.gamePhase;
+  return phase === 'animating' || phase === 'transitioning' || !!this._postMergeEffectsPending;
+};
+
+LostNumberGame.prototype.flushDeferredSaveActions = function () {
+  try {
+    if (this.isSaveSnapshotBlocked()) return;
+
+    const shouldSave = !!this._deferredSaveRequested;
+    const screen = this._deferredNavigateScreen;
+    const showToast = !!this._deferredSaveToast;
+
+    this._deferredSaveRequested = false;
+    this._deferredNavigateScreen = null;
+    this._deferredSaveToast = false;
+
+    if (shouldSave) {
+      this.saveGameState({ force: true });
+      if (showToast && typeof this.showMessage === 'function') {
+        this.showMessage(this.t('save_done'));
+      }
+    }
+
+    if (screen && typeof this.showScreen === 'function') {
+      this.setGamePhase('blocked');
+      this.showScreen(screen);
+    }
+  } catch (error) {
+    ErrorHandler.handle(error, { type: 'deferred_save_flush' });
+  }
+};
+
+LostNumberGame.prototype.requestSaveGameState = function (options = {}) {
+  if (this.isSaveSnapshotBlocked()) {
+    this._deferredSaveRequested = true;
+    if (options.showToast) {
+      this._deferredSaveToast = true;
+    }
+    return false;
+  }
+  this.saveGameState({ force: true });
+  if (options.showToast && typeof this.showMessage === 'function') {
+    this.showMessage(this.t('save_done'));
+  }
+  return true;
+};
+
+LostNumberGame.prototype.requestSaveAndExitToMenu = function () {
+  if (this.isSaveSnapshotBlocked()) {
+    this._deferredSaveRequested = true;
+    this._deferredNavigateScreen = 'mainMenu';
+    return false;
+  }
+  this.setGamePhase('blocked');
+  this.saveGameState({ force: true });
+  this.showScreen('mainMenu');
+  return true;
+};
+
+LostNumberGame.prototype.repairMergeGridState = function (removedCells) {
+  try {
+    const gm = this.gridManager;
+    if (!gm) return;
+
+    gm.clearMergeAnimationState?.();
+
+    if (removedCells?.length && typeof gm.applyLocalGravity === 'function') {
+      gm.applyLocalGravity(removedCells);
+    } else if (typeof gm._settleAllColumns === 'function') {
+      gm._settleAllColumns();
+    }
+
+    if (
+      typeof gm.countEmptyCells === 'function' &&
+      gm.countEmptyCells() > 0 &&
+      typeof gm.repairGrid === 'function'
+    ) {
+      gm.repairGrid();
+    } else if (
+      typeof gm.countEmptyCells === 'function' &&
+      gm.countEmptyCells() > 0 &&
+      typeof gm._settleAllColumns === 'function'
+    ) {
+      gm._settleAllColumns();
+    }
+
+    gm.render?.();
+  } catch (error) {
+    ErrorHandler.handle(error, { type: 'merge_repair', removedCells: removedCells?.length });
+  }
+};
+
+LostNumberGame.prototype.saveGameState = function (options) {
+  const force = !!(options && options.force);
+
+  if (!force && this.isSaveSnapshotBlocked()) {
+    this._deferredSaveRequested = true;
+    return;
+  }
+
+  if (
+    !force &&
+    this.screenState === 'game' &&
+    this.gridManager &&
+    typeof this.gridManager.countEmptyCells === 'function' &&
+    this.gridManager.countEmptyCells() > 0
+  ) {
+    this._deferredSaveRequested = true;
+    return;
+  }
+
   try {
     const gridV2 = this._serializeGridV2();
 

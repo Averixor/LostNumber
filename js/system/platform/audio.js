@@ -224,13 +224,21 @@ class AudioManager {
   }
 
   updateSoundStateUI() {
+    const iconHost = document.getElementById('footerSoundIcon');
+    if (iconHost && typeof LostNumberIcons !== 'undefined') {
+      LostNumberIcons.setSlug(iconHost, this.soundEnabled ? 'sound' : 'volume', {
+        muted: !this.soundEnabled,
+      });
+      return;
+    }
+
     const soundBtn = document.getElementById('footerSoundBtn');
-    if (soundBtn) {
-      const iconSpan = soundBtn.querySelector('span');
-      if (iconSpan) {
-        iconSpan.textContent = this.soundEnabled
-          ? I18N[window.game?.lang || 'ua']?.icon_sound_on || '🔊'
-          : I18N[window.game?.lang || 'ua']?.icon_sound_off || '🔇';
+    if (soundBtn && typeof LostNumberIcons !== 'undefined') {
+      const slot = soundBtn.querySelector('[data-ln-icon]');
+      if (slot) {
+        LostNumberIcons.setSlug(slot, this.soundEnabled ? 'sound' : 'volume', {
+          muted: !this.soundEnabled,
+        });
       }
     }
   }
