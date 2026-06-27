@@ -321,3 +321,51 @@ html[data-theme='dusk'] .wheel-overlay {
   max-width: none;
   width: 100%;
 }
+
+.feature-stub-dialog__icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feature-stub-dialog__list {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  text-align: left;
+}
+
+.feature-stub-dialog__list li {
+  position: relative;
+  padding: 6px 0 6px 18px;
+  font-size: clamp(0.82rem, 1.7vh, 0.92rem);
+  line-height: 1.35;
+  color: var(--text-color);
+}
+
+.feature-stub-dialog__list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.72em;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  box-shadow: 0 0 8px rgba(255, 142, 234, 0.45);
+}
+
+.feature-stub-dialog__note {
+  margin: 0 0 14px;
+  font-size: clamp(0.78rem, 1.6vh, 0.88rem);
+  line-height: 1.4;
+  color: var(--muted-color);
+}
+
+.feature-stub-dialog__list.hidden,
+.feature-stub-dialog__note.hidden {
+  display: none !important;
+}

@@ -50,6 +50,22 @@ img.ln-icon {
   height: 32px;
 }
 
+.feature-stub-dialog__icon.ln-icon-slot,
+.feature-stub-dialog__icon {
+  width: 56px;
+  height: 56px;
+}
+
+.feature-stub-dialog__icon img.ln-icon {
+  width: 48px;
+  height: 48px;
+}
+
+html.low-performance .feature-stub-dialog__icon img.ln-icon {
+  opacity: 1;
+  visibility: visible;
+}
+
 .menu-dock-btn__icon.ln-icon-slot,
 .menu-dock-btn__icon {
   width: 36px;

@@ -37,17 +37,29 @@ const I18N = {
     menu_dock_aria: 'Преміум та можливості',
 
     feature_stub_ok: 'Зрозуміло',
-    feature_login_title: 'Вхід в акаунт',
+    feature_login_title: 'Увійти',
     feature_login_text:
-      'Скоро з’явиться вхід через акаунт для синхронізації прогресу між пристроями.',
+      'Синхронізація акаунта між пристроями з’явиться в одному з наступних оновлень. Зараз прогрес зберігається локально на цьому пристрої.',
     feature_premium_title: 'Преміум',
-    feature_premium_text:
-      'Преміум-режим із додатковими темами та бонусами — у наступних оновленнях.',
+    feature_premium_intro:
+      'Преміум — майбутній режим для тих, хто хоче піти глибше в гру. Орієнтовні переваги:',
+    feature_premium_bullet_ad: 'Гра без реклами',
+    feature_premium_bullet_themes: 'Ексклюзивні теми оформлення',
+    feature_premium_bullet_tournaments: 'Доступ до турнірів',
+    feature_premium_bullet_bonuses: 'Додаткові бонуси',
+    feature_premium_bullet_stats: 'Розширена статистика',
+    feature_premium_note:
+      'Покупки та підписка ще не підключені — зараз це перегляд майбутніх можливостей.',
     feature_tournaments_title: 'Турніри',
-    feature_tournaments_text: 'Змагальні турніри та таблиці лідерів — скоро в Lost Number.',
+    feature_tournaments_intro:
+      'Турніри дозволять змагатися з іншими гравцями, не відволікаючись від спокійного основного режиму.',
+    feature_tournaments_bullet_weekly: 'Щотижневі змагання',
+    feature_tournaments_bullet_records: 'Таблиці рекордів',
+    feature_tournaments_bullet_rewards: 'Нагороди за місця',
+    feature_tournaments_note: 'Онлайн-режим ще в розробці — без мережевих запитів.',
     feature_bonuses_title: 'Магазин бонусів',
     feature_bonuses_text:
-      'Окремий магазин бонусів з’явиться пізніше. Зараз бонуси — у грі та на колесі.',
+      'Окремий магазин бонусів з’явиться пізніше. Зараз бонуси можна отримати під час гри та на колесі фортуни.',
     exit_web_hint: 'Закрийте вкладку браузера, щоб вийти з гри.',
 
     feature_1: 'З шармом',
@@ -304,17 +316,29 @@ const I18N = {
     menu_dock_aria: 'Премиум и возможности',
 
     feature_stub_ok: 'Понятно',
-    feature_login_title: 'Вход в аккаунт',
+    feature_login_title: 'Войти',
     feature_login_text:
-      'Скоро появится вход через аккаунт для синхронизации прогресса между устройствами.',
+      'Синхронизация аккаунта между устройствами появится в одном из следующих обновлений. Сейчас прогресс хранится локально на этом устройстве.',
     feature_premium_title: 'Премиум',
-    feature_premium_text:
-      'Премиум-режим с дополнительными темами и бонусами — в следующих обновлениях.',
+    feature_premium_intro:
+      'Премиум — будущий режим для тех, кто хочет углубиться в игру. Ориентировочные преимущества:',
+    feature_premium_bullet_ad: 'Игра без рекламы',
+    feature_premium_bullet_themes: 'Эксклюзивные темы',
+    feature_premium_bullet_tournaments: 'Доступ к турнирам',
+    feature_premium_bullet_bonuses: 'Дополнительные бонусы',
+    feature_premium_bullet_stats: 'Расширенная статистика',
+    feature_premium_note:
+      'Покупки и подписка ещё не подключены — сейчас это предпросмотр возможностей.',
     feature_tournaments_title: 'Турниры',
-    feature_tournaments_text: 'Соревновательные турниры и таблицы лидеров — скоро в Lost Number.',
+    feature_tournaments_intro:
+      'Турниры позволят соревноваться с другими игроками, не отвлекаясь от спокойного основного режима.',
+    feature_tournaments_bullet_weekly: 'Еженедельные соревнования',
+    feature_tournaments_bullet_records: 'Таблицы рекордов',
+    feature_tournaments_bullet_rewards: 'Награды за места',
+    feature_tournaments_note: 'Онлайн-режим ещё в разработке — без сетевых запросов.',
     feature_bonuses_title: 'Магазин бонусов',
     feature_bonuses_text:
-      'Отдельный магазин бонусов появится позже. Сейчас бонусы — в игре и на колесе.',
+      'Отдельный магазин бонусов появится позже. Сейчас бонусы можно получить в игре и на колесе.',
     exit_web_hint: 'Закройте вкладку браузера, чтобы выйти из игры.',
 
     feature_1: 'Без спешки',
@@ -569,14 +593,25 @@ const I18N = {
     menu_dock_aria: 'Premium and features',
 
     feature_stub_ok: 'Got it',
-    feature_login_title: 'Account sign-in',
-    feature_login_text: 'Cloud account sign-in for cross-device progress sync is coming soon.',
+    feature_login_title: 'Sign in',
+    feature_login_text:
+      'Cross-device account sync will arrive in a future update. Progress is stored locally on this device for now.',
     feature_premium_title: 'Premium',
-    feature_premium_text:
-      'Premium mode with extra themes and bonuses is coming in a future update.',
+    feature_premium_intro:
+      'Premium is a future mode for players who want to go deeper. Planned perks:',
+    feature_premium_bullet_ad: 'Ad-free play',
+    feature_premium_bullet_themes: 'Exclusive themes',
+    feature_premium_bullet_tournaments: 'Tournament access',
+    feature_premium_bullet_bonuses: 'Extra bonuses',
+    feature_premium_bullet_stats: 'Extended statistics',
+    feature_premium_note: 'Purchases and subscriptions are not connected yet — this is a preview.',
     feature_tournaments_title: 'Tournaments',
-    feature_tournaments_text:
-      'Competitive tournaments and leaderboards are coming soon to Lost Number.',
+    feature_tournaments_intro:
+      'Tournaments will let you compete with other players without breaking the calm core experience.',
+    feature_tournaments_bullet_weekly: 'Weekly competitions',
+    feature_tournaments_bullet_records: 'Leaderboards',
+    feature_tournaments_bullet_rewards: 'Placement rewards',
+    feature_tournaments_note: 'Online mode is still in development — no network requests yet.',
     feature_bonuses_title: 'Bonus shop',
     feature_bonuses_text:
       'A dedicated bonus shop will arrive later. For now, bonuses are earned in-game and via the wheel.',

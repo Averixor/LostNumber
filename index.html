@@ -384,9 +384,17 @@
         id="featureStubBackdrop"
         data-i18n-aria-label="btn_close"
       ></button>
-      <div class="confirm-dialog">
+      <div class="confirm-dialog feature-stub-dialog">
+        <div
+          class="feature-stub-dialog__icon ln-icon-slot"
+          id="featureStubIcon"
+          data-ln-icon="premium"
+          aria-hidden="true"
+        ></div>
         <h2 class="confirm-dialog__title" id="featureStubTitle"></h2>
         <p class="confirm-dialog__text" id="featureStubText"></p>
+        <ul class="feature-stub-dialog__list hidden" id="featureStubList"></ul>
+        <p class="feature-stub-dialog__note hidden" id="featureStubNote"></p>
         <div class="confirm-dialog__actions menu-buttons">
           <button type="button" class="menu-btn primary" id="featureStubClose">
             <span class="menu-btn__icon" data-ln-icon="back" aria-hidden="true"></span>
@@ -400,7 +408,7 @@
       <h1 class="sr-only" data-i18n="game_logo">Lost Number</h1>
 
       <div class="main-menu__account">
-        <button type="button" class="menu-account-btn" id="loginBtn">
+        <button type="button" class="menu-account-btn menu-account-btn--login" id="loginBtn">
           <span
             class="menu-account-btn__icon ln-icon-slot"
             data-ln-icon="unlock"

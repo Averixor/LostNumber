@@ -5,6 +5,48 @@ class MenuManager {
     this._featureStubEscapeHandler = null;
   }
 
+  getFeatureStubSpec(id) {
+    const specs = {
+      login: {
+        icon: 'unlock',
+        titleKey: 'feature_login_title',
+        textKey: 'feature_login_text',
+        bullets: [],
+      },
+      premium: {
+        icon: 'premium',
+        titleKey: 'feature_premium_title',
+        textKey: 'feature_premium_intro',
+        bullets: [
+          'feature_premium_bullet_ad',
+          'feature_premium_bullet_themes',
+          'feature_premium_bullet_tournaments',
+          'feature_premium_bullet_bonuses',
+          'feature_premium_bullet_stats',
+        ],
+        noteKey: 'feature_premium_note',
+      },
+      tournaments: {
+        icon: 'tournaments',
+        titleKey: 'feature_tournaments_title',
+        textKey: 'feature_tournaments_intro',
+        bullets: [
+          'feature_tournaments_bullet_weekly',
+          'feature_tournaments_bullet_records',
+          'feature_tournaments_bullet_rewards',
+        ],
+        noteKey: 'feature_tournaments_note',
+      },
+      bonuses: {
+        icon: 'bonus',
+        titleKey: 'feature_bonuses_title',
+        textKey: 'feature_bonuses_text',
+        bullets: [],
+      },
+    };
+    return specs[id] || specs.login;
+  }
+
   setupMainMenu() {
     const continueBtn = document.getElementById('continueBtn');
     const newGameBtn = document.getElementById('newGameBtn');
@@ -44,7 +86,7 @@ class MenuManager {
     if (loginBtn && !loginBtn._lnBound) {
       loginBtn.addEventListener('click', () => {
         this.game.audioManager.playTap();
-        this.showFeatureStub('feature_login_title', 'feature_login_text');
+        this.showFeatureStub('login');
       });
       loginBtn._lnBound = true;
     }
@@ -73,11 +115,11 @@ class MenuManager {
     };
 
     bindDock('dockPremiumBtn', () => {
-      this.showFeatureStub('feature_premium_title', 'feature_premium_text');
+      this.showFeatureStub('premium');
     });
 
     bindDock('dockTournamentsBtn', () => {
-      this.showFeatureStub('feature_tournaments_title', 'feature_tournaments_text');
+      this.showFeatureStub('tournaments');
     });
 
     bindDock('dockAchievementsBtn', () => {
@@ -90,7 +132,7 @@ class MenuManager {
     });
 
     bindDock('dockBonusesBtn', () => {
-      this.showFeatureStub('feature_bonuses_title', 'feature_bonuses_text');
+      this.showFeatureStub('bonuses');
     });
   }
 
@@ -150,15 +192,20 @@ class MenuManager {
   }
 
   applyMainMenuIcons() {
+    this.applyFeatureStubIcons(document.getElementById('mainMenuScreen'));
+  }
+
+  applyFeatureStubIcons(root) {
     try {
-      if (typeof LostNumberIcons === 'undefined') return;
-      const menu = document.getElementById('mainMenuScreen');
-      if (menu) {
-        LostNumberIcons.applyAll(menu);
+      if (
+        typeof LostNumberIcons === 'undefined' ||
+        typeof LostNumberIcons.applyAll !== 'function'
+      ) {
+        return;
       }
-      const stub = document.getElementById('featureStubOverlay');
-      if (stub && !stub.classList.contains('hidden')) {
-        LostNumberIcons.applyAll(stub);
+      const scope = root || document.getElementById('featureStubOverlay');
+      if (scope) {
+        LostNumberIcons.applyAll(scope);
       }
     } catch (_) {}
   }
@@ -168,7 +215,10 @@ class MenuManager {
     const backdrop = document.getElementById('featureStubBackdrop');
 
     if (closeBtn && !closeBtn._lnBound) {
-      closeBtn.addEventListener('click', () => this.hideFeatureStub());
+      closeBtn.addEventListener('click', () => {
+        this.game.audioManager.playTap();
+        this.hideFeatureStub();
+      });
       closeBtn._lnBound = true;
     }
 
@@ -183,19 +233,65 @@ class MenuManager {
     return !!(overlay && !overlay.classList.contains('hidden'));
   }
 
-  showFeatureStub(titleKey, textKey) {
+  showFeatureStub(stubIdOrSpec) {
+    const spec =
+      typeof stubIdOrSpec === 'string' ? this.getFeatureStubSpec(stubIdOrSpec) : stubIdOrSpec;
+    if (!spec) return;
+
     const overlay = document.getElementById('featureStubOverlay');
+    const iconHost = document.getElementById('featureStubIcon');
     const title = document.getElementById('featureStubTitle');
     const text = document.getElementById('featureStubText');
+    const list = document.getElementById('featureStubList');
+    const note = document.getElementById('featureStubNote');
+
     if (!overlay || !title || !text) {
-      this.game.showMessage(this.game.t(textKey || titleKey));
+      const fallback = spec.noteKey
+        ? `${this.game.t(spec.textKey)} ${this.game.t(spec.noteKey)}`
+        : this.game.t(spec.textKey);
+      this.game.showMessage(fallback);
       return;
     }
 
-    title.textContent = this.game.t(titleKey);
-    text.textContent = this.game.t(textKey);
+    title.textContent = this.game.t(spec.titleKey);
+    text.textContent = this.game.t(spec.textKey);
+
+    if (iconHost && spec.icon) {
+      iconHost.setAttribute('data-ln-icon', spec.icon);
+      try {
+        if (typeof LostNumberIcons !== 'undefined' && typeof LostNumberIcons.mount === 'function') {
+          LostNumberIcons.mount(iconHost, spec.icon);
+        }
+      } catch (_) {}
+    }
+
+    if (list) {
+      list.innerHTML = '';
+      const bullets = Array.isArray(spec.bullets) ? spec.bullets : [];
+      if (bullets.length) {
+        list.classList.remove('hidden');
+        for (const key of bullets) {
+          const li = document.createElement('li');
+          li.textContent = this.game.t(key);
+          list.appendChild(li);
+        }
+      } else {
+        list.classList.add('hidden');
+      }
+    }
+
+    if (note) {
+      if (spec.noteKey) {
+        note.textContent = this.game.t(spec.noteKey);
+        note.classList.remove('hidden');
+      } else {
+        note.textContent = '';
+        note.classList.add('hidden');
+      }
+    }
+
     overlay.classList.remove('hidden');
-    this.applyMainMenuIcons();
+    this.applyFeatureStubIcons(overlay);
 
     const closeBtn = document.getElementById('featureStubClose');
     if (closeBtn) {
