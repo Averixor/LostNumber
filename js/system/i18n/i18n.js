@@ -8,6 +8,7 @@ const I18N = {
     main_subtitle: 'Спокійна головоломка з числами. Грайте у своєму темпі, без таймерів і поспіху.',
 
     btn_continue: 'Продовжити',
+    btn_no_save: 'Немає збереження',
     btn_play: 'Грати',
     btn_new_game: 'Нова гра',
     btn_login: 'Увійти',
@@ -288,6 +289,7 @@ const I18N = {
     main_subtitle: 'Спокойная игра с числами. Играйте в своём темпе, без таймеров и спешки.',
 
     btn_continue: 'Продолжить',
+    btn_no_save: 'Нет сохранения',
     btn_play: 'Играть',
     btn_new_game: 'Новая игра',
     btn_login: 'Войти',
@@ -566,6 +568,7 @@ const I18N = {
     main_subtitle: 'A calm number puzzle. Play at your own pace, with no timers and no pressure.',
 
     btn_continue: 'Continue',
+    btn_no_save: 'No saved game',
     btn_play: 'Play',
     btn_new_game: 'New Game',
     btn_login: 'Sign in',

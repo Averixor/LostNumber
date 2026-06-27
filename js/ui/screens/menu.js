@@ -180,8 +180,13 @@ class MenuManager {
       if (continueBtn) {
         continueBtn.classList.toggle('primary', hasSave);
         continueBtn.classList.toggle('secondary', !hasSave);
-        continueBtn.classList.toggle('menu-btn--muted-disabled', !hasSave);
+        continueBtn.classList.toggle('menu-btn--disabled-state', !hasSave);
         continueBtn.classList.toggle('main-menu__cta-secondary', !hasSave);
+      }
+
+      const continueHint = document.getElementById('continueBtnHint');
+      if (continueHint) {
+        continueHint.classList.toggle('hidden', hasSave);
       }
       if (newGameBtn) {
         newGameBtn.classList.toggle('primary', !hasSave);

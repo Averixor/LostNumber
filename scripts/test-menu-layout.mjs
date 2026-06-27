@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Smoke tests: mobile main menu layout (title, quick row, disabled CTA, dock).
+ * Smoke tests: mobile main menu layout (title, panel, pills, disabled CTA, dock).
  */
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -40,18 +40,23 @@ assert(titleRule.includes('clamp('), 'title uses responsive clamp font-size');
 assert(titleRule.includes('max-width: 100%'), 'title uses fluid max-width not fixed clip');
 assert(titleRule.includes('letter-spacing: clamp'), 'title uses responsive letter-spacing');
 
-assert(mainMenuBlock.includes('main-menu__quick-row'), 'main menu has quick action row');
+assert(mainMenuBlock.includes('main-menu__panel'), 'main menu has contrast panel container');
+assert(uiCss.includes('backdrop-filter'), 'panel uses backdrop blur for readability');
+
+assert(mainMenuBlock.includes('main-menu__quick-stack'), 'main menu has quick action stack');
 assert(
-  (mainMenuBlock.match(/class="menu-quick-btn"/g) || []).length === 3,
-  'quick row has three equal quick buttons',
+  (mainMenuBlock.match(/menu-quick-btn--pill/g) || []).length === 3,
+  'quick stack has three equal pill buttons',
 );
+assert(!mainMenuBlock.includes('main-menu__quick-row'), 'legacy quick row grid removed');
 assert(!mainMenuBlock.includes('menu-btn--compact'), 'legacy uneven compact menu buttons removed');
 
-assert(uiCss.includes('.menu-quick-btn'), 'quick button styles defined');
-assert(uiCss.includes('grid-template-columns: repeat(3'), 'quick row uses 3-column grid');
+assert(uiCss.includes('.menu-quick-btn--pill'), 'pill button styles defined');
+assert(uiCss.includes('rgba(20, 10, 35'), 'quick buttons use dense dark background');
 
-assert(uiCss.includes('.menu-btn--muted-disabled'), 'disabled continue muted style exists');
-assert(menuJs.includes("'menu-btn--muted-disabled'"), 'menu toggles muted disabled on continue');
+assert(uiCss.includes('.menu-btn--disabled-state'), 'disabled continue readable style exists');
+assert(menuJs.includes("'menu-btn--disabled-state'"), 'menu toggles disabled state on continue');
+assert(mainMenuBlock.includes('id="continueBtnHint"'), 'continue shows no-save hint when disabled');
 
 assert(
   menuJs.includes("continueBtn.classList.toggle('primary', hasSave)"),

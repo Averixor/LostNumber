@@ -428,47 +428,56 @@
       <div class="main-menu__core">
         <h1 class="main-menu__title" data-i18n="game_logo">Lost Number</h1>
         <p class="main-menu__tagline" data-i18n="main_subtitle"></p>
-        <div class="menu-buttons main-menu__buttons">
-          <button
-            class="menu-btn primary"
-            id="continueBtn"
-            type="button"
-            disabled
-            aria-disabled="true"
-          >
-            <span class="menu-btn__icon" data-ln-icon="continue" aria-hidden="true"></span>
-            <span class="menu-btn__label" data-i18n="btn_continue"></span>
-          </button>
-          <button class="menu-btn secondary" id="newGameBtn" type="button">
-            <span class="menu-btn__icon" data-ln-icon="new-game" aria-hidden="true"></span>
-            <span class="menu-btn__label" id="newGameBtnLabel" data-i18n="btn_play"></span>
-          </button>
-        </div>
-        <div class="main-menu__quick-row" role="group" data-i18n-aria-label="menu_quick_aria">
-          <button type="button" class="menu-quick-btn" id="settingsBtn">
-            <span
-              class="menu-quick-btn__icon ln-icon-slot"
-              data-ln-icon="settings"
-              aria-hidden="true"
-            ></span>
-            <span class="menu-quick-btn__label" data-i18n="btn_settings"></span>
-          </button>
-          <button type="button" class="menu-quick-btn" id="statsBtn">
-            <span
-              class="menu-quick-btn__icon ln-icon-slot"
-              data-ln-icon="statistics"
-              aria-hidden="true"
-            ></span>
-            <span class="menu-quick-btn__label" data-i18n="btn_stats"></span>
-          </button>
-          <button type="button" class="menu-quick-btn" id="aboutBtn">
-            <span
-              class="menu-quick-btn__icon ln-icon-slot"
-              data-ln-icon="about"
-              aria-hidden="true"
-            ></span>
-            <span class="menu-quick-btn__label" data-i18n="btn_about"></span>
-          </button>
+        <div class="main-menu__panel">
+          <div class="menu-buttons main-menu__buttons">
+            <button
+              class="menu-btn primary"
+              id="continueBtn"
+              type="button"
+              disabled
+              aria-disabled="true"
+            >
+              <span class="menu-btn__icon" data-ln-icon="continue" aria-hidden="true"></span>
+              <span class="menu-btn__body">
+                <span class="menu-btn__label" data-i18n="btn_continue"></span>
+                <span
+                  class="menu-btn__hint hidden"
+                  id="continueBtnHint"
+                  data-i18n="btn_no_save"
+                ></span>
+              </span>
+            </button>
+            <button class="menu-btn secondary" id="newGameBtn" type="button">
+              <span class="menu-btn__icon" data-ln-icon="new-game" aria-hidden="true"></span>
+              <span class="menu-btn__label" id="newGameBtnLabel" data-i18n="btn_play"></span>
+            </button>
+          </div>
+          <div class="main-menu__quick-stack" role="group" data-i18n-aria-label="menu_quick_aria">
+            <button type="button" class="menu-quick-btn menu-quick-btn--pill" id="settingsBtn">
+              <span
+                class="menu-quick-btn__icon ln-icon-slot"
+                data-ln-icon="settings"
+                aria-hidden="true"
+              ></span>
+              <span class="menu-quick-btn__label" data-i18n="btn_settings"></span>
+            </button>
+            <button type="button" class="menu-quick-btn menu-quick-btn--pill" id="statsBtn">
+              <span
+                class="menu-quick-btn__icon ln-icon-slot"
+                data-ln-icon="statistics"
+                aria-hidden="true"
+              ></span>
+              <span class="menu-quick-btn__label" data-i18n="btn_stats"></span>
+            </button>
+            <button type="button" class="menu-quick-btn menu-quick-btn--pill" id="aboutBtn">
+              <span
+                class="menu-quick-btn__icon ln-icon-slot"
+                data-ln-icon="about"
+                aria-hidden="true"
+              ></span>
+              <span class="menu-quick-btn__label" data-i18n="btn_about"></span>
+            </button>
+          </div>
         </div>
       </div>
 
