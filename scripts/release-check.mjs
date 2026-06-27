@@ -10,6 +10,7 @@ const steps = [
   ['node_modules/eslint/bin/eslint.js', ['.']],
   ['node_modules/typescript/bin/tsc', ['--noEmit', '-p', 'tsconfig.json']],
   ['scripts/verify-static-assets.mjs', []],
+  ['scripts/verify-android-release.mjs', []],
   ['scripts/smoke-tests.mjs', []],
 ];
 

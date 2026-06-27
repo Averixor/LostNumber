@@ -12,6 +12,8 @@
 | `js/app/navigation/back-navigation.js` | Системна кнопка «Назад» (`@capacitor/app`)                 |
 | `public/audio/` → `_site/audio/`       | Музика та SFX у APK (див. `docs/AUDIO.md`)                 |
 | `npm run android:prepare`              | `build:pages` + `cap sync android`                         |
+| `npm run verify:android`               | Release security + `_site` bundle prerequisites            |
+| `docs/ANDROID_QA.md`                   | Manual QA checklist перед установкою APK на телефон        |
 
 **Capacitor-плагіни:** `@capacitor/status-bar`, `@capacitor/app`.
 

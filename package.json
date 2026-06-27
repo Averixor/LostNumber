@@ -20,6 +20,7 @@
     "lint:fix": "node ./node_modules/eslint/bin/eslint.js . --fix",
     "check": "node ./scripts/check.mjs",
     "verify:static": "node ./scripts/verify-static-assets.mjs",
+    "verify:android": "node ./scripts/verify-android-release.mjs",
     "test:smoke": "node ./scripts/smoke-tests.mjs",
     "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit -p tsconfig.json",
     "release:check": "node ./scripts/release-check.mjs",
