@@ -111,6 +111,7 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 - **Data collected:** None (або «No data shared with third parties»)
 - Локальні дані на пристрої не синхронізуються з сервером розробника
 - Privacy policy URL: `https://averixor.github.io/LostNumber/privacy.html`
+- Потрібен успішний деплой GitHub Pages — див. [GITHUB_PAGES.md](./GITHUB_PAGES.md), якщо workflow падає на `configure-pages`.
 
 ## 8. Чекліст перед Production
 
