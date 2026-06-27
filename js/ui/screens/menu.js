@@ -178,6 +178,9 @@ class MenuManager {
       }
 
       if (continueBtn) {
+        continueBtn.classList.toggle('primary', hasSave);
+        continueBtn.classList.toggle('secondary', !hasSave);
+        continueBtn.classList.toggle('menu-btn--muted-disabled', !hasSave);
         continueBtn.classList.toggle('main-menu__cta-secondary', !hasSave);
       }
       if (newGameBtn) {

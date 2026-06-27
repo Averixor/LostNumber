@@ -28,6 +28,10 @@ class ScreenManager {
         ErrorHandler.warn('Screen not found', { name });
       }
 
+      if (document.body) {
+        document.body.dataset.activeScreen = name;
+      }
+
       if (wasGame && name !== 'game') {
         if (typeof this.game.requestSaveGameState === 'function') {
           this.game.requestSaveGameState();

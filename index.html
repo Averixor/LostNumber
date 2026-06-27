@@ -406,8 +406,6 @@
     </div>
 
     <div class="screen main-menu" id="mainMenuScreen">
-      <h1 class="sr-only" data-i18n="game_logo">Lost Number</h1>
-
       <div class="main-menu__account">
         <button type="button" class="menu-account-btn menu-account-btn--login" id="loginBtn">
           <span
@@ -428,6 +426,7 @@
       </div>
 
       <div class="main-menu__core">
+        <h1 class="main-menu__title" data-i18n="game_logo">Lost Number</h1>
         <p class="main-menu__tagline" data-i18n="main_subtitle"></p>
         <div class="menu-buttons main-menu__buttons">
           <button
@@ -445,18 +444,30 @@
             <span class="menu-btn__label" id="newGameBtnLabel" data-i18n="btn_play"></span>
           </button>
         </div>
-        <div class="main-menu__secondary menu-buttons">
-          <button class="menu-btn secondary menu-btn--compact" id="settingsBtn" type="button">
-            <span class="menu-btn__icon" data-ln-icon="settings" aria-hidden="true"></span>
-            <span class="menu-btn__label" data-i18n="btn_settings"></span>
+        <div class="main-menu__quick-row" role="group" data-i18n-aria-label="menu_quick_aria">
+          <button type="button" class="menu-quick-btn" id="settingsBtn">
+            <span
+              class="menu-quick-btn__icon ln-icon-slot"
+              data-ln-icon="settings"
+              aria-hidden="true"
+            ></span>
+            <span class="menu-quick-btn__label" data-i18n="btn_settings"></span>
           </button>
-          <button class="menu-btn secondary menu-btn--compact" id="statsBtn" type="button">
-            <span class="menu-btn__icon" data-ln-icon="statistics" aria-hidden="true"></span>
-            <span class="menu-btn__label" data-i18n="btn_stats"></span>
+          <button type="button" class="menu-quick-btn" id="statsBtn">
+            <span
+              class="menu-quick-btn__icon ln-icon-slot"
+              data-ln-icon="statistics"
+              aria-hidden="true"
+            ></span>
+            <span class="menu-quick-btn__label" data-i18n="btn_stats"></span>
           </button>
-          <button class="menu-btn secondary menu-btn--compact" id="aboutBtn" type="button">
-            <span class="menu-btn__icon" data-ln-icon="about" aria-hidden="true"></span>
-            <span class="menu-btn__label" data-i18n="btn_about"></span>
+          <button type="button" class="menu-quick-btn" id="aboutBtn">
+            <span
+              class="menu-quick-btn__icon ln-icon-slot"
+              data-ln-icon="about"
+              aria-hidden="true"
+            ></span>
+            <span class="menu-quick-btn__label" data-i18n="btn_about"></span>
           </button>
         </div>
       </div>

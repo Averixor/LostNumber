@@ -35,6 +35,7 @@ const I18N = {
     dock_daily: 'Завдання',
     dock_bonuses: 'Бонуси',
     menu_dock_aria: 'Преміум та можливості',
+    menu_quick_aria: 'Швидкі дії меню',
 
     feature_stub_ok: 'Зрозуміло',
     feature_login_title: 'Увійти',
@@ -314,6 +315,7 @@ const I18N = {
     dock_daily: 'Задания',
     dock_bonuses: 'Бонусы',
     menu_dock_aria: 'Премиум и возможности',
+    menu_quick_aria: 'Быстрые действия меню',
 
     feature_stub_ok: 'Понятно',
     feature_login_title: 'Войти',
@@ -591,6 +593,7 @@ const I18N = {
     dock_daily: 'Quests',
     dock_bonuses: 'Bonuses',
     menu_dock_aria: 'Premium and features',
+    menu_quick_aria: 'Quick menu actions',
 
     feature_stub_ok: 'Got it',
     feature_login_title: 'Sign in',

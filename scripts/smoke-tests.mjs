@@ -13,6 +13,7 @@ const tests = [
   'scripts/test-critical-fixes.mjs',
   'scripts/test-package2.mjs',
   'scripts/test-menu-navigation.mjs',
+  'scripts/test-menu-layout.mjs',
   'scripts/test-build-flags.mjs',
 ];
 

@@ -79,10 +79,17 @@ html.low-performance .feature-stub-dialog__icon img.ln-icon {
 }
 
 html.low-performance .main-menu__dock,
+html.low-performance .main-menu__quick-row,
 html.low-performance .menu-dock-btn__icon img.ln-icon,
+html.low-performance .menu-quick-btn__icon img.ln-icon,
 html.low-performance .menu-account-btn__icon img.ln-icon {
   opacity: 1;
   visibility: visible;
+}
+
+html.low-performance .main-menu__title {
+  filter: none;
+  color: #ffb8f0;
 }
 
 .footer-btn .ln-icon-slot {
