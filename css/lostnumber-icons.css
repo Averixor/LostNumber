@@ -80,7 +80,7 @@ html.low-performance .feature-stub-dialog__icon img.ln-icon {
 
 html.low-performance .main-menu__dock,
 html.low-performance .main-menu__quick-row,
-html.low-performance .main-menu__panel,
+html.low-performance .main-menu__actions,
 html.low-performance .menu-dock-btn__icon img.ln-icon,
 html.low-performance .menu-quick-btn__icon img.ln-icon,
 html.low-performance .menu-account-btn__icon img.ln-icon {
@@ -88,11 +88,11 @@ html.low-performance .menu-account-btn__icon img.ln-icon {
   visibility: visible;
 }
 
-html.low-performance .main-menu__panel {
-  background: rgba(24, 12, 40, 0.96);
+html.low-performance .main-menu__actions {
+  background: transparent;
 }
 
-html.low-performance .menu-quick-btn--tile {
+html.low-performance .menu-quick-btn--chip {
   filter: none;
 }
 

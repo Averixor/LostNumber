@@ -19,7 +19,19 @@ LostNumberGame.prototype.renderStaticI18n = function () {
       const key = el.getAttribute('data-i18n');
       if (!key) return;
       if (el.hasAttribute('data-ln-icon')) return;
-      el.textContent = this.t(key);
+      const value = this.t(key);
+      if (el.hasAttribute('data-i18n-split-lines')) {
+        el.replaceChildren(
+          ...value.split(/\s+/).map((part) => {
+            const span = document.createElement('span');
+            span.textContent = part;
+            return span;
+          }),
+        );
+        el.setAttribute('aria-label', value);
+      } else {
+        el.textContent = value;
+      }
     });
 
     document.querySelectorAll('[data-i18n-title]').forEach((el) => {

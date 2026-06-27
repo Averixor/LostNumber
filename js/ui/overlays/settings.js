@@ -66,6 +66,17 @@ class SettingsManager {
           this.game.liteVisualMode =
             lite === 'on' || lite === 'off' || lite === 'auto' ? lite : 'auto';
         }
+        {
+          const backgroundValue = document.getElementById('backgroundSelect')?.value || 'auto';
+          this.game.backgroundPreference =
+            typeof BackgroundRotator !== 'undefined'
+              ? BackgroundRotator.getPreferenceValue()
+              : backgroundValue;
+          if (typeof BackgroundRotator !== 'undefined') {
+            BackgroundRotator.setPreferenceValue(backgroundValue);
+            this.game.backgroundPreference = BackgroundRotator.getPreferenceValue();
+          }
+        }
         this.game.theme = document.getElementById('themeSelect')?.value || 'dusk';
         const newLang = document.getElementById('languageSelect')?.value || 'ua';
 
@@ -130,6 +141,10 @@ class SettingsManager {
       this.game.lang = settings.lang || this.game.lang || 'ua';
       const lv = settings.liteVisualMode;
       this.game.liteVisualMode = lv === 'on' || lv === 'off' || lv === 'auto' ? lv : 'auto';
+      this.game.backgroundPreference =
+        typeof BackgroundRotator !== 'undefined'
+          ? BackgroundRotator.getPreferenceValue()
+          : settings.backgroundPreference || 'auto';
 
       this.updateSettingsUI();
 
@@ -152,6 +167,7 @@ class SettingsManager {
     const musicVolumeSelect = document.getElementById('musicVolumeSelect');
     const musicTrackSelect = document.getElementById('musicTrackSelect');
     const themeSelect = document.getElementById('themeSelect');
+    const backgroundSelect = document.getElementById('backgroundSelect');
     const languageSelect = document.getElementById('languageSelect');
 
     if (animationSelect) {
@@ -183,6 +199,13 @@ class SettingsManager {
       musicTrackSelect.value = this.game.musicTrack || 'ambient';
     }
 
+    if (backgroundSelect) {
+      backgroundSelect.value =
+        typeof BackgroundRotator !== 'undefined'
+          ? BackgroundRotator.getPreferenceValue()
+          : this.game.backgroundPreference || 'auto';
+    }
+
     if (themeSelect) {
       themeSelect.value = this.game.theme || 'dusk';
     }
@@ -202,6 +225,10 @@ class SettingsManager {
       musicTrack: this.game.musicTrack || 'ambient',
       theme: this.game.theme || 'dusk',
       lang: this.game.lang || 'ua',
+      backgroundPreference:
+        typeof BackgroundRotator !== 'undefined'
+          ? BackgroundRotator.getPreferenceValue()
+          : this.game.backgroundPreference || 'auto',
       liteVisualMode:
         this.game.liteVisualMode === 'on' ||
         this.game.liteVisualMode === 'off' ||

@@ -427,10 +427,10 @@
 
       <div class="main-menu__core">
         <div class="main-menu__hero">
-          <h1 class="main-menu__title" data-i18n="game_logo">Lost Number</h1>
+          <h1 class="main-menu__title" data-i18n="game_logo" data-i18n-split-lines>Lost Number</h1>
           <p class="main-menu__tagline" data-i18n="main_subtitle"></p>
         </div>
-        <div class="main-menu__panel">
+        <div class="main-menu__actions">
           <div class="menu-buttons main-menu__buttons">
             <button
               class="menu-btn primary main-menu__continue hidden"
@@ -442,13 +442,13 @@
               <span class="menu-btn__icon" data-ln-icon="continue" aria-hidden="true"></span>
               <span class="menu-btn__label" data-i18n="btn_continue"></span>
             </button>
-            <button class="menu-btn primary" id="newGameBtn" type="button">
+            <button class="menu-btn primary main-menu__new-game" id="newGameBtn" type="button">
               <span class="menu-btn__icon" data-ln-icon="new-game" aria-hidden="true"></span>
               <span class="menu-btn__label" id="newGameBtnLabel" data-i18n="btn_play"></span>
             </button>
           </div>
           <div class="main-menu__quick-row" role="group" data-i18n-aria-label="menu_quick_aria">
-            <button type="button" class="menu-quick-btn menu-quick-btn--tile" id="settingsBtn">
+            <button type="button" class="menu-quick-btn menu-quick-btn--chip" id="settingsBtn">
               <span
                 class="menu-quick-btn__icon ln-icon-slot"
                 data-ln-icon="settings"
@@ -456,7 +456,7 @@
               ></span>
               <span class="menu-quick-btn__label" data-i18n="btn_settings"></span>
             </button>
-            <button type="button" class="menu-quick-btn menu-quick-btn--tile" id="statsBtn">
+            <button type="button" class="menu-quick-btn menu-quick-btn--chip" id="statsBtn">
               <span
                 class="menu-quick-btn__icon ln-icon-slot"
                 data-ln-icon="statistics"
@@ -464,7 +464,7 @@
               ></span>
               <span class="menu-quick-btn__label" data-i18n="btn_stats"></span>
             </button>
-            <button type="button" class="menu-quick-btn menu-quick-btn--tile" id="aboutBtn">
+            <button type="button" class="menu-quick-btn menu-quick-btn--chip" id="aboutBtn">
               <span
                 class="menu-quick-btn__icon ln-icon-slot"
                 data-ln-icon="about"
@@ -664,6 +664,19 @@
             <option value="auto" selected data-i18n="settings_state_auto"></option>
             <option value="on" data-i18n="settings_state_on"></option>
             <option value="off" data-i18n="settings_state_off"></option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label
+            class="setting-label"
+            for="backgroundSelect"
+            data-i18n="settings_background_label"
+          ></label>
+          <select class="setting-control" id="backgroundSelect">
+            <option value="auto" selected data-i18n="settings_background_auto"></option>
+            <option value="0" data-i18n="settings_background_1"></option>
+            <option value="1" data-i18n="settings_background_2"></option>
+            <option value="2" data-i18n="settings_background_3"></option>
           </select>
         </div>
         <div class="setting-item">

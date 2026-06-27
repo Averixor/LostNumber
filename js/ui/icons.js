@@ -19,7 +19,7 @@ const LostNumberIcons = {
     if (explicit) return `ln-icon ln-icon--${explicit}`;
 
     if (host.classList.contains('menu-btn__icon')) return 'ln-icon ln-icon--lg';
-    if (host.closest('.menu-quick-btn--tile')) return 'ln-icon ln-icon--md';
+    if (host.closest('.menu-quick-btn--chip')) return 'ln-icon ln-icon--sm';
     if (host.closest('.menu-quick-btn')) return 'ln-icon ln-icon--sm';
     if (host.closest('.menu-dock-btn')) return 'ln-icon ln-icon--md';
     if (host.closest('.menu-account-btn')) return 'ln-icon ln-icon--sm';

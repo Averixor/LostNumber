@@ -186,7 +186,8 @@ class MenuManager {
       }
       if (newGameBtn) {
         newGameBtn.classList.toggle('primary', !hasSave);
-        newGameBtn.classList.toggle('secondary', hasSave);
+        newGameBtn.classList.toggle('secondary', false);
+        newGameBtn.classList.toggle('ghost', hasSave);
       }
 
       this.applyMainMenuIcons();

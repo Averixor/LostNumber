@@ -35,28 +35,47 @@ const BackgroundRotator = {
     return ((n % len) + len) % len;
   },
 
+  normalizePreference(value) {
+    if (value === 'auto') return { mode: 'auto', index: null };
+    const n = Number(value);
+    if (Number.isFinite(n)) {
+      return { mode: 'manual', index: this.normalizeIndex(n) };
+    }
+    return { mode: 'auto', index: null };
+  },
+
   readStoredState() {
     try {
       const raw = localStorage.getItem(this.STORAGE_KEY);
       if (!raw) return null;
       const parsed = JSON.parse(raw);
       if (!parsed || typeof parsed !== 'object') return null;
+      const mode = parsed.mode === 'manual' ? 'manual' : 'auto';
+      const index = this.normalizeIndex(parsed.index);
+      const manualIndex = this.normalizeIndex(parsed.manualIndex ?? index);
       return {
-        index: this.normalizeIndex(parsed.index),
+        index,
         lastDay: typeof parsed.lastDay === 'string' ? parsed.lastDay : null,
+        mode,
+        manualIndex,
       };
     } catch (_) {
       return null;
     }
   },
 
-  writeStoredState(index, day) {
+  writeStoredState(index, day, options = {}) {
     try {
+      const mode = options.mode === 'manual' ? 'manual' : 'auto';
+      const safe = this.normalizeIndex(index);
+      const manualIndex = this.normalizeIndex(options.manualIndex ?? safe);
       localStorage.setItem(
         this.STORAGE_KEY,
         JSON.stringify({
-          index: this.normalizeIndex(index),
+          index: safe,
           lastDay: day,
+          mode,
+          manualIndex,
         }),
       );
     } catch (_) {}
@@ -75,6 +94,10 @@ const BackgroundRotator = {
       return this.getDailyIndex();
     }
 
+    if (stored.mode === 'manual') {
+      return stored.manualIndex;
+    }
+
     if (stored.lastDay === today) {
       return stored.index;
     }
@@ -84,6 +107,35 @@ const BackgroundRotator = {
     }
 
     return this.normalizeIndex(stored.index + 1);
+  },
+
+  getPreferenceValue() {
+    const stored = this.readStoredState();
+    if (stored?.mode === 'manual') {
+      return String(stored.manualIndex);
+    }
+    return 'auto';
+  },
+
+  setPreferenceValue(value) {
+    const preference = this.normalizePreference(value);
+    const today = this.getTodayKey();
+
+    if (preference.mode === 'manual') {
+      const index = preference.index;
+      this.apply(index);
+      this.writeStoredState(index, today, { mode: 'manual', manualIndex: index });
+      return index;
+    }
+
+    const stored = this.readStoredState();
+    const index =
+      stored?.mode === 'auto'
+        ? this.resolveIndex({ advanceOnNewDay: false })
+        : this.getDailyIndex();
+    this.apply(index);
+    this.writeStoredState(index, today, { mode: 'auto' });
+    return index;
   },
 
   apply(index) {
@@ -114,9 +166,13 @@ const BackgroundRotator = {
   /** First paint on load — use stored index for today, or advance if day rolled over. */
   init() {
     const today = this.getTodayKey();
+    const stored = this.readStoredState();
     const index = this.resolveIndex({ advanceOnNewDay: true });
     this.apply(index);
-    this.writeStoredState(index, today);
+    this.writeStoredState(index, today, {
+      mode: stored?.mode === 'manual' ? 'manual' : 'auto',
+      manualIndex: stored?.manualIndex ?? index,
+    });
     return index;
   },
 
@@ -128,6 +184,8 @@ const BackgroundRotator = {
 
     if (!stored) {
       index = this.getDailyIndex();
+    } else if (stored.mode === 'manual') {
+      index = stored.manualIndex;
     } else if (stored.lastDay === today) {
       index = stored.index;
     } else {
@@ -135,7 +193,10 @@ const BackgroundRotator = {
     }
 
     this.apply(index);
-    this.writeStoredState(index, today);
+    this.writeStoredState(index, today, {
+      mode: stored?.mode === 'manual' ? 'manual' : 'auto',
+      manualIndex: stored?.manualIndex ?? index,
+    });
     return index;
   },
 };

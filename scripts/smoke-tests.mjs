@@ -14,6 +14,7 @@ const tests = [
   'scripts/test-package2.mjs',
   'scripts/test-menu-navigation.mjs',
   'scripts/test-menu-layout.mjs',
+  'scripts/test-background-rotator.mjs',
   'scripts/test-build-flags.mjs',
 ];
 
