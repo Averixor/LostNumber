@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Smoke tests: mobile main menu layout (title, panel, pills, disabled CTA, dock).
+ * Smoke tests: mobile main menu layout (title, panel, tiles, CTA, dock).
  */
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -35,32 +35,32 @@ const mainMenuBlock =
   indexHtml.match(/id="mainMenuScreen"[\s\S]*?id="achievementsScreen"/)?.[0] || '';
 
 assert(mainMenuBlock.includes('class="main-menu__title"'), 'main menu has visible title');
+assert(mainMenuBlock.includes('main-menu__hero'), 'title sits in hero scrim block');
 const titleRule = uiCss.match(/\.main-menu__title\s*\{[^}]*\}/)?.[0] || '';
 assert(titleRule.includes('clamp('), 'title uses responsive clamp font-size');
 assert(titleRule.includes('max-width: 100%'), 'title uses fluid max-width not fixed clip');
-assert(titleRule.includes('letter-spacing: clamp'), 'title uses responsive letter-spacing');
 
 assert(mainMenuBlock.includes('main-menu__panel'), 'main menu has contrast panel container');
-assert(uiCss.includes('backdrop-filter'), 'panel uses backdrop blur for readability');
 
-assert(mainMenuBlock.includes('main-menu__quick-stack'), 'main menu has quick action stack');
+assert(mainMenuBlock.includes('main-menu__quick-row'), 'main menu has horizontal quick row');
 assert(
-  (mainMenuBlock.match(/menu-quick-btn--pill/g) || []).length === 3,
-  'quick stack has three equal pill buttons',
+  (mainMenuBlock.match(/menu-quick-btn--tile/g) || []).length === 3,
+  'quick row has three equal tile buttons',
 );
-assert(!mainMenuBlock.includes('main-menu__quick-row'), 'legacy quick row grid removed');
-assert(!mainMenuBlock.includes('menu-btn--compact'), 'legacy uneven compact menu buttons removed');
+assert(!mainMenuBlock.includes('main-menu__quick-stack'), 'vertical pill stack removed');
 
-assert(uiCss.includes('.menu-quick-btn--pill'), 'pill button styles defined');
-assert(uiCss.includes('rgba(20, 10, 35'), 'quick buttons use dense dark background');
+assert(uiCss.includes('.menu-quick-btn--tile'), 'tile button styles defined');
+assert(uiCss.includes('grid-template-columns: repeat(3'), 'quick row uses 3-column grid');
 
-assert(uiCss.includes('.menu-btn--disabled-state'), 'disabled continue readable style exists');
-assert(menuJs.includes("'menu-btn--disabled-state'"), 'menu toggles disabled state on continue');
-assert(mainMenuBlock.includes('id="continueBtnHint"'), 'continue shows no-save hint when disabled');
+assert(mainMenuBlock.includes('main-menu__continue hidden'), 'continue hidden until save exists');
+assert(
+  menuJs.includes("continueBtn.classList.toggle('hidden', !hasSave)"),
+  'menu hides continue without save',
+);
 
 assert(
   menuJs.includes("continueBtn.classList.toggle('primary', hasSave)"),
-  'continue primary only when save exists',
+  'continue primary when save exists',
 );
 
 for (const id of [

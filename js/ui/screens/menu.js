@@ -178,15 +178,11 @@ class MenuManager {
       }
 
       if (continueBtn) {
+        continueBtn.classList.toggle('hidden', !hasSave);
         continueBtn.classList.toggle('primary', hasSave);
-        continueBtn.classList.toggle('secondary', !hasSave);
-        continueBtn.classList.toggle('menu-btn--disabled-state', !hasSave);
-        continueBtn.classList.toggle('main-menu__cta-secondary', !hasSave);
-      }
-
-      const continueHint = document.getElementById('continueBtnHint');
-      if (continueHint) {
-        continueHint.classList.toggle('hidden', hasSave);
+        continueBtn.classList.toggle('secondary', false);
+        continueBtn.disabled = !hasSave;
+        continueBtn.setAttribute('aria-disabled', hasSave ? 'false' : 'true');
       }
       if (newGameBtn) {
         newGameBtn.classList.toggle('primary', !hasSave);
