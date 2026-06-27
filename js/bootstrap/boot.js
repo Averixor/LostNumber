@@ -22,7 +22,9 @@ window.showCriticalError = function (message, errorId, options) {
       container.style.display = 'flex';
 
       document
-        .querySelectorAll('.screen, .overlay, .victory-overlay, .level-overlay, .wheel-overlay')
+        .querySelectorAll(
+          '.screen, .overlay, .victory-overlay, .level-overlay, .wheel-overlay, .confirm-overlay',
+        )
         .forEach((el) => {
           if (el !== container) el.style.display = 'none';
         });

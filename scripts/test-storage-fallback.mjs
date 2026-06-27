@@ -143,5 +143,60 @@ const ls = createMockLocalStorage();
   assertEq(loaded?.currentLevel, 99, 'LS currentLevel wins over memory');
 }
 
+// 6. settings: setItem throws → loadSettings uses memory when LS empty
+{
+  ls.clear();
+  const sm = loadStorageManager(ls);
+  const settings = { musicEnabled: false, marker: 'settings-mem' };
+  ls.setThrowOnSet(true);
+  assert(sm.saveSettings(settings), 'saveSettings returns true when setItem throws');
+  ls.setThrowOnSet(false);
+  assert(ls.getItem(sm.SETTINGS_KEY) == null, 'LS empty after failed settings setItem');
+  const loaded = sm.loadSettings();
+  assertEq(loaded?.marker, 'settings-mem', 'loadSettings uses memory when getItem is null');
+  assertEq(loaded?.musicEnabled, false, 'loadSettings memory payload intact');
+}
+
+// 7. settings: getItem throws → loadSettings uses memory
+{
+  ls.clear();
+  const sm = loadStorageManager(ls);
+  const settings = { marker: 'settings-get-throws' };
+  ls.setThrowOnSet(true);
+  sm.saveSettings(settings);
+  ls.setThrowOnSet(false);
+  ls.setThrowOnGet(true);
+  const loaded = sm.loadSettings();
+  ls.setThrowOnGet(false);
+  assertEq(loaded?.marker, 'settings-get-throws', 'loadSettings uses memory when getItem throws');
+}
+
+// 8. daily quests: setItem throws → loadDailyQuests uses memory when LS empty
+{
+  ls.clear();
+  const sm = loadStorageManager(ls);
+  const quests = { marker: 'quests-mem', day: '2026-06-27' };
+  ls.setThrowOnSet(true);
+  assert(sm.saveDailyQuests(quests), 'saveDailyQuests returns true when setItem throws');
+  ls.setThrowOnSet(false);
+  assert(ls.getItem(sm.DAILY_QUESTS_KEY) == null, 'LS empty after failed daily quests setItem');
+  const loaded = sm.loadDailyQuests();
+  assertEq(loaded?.marker, 'quests-mem', 'loadDailyQuests uses memory when getItem is null');
+}
+
+// 9. daily quests: getItem throws → loadDailyQuests uses memory
+{
+  ls.clear();
+  const sm = loadStorageManager(ls);
+  const quests = { marker: 'quests-get-throws' };
+  ls.setThrowOnSet(true);
+  sm.saveDailyQuests(quests);
+  ls.setThrowOnSet(false);
+  ls.setThrowOnGet(true);
+  const loaded = sm.loadDailyQuests();
+  ls.setThrowOnGet(false);
+  assertEq(loaded?.marker, 'quests-get-throws', 'loadDailyQuests uses memory when getItem throws');
+}
+
 console.log(`\n${passed} passed, ${failed} failed`);
 process.exit(failed > 0 ? 1 : 0);

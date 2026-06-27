@@ -80,6 +80,43 @@ function verifyAndroidManifest() {
   } else {
     ok('AndroidManifest allowBackup=false');
   }
+
+  if (!/android:dataExtractionRules\s*=/.test(xml)) {
+    fail('AndroidManifest must declare android:dataExtractionRules for API 31+');
+  } else {
+    ok('AndroidManifest dataExtractionRules present');
+  }
+
+  const appIdx = xml.indexOf('<application');
+  const permIdx = xml.indexOf('<uses-permission');
+  if (permIdx === -1 || appIdx === -1 || permIdx > appIdx) {
+    fail('AndroidManifest uses-permission must appear before <application>');
+  } else {
+    ok('AndroidManifest permissions before application');
+  }
+}
+
+function verifyAudioBundle() {
+  const forbidden = join(root, '_site/audio/music_original');
+  if (existsSync(forbidden)) {
+    fail('_site/audio/music_original must not be shipped (use audio-sources/ for masters)');
+    return;
+  }
+  ok('audio bundle excludes music_original');
+
+  const audioRoot = join(root, '_site/audio');
+  if (!existsSync(audioRoot)) {
+    return;
+  }
+  for (const sub of ['music', 'sfx']) {
+    const dir = join(audioRoot, sub);
+    if (!existsSync(dir)) {
+      fail(`_site/audio/${sub} missing from release bundle`);
+    }
+  }
+  if (existsSync(join(audioRoot, 'music')) && existsSync(join(audioRoot, 'sfx'))) {
+    ok('_site/audio contains only music and sfx');
+  }
 }
 
 function verifyBuildFlagsRelease() {
@@ -257,6 +294,7 @@ verifyNoHardcodedCheats();
 verifyGradleReleasePackage();
 verifyNoSecretsInGit();
 ensureSiteBundle();
+verifyAudioBundle();
 verifySyncedAssetsOptional();
 
 if (failures.length) {

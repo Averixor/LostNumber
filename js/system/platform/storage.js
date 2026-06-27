@@ -7,6 +7,7 @@ class StorageManager {
 
     this._memorySave = null;
     this._memorySettings = null;
+    this._memoryDailyQuests = null;
     this._usingMemory = false;
   }
 
@@ -52,6 +53,7 @@ class StorageManager {
   saveSettings(settings) {
     try {
       localStorage.setItem(this.SETTINGS_KEY, JSON.stringify(settings));
+      this._memorySettings = settings;
       return true;
     } catch (e) {
       console.error('Settings save failed:', e);
@@ -62,15 +64,25 @@ class StorageManager {
   }
 
   loadSettings() {
+    let parsed = null;
     try {
       const raw = localStorage.getItem(this.SETTINGS_KEY);
-      if (!raw) return null;
-      return JSON.parse(raw);
+      if (raw) {
+        parsed = JSON.parse(raw);
+      }
     } catch (e) {
       console.error('Settings load failed:', e);
       this._usingMemory = true;
+    }
+
+    if (parsed) {
+      return parsed;
+    }
+    if (this._memorySettings) {
+      this._usingMemory = true;
       return this._memorySettings;
     }
+    return null;
   }
 
   clearSave() {
@@ -88,22 +100,36 @@ class StorageManager {
   saveDailyQuests(quests) {
     try {
       localStorage.setItem(this.DAILY_QUESTS_KEY, JSON.stringify(quests));
+      this._memoryDailyQuests = quests;
       return true;
     } catch (e) {
       console.error('Daily quests save failed:', e);
-      return false;
+      this._usingMemory = true;
+      this._memoryDailyQuests = quests;
+      return true;
     }
   }
 
   loadDailyQuests() {
+    let parsed = null;
     try {
       const raw = localStorage.getItem(this.DAILY_QUESTS_KEY);
-      if (!raw) return null;
-      return JSON.parse(raw);
+      if (raw) {
+        parsed = JSON.parse(raw);
+      }
     } catch (e) {
       console.error('Daily quests load failed:', e);
-      return null;
+      this._usingMemory = true;
     }
+
+    if (parsed) {
+      return parsed;
+    }
+    if (this._memoryDailyQuests) {
+      this._usingMemory = true;
+      return this._memoryDailyQuests;
+    }
+    return null;
   }
 
   isFirstRun() {

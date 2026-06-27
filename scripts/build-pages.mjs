@@ -14,7 +14,12 @@ for (const entry of releaseEntries) {
   cpSync(join(root, entry), join(outDir, entry), { recursive: true });
 }
 
-cpSync(join(root, 'public', 'audio'), join(outDir, 'audio'), { recursive: true });
+mkdirSync(join(outDir, 'audio'), { recursive: true });
+for (const subdir of ['music', 'sfx']) {
+  cpSync(join(root, 'public', 'audio', subdir), join(outDir, 'audio', subdir), {
+    recursive: true,
+  });
+}
 
 writeFileSync(join(outDir, '.nojekyll'), 'Disable Jekyll processing for this static app.\n');
 

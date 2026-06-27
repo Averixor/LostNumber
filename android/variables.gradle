@@ -1,4 +1,5 @@
 ext {
+    // TODO(release-audit): bump AndroidX deps in a dedicated PR (lint may flag stale versions).
     minSdkVersion = 23
     compileSdkVersion = 35
     targetSdkVersion = 35

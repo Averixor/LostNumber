@@ -108,8 +108,8 @@ LostNumberGame.prototype.reportErrorToAnalytics = function (errorData) {
       message: errorData.message?.substring(0, 200),
       type: errorData.meta?.type,
       timestamp: errorData.timestamp,
-      level: errorData.context?.level || 0,
-      phase: errorData.context?.phase || 'unknown',
+      currentLevel: errorData.context?.currentLevel ?? 0,
+      gamePhase: errorData.context?.gamePhase || 'unknown',
       url: window.location.href,
       user_agent: navigator.userAgent.substring(0, 100),
     };

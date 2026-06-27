@@ -65,8 +65,6 @@ class GameState {
       this.screenState = 'mainMenu';
       this.gamePhase = 'idle';
 
-      this.core = new GameCore(this);
-
       /** @type {unknown} */
       this.dailyQuests = null;
 
