@@ -87,42 +87,50 @@
     <link
       rel="preload"
       as="image"
-      href="./assets/images/menu-bg-1.png"
+      href="./assets/images/dark/menu-bg-1.png"
       type="image/png"
       fetchpriority="high"
     />
     <link
       rel="preload"
       as="image"
-      href="./assets/images/menu-bg-2.png"
+      href="./assets/images/dark/menu-bg-2.png"
       type="image/png"
       fetchpriority="low"
     />
     <link
       rel="preload"
       as="image"
-      href="./assets/images/menu-bg-3.png"
+      href="./assets/images/dark/menu-bg-3.png"
       type="image/png"
       fetchpriority="low"
     />
     <link
       rel="preload"
       as="image"
-      href="./assets/images/menu-bg-4.png"
+      href="./assets/images/dark/menu-bg-4.png"
       type="image/png"
       fetchpriority="low"
     />
     <link
       rel="preload"
       as="image"
-      href="./assets/images/menu-bg-5.png"
+      href="./assets/images/dark/menu-bg-5.png"
       type="image/png"
       fetchpriority="low"
     />
     <link
       rel="preload"
       as="image"
-      href="./assets/images/menu-bg-6.png"
+      href="./assets/images/dark/menu-bg-6.png"
+      type="image/png"
+      fetchpriority="low"
+    />
+
+    <link
+      rel="preload"
+      as="image"
+      href="./assets/images/light/bg-light-01.png"
       type="image/png"
       fetchpriority="low"
     />
@@ -133,13 +141,10 @@
     <meta name="apple-mobile-web-app-title" content="Lost Number" />
 
     <meta property="og:title" content="Lost Number" />
-    <meta
-      property="og:description"
-      content="Спокійна головоломка з числами. Грайте у своєму темпі, без таймерів і поспіху."
-    />
+    <meta property="og:description" content="Panta mēn ta gignōskomena arithmon echonti." />
     <meta
       property="og:image"
-      content="https://averixor.github.io/LostNumber/assets/images/menu-bg-1.png"
+      content="https://averixor.github.io/LostNumber/assets/images/dark/menu-bg-1.png"
     />
     <meta property="og:type" content="website" />
 
@@ -685,6 +690,13 @@
             <option value="auto" selected data-i18n="settings_state_auto"></option>
             <option value="on" data-i18n="settings_state_on"></option>
             <option value="off" data-i18n="settings_state_off"></option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label class="setting-label" for="themeSelect" data-i18n="settings_theme_label"></label>
+          <select class="setting-control" id="themeSelect">
+            <option value="dawn" data-i18n="settings_theme_dawn"></option>
+            <option value="dusk" data-i18n="settings_theme_dusk"></option>
           </select>
         </div>
         <div class="setting-item">

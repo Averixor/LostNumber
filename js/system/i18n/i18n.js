@@ -5,7 +5,7 @@ const I18N = {
     loading: 'Завантаження…',
 
     main_title: 'Числова головоломка',
-    main_subtitle: 'Спокійна головоломка з числами. Грайте у своєму темпі, без таймерів і поспіху.',
+    main_subtitle: 'Panta mēn ta gignōskomena arithmon echonti.',
 
     btn_continue: 'Продовжити',
     btn_no_save: 'Немає збереження',

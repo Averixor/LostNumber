@@ -78,11 +78,8 @@ class LostNumberGame {
     }
 
     this.settingsManager.loadSettings();
-    if (
-      typeof BackgroundRotator !== 'undefined' &&
-      typeof BackgroundRotator.getCurrentSkin === 'function'
-    ) {
-      this.theme = BackgroundRotator.getCurrentSkin()?.gameTheme || this.theme || 'dusk';
+    if (typeof BackgroundRotator !== 'undefined') {
+      BackgroundRotator._activeGameTheme = this.theme === 'dawn' ? 'dawn' : 'dusk';
     }
 
     this.applyLanguage(this.lang || 'ua');

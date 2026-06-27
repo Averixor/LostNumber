@@ -108,25 +108,26 @@ assert(
 );
 
 assert(settingsBlock.includes('id="visualSkinSelect"'), 'settings expose visual skin selector');
+assert(settingsBlock.includes('id="themeSelect"'), 'settings expose theme selector');
 assert(!settingsBlock.includes('id="backgroundSelect"'), 'old background-only selector removed');
-assert(
-  !settingsBlock.includes('id="themeSelect"'),
-  'separate theme selector removed from settings',
-);
 for (const value of ['auto', 'skin-1', 'skin-2', 'skin-3', 'skin-4', 'skin-5', 'skin-6']) {
   assert(settingsBlock.includes(`value="${value}"`), `visual skin option ${value} present`);
 }
 assert(
-  settingsJs.includes('BackgroundRotator.setPreferenceValue(visualSkinValue)'),
-  'settings save applies manual/auto visual skin preference',
+  settingsJs.includes('BackgroundRotator.setPreferenceValue(visualSkinValue, this.game.theme)'),
+  'settings save applies visual skin preference for active theme',
 );
 assert(
-  settingsJs.includes('BackgroundRotator.getPreferenceValue()'),
-  'settings UI reads current visual skin preference',
+  settingsJs.includes('BackgroundRotator.getPreferenceValue(this.game.theme)'),
+  'settings UI reads visual skin preference for active theme',
 );
 assert(
-  settingsJs.includes('BackgroundRotator.getCurrentSkin()?.gameTheme'),
-  'settings derive game theme from selected visual skin',
+  settingsJs.includes('this.game.applyTheme()'),
+  'settings save re-applies theme and background',
+);
+assert(
+  i18nJs.includes('BackgroundRotator.syncForGameTheme(theme)'),
+  'applyTheme syncs theme-specific backgrounds',
 );
 assert(uiCss.includes("html[data-visual-skin='skin-3']"), 'skin 3 CSS variables defined');
 assert(uiCss.includes("html[data-visual-skin='skin-4']"), 'skin 4 CSS variables defined');

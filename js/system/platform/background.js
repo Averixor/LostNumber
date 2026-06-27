@@ -1,9 +1,7 @@
 /**
- * Rotating visual skins: clean background art + menu CSS variants, auto-advance
- * when the calendar day changes (on main menu enter). State in localStorage key
- * lostNumberBackground for backward compatibility.
- *
- * TODO: replace menu-bg-1..6.png placeholders with dedicated clean art (no UI text).
+ * Visual skins: theme-specific clean background art + menu CSS variants.
+ * Auto-advance when the calendar day changes (on main menu enter).
+ * State in localStorage key lostNumberBackground (per dawn/dusk branch).
  */
 const BackgroundRotator = {
   STORAGE_KEY: 'lostNumberBackground',
@@ -12,12 +10,26 @@ const BackgroundRotator = {
     ember: 'skin-3',
     crystal: 'skin-4',
   },
+  DARK_BACKGROUNDS: [
+    './assets/images/dark/menu-bg-1.png',
+    './assets/images/dark/menu-bg-2.png',
+    './assets/images/dark/menu-bg-3.png',
+    './assets/images/dark/menu-bg-4.png',
+    './assets/images/dark/menu-bg-5.png',
+    './assets/images/dark/menu-bg-6.png',
+  ],
+  LIGHT_BACKGROUNDS: [
+    './assets/images/light/bg-light-01.png',
+    './assets/images/light/bg-light-02.png',
+    './assets/images/light/bg-light-03.png',
+    './assets/images/light/bg-light-04.png',
+    './assets/images/light/bg-light-05.png',
+    './assets/images/light/bg-light-06.png',
+  ],
   SKINS: [
     {
       id: 'skin-1',
       nameKey: 'visual_skin_1',
-      background: './assets/images/menu-bg-1.png',
-      gameTheme: 'dusk',
       titleFrame: 'none',
       quickRow: 'circles',
       primaryBtn: 'pill',
@@ -25,8 +37,6 @@ const BackgroundRotator = {
     {
       id: 'skin-2',
       nameKey: 'visual_skin_2',
-      background: './assets/images/menu-bg-2.png',
-      gameTheme: 'dusk',
       titleFrame: 'diamond',
       quickRow: 'circles',
       primaryBtn: 'pill',
@@ -34,8 +44,6 @@ const BackgroundRotator = {
     {
       id: 'skin-3',
       nameKey: 'visual_skin_3',
-      background: './assets/images/menu-bg-3.png',
-      gameTheme: 'dawn',
       titleFrame: 'arc',
       quickRow: 'boxed',
       primaryBtn: 'pill',
@@ -43,8 +51,6 @@ const BackgroundRotator = {
     {
       id: 'skin-4',
       nameKey: 'visual_skin_4',
-      background: './assets/images/menu-bg-4.png',
-      gameTheme: 'dusk',
       titleFrame: 'none',
       quickRow: 'circles',
       primaryBtn: 'skew',
@@ -52,8 +58,6 @@ const BackgroundRotator = {
     {
       id: 'skin-5',
       nameKey: 'visual_skin_5',
-      background: './assets/images/menu-bg-5.png',
-      gameTheme: 'dawn',
       titleFrame: 'arc',
       quickRow: 'boxed',
       primaryBtn: 'pill',
@@ -61,17 +65,38 @@ const BackgroundRotator = {
     {
       id: 'skin-6',
       nameKey: 'visual_skin_6',
-      background: './assets/images/menu-bg-6.png',
-      gameTheme: 'dusk',
       titleFrame: 'none',
       quickRow: 'boxed',
       primaryBtn: 'pill',
     },
   ],
   DAY_MS: 24 * 60 * 60 * 1000,
+  _activeGameTheme: 'dusk',
 
   get IMAGES() {
-    return this.SKINS.map((skin) => skin.background);
+    return this.getBackgroundsForTheme(this._activeGameTheme);
+  },
+
+  normalizeGameTheme(theme) {
+    return theme === 'dawn' ? 'dawn' : 'dusk';
+  },
+
+  getThemeKind(theme) {
+    return this.normalizeGameTheme(theme) === 'dawn' ? 'light' : 'dark';
+  },
+
+  getBackgroundsForTheme(theme) {
+    return this.getThemeKind(theme) === 'light' ? this.LIGHT_BACKGROUNDS : this.DARK_BACKGROUNDS;
+  },
+
+  getDefaultBackgroundPath(theme) {
+    return this.getBackgroundsForTheme(theme)[0];
+  },
+
+  getBackgroundPath(index, theme) {
+    const backgrounds = this.getBackgroundsForTheme(theme);
+    const safe = this.normalizeIndex(index, backgrounds.length);
+    return backgrounds[safe];
   },
 
   getTodayKey() {
@@ -81,21 +106,21 @@ const BackgroundRotator = {
     return `${d.getFullYear()}-${m}-${day}`;
   },
 
-  /** Deterministic starting index for first install (no stored state). */
-  getDailyIndex() {
+  getDailyIndex(theme) {
+    const backgrounds = this.getBackgroundsForTheme(theme);
     const d = new Date();
     const dayNumber = Math.floor(
       Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / this.DAY_MS,
     );
-    return dayNumber % this.IMAGES.length;
+    return dayNumber % backgrounds.length;
   },
 
-  normalizeIndex(index) {
-    const len = this.SKINS.length;
-    if (!len) return 0;
+  normalizeIndex(index, len) {
+    const count = len ?? this.SKINS.length;
+    if (!count) return 0;
     const n = Number(index);
     if (!Number.isFinite(n)) return 0;
-    return ((n % len) + len) % len;
+    return ((n % count) + count) % count;
   },
 
   getSkin(index) {
@@ -114,7 +139,103 @@ const BackgroundRotator = {
   getCurrentSkin() {
     const el = document.getElementById('appBackground');
     const index = el?.dataset?.bgIndex;
-    return this.getSkin(index ?? this.resolveIndex({ advanceOnNewDay: false }));
+    return this.getSkin(
+      index ?? this.resolveIndex(this._activeGameTheme, { advanceOnNewDay: false }),
+    );
+  },
+
+  createDefaultBranch(theme) {
+    const index = this.getDailyIndex(theme);
+    const skin = this.getSkin(index);
+    return {
+      mode: 'auto',
+      index,
+      lastDay: this.getTodayKey(),
+      manualIndex: index,
+      manualSkin: skin.id,
+      selectedBackground: this.getBackgroundPath(index, theme),
+    };
+  },
+
+  migrateLegacyState(parsed) {
+    const legacy = {
+      mode: parsed.mode === 'manual' ? 'manual' : 'auto',
+      index: this.normalizeIndex(parsed.index),
+      lastDay: typeof parsed.lastDay === 'string' ? parsed.lastDay : null,
+      manualIndex: this.normalizeIndex(parsed.manualIndex ?? parsed.index),
+      manualSkin:
+        typeof parsed.manualSkin === 'string'
+          ? parsed.manualSkin
+          : this.getSkin(parsed.manualIndex ?? parsed.index).id,
+    };
+    legacy.selectedBackground = this.getBackgroundPath(legacy.manualIndex, 'dusk');
+    return {
+      version: 2,
+      dawn: this.createDefaultBranch('dawn'),
+      dusk: {
+        ...legacy,
+        selectedBackground: this.getBackgroundPath(legacy.manualIndex, 'dusk'),
+      },
+      selectedLightBackground: null,
+      selectedDarkBackground: legacy.mode === 'manual' ? legacy.manualSkin : null,
+    };
+  },
+
+  normalizeStoredState(parsed) {
+    if (!parsed || typeof parsed !== 'object') return null;
+
+    if (parsed.dawn && parsed.dusk) {
+      const dawn = { ...this.createDefaultBranch('dawn'), ...parsed.dawn };
+      const dusk = { ...this.createDefaultBranch('dusk'), ...parsed.dusk };
+      dawn.index = this.normalizeIndex(dawn.index);
+      dusk.index = this.normalizeIndex(dusk.index);
+      dawn.manualIndex = this.normalizeIndex(dawn.manualIndex ?? dawn.index);
+      dusk.manualIndex = this.normalizeIndex(dusk.manualIndex ?? dusk.index);
+      dawn.manualSkin = this.getSkin(dawn.manualIndex).id;
+      dusk.manualSkin = this.getSkin(dusk.manualIndex).id;
+      dawn.selectedBackground = this.getBackgroundPath(dawn.manualIndex, 'dawn');
+      dusk.selectedBackground = this.getBackgroundPath(dusk.manualIndex, 'dusk');
+      return {
+        version: 2,
+        dawn,
+        dusk,
+        selectedLightBackground:
+          typeof parsed.selectedLightBackground === 'string'
+            ? parsed.selectedLightBackground
+            : parsed.selectedDawnBackground || null,
+        selectedDarkBackground:
+          typeof parsed.selectedDarkBackground === 'string'
+            ? parsed.selectedDarkBackground
+            : parsed.selectedDuskBackground || null,
+      };
+    }
+
+    return this.migrateLegacyState(parsed);
+  },
+
+  readStoredState() {
+    try {
+      const raw = localStorage.getItem(this.STORAGE_KEY);
+      if (!raw) return null;
+      return this.normalizeStoredState(JSON.parse(raw));
+    } catch (_) {
+      return null;
+    }
+  },
+
+  getBranchKey(theme) {
+    return this.normalizeGameTheme(theme);
+  },
+
+  getBranchState(state, theme) {
+    const key = this.getBranchKey(theme);
+    return state?.[key] || this.createDefaultBranch(theme);
+  },
+
+  writeStoredState(state) {
+    try {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(state));
+    } catch (_) {}
   },
 
   normalizePreference(value) {
@@ -131,135 +252,175 @@ const BackgroundRotator = {
     return { mode: 'auto', index: null };
   },
 
-  readStoredState() {
-    try {
-      const raw = localStorage.getItem(this.STORAGE_KEY);
-      if (!raw) return null;
-      const parsed = JSON.parse(raw);
-      if (!parsed || typeof parsed !== 'object') return null;
-      const mode = parsed.mode === 'manual' ? 'manual' : 'auto';
-      const index = this.normalizeIndex(parsed.index);
-      const manualIndex =
-        typeof parsed.manualSkin === 'string'
-          ? this.getSkinIndex(parsed.manualSkin)
-          : this.normalizeIndex(parsed.manualIndex ?? index);
-      return {
-        index,
-        lastDay: typeof parsed.lastDay === 'string' ? parsed.lastDay : null,
-        mode,
-        manualIndex,
-        manualSkin: this.getSkin(manualIndex).id,
-      };
-    } catch (_) {
-      return null;
-    }
-  },
-
-  writeStoredState(index, day, options = {}) {
-    try {
-      const mode = options.mode === 'manual' ? 'manual' : 'auto';
-      const safe = this.normalizeIndex(index);
-      const manualIndex = this.normalizeIndex(options.manualIndex ?? safe);
-      const manualSkin = this.getSkin(manualIndex).id;
-      localStorage.setItem(
-        this.STORAGE_KEY,
-        JSON.stringify({
-          index: safe,
-          lastDay: day,
-          mode,
-          manualIndex,
-          manualSkin,
-        }),
-      );
-    } catch (_) {}
-  },
-
-  /**
-   * @param {{ advanceOnNewDay?: boolean }} [options]
-   * @returns {number}
-   */
-  resolveIndex(options = {}) {
+  resolveIndex(theme, options = {}) {
     const advanceOnNewDay = options.advanceOnNewDay !== false;
     const today = this.getTodayKey();
     const stored = this.readStoredState();
+    const branch = this.getBranchState(stored, theme);
 
     if (!stored) {
-      return this.getDailyIndex();
+      return this.getDailyIndex(theme);
     }
 
-    if (stored.mode === 'manual') {
-      return stored.manualIndex;
+    if (branch.mode === 'manual') {
+      return branch.manualIndex;
     }
 
-    if (stored.lastDay === today) {
-      return stored.index;
+    if (branch.lastDay === today) {
+      return branch.index;
     }
 
     if (!advanceOnNewDay) {
-      return stored.index;
+      return branch.index;
     }
 
-    return this.normalizeIndex(stored.index + 1);
+    return this.normalizeIndex(branch.index + 1);
   },
 
-  getPreferenceValue() {
+  getSelectedBackgroundForTheme(theme) {
     const stored = this.readStoredState();
-    if (stored?.mode === 'manual') {
-      return stored.manualSkin;
+    const branchKey = this.getBranchKey(theme);
+    const branch = this.getBranchState(stored, theme);
+    const selectedKey = branchKey === 'dawn' ? 'selectedLightBackground' : 'selectedDarkBackground';
+    const selectedSkin = stored?.[selectedKey];
+
+    if (branch.mode === 'manual') {
+      const index = this.getSkinIndex(branch.manualSkin);
+      return this.getBackgroundPath(index, theme);
+    }
+
+    if (typeof selectedSkin === 'string' && selectedSkin.startsWith('./assets/')) {
+      return selectedSkin;
+    }
+
+    if (typeof selectedSkin === 'string') {
+      const index = this.getSkinIndex(selectedSkin);
+      return this.getBackgroundPath(index, theme);
+    }
+
+    const index = this.resolveIndex(theme, { advanceOnNewDay: false });
+    return this.getBackgroundPath(index, theme);
+  },
+
+  getPreferenceValue(theme) {
+    const gameTheme = this.normalizeGameTheme(theme ?? this._activeGameTheme);
+    const stored = this.readStoredState();
+    const branch = this.getBranchState(stored, gameTheme);
+    if (branch.mode === 'manual') {
+      return branch.manualSkin;
     }
     return 'auto';
   },
 
-  setPreferenceValue(value) {
+  setPreferenceValue(value, theme) {
+    const gameTheme = this.normalizeGameTheme(theme ?? this._activeGameTheme);
     const preference = this.normalizePreference(value);
     const today = this.getTodayKey();
+    const stored = this.readStoredState() || {
+      version: 2,
+      dawn: this.createDefaultBranch('dawn'),
+      dusk: this.createDefaultBranch('dusk'),
+      selectedLightBackground: null,
+      selectedDarkBackground: null,
+    };
+    const branchKey = this.getBranchKey(gameTheme);
+    const branch = { ...this.getBranchState(stored, gameTheme) };
 
     if (preference.mode === 'manual') {
       const index = preference.index;
-      this.apply(index);
-      this.writeStoredState(index, today, { mode: 'manual', manualIndex: index });
+      branch.mode = 'manual';
+      branch.manualIndex = index;
+      branch.manualSkin = this.getSkin(index).id;
+      branch.index = index;
+      branch.lastDay = today;
+      branch.selectedBackground = this.getBackgroundPath(index, gameTheme);
+      stored[branchKey] = branch;
+      if (branchKey === 'dawn') {
+        stored.selectedLightBackground = branch.manualSkin;
+      } else {
+        stored.selectedDarkBackground = branch.manualSkin;
+      }
+      this.writeStoredState(stored);
+      if (gameTheme === this._activeGameTheme) {
+        this.apply(index, gameTheme);
+      }
       return index;
     }
 
-    const stored = this.readStoredState();
+    branch.mode = 'auto';
     const index =
-      stored?.mode === 'auto'
-        ? this.resolveIndex({ advanceOnNewDay: false })
-        : this.getDailyIndex();
-    this.apply(index);
-    this.writeStoredState(index, today, { mode: 'auto' });
+      branch.lastDay === today
+        ? branch.index
+        : this.resolveIndex(gameTheme, { advanceOnNewDay: false });
+    branch.index = index;
+    branch.manualIndex = index;
+    branch.manualSkin = this.getSkin(index).id;
+    branch.lastDay = today;
+    branch.selectedBackground = this.getBackgroundPath(index, gameTheme);
+    stored[branchKey] = branch;
+    if (branchKey === 'dawn') {
+      stored.selectedLightBackground = null;
+    } else {
+      stored.selectedDarkBackground = null;
+    }
+    this.writeStoredState(stored);
+    if (gameTheme === this._activeGameTheme) {
+      this.apply(index, gameTheme);
+    }
     return index;
   },
 
-  applySkinDatasets(skin) {
+  applySkinDatasets(skin, theme) {
     const root = document.documentElement;
     root.dataset.visualSkin = skin.id;
     root.dataset.titleFrame = skin.titleFrame || 'none';
     root.dataset.quickRow = skin.quickRow || 'chips';
     root.dataset.primaryBtn = skin.primaryBtn || 'pill';
-    root.dataset.gameTheme = skin.gameTheme || 'dusk';
+    root.dataset.backgroundTheme = this.getThemeKind(theme);
     delete root.dataset.skinArtwork;
+    delete root.dataset.gameTheme;
   },
 
-  apply(index) {
-    const safe = this.normalizeIndex(index);
-    const skin = this.getSkin(safe);
-    const url = this.resolveImageUrl(skin.background);
+  applyBackgroundCss(backgroundPath) {
+    const url = this.resolveImageUrl(backgroundPath);
     const cssValue = `url("${url}")`;
 
     try {
       document.documentElement.style.setProperty('--app-bg-image', cssValue);
-      this.applySkinDatasets(skin);
+      document.documentElement.style.setProperty('--menu-background-image', cssValue);
     } catch (_) {}
 
     const el = document.getElementById('appBackground');
     if (el) {
       el.style.backgroundImage = cssValue;
-      el.dataset.bgIndex = String(safe);
-      el.dataset.visualSkin = skin.id;
-      el.dataset.bgDay = this.getTodayKey();
       delete el.dataset.skinArtwork;
     }
+  },
+
+  apply(index, theme) {
+    const gameTheme = this.normalizeGameTheme(theme ?? this._activeGameTheme);
+    const safe = this.normalizeIndex(index);
+    const skin = this.getSkin(safe);
+    const backgroundPath = this.getBackgroundPath(safe, gameTheme);
+
+    this.applyBackgroundCss(backgroundPath);
+    this.applySkinDatasets(skin, gameTheme);
+
+    const el = document.getElementById('appBackground');
+    if (el) {
+      el.dataset.bgIndex = String(safe);
+      el.dataset.visualSkin = skin.id;
+      el.dataset.bgTheme = this.getThemeKind(gameTheme);
+      el.dataset.bgDay = this.getTodayKey();
+    }
+  },
+
+  syncForGameTheme(theme) {
+    const gameTheme = this.normalizeGameTheme(theme);
+    this._activeGameTheme = gameTheme;
+    const index = this.resolveIndex(gameTheme, { advanceOnNewDay: false });
+    this.apply(index, gameTheme);
+    return index;
   },
 
   resolveImageUrl(path) {
@@ -270,40 +431,67 @@ const BackgroundRotator = {
     }
   },
 
-  /** First paint on load — use stored index for today, or advance if day rolled over. */
-  init() {
+  init(gameTheme) {
+    const theme = this.normalizeGameTheme(gameTheme || this._activeGameTheme);
+    this._activeGameTheme = theme;
     const today = this.getTodayKey();
     const stored = this.readStoredState();
-    const index = this.resolveIndex({ advanceOnNewDay: true });
-    this.apply(index);
-    this.writeStoredState(index, today, {
-      mode: stored?.mode === 'manual' ? 'manual' : 'auto',
-      manualIndex: stored?.manualIndex ?? index,
-    });
+    const index = this.resolveIndex(theme, { advanceOnNewDay: true });
+    this.apply(index, theme);
+
+    const next = stored || {
+      version: 2,
+      dawn: this.createDefaultBranch('dawn'),
+      dusk: this.createDefaultBranch('dusk'),
+      selectedLightBackground: null,
+      selectedDarkBackground: null,
+    };
+    const branchKey = this.getBranchKey(theme);
+    const branch = { ...this.getBranchState(next, theme) };
+    branch.index = index;
+    branch.lastDay = today;
+    branch.manualIndex = branch.mode === 'manual' ? branch.manualIndex : index;
+    branch.manualSkin = this.getSkin(branch.manualIndex).id;
+    branch.selectedBackground = this.getBackgroundPath(index, theme);
+    next[branchKey] = branch;
+    this.writeStoredState(next);
     return index;
   },
 
-  /** Each main-menu visit: rotate when the calendar day changed since last stored day. */
-  onMainMenuEnter() {
+  onMainMenuEnter(gameTheme) {
+    const theme = this.normalizeGameTheme(gameTheme || this._activeGameTheme);
+    this._activeGameTheme = theme;
     const today = this.getTodayKey();
     const stored = this.readStoredState();
+    const branch = this.getBranchState(stored, theme);
     let index;
 
     if (!stored) {
-      index = this.getDailyIndex();
-    } else if (stored.mode === 'manual') {
-      index = stored.manualIndex;
-    } else if (stored.lastDay === today) {
-      index = stored.index;
+      index = this.getDailyIndex(theme);
+    } else if (branch.mode === 'manual') {
+      index = branch.manualIndex;
+    } else if (branch.lastDay === today) {
+      index = branch.index;
     } else {
-      index = this.normalizeIndex(stored.index + 1);
+      index = this.normalizeIndex(branch.index + 1);
     }
 
-    this.apply(index);
-    this.writeStoredState(index, today, {
-      mode: stored?.mode === 'manual' ? 'manual' : 'auto',
-      manualIndex: stored?.manualIndex ?? index,
-    });
+    this.apply(index, theme);
+
+    const next = stored || {
+      version: 2,
+      dawn: this.createDefaultBranch('dawn'),
+      dusk: this.createDefaultBranch('dusk'),
+      selectedLightBackground: null,
+      selectedDarkBackground: null,
+    };
+    const branchKey = this.getBranchKey(theme);
+    const updated = { ...this.getBranchState(next, theme) };
+    updated.index = index;
+    updated.lastDay = today;
+    updated.selectedBackground = this.getBackgroundPath(index, theme);
+    next[branchKey] = updated;
+    this.writeStoredState(next);
     return index;
   },
 };

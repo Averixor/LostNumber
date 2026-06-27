@@ -4,24 +4,24 @@
 
 ## Корінь репозиторію
 
-| Шлях                            | Призначення                                            |
-| ------------------------------- | ------------------------------------------------------ |
-| `index.html`                    | Точка входу, послідовні `<script>` без `type="module"` |
-| `manifest.json`                 | PWA (`name`: Lost Number)                              |
-| `capacitor.config.json`         | Capacitor 7, `appName`: Lost Number, `webDir`: `_site` |
-| `assets/images/menu-bg-*.png`   | 6 чистих арт-фонів для VisualSkin (без UI)             |
-| `assets/images/background*.png` | Legacy clean placeholders / джерела для menu-bg        |
-| `assets/icons/neon/icons/*.svg` | Neon SVG для UI (`LostNumberIcons`)                    |
-| `css/lostnumber-icons.css`      | Стилі neon-іконок                                      |
-| `js/ui/icons.js`                | `LostNumberIcons` — mount / `applyAll`                 |
-| `assets/icons/icon.png`         | Іконка 512×512 (PWA, favicon)                          |
-| `assets/icons/icon-1024.png`    | Мастер-іконка 1024×1024 (Android, maskable PWA)        |
-| `public/audio/`                 | Музика та SFX → `_site/audio/`                         |
-| `css/`                          | Стилі                                                  |
-| `js/`                           | Логіка гри                                             |
-| `android/`                      | Gradle-проєкт Android                                  |
-| `scripts/`                      | Збірка, перевірки, генерація іконок                    |
-| `docs/`                         | `ANDROID.md`, `AUDIO.md`, `PHASES.md`                  |
+| Шлях                                 | Призначення                                            |
+| ------------------------------------ | ------------------------------------------------------ |
+| `index.html`                         | Точка входу, послідовні `<script>` без `type="module"` |
+| `manifest.json`                      | PWA (`name`: Lost Number)                              |
+| `capacitor.config.json`              | Capacitor 7, `appName`: Lost Number, `webDir`: `_site` |
+| `assets/images/dark/menu-bg-*.png`   | 6 арт-фонів для dusk (тёмна тема)                      |
+| `assets/images/light/bg-light-*.png` | 6 арт-фонів для dawn (світла тема)                     |
+| `assets/icons/neon/icons/*.svg`      | Neon SVG для UI (`LostNumberIcons`)                    |
+| `css/lostnumber-icons.css`           | Стилі neon-іконок                                      |
+| `js/ui/icons.js`                     | `LostNumberIcons` — mount / `applyAll`                 |
+| `assets/icons/icon.png`              | Іконка 512×512 (PWA, favicon)                          |
+| `assets/icons/icon-1024.png`         | Мастер-іконка 1024×1024 (Android, maskable PWA)        |
+| `public/audio/`                      | Музика та SFX → `_site/audio/`                         |
+| `css/`                               | Стилі                                                  |
+| `js/`                                | Логіка гри                                             |
+| `android/`                           | Gradle-проєкт Android                                  |
+| `scripts/`                           | Збірка, перевірки, генерація іконок                    |
+| `docs/`                              | `ANDROID.md`, `AUDIO.md`, `PHASES.md`                  |
 
 ## Фони (чергування)
 

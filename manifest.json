@@ -27,46 +27,18 @@
   ],
   "screenshots": [
     {
-      "src": "./assets/images/menu-bg-1.png",
+      "src": "./assets/images/dark/menu-bg-1.png",
       "sizes": "941x1672",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Lost Number — skin 1"
+      "label": "Lost Number — dark skin 1"
     },
     {
-      "src": "./assets/images/menu-bg-2.png",
+      "src": "./assets/images/light/bg-light-01.png",
       "sizes": "941x1672",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Lost Number — skin 2"
-    },
-    {
-      "src": "./assets/images/menu-bg-3.png",
-      "sizes": "941x1672",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Lost Number — skin 3"
-    },
-    {
-      "src": "./assets/images/menu-bg-4.png",
-      "sizes": "941x1672",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Lost Number — skin 4"
-    },
-    {
-      "src": "./assets/images/menu-bg-5.png",
-      "sizes": "941x1672",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Lost Number — skin 5"
-    },
-    {
-      "src": "./assets/images/menu-bg-6.png",
-      "sizes": "941x1672",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Lost Number — skin 6"
+      "label": "Lost Number — light skin 1"
     }
   ],
   "prefer_related_applications": false

@@ -3,7 +3,10 @@
   inset: 0;
   z-index: -10;
   background-color: #1b1028;
-  background-image: var(--app-bg-image, url('../assets/images/menu-bg-1.png'));
+  background-image: var(
+    --menu-background-image,
+    var(--app-bg-image, url('../assets/images/dark/menu-bg-1.png'))
+  );
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -18,4 +21,29 @@ body {
 
 .screen {
   background: transparent;
+}
+
+.main-menu {
+  position: relative;
+}
+
+.main-menu::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+html[data-theme='dawn'] .main-menu::before {
+  background: rgba(255, 245, 255, 0.25);
+}
+
+html[data-theme='dusk'] .main-menu::before {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.main-menu > * {
+  position: relative;
+  z-index: 1;
 }

@@ -58,7 +58,7 @@ class ScreenManager {
 
       if (name === 'mainMenu') {
         if (typeof BackgroundRotator !== 'undefined') {
-          BackgroundRotator.onMainMenuEnter();
+          BackgroundRotator.onMainMenuEnter(this.game.theme);
         }
         if (typeof this.game.checkExistingSave === 'function') {
           this.game.checkExistingSave();

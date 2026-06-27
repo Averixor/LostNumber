@@ -68,19 +68,16 @@ class SettingsManager {
         }
         {
           const visualSkinValue = document.getElementById('visualSkinSelect')?.value || 'auto';
-          this.game.visualSkinPreference =
-            typeof BackgroundRotator !== 'undefined'
-              ? BackgroundRotator.getPreferenceValue()
-              : visualSkinValue;
+          const themeValue =
+            document.getElementById('themeSelect')?.value || this.game.theme || 'dusk';
+          this.game.theme = themeValue === 'dawn' ? 'dawn' : 'dusk';
           if (typeof BackgroundRotator !== 'undefined') {
-            BackgroundRotator.setPreferenceValue(visualSkinValue);
-            this.game.visualSkinPreference = BackgroundRotator.getPreferenceValue();
+            BackgroundRotator.setPreferenceValue(visualSkinValue, this.game.theme);
+            this.game.visualSkinPreference = BackgroundRotator.getPreferenceValue(this.game.theme);
+          } else {
+            this.game.visualSkinPreference = visualSkinValue;
           }
         }
-        this.game.theme =
-          typeof BackgroundRotator !== 'undefined'
-            ? BackgroundRotator.getCurrentSkin()?.gameTheme || 'dusk'
-            : this.game.theme || 'dusk';
         const newLang = document.getElementById('languageSelect')?.value || 'ua';
 
         if (this.game.animationEnabled) {
@@ -90,6 +87,7 @@ class SettingsManager {
         }
 
         this._applyAudioFromForm();
+        this.game.applyTheme();
         this.game.applyLanguage(newLang);
         this.applyLiteVisualMode();
         this.saveSettings();
@@ -141,18 +139,13 @@ class SettingsManager {
       this.game.musicVolume = lnNormalizeVolume(settings.musicVolume, 0.3);
       this.game.musicTrack = settings.musicTrack || 'ambient';
       this.game.theme =
-        typeof BackgroundRotator !== 'undefined'
-          ? BackgroundRotator.getCurrentSkin()?.gameTheme ||
-            settings.theme ||
-            this.game.theme ||
-            'dusk'
-          : settings.theme || this.game.theme || 'dusk';
+        settings.theme === 'dawn' ? 'dawn' : settings.theme || this.game.theme || 'dusk';
       this.game.lang = settings.lang || this.game.lang || 'ua';
       const lv = settings.liteVisualMode;
       this.game.liteVisualMode = lv === 'on' || lv === 'off' || lv === 'auto' ? lv : 'auto';
       this.game.visualSkinPreference =
         typeof BackgroundRotator !== 'undefined'
-          ? BackgroundRotator.getPreferenceValue()
+          ? BackgroundRotator.getPreferenceValue(this.game.theme)
           : settings.visualSkinPreference || settings.backgroundPreference || 'auto';
 
       this.updateSettingsUI();
@@ -176,6 +169,7 @@ class SettingsManager {
     const musicVolumeSelect = document.getElementById('musicVolumeSelect');
     const musicTrackSelect = document.getElementById('musicTrackSelect');
     const visualSkinSelect = document.getElementById('visualSkinSelect');
+    const themeSelect = document.getElementById('themeSelect');
     const languageSelect = document.getElementById('languageSelect');
 
     if (animationSelect) {
@@ -210,8 +204,12 @@ class SettingsManager {
     if (visualSkinSelect) {
       visualSkinSelect.value =
         typeof BackgroundRotator !== 'undefined'
-          ? BackgroundRotator.getPreferenceValue()
+          ? BackgroundRotator.getPreferenceValue(this.game.theme)
           : this.game.visualSkinPreference || this.game.backgroundPreference || 'auto';
+    }
+
+    if (themeSelect) {
+      themeSelect.value = this.game.theme || 'dusk';
     }
 
     if (languageSelect) {
@@ -231,7 +229,7 @@ class SettingsManager {
       lang: this.game.lang || 'ua',
       visualSkinPreference:
         typeof BackgroundRotator !== 'undefined'
-          ? BackgroundRotator.getPreferenceValue()
+          ? BackgroundRotator.getPreferenceValue(this.game.theme)
           : this.game.visualSkinPreference || 'auto',
       liteVisualMode:
         this.game.liteVisualMode === 'on' ||

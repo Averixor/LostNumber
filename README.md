@@ -19,14 +19,12 @@ npx serve .
 
 ## Брендинг та графіка
 
-**Скіни меню** (чисті фони без UI + HTML/CSS поверх; чергуються раз на календарний день при вході в головне меню):
+**Фони головного меню** (чистий арт без UI; HTML/CSS — окремий шар):
 
-- `assets/images/menu-bg-1.png` … `menu-bg-6.png` — арт-фони (без тексту й кнопок)
-- `assets/images/background.png`, `background-alt.png`, `background-alt2.png` — legacy clean placeholders
+- `assets/images/dark/menu-bg-1.png` … `menu-bg-6.png` — тёмна тема (dusk)
+- `assets/images/light/bg-light-01.png` … `bg-light-06.png` — світла тема (dawn)
 
-Логіка: `js/system/platform/background.js` (`BackgroundRotator`), стан у `localStorage` ключ `lostNumberBackground` (`manualSkin` / auto + `lastDay`).
-
-Повноекранні mockup-скріншоти з намальованим меню **не** використовуються як runtime UI. Меню — окремий `.screen` поверх `#appBackground`.
+Логіка: `js/system/platform/background.js` (`BackgroundRotator`). Окремий вибір фону для dawn/dusk у `localStorage` (`lostNumberBackground`, гілки `dawn` / `dusk`, `selectedLightBackground` / `selectedDarkBackground`). При зміні теми в налаштуваннях фон перемикається автоматично.
 
 **Neon-іконки UI** (замість emoji в меню, HUD, досягненнях):
 

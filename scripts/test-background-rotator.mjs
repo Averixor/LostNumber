@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Smoke tests: automatic and manual visual skin selection.
+ * Smoke tests: automatic and manual visual skin selection with theme-specific backgrounds.
  */
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -63,19 +63,33 @@ const factory = new Function(
 const rotator = factory(localStorage, document, window);
 
 assert(rotator.SKINS.length === 6, 'visual skin registry contains six provided skins');
+assert(rotator.DARK_BACKGROUNDS.length === 6, 'dark background registry contains six images');
+assert(rotator.LIGHT_BACKGROUNDS.length === 6, 'light background registry contains six images');
 assert(!code.includes("artwork: 'mockup'"), 'mockup artwork mode removed from skin registry');
 
+rotator.syncForGameTheme('dusk');
 for (let i = 1; i <= 6; i++) {
   const skinId = `skin-${i}`;
-  const index = rotator.setPreferenceValue(skinId);
-  assert(index === i - 1, `${skinId} maps to its source image index`);
-  assert(rotator.getPreferenceValue() === skinId, `${skinId} persists as selected skin id`);
+  const index = rotator.setPreferenceValue(skinId, 'dusk');
+  assert(index === i - 1, `${skinId} maps to its dark image index`);
+  assert(rotator.getPreferenceValue('dusk') === skinId, `${skinId} persists for dark theme`);
   assert(
-    bgEl.style.backgroundImage.includes(`menu-bg-${i}.png`),
-    `${skinId} applies clean menu-bg-${i}.png`,
+    bgEl.style.backgroundImage.includes(`dark/menu-bg-${i}.png`),
+    `${skinId} applies dark/menu-bg-${i}.png`,
   );
-  assert(!bgEl.dataset.skinArtwork, `${skinId} does not tag mockup artwork mode`);
+  assert(
+    !bgEl.style.backgroundImage.includes('light/'),
+    `${skinId} dark theme avoids light assets`,
+  );
 }
+
+rotator.syncForGameTheme('dawn');
+rotator.setPreferenceValue('skin-2', 'dawn');
+assert(
+  bgEl.style.backgroundImage.includes('light/bg-light-02.png'),
+  'dawn theme applies light/bg-light-02.png for skin 2',
+);
+assert(!bgEl.style.backgroundImage.includes('/dark/'), 'dawn theme avoids dark assets');
 
 storage.clear();
 bgEl.style = {};
@@ -83,73 +97,92 @@ bgEl.dataset = {};
 document.documentElement.dataset = {};
 document.documentElement.style.props = {};
 
-rotator.init();
-assert(rotator.getPreferenceValue() === 'auto', 'default preference is auto');
+rotator.init('dusk');
+assert(rotator.getPreferenceValue('dusk') === 'auto', 'default dark preference is auto');
 let stored = JSON.parse(storage.get(rotator.STORAGE_KEY));
-assert(stored.mode === 'auto', 'init stores auto mode');
-assert(Number.isInteger(stored.index), 'init stores numeric index');
+assert(stored.dawn && stored.dusk, 'init stores per-theme branches');
 assert(document.documentElement.dataset.visualSkin, 'init sets html visual skin dataset');
+assert(
+  document.documentElement.dataset.backgroundTheme === 'dark',
+  'init tags dark background theme',
+);
 assert(!document.documentElement.dataset.skinArtwork, 'init does not set mockup artwork dataset');
-assert(document.documentElement.dataset.quickRow, 'init sets quick-row variant dataset');
-assert(document.documentElement.dataset.primaryBtn, 'init sets primary button variant dataset');
 
-const manual = rotator.setPreferenceValue('skin-3');
+const manual = rotator.setPreferenceValue('skin-3', 'dusk');
 assert(manual === 2, 'manual set returns selected skin index');
 assert(bgEl.dataset.bgIndex === '2', 'manual set applies selected skin background');
 assert(bgEl.dataset.visualSkin === 'skin-3', 'manual set tags app background with skin id');
-assert(!bgEl.dataset.skinArtwork, 'manual set does not tag mockup artwork mode');
 assert(
-  document.documentElement.dataset.visualSkin === 'skin-3',
-  'manual set tags html with skin id',
+  bgEl.style.backgroundImage.includes('dark/menu-bg-3.png'),
+  'manual dark skin 3 uses dark background path',
 );
-assert(document.documentElement.dataset.titleFrame === 'arc', 'skin 3 applies title frame variant');
-assert(document.documentElement.dataset.quickRow === 'boxed', 'skin 3 applies quick-row variant');
-assert(
-  document.documentElement.dataset.primaryBtn === 'pill',
-  'skin 3 applies primary button variant',
-);
-assert(rotator.getPreferenceValue() === 'skin-3', 'manual preference reads selected skin id');
 stored = JSON.parse(storage.get(rotator.STORAGE_KEY));
-assert(stored.mode === 'manual', 'manual set stores manual mode');
-assert(stored.manualIndex === 2, 'manual set stores manual index');
-assert(stored.manualSkin === 'skin-3', 'manual set stores manual skin id');
-assert(rotator.onMainMenuEnter() === 2, 'manual mode does not rotate on menu enter');
-
-rotator.setPreferenceValue('skin-4');
-assert(document.documentElement.dataset.titleFrame === 'none', 'skin 4 applies no title frame');
+assert(stored.dusk.mode === 'manual', 'manual set stores manual mode on dark branch');
 assert(
-  document.documentElement.dataset.quickRow === 'circles',
-  'skin 4 applies circle quick actions',
+  stored.selectedDarkBackground === 'skin-3',
+  'manual dark selection stored in selectedDarkBackground',
 );
+assert(stored.dusk.manualIndex === 2, 'manual set stores manual index on dark branch');
+assert(stored.dusk.manualSkin === 'skin-3', 'manual set stores manual skin id on dark branch');
+assert(rotator.onMainMenuEnter('dusk') === 2, 'manual dark mode does not rotate on menu enter');
+
+rotator.syncForGameTheme('dawn');
 assert(
-  document.documentElement.dataset.primaryBtn === 'skew',
-  'skin 4 applies skew primary button',
+  document.documentElement.dataset.backgroundTheme === 'light',
+  'dawn sync switches background theme dataset',
+);
+rotator.setPreferenceValue('skin-4', 'dawn');
+assert(
+  bgEl.style.backgroundImage.includes('light/bg-light-04.png'),
+  'dawn manual skin 4 uses light background path',
+);
+stored = JSON.parse(storage.get(rotator.STORAGE_KEY));
+assert(stored.dawn.manualSkin === 'skin-4', 'dawn manual skin stored separately');
+
+rotator.syncForGameTheme('dusk');
+assert(
+  bgEl.style.backgroundImage.includes('dark/menu-bg-3.png'),
+  'switching back to dusk restores dark manual background',
 );
 
-rotator.setPreferenceValue('synthwave');
-assert(rotator.getPreferenceValue() === 'skin-1', 'legacy synthwave maps to skin 1');
+rotator.setPreferenceValue('synthwave', 'dusk');
+assert(rotator.getPreferenceValue('dusk') === 'skin-1', 'legacy synthwave maps to skin 1 on dark');
 
-const autoIndex = rotator.setPreferenceValue('auto');
+const autoIndex = rotator.setPreferenceValue('auto', 'dusk');
 assert(Number.isInteger(autoIndex), 'auto set returns numeric index');
-assert(rotator.getPreferenceValue() === 'auto', 'auto preference reads auto');
+assert(rotator.getPreferenceValue('dusk') === 'auto', 'auto preference reads auto for dark branch');
 stored = JSON.parse(storage.get(rotator.STORAGE_KEY));
-assert(stored.mode === 'auto', 'auto set stores auto mode');
+assert(stored.dusk.mode === 'auto', 'auto set stores auto mode on dark branch');
 
 const yesterday = '2000-01-01';
 storage.set(
   rotator.STORAGE_KEY,
   JSON.stringify({
-    index: 1,
-    lastDay: yesterday,
-    mode: 'auto',
-    manualIndex: 2,
-    manualSkin: 'skin-3',
+    version: 2,
+    dawn: {
+      index: 0,
+      lastDay: yesterday,
+      mode: 'auto',
+      manualIndex: 0,
+      manualSkin: 'skin-1',
+      selectedBackground: rotator.LIGHT_BACKGROUNDS[0],
+    },
+    dusk: {
+      index: 1,
+      lastDay: yesterday,
+      mode: 'auto',
+      manualIndex: 2,
+      manualSkin: 'skin-3',
+      selectedBackground: rotator.DARK_BACKGROUNDS[1],
+    },
+    selectedLightBackground: null,
+    selectedDarkBackground: null,
   }),
 );
-assert(rotator.onMainMenuEnter() === 2, 'auto mode rotates when stored day changes');
+assert(rotator.onMainMenuEnter('dusk') === 2, 'auto dark mode rotates when stored day changes');
 stored = JSON.parse(storage.get(rotator.STORAGE_KEY));
-assert(stored.index === 2, 'auto rotation stores next index');
-assert(stored.mode === 'auto', 'auto rotation keeps auto mode');
+assert(stored.dusk.index === 2, 'auto dark rotation stores next index');
+assert(stored.dusk.mode === 'auto', 'auto dark rotation keeps auto mode');
 
 console.log(`\n${passed} passed, ${failed} failed`);
 process.exit(failed > 0 ? 1 : 0);

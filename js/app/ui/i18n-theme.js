@@ -162,6 +162,10 @@ LostNumberGame.prototype.applyTheme = function () {
     const theme = this.theme === 'dawn' ? 'dawn' : 'dusk';
     root.setAttribute('data-theme', theme);
 
+    if (typeof BackgroundRotator !== 'undefined') {
+      BackgroundRotator.syncForGameTheme(theme);
+    }
+
     const themeColor = getComputedStyle(root).getPropertyValue('--pwa-theme-color').trim();
     if (themeColor) {
       const metaTheme = document.querySelector('meta[name="theme-color"]');
