@@ -67,17 +67,20 @@ class SettingsManager {
             lite === 'on' || lite === 'off' || lite === 'auto' ? lite : 'auto';
         }
         {
-          const backgroundValue = document.getElementById('backgroundSelect')?.value || 'auto';
-          this.game.backgroundPreference =
+          const visualSkinValue = document.getElementById('visualSkinSelect')?.value || 'auto';
+          this.game.visualSkinPreference =
             typeof BackgroundRotator !== 'undefined'
               ? BackgroundRotator.getPreferenceValue()
-              : backgroundValue;
+              : visualSkinValue;
           if (typeof BackgroundRotator !== 'undefined') {
-            BackgroundRotator.setPreferenceValue(backgroundValue);
-            this.game.backgroundPreference = BackgroundRotator.getPreferenceValue();
+            BackgroundRotator.setPreferenceValue(visualSkinValue);
+            this.game.visualSkinPreference = BackgroundRotator.getPreferenceValue();
           }
         }
-        this.game.theme = document.getElementById('themeSelect')?.value || 'dusk';
+        this.game.theme =
+          typeof BackgroundRotator !== 'undefined'
+            ? BackgroundRotator.getCurrentSkin()?.gameTheme || 'dusk'
+            : this.game.theme || 'dusk';
         const newLang = document.getElementById('languageSelect')?.value || 'ua';
 
         if (this.game.animationEnabled) {
@@ -137,14 +140,20 @@ class SettingsManager {
       this.game.sfxVolume = lnNormalizeVolume(settings.sfxVolume, 0.5);
       this.game.musicVolume = lnNormalizeVolume(settings.musicVolume, 0.3);
       this.game.musicTrack = settings.musicTrack || 'ambient';
-      this.game.theme = settings.theme || this.game.theme || 'dusk';
+      this.game.theme =
+        typeof BackgroundRotator !== 'undefined'
+          ? BackgroundRotator.getCurrentSkin()?.gameTheme ||
+            settings.theme ||
+            this.game.theme ||
+            'dusk'
+          : settings.theme || this.game.theme || 'dusk';
       this.game.lang = settings.lang || this.game.lang || 'ua';
       const lv = settings.liteVisualMode;
       this.game.liteVisualMode = lv === 'on' || lv === 'off' || lv === 'auto' ? lv : 'auto';
-      this.game.backgroundPreference =
+      this.game.visualSkinPreference =
         typeof BackgroundRotator !== 'undefined'
           ? BackgroundRotator.getPreferenceValue()
-          : settings.backgroundPreference || 'auto';
+          : settings.visualSkinPreference || settings.backgroundPreference || 'auto';
 
       this.updateSettingsUI();
 
@@ -166,8 +175,7 @@ class SettingsManager {
     const sfxVolumeSelect = document.getElementById('sfxVolumeSelect');
     const musicVolumeSelect = document.getElementById('musicVolumeSelect');
     const musicTrackSelect = document.getElementById('musicTrackSelect');
-    const themeSelect = document.getElementById('themeSelect');
-    const backgroundSelect = document.getElementById('backgroundSelect');
+    const visualSkinSelect = document.getElementById('visualSkinSelect');
     const languageSelect = document.getElementById('languageSelect');
 
     if (animationSelect) {
@@ -199,15 +207,11 @@ class SettingsManager {
       musicTrackSelect.value = this.game.musicTrack || 'ambient';
     }
 
-    if (backgroundSelect) {
-      backgroundSelect.value =
+    if (visualSkinSelect) {
+      visualSkinSelect.value =
         typeof BackgroundRotator !== 'undefined'
           ? BackgroundRotator.getPreferenceValue()
-          : this.game.backgroundPreference || 'auto';
-    }
-
-    if (themeSelect) {
-      themeSelect.value = this.game.theme || 'dusk';
+          : this.game.visualSkinPreference || this.game.backgroundPreference || 'auto';
     }
 
     if (languageSelect) {
@@ -225,10 +229,10 @@ class SettingsManager {
       musicTrack: this.game.musicTrack || 'ambient',
       theme: this.game.theme || 'dusk',
       lang: this.game.lang || 'ua',
-      backgroundPreference:
+      visualSkinPreference:
         typeof BackgroundRotator !== 'undefined'
           ? BackgroundRotator.getPreferenceValue()
-          : this.game.backgroundPreference || 'auto',
+          : this.game.visualSkinPreference || 'auto',
       liteVisualMode:
         this.game.liteVisualMode === 'on' ||
         this.game.liteVisualMode === 'off' ||

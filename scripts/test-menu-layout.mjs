@@ -107,18 +107,34 @@ assert(
   'new game is primary only when no save exists',
 );
 
-assert(settingsBlock.includes('id="backgroundSelect"'), 'settings expose background selector');
-for (const value of ['auto', '0', '1', '2']) {
-  assert(settingsBlock.includes(`value="${value}"`), `background option ${value} present`);
+assert(settingsBlock.includes('id="visualSkinSelect"'), 'settings expose visual skin selector');
+assert(!settingsBlock.includes('id="backgroundSelect"'), 'old background-only selector removed');
+assert(
+  !settingsBlock.includes('id="themeSelect"'),
+  'separate theme selector removed from settings',
+);
+for (const value of ['auto', 'synthwave', 'ember', 'crystal']) {
+  assert(settingsBlock.includes(`value="${value}"`), `visual skin option ${value} present`);
 }
 assert(
-  settingsJs.includes('BackgroundRotator.setPreferenceValue(backgroundValue)'),
-  'settings save applies manual/auto background preference',
+  settingsJs.includes('BackgroundRotator.setPreferenceValue(visualSkinValue)'),
+  'settings save applies manual/auto visual skin preference',
 );
 assert(
   settingsJs.includes('BackgroundRotator.getPreferenceValue()'),
-  'settings UI reads current background preference',
+  'settings UI reads current visual skin preference',
 );
+assert(
+  settingsJs.includes('BackgroundRotator.getCurrentSkin()?.gameTheme'),
+  'settings derive game theme from selected visual skin',
+);
+assert(uiCss.includes("html[data-visual-skin='ember']"), 'ember skin CSS variables defined');
+assert(uiCss.includes("html[data-visual-skin='crystal']"), 'crystal skin CSS variables defined');
+assert(uiCss.includes("html[data-title-frame='arc']"), 'arc title frame variant defined');
+assert(uiCss.includes("html[data-title-frame='diamond']"), 'diamond title frame variant defined');
+assert(uiCss.includes("html[data-quick-row='boxed']"), 'boxed quick-row variant defined');
+assert(uiCss.includes("html[data-quick-row='circles']"), 'circle quick-row variant defined');
+assert(uiCss.includes("html[data-primary-btn='skew']"), 'skew primary button variant defined');
 
 for (const id of [
   'dockPremiumBtn',

@@ -1,15 +1,44 @@
 /**
- * Rotating app backgrounds: 3 images, auto-advance when the calendar day changes
- * (on main menu enter). State in localStorage key lostNumberBackground.
+ * Rotating visual skins: background + menu composition variants, auto-advance
+ * when the calendar day changes (on main menu enter). State in localStorage key
+ * lostNumberBackground for backward compatibility.
  */
 const BackgroundRotator = {
   STORAGE_KEY: 'lostNumberBackground',
-  IMAGES: [
-    './assets/images/background.png',
-    './assets/images/background-alt.png',
-    './assets/images/background-alt2.png',
+  SKINS: [
+    {
+      id: 'synthwave',
+      nameKey: 'visual_skin_synthwave',
+      background: './assets/images/background.png',
+      gameTheme: 'dusk',
+      titleFrame: 'none',
+      quickRow: 'chips',
+      primaryBtn: 'pill',
+    },
+    {
+      id: 'ember',
+      nameKey: 'visual_skin_ember',
+      background: './assets/images/background-alt.png',
+      gameTheme: 'dawn',
+      titleFrame: 'arc',
+      quickRow: 'boxed',
+      primaryBtn: 'pill',
+    },
+    {
+      id: 'crystal',
+      nameKey: 'visual_skin_crystal',
+      background: './assets/images/background-alt2.png',
+      gameTheme: 'dusk',
+      titleFrame: 'diamond',
+      quickRow: 'circles',
+      primaryBtn: 'skew',
+    },
   ],
   DAY_MS: 24 * 60 * 60 * 1000,
+
+  get IMAGES() {
+    return this.SKINS.map((skin) => skin.background);
+  },
 
   getTodayKey() {
     const d = new Date();
@@ -28,15 +57,37 @@ const BackgroundRotator = {
   },
 
   normalizeIndex(index) {
-    const len = this.IMAGES.length;
+    const len = this.SKINS.length;
     if (!len) return 0;
     const n = Number(index);
     if (!Number.isFinite(n)) return 0;
     return ((n % len) + len) % len;
   },
 
+  getSkin(index) {
+    return this.SKINS[this.normalizeIndex(index)] || this.SKINS[0];
+  },
+
+  getSkinIndex(value) {
+    if (typeof value === 'string') {
+      const byId = this.SKINS.findIndex((skin) => skin.id === value);
+      if (byId >= 0) return byId;
+    }
+    return this.normalizeIndex(value);
+  },
+
+  getCurrentSkin() {
+    const el = document.getElementById('appBackground');
+    const index = el?.dataset?.bgIndex;
+    return this.getSkin(index ?? this.resolveIndex({ advanceOnNewDay: false }));
+  },
+
   normalizePreference(value) {
     if (value === 'auto') return { mode: 'auto', index: null };
+    const bySkinId = this.SKINS.findIndex((skin) => skin.id === value);
+    if (bySkinId >= 0) {
+      return { mode: 'manual', index: bySkinId };
+    }
     const n = Number(value);
     if (Number.isFinite(n)) {
       return { mode: 'manual', index: this.normalizeIndex(n) };
@@ -52,12 +103,16 @@ const BackgroundRotator = {
       if (!parsed || typeof parsed !== 'object') return null;
       const mode = parsed.mode === 'manual' ? 'manual' : 'auto';
       const index = this.normalizeIndex(parsed.index);
-      const manualIndex = this.normalizeIndex(parsed.manualIndex ?? index);
+      const manualIndex =
+        typeof parsed.manualSkin === 'string'
+          ? this.getSkinIndex(parsed.manualSkin)
+          : this.normalizeIndex(parsed.manualIndex ?? index);
       return {
         index,
         lastDay: typeof parsed.lastDay === 'string' ? parsed.lastDay : null,
         mode,
         manualIndex,
+        manualSkin: this.getSkin(manualIndex).id,
       };
     } catch (_) {
       return null;
@@ -69,6 +124,7 @@ const BackgroundRotator = {
       const mode = options.mode === 'manual' ? 'manual' : 'auto';
       const safe = this.normalizeIndex(index);
       const manualIndex = this.normalizeIndex(options.manualIndex ?? safe);
+      const manualSkin = this.getSkin(manualIndex).id;
       localStorage.setItem(
         this.STORAGE_KEY,
         JSON.stringify({
@@ -76,6 +132,7 @@ const BackgroundRotator = {
           lastDay: day,
           mode,
           manualIndex,
+          manualSkin,
         }),
       );
     } catch (_) {}
@@ -112,7 +169,7 @@ const BackgroundRotator = {
   getPreferenceValue() {
     const stored = this.readStoredState();
     if (stored?.mode === 'manual') {
-      return String(stored.manualIndex);
+      return stored.manualSkin;
     }
     return 'auto';
   },
@@ -140,17 +197,24 @@ const BackgroundRotator = {
 
   apply(index) {
     const safe = this.normalizeIndex(index);
-    const url = this.resolveImageUrl(this.IMAGES[safe]);
+    const skin = this.getSkin(safe);
+    const url = this.resolveImageUrl(skin.background);
     const cssValue = `url("${url}")`;
 
     try {
       document.documentElement.style.setProperty('--app-bg-image', cssValue);
+      document.documentElement.dataset.visualSkin = skin.id;
+      document.documentElement.dataset.titleFrame = skin.titleFrame || 'none';
+      document.documentElement.dataset.quickRow = skin.quickRow || 'chips';
+      document.documentElement.dataset.primaryBtn = skin.primaryBtn || 'pill';
+      document.documentElement.dataset.gameTheme = skin.gameTheme || 'dusk';
     } catch (_) {}
 
     const el = document.getElementById('appBackground');
     if (el) {
       el.style.backgroundImage = cssValue;
       el.dataset.bgIndex = String(safe);
+      el.dataset.visualSkin = skin.id;
       el.dataset.bgDay = this.getTodayKey();
     }
   },
