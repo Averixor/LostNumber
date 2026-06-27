@@ -34,13 +34,29 @@ const screensJs = readFileSync(join(root, 'js/ui/screens/screens.js'), 'utf8');
 const mainMenuBlock =
   indexHtml.match(/id="mainMenuScreen"[\s\S]*?id="achievementsScreen"/)?.[0] || '';
 
+function cssRule(selector) {
+  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return uiCss.match(new RegExp(`${escaped}\\s*\\{[^}]*\\}`))?.[0] || '';
+}
+
 assert(mainMenuBlock.includes('class="main-menu__title"'), 'main menu has visible title');
 assert(mainMenuBlock.includes('main-menu__hero'), 'title sits in hero scrim block');
-const titleRule = uiCss.match(/\.main-menu__title\s*\{[^}]*\}/)?.[0] || '';
-assert(titleRule.includes('clamp('), 'title uses responsive clamp font-size');
+const titleRule = cssRule('.main-menu__title');
+assert(titleRule.includes('letter-spacing: 0'), 'title avoids width-scaled letter spacing');
 assert(titleRule.includes('max-width: 100%'), 'title uses fluid max-width not fixed clip');
+assert(
+  uiCss.includes("body[data-active-screen='mainMenu'] .app-background::after"),
+  'main menu mutes baked-in background logo with a screen-only scrim',
+);
+assert(
+  uiCss.includes('rgba(12, 5, 25, 0.9)'),
+  'main menu scrim darkens right edge where background title can clip',
+);
 
 assert(mainMenuBlock.includes('main-menu__panel'), 'main menu has contrast panel container');
+const panelRule = cssRule('.main-menu__panel');
+assert(panelRule.includes('rgba(43, 23, 70, 0.78)'), 'menu panel uses lighter translucent fill');
+assert(panelRule.includes('rgba(116, 235, 255'), 'menu panel has cyan neon edge');
 
 assert(mainMenuBlock.includes('main-menu__quick-row'), 'main menu has horizontal quick row');
 assert(
@@ -51,6 +67,12 @@ assert(!mainMenuBlock.includes('main-menu__quick-stack'), 'vertical pill stack r
 
 assert(uiCss.includes('.menu-quick-btn--tile'), 'tile button styles defined');
 assert(uiCss.includes('grid-template-columns: repeat(3'), 'quick row uses 3-column grid');
+const quickLabelRule = cssRule('.menu-quick-btn--tile .menu-quick-btn__label');
+assert(quickLabelRule.includes('white-space: normal'), 'quick labels can wrap instead of clipping');
+assert(
+  quickLabelRule.includes('overflow-wrap: anywhere'),
+  'quick labels keep long words inside tiles',
+);
 
 assert(mainMenuBlock.includes('main-menu__continue hidden'), 'continue hidden until save exists');
 assert(
