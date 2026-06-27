@@ -294,7 +294,7 @@ const I18N = {
     loading: 'Загрузка…',
 
     main_title: 'Числовая головоломка',
-    main_subtitle: 'Спокойная игра с числами. Играйте в своём темпе, без таймеров и спешки.',
+    main_subtitle: 'Panta mēn ta gignōskomena arithmon echonti.',
 
     btn_continue: 'Продолжить',
     btn_no_save: 'Нет сохранения',
