@@ -19,12 +19,12 @@ HTTP 422: Your current plan does not support GitHub Pages for this repository.
 
 **Варіанти:**
 
-| Варіант | Дія |
-| ------- | --- |
-| **A. Public repo** | Settings → General → Change visibility → **Public** (безкоштовний Pages) |
-| **B. GitHub Pro / Team** | Платний план з Pages для private repos |
-| **C. Окремий public repo** | Напр. `LostNumber-pages` лише для `_site/` |
-| **D. Інший хост privacy** | Netlify / Cloudflare Pages — для URL у Play Console |
+| Варіант                    | Дія                                                                      |
+| -------------------------- | ------------------------------------------------------------------------ |
+| **A. Public repo**         | Settings → General → Change visibility → **Public** (безкоштовний Pages) |
+| **B. GitHub Pro / Team**   | Платний план з Pages для private repos                                   |
+| **C. Окремий public repo** | Напр. `LostNumber-pages` лише для `_site/`                               |
+| **D. Інший хост privacy**  | Netlify / Cloudflare Pages — для URL у Play Console                      |
 
 ### Після A або B
 
