@@ -14,6 +14,9 @@
 | `npm run android:prepare`              | `build:pages` + `cap sync android`                         |
 | `npm run verify:android`               | Release security + `_site` bundle prerequisites            |
 | `docs/ANDROID_QA.md`                   | Manual QA checklist перед установкою APK на телефон        |
+| `docs/DEBUG_CHEATS.md`                 | Debug APK з читами (`com.averixor.lostnumber.dev`)         |
+| `npm run android:debug:cheats`         | Debug APK + cheatsEnabled=true + restore release flags     |
+| `npm run android:release`              | Release APK без читів                                      |
 
 **Capacitor-плагіни:** `@capacitor/status-bar`, `@capacitor/app`.
 
@@ -118,6 +121,8 @@ cd android && ./gradlew assembleDebug
 }
 ```
 
+Для **debug APK з читами** використовуйте `npm run android:debug:cheats` — див. [DEBUG_CHEATS.md](./DEBUG_CHEATS.md). Не вмикайте `cheatsEnabled` у release.
+
 У `index.html` перед gate (лише для внутрішніх build):
 
 ```html
@@ -125,6 +130,8 @@ cd android && ./gradlew assembleDebug
   window.LN_BUILD_FLAGS = { cheatsEnabled: true };
 </script>
 ```
+
+**Застаріло:** ручне редагування `index.html`. Використовуйте `build:flags:debug-cheats` / `android:debug:cheats`.
 
 Не включайте `cheatsEnabled` у release для Play Store.
 

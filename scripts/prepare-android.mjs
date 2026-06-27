@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 /**
  * Готує web-артефакт (_site/) і синхронізує його з Capacitor Android.
+ * Usage: node scripts/prepare-android.mjs [--debug-cheats]
  */
 import { spawnSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const debugCheats = process.argv.includes('--debug-cheats');
+const flagsMode = debugCheats ? 'debug-cheats' : 'release';
 
 function runNode(scriptRel, args = []) {
   const script = join(root, scriptRel);
@@ -32,10 +35,14 @@ function runCap(args) {
   }
 }
 
+console.log(`→ build:flags:${flagsMode}`);
+runNode('scripts/build-flags.mjs', [flagsMode]);
+
 console.log('→ build:pages');
 runNode('scripts/build-pages.mjs');
 
 console.log('→ cap sync android');
 runCap(['sync', 'android']);
 
-console.log('Android web assets synced. Open Android Studio: npm run android:open');
+const label = debugCheats ? 'debug-cheats' : 'release';
+console.log(`Android web assets synced (${label}).`);

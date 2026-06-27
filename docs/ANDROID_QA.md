@@ -14,6 +14,17 @@ APK: `android/app/build/outputs/apk/release/app-release.apk`
 
 Підпис: локальний `android/keystore.properties` + `android/keystore/*.jks` (не в git).
 
+## Debug APK з читами (особисте тестування)
+
+```bash
+npm run android:debug:cheats
+adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+Package: `com.averixor.lostnumber.dev` — окремий застосунок, не конфліктує з release.
+
+Детально: [DEBUG_CHEATS.md](./DEBUG_CHEATS.md)
+
 ## Manual QA — телефон
 
 Позначайте `[x]` після перевірки. Орієнтовний час: 20–30 хв.

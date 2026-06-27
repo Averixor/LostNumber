@@ -82,6 +82,67 @@ function verifyAndroidManifest() {
   }
 }
 
+function verifyBuildFlagsRelease() {
+  const flagsPath = join(root, 'js/system/build-flags.generated.js');
+  if (!existsSync(flagsPath)) {
+    ok('build flags file absent — gate falls back to cheatsEnabled=false');
+    return;
+  }
+
+  const content = readFileSync(flagsPath, 'utf8');
+  if (/cheatsEnabled\s*:\s*true/.test(content)) {
+    fail(
+      'js/system/build-flags.generated.js must have cheatsEnabled:false for release (run npm run build:flags:release)',
+    );
+  } else {
+    ok('generated build flags cheatsEnabled=false');
+  }
+}
+
+function verifyNoHardcodedCheats() {
+  const indexPath = join(root, 'index.html');
+  if (!existsSync(indexPath)) {
+    fail('index.html not found');
+    return;
+  }
+
+  const html = readFileSync(indexPath, 'utf8');
+  if (!html.includes('js/system/build-flags.generated.js')) {
+    fail('index.html must load js/system/build-flags.generated.js before dev tools gate');
+  } else {
+    ok('index.html loads generated build flags');
+  }
+
+  const stripped = html.replace(/build-flags\.generated\.js[\s\S]*?<\/script>/g, '');
+  if (/cheatsEnabled\s*:\s*true/.test(stripped)) {
+    fail('index.html must not hardcode cheatsEnabled:true outside generated flags');
+  } else {
+    ok('index.html has no hardcoded cheatsEnabled:true');
+  }
+}
+
+function verifyGradleReleasePackage() {
+  const gradlePath = join(root, 'android/app/build.gradle');
+  if (!existsSync(gradlePath)) {
+    fail('android/app/build.gradle not found');
+    return;
+  }
+
+  const gradle = readFileSync(gradlePath, 'utf8');
+  const releaseBlock = gradle.match(/release\s*\{[\s\S]*?\n\s*\}/);
+  if (releaseBlock && /applicationIdSuffix\s*["']\.dev["']/.test(releaseBlock[0])) {
+    fail('release buildType must not use applicationIdSuffix .dev');
+  } else {
+    ok('release buildType has no .dev applicationIdSuffix');
+  }
+
+  if (!/debug\s*\{[\s\S]*applicationIdSuffix\s*["']\.dev["']/.test(gradle)) {
+    fail('debug buildType should use applicationIdSuffix .dev');
+  } else {
+    ok('debug buildType uses applicationIdSuffix .dev');
+  }
+}
+
 function verifyNoSecretsInGit() {
   const patterns = [/keystore/i, /\.jks$/i, /\.keystore$/i, /keystore\.properties$/i];
   const result = spawnSync('git', ['ls-files'], { cwd: root, encoding: 'utf8' });
@@ -120,12 +181,18 @@ function ensureSiteBundle() {
     '_site/assets/icons/neon/sprite/lostnumber-icons.svg',
     '_site/css/lostnumber-icons.css',
     '_site/js/ui/icons.js',
+    '_site/js/system/build-flags.generated.js',
   ];
 
   const missing = required.filter((rel) => !existsSync(join(root, rel)));
   if (missing.length === 0) return;
 
   console.log('→ build:pages (refresh _site for Android bundle check)');
+  spawnSync(process.execPath, [join(root, 'scripts/build-flags.mjs'), 'release'], {
+    cwd: root,
+    stdio: 'inherit',
+    shell: false,
+  });
   const build = spawnSync(process.execPath, [join(root, 'scripts/build-pages.mjs')], {
     cwd: root,
     stdio: 'inherit',
@@ -153,6 +220,7 @@ function verifySyncedAssetsOptional() {
   const syncedChecks = [
     'assets/images/background.png',
     'assets/icons/neon/sprite/lostnumber-icons.svg',
+    'js/system/build-flags.generated.js',
   ];
   for (const rel of syncedChecks) {
     const full = join(syncedRoot, rel);
@@ -164,6 +232,9 @@ function verifySyncedAssetsOptional() {
 
 verifyCapacitorSecurity();
 verifyAndroidManifest();
+verifyBuildFlagsRelease();
+verifyNoHardcodedCheats();
+verifyGradleReleasePackage();
 verifyNoSecretsInGit();
 ensureSiteBundle();
 verifySyncedAssetsOptional();
