@@ -6,7 +6,7 @@ class BonusManager {
 
   activateBonus(type) {
     try {
-      if (this.game.gamePhase === 'transitioning') {
+      if (this.game.gamePhase === 'transitioning' || this.game.gamePhase === 'animating') {
         return;
       }
       if (this.game.gamePhase !== 'playing' && this.game.gamePhase !== 'idle') {
@@ -94,6 +94,56 @@ class BonusManager {
     }
   }
 
+  /**
+   * @param {GridPoint[]} removedCells
+   * @param {() => void} onSettled
+   */
+  _runBonusRemovalEffects(removedCells, onSettled) {
+    const gm = this.game.gridManager;
+    if (!gm) {
+      ErrorHandler.warn('GridManager not available for bonus post-effects');
+      this.game.activeBonus = null;
+      this.updateBonusesUI();
+      this.game.setGamePhase('playing');
+      return;
+    }
+
+    for (const c of removedCells) {
+      const cell = this.game.grid[c.x]?.[c.y];
+      if (!cell) continue;
+      const idx = c.y * this.game.GRID_W + c.x;
+      if (typeof this.game.isCellFrozen === 'function' && this.game.isCellFrozen(idx)) {
+        continue;
+      }
+      cell.number = null;
+      cell.merged = false;
+    }
+
+    gm.render?.();
+
+    this.game.setGamePhase('animating');
+
+    gm.runPostMergeEffects(removedCells, () => {
+      try {
+        if (typeof onSettled === 'function') {
+          onSettled();
+        }
+      } catch (error) {
+        ErrorHandler.handle(error, {
+          type: 'bonus_post_effects',
+          removedCells: removedCells?.length,
+        });
+        this.game.repairMergeGridState?.(removedCells);
+        this.game.activeBonus = null;
+        this.updateBonusesUI();
+      } finally {
+        if (this.game.gamePhase === 'animating') {
+          this.game.setGamePhase('playing');
+        }
+      }
+    });
+  }
+
   animatedShuffleGrid(callback) {
     const finish = () => {
       this.game.setGamePhase('playing');
@@ -154,7 +204,7 @@ class BonusManager {
 
   useDestroyBonus(x, y) {
     try {
-      if (this.game.gamePhase === 'transitioning') {
+      if (this.game.gamePhase === 'transitioning' || this.game.gamePhase === 'animating') {
         return;
       }
       if (this.game.gamePhase !== 'playing' && this.game.gamePhase !== 'idle') {
@@ -191,47 +241,26 @@ class BonusManager {
 
       const removedCells = [{ x, y }];
 
-      this.game.setGamePhase('transitioning');
-
-      if (this.game.gridManager) {
-        this.game.gridManager.animatePopping(removedCells, () => {
-          this.game.gridManager.animateGravity(removedCells, () => {
-            try {
-              this.game.gridManager.applyLocalGravity(removedCells);
-              this.game.activeBonus = null;
-              this.updateBonusesUI();
-              this.game.audioManager?.playBonus?.();
-              this.showMessage(this.game.t('destroy_done'));
-              this.game.setGamePhase('playing');
-
-              if (this.game.achievementManager) {
-                this.game.achievementManager.trackBonusTypeUsed('destroy');
-              }
-
-              if (this.game.dailyQuestManager) {
-                this.game.dailyQuestManager.completeDailyQuest('useBonus');
-              }
-
-              this.game.saveGameState();
-            } catch (error) {
-              ErrorHandler.handle(error, {
-                type: 'destroy_bonus_aftermath',
-                x,
-                y,
-                removedCells,
-              });
-              this.game.activeBonus = null;
-              this.updateBonusesUI();
-              this.game.setGamePhase('playing');
-            }
-          });
-        });
-      } else {
-        ErrorHandler.warn('GridManager not available for destroy bonus');
+      this._runBonusRemovalEffects(removedCells, () => {
         this.game.activeBonus = null;
         this.updateBonusesUI();
-        this.game.setGamePhase('playing');
-      }
+        this.game.audioManager?.playBonus?.();
+        this.showMessage(this.game.t('destroy_done'));
+
+        if (this.game.achievementManager) {
+          this.game.achievementManager.trackBonusTypeUsed('destroy');
+        }
+
+        if (this.game.dailyQuestManager) {
+          this.game.dailyQuestManager.completeDailyQuest('useBonus');
+        }
+
+        if (typeof this.game.requestSaveGameState === 'function') {
+          this.game.requestSaveGameState();
+        } else {
+          this.game.saveGameState({ force: true });
+        }
+      });
     } catch (error) {
       ErrorHandler.handle(error, {
         type: 'destroy_bonus',
@@ -248,7 +277,7 @@ class BonusManager {
 
   useExplosionBonus(x, y) {
     try {
-      if (this.game.gamePhase === 'transitioning') {
+      if (this.game.gamePhase === 'transitioning' || this.game.gamePhase === 'animating') {
         return;
       }
       if (this.game.gamePhase !== 'playing' && this.game.gamePhase !== 'idle') {
@@ -286,55 +315,38 @@ class BonusManager {
       const removedCells = [];
       for (let dx = -1; dx <= 1; dx++) {
         for (let dy = -1; dy <= 1; dy++) {
-          const nx = x + dx,
-            ny = y + dy;
+          const nx = x + dx;
+          const ny = y + dy;
           if (nx >= 0 && nx < this.game.GRID_W && ny >= 0 && ny < this.game.GRID_H) {
+            const idx = ny * this.game.GRID_W + nx;
+            if (typeof this.game.isCellFrozen === 'function' && this.game.isCellFrozen(idx)) {
+              continue;
+            }
             removedCells.push({ x: nx, y: ny });
           }
         }
       }
 
-      this.game.setGamePhase('transitioning');
-
-      if (this.game.gridManager) {
-        this.game.gridManager.animatePopping(removedCells, () => {
-          this.game.gridManager.animateGravity(removedCells, () => {
-            try {
-              this.game.gridManager.applyLocalGravity(removedCells);
-              this.game.activeBonus = null;
-              this.updateBonusesUI();
-              this.game.audioManager?.playBonus?.();
-              this.showMessage(this.game.t('explosion_done'));
-              this.game.setGamePhase('playing');
-
-              if (this.game.achievementManager) {
-                this.game.achievementManager.trackBonusTypeUsed('explosion');
-              }
-
-              if (this.game.dailyQuestManager) {
-                this.game.dailyQuestManager.completeDailyQuest('useBonus');
-              }
-
-              this.game.saveGameState();
-            } catch (error) {
-              ErrorHandler.handle(error, {
-                type: 'explosion_bonus_aftermath',
-                x,
-                y,
-                removedCells,
-              });
-              this.game.activeBonus = null;
-              this.updateBonusesUI();
-              this.game.setGamePhase('playing');
-            }
-          });
-        });
-      } else {
-        ErrorHandler.warn('GridManager not available for explosion bonus');
+      this._runBonusRemovalEffects(removedCells, () => {
         this.game.activeBonus = null;
         this.updateBonusesUI();
-        this.game.setGamePhase('playing');
-      }
+        this.game.audioManager?.playBonus?.();
+        this.showMessage(this.game.t('explosion_done'));
+
+        if (this.game.achievementManager) {
+          this.game.achievementManager.trackBonusTypeUsed('explosion');
+        }
+
+        if (this.game.dailyQuestManager) {
+          this.game.dailyQuestManager.completeDailyQuest('useBonus');
+        }
+
+        if (typeof this.game.requestSaveGameState === 'function') {
+          this.game.requestSaveGameState();
+        } else {
+          this.game.saveGameState({ force: true });
+        }
+      });
     } catch (error) {
       ErrorHandler.handle(error, {
         type: 'explosion_bonus',

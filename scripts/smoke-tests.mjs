@@ -11,6 +11,7 @@ const tests = [
   'scripts/test-error-handler-fallback.mjs',
   'scripts/test-grid-dom-sync.mjs',
   'scripts/test-critical-fixes.mjs',
+  'scripts/test-package2.mjs',
 ];
 
 for (const test of tests) {

@@ -76,6 +76,20 @@ GridManager.prototype._genSpawnNumber = function () {
 };
 
 /**
+ * @param {number} x
+ * @param {number} y
+ * @returns {boolean}
+ */
+GridManager.prototype._isCellFrozen = function (x, y) {
+  const W = this.game.GRID_W;
+  const idx = y * W + x;
+  if (this.game.freezeSystem && typeof this.game.freezeSystem.getFreezeData === 'function') {
+    return !!this.game.freezeSystem.getFreezeData(idx);
+  }
+  return !!this.game.grid?.[x]?.[y]?.frozen;
+};
+
+/**
  * Collapse each column and spawn new tiles in empty top cells.
  */
 GridManager.prototype._settleAllColumns = function () {
@@ -84,13 +98,7 @@ GridManager.prototype._settleAllColumns = function () {
   const grid = this.game.grid;
   const genNewNumber = () => this._genSpawnNumber();
 
-  const isFrozenAt = (x, y) => {
-    const idx = y * W + x;
-    if (this.game.freezeSystem && typeof this.game.freezeSystem.getFreezeData === 'function') {
-      return !!this.game.freezeSystem.getFreezeData(idx);
-    }
-    return !!grid?.[x]?.[y]?.frozen;
-  };
+  const isFrozenAt = (x, y) => this._isCellFrozen(x, y);
 
   for (let x = 0; x < W; x++) {
     if (!grid[x]) continue;
@@ -189,13 +197,7 @@ GridManager.prototype.applyLocalGravity = function (removedCells) {
     const H = this.game.GRID_H;
     const grid = this.game.grid;
 
-    const isFrozenAt = (x, y) => {
-      const idx = y * W + x;
-      if (this.game.freezeSystem && typeof this.game.freezeSystem.getFreezeData === 'function') {
-        return !!this.game.freezeSystem.getFreezeData(idx);
-      }
-      return !!grid?.[x]?.[y]?.frozen;
-    };
+    const isFrozenAt = (x, y) => this._isCellFrozen(x, y);
 
     for (let x = 0; x < W; x++) {
       for (let y = 0; y < H; y++) {
@@ -254,7 +256,7 @@ GridManager.prototype.applyPressureTransfer = function (
 
         let srcHasFrozen = false;
         for (let y = 0; y < H; y++) {
-          if (grid[sx][y]?.frozen) {
+          if (this._isCellFrozen(sx, y)) {
             srcHasFrozen = true;
             break;
           }
@@ -264,6 +266,7 @@ GridManager.prototype.applyPressureTransfer = function (
         for (let y = H - 1; y >= 0 && !moved; y--) {
           const srcCell = grid[sx][y];
           if (!srcCell || srcCell.number == null) continue;
+          if (this._isCellFrozen(sx, y)) continue;
 
           const candidates = [];
           const lx = sx - 1;
@@ -271,12 +274,12 @@ GridManager.prototype.applyPressureTransfer = function (
 
           if (lx >= 0) {
             const depth = this.countEmptyBelow(lx, y);
-            if (depth >= requiredEmptyDepth && !grid[lx][y]?.frozen)
+            if (depth >= requiredEmptyDepth && !this._isCellFrozen(lx, y))
               candidates.push({ tx: lx, depth });
           }
           if (rx < W) {
             const depth = this.countEmptyBelow(rx, y);
-            if (depth >= requiredEmptyDepth && !grid[rx][y]?.frozen)
+            if (depth >= requiredEmptyDepth && !this._isCellFrozen(rx, y))
               candidates.push({ tx: rx, depth });
           }
 
@@ -324,24 +327,24 @@ GridManager.prototype.applyPressureTransfer = function (
       const nums = [];
       for (let y = H - 1; y >= 0; y--) {
         const cell = grid[cx][y];
-        if (cell && cell.number != null && !cell.frozen) {
+        if (cell && cell.number != null && !this._isCellFrozen(cx, y)) {
           nums.push(cell.number);
         }
       }
       let writeY = H - 1;
       for (let y = H - 1; y >= 0; y--) {
-        if (grid[cx][y]?.frozen) continue;
+        if (this._isCellFrozen(cx, y)) continue;
         grid[cx][y].number = null;
         grid[cx][y].merged = false;
       }
       for (const n of nums) {
-        while (writeY >= 0 && grid[cx][writeY]?.frozen) writeY--;
+        while (writeY >= 0 && this._isCellFrozen(cx, writeY)) writeY--;
         if (writeY < 0) break;
         grid[cx][writeY].number = n;
         writeY--;
       }
       while (writeY >= 0) {
-        while (writeY >= 0 && grid[cx][writeY]?.frozen) writeY--;
+        while (writeY >= 0 && this._isCellFrozen(cx, writeY)) writeY--;
         if (writeY < 0) break;
         grid[cx][writeY].number = this._genSpawnNumber();
         grid[cx][writeY].merged = false;

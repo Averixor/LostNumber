@@ -9,6 +9,46 @@ const failures = [];
 const references = new Map();
 const expectedImageSizes = new Map();
 
+const REQUIRED_ASSETS = [
+  'assets/images/background.png',
+  'assets/images/background-alt.png',
+  'assets/images/background-alt2.png',
+  'css/lostnumber-icons.css',
+  'js/ui/icons.js',
+  'assets/icons/neon/sprite/lostnumber-icons.svg',
+];
+
+function verifyRequiredAssets() {
+  for (const rel of REQUIRED_ASSETS) {
+    const full = join(root, rel);
+    if (!existsSync(full) || !statSync(full).isFile()) {
+      fail(`Required asset missing: ${rel}`);
+    }
+  }
+
+  const iconsJsonPath = join(root, 'assets/icons/neon/icons.json');
+  if (!existsSync(iconsJsonPath)) {
+    fail('Required asset missing: assets/icons/neon/icons.json');
+    return;
+  }
+
+  let iconsCatalog;
+  try {
+    iconsCatalog = JSON.parse(readFileSync(iconsJsonPath, 'utf8'));
+  } catch (error) {
+    fail(`Invalid JSON in assets/icons/neon/icons.json: ${error.message}`);
+    return;
+  }
+
+  for (const slug of Object.keys(iconsCatalog)) {
+    const rel = `assets/icons/neon/icons/${slug}.svg`;
+    const full = join(root, rel);
+    if (!existsSync(full) || !statSync(full).isFile()) {
+      fail(`Neon icon missing: ${rel} (listed in icons.json)`);
+    }
+  }
+}
+
 function addReference(source, rawUrl) {
   const cleaned = normalizeLocalUrl(rawUrl);
   if (!cleaned) return null;
@@ -271,6 +311,8 @@ for (const [ref, sources] of [...references.entries()].sort(([a], [b]) => a.loca
   }
   verifyBinaryAsset(ref, full, sources);
 }
+
+verifyRequiredAssets();
 
 if (failures.length) {
   console.error('Static asset verification failed:');
