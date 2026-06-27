@@ -27,18 +27,46 @@
   ],
   "screenshots": [
     {
-      "src": "./assets/images/background.png",
+      "src": "./assets/images/menu-skin-1.png",
       "sizes": "941x1672",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Lost Number"
+      "label": "Lost Number — skin 1"
     },
     {
-      "src": "./assets/images/background-alt.png",
+      "src": "./assets/images/menu-skin-2.png",
       "sizes": "941x1672",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Lost Number — alt"
+      "label": "Lost Number — skin 2"
+    },
+    {
+      "src": "./assets/images/menu-skin-3.png",
+      "sizes": "941x1672",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Lost Number — skin 3"
+    },
+    {
+      "src": "./assets/images/menu-skin-4.png",
+      "sizes": "941x1672",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Lost Number — skin 4"
+    },
+    {
+      "src": "./assets/images/menu-skin-5.png",
+      "sizes": "941x1672",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Lost Number — skin 5"
+    },
+    {
+      "src": "./assets/images/menu-skin-6.png",
+      "sizes": "941x1672",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Lost Number — skin 6"
     }
   ],
   "prefer_related_applications": false

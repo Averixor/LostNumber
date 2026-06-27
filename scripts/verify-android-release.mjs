@@ -174,9 +174,12 @@ function verifyNoSecretsInGit() {
 
 function ensureSiteBundle() {
   const required = [
-    '_site/assets/images/background.png',
-    '_site/assets/images/background-alt.png',
-    '_site/assets/images/background-alt2.png',
+    '_site/assets/images/menu-skin-1.png',
+    '_site/assets/images/menu-skin-2.png',
+    '_site/assets/images/menu-skin-3.png',
+    '_site/assets/images/menu-skin-4.png',
+    '_site/assets/images/menu-skin-5.png',
+    '_site/assets/images/menu-skin-6.png',
     '_site/assets/icons/neon/icons.json',
     '_site/assets/icons/neon/sprite/lostnumber-icons.svg',
     '_site/css/lostnumber-icons.css',
@@ -218,7 +221,12 @@ function verifySyncedAssetsOptional() {
   }
 
   const syncedChecks = [
-    'assets/images/background.png',
+    'assets/images/menu-skin-1.png',
+    'assets/images/menu-skin-2.png',
+    'assets/images/menu-skin-3.png',
+    'assets/images/menu-skin-4.png',
+    'assets/images/menu-skin-5.png',
+    'assets/images/menu-skin-6.png',
     'assets/icons/neon/sprite/lostnumber-icons.svg',
     'js/system/build-flags.generated.js',
   ];

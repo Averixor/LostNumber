@@ -113,7 +113,7 @@ assert(
   !settingsBlock.includes('id="themeSelect"'),
   'separate theme selector removed from settings',
 );
-for (const value of ['auto', 'synthwave', 'ember', 'crystal']) {
+for (const value of ['auto', 'skin-1', 'skin-2', 'skin-3', 'skin-4', 'skin-5', 'skin-6']) {
   assert(settingsBlock.includes(`value="${value}"`), `visual skin option ${value} present`);
 }
 assert(
@@ -128,8 +128,10 @@ assert(
   settingsJs.includes('BackgroundRotator.getCurrentSkin()?.gameTheme'),
   'settings derive game theme from selected visual skin',
 );
-assert(uiCss.includes("html[data-visual-skin='ember']"), 'ember skin CSS variables defined');
-assert(uiCss.includes("html[data-visual-skin='crystal']"), 'crystal skin CSS variables defined');
+assert(uiCss.includes("html[data-visual-skin='skin-3']"), 'skin 3 CSS variables defined');
+assert(uiCss.includes("html[data-visual-skin='skin-4']"), 'skin 4 CSS variables defined');
+assert(uiCss.includes("html[data-skin-artwork='mockup']"), 'full artwork skin mode defined');
+assert(uiCss.includes('opacity: 0'), 'full artwork mode hides duplicate HTML visuals');
 assert(uiCss.includes("html[data-title-frame='arc']"), 'arc title frame variant defined');
 assert(uiCss.includes("html[data-title-frame='diamond']"), 'diamond title frame variant defined');
 assert(uiCss.includes("html[data-quick-row='boxed']"), 'boxed quick-row variant defined');

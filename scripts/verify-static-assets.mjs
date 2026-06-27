@@ -10,9 +10,12 @@ const references = new Map();
 const expectedImageSizes = new Map();
 
 const REQUIRED_ASSETS = [
-  'assets/images/background.png',
-  'assets/images/background-alt.png',
-  'assets/images/background-alt2.png',
+  'assets/images/menu-skin-1.png',
+  'assets/images/menu-skin-2.png',
+  'assets/images/menu-skin-3.png',
+  'assets/images/menu-skin-4.png',
+  'assets/images/menu-skin-5.png',
+  'assets/images/menu-skin-6.png',
   'css/lostnumber-icons.css',
   'js/ui/icons.js',
   'assets/icons/neon/sprite/lostnumber-icons.svg',

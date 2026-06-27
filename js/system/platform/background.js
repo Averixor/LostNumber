@@ -5,33 +5,71 @@
  */
 const BackgroundRotator = {
   STORAGE_KEY: 'lostNumberBackground',
+  LEGACY_SKIN_ALIASES: {
+    synthwave: 'skin-1',
+    ember: 'skin-3',
+    crystal: 'skin-4',
+  },
   SKINS: [
     {
-      id: 'synthwave',
-      nameKey: 'visual_skin_synthwave',
-      background: './assets/images/background.png',
+      id: 'skin-1',
+      nameKey: 'visual_skin_1',
+      background: './assets/images/menu-skin-1.png',
       gameTheme: 'dusk',
+      artwork: 'mockup',
       titleFrame: 'none',
-      quickRow: 'chips',
+      quickRow: 'circles',
       primaryBtn: 'pill',
     },
     {
-      id: 'ember',
-      nameKey: 'visual_skin_ember',
-      background: './assets/images/background-alt.png',
+      id: 'skin-2',
+      nameKey: 'visual_skin_2',
+      background: './assets/images/menu-skin-2.png',
+      gameTheme: 'dusk',
+      artwork: 'mockup',
+      titleFrame: 'diamond',
+      quickRow: 'circles',
+      primaryBtn: 'pill',
+    },
+    {
+      id: 'skin-3',
+      nameKey: 'visual_skin_3',
+      background: './assets/images/menu-skin-3.png',
       gameTheme: 'dawn',
+      artwork: 'mockup',
       titleFrame: 'arc',
       quickRow: 'boxed',
       primaryBtn: 'pill',
     },
     {
-      id: 'crystal',
-      nameKey: 'visual_skin_crystal',
-      background: './assets/images/background-alt2.png',
+      id: 'skin-4',
+      nameKey: 'visual_skin_4',
+      background: './assets/images/menu-skin-4.png',
       gameTheme: 'dusk',
-      titleFrame: 'diamond',
+      artwork: 'mockup',
+      titleFrame: 'none',
       quickRow: 'circles',
       primaryBtn: 'skew',
+    },
+    {
+      id: 'skin-5',
+      nameKey: 'visual_skin_5',
+      background: './assets/images/menu-skin-5.png',
+      gameTheme: 'dawn',
+      artwork: 'mockup',
+      titleFrame: 'arc',
+      quickRow: 'boxed',
+      primaryBtn: 'pill',
+    },
+    {
+      id: 'skin-6',
+      nameKey: 'visual_skin_6',
+      background: './assets/images/menu-skin-6.png',
+      gameTheme: 'dusk',
+      artwork: 'mockup',
+      titleFrame: 'none',
+      quickRow: 'boxed',
+      primaryBtn: 'pill',
     },
   ],
   DAY_MS: 24 * 60 * 60 * 1000,
@@ -70,7 +108,8 @@ const BackgroundRotator = {
 
   getSkinIndex(value) {
     if (typeof value === 'string') {
-      const byId = this.SKINS.findIndex((skin) => skin.id === value);
+      const skinId = this.LEGACY_SKIN_ALIASES[value] || value;
+      const byId = this.SKINS.findIndex((skin) => skin.id === skinId);
       if (byId >= 0) return byId;
     }
     return this.normalizeIndex(value);
@@ -84,7 +123,8 @@ const BackgroundRotator = {
 
   normalizePreference(value) {
     if (value === 'auto') return { mode: 'auto', index: null };
-    const bySkinId = this.SKINS.findIndex((skin) => skin.id === value);
+    const skinId = typeof value === 'string' ? this.LEGACY_SKIN_ALIASES[value] || value : value;
+    const bySkinId = this.SKINS.findIndex((skin) => skin.id === skinId);
     if (bySkinId >= 0) {
       return { mode: 'manual', index: bySkinId };
     }
@@ -204,6 +244,7 @@ const BackgroundRotator = {
     try {
       document.documentElement.style.setProperty('--app-bg-image', cssValue);
       document.documentElement.dataset.visualSkin = skin.id;
+      document.documentElement.dataset.skinArtwork = skin.artwork || 'native';
       document.documentElement.dataset.titleFrame = skin.titleFrame || 'none';
       document.documentElement.dataset.quickRow = skin.quickRow || 'chips';
       document.documentElement.dataset.primaryBtn = skin.primaryBtn || 'pill';
@@ -215,6 +256,7 @@ const BackgroundRotator = {
       el.style.backgroundImage = cssValue;
       el.dataset.bgIndex = String(safe);
       el.dataset.visualSkin = skin.id;
+      el.dataset.skinArtwork = skin.artwork || 'native';
       el.dataset.bgDay = this.getTodayKey();
     }
   },

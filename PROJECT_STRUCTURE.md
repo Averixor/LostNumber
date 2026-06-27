@@ -4,25 +4,24 @@
 
 ## Корінь репозиторію
 
-| Шлях                                | Призначення                                            |
-| ----------------------------------- | ------------------------------------------------------ |
-| `index.html`                        | Точка входу, послідовні `<script>` без `type="module"` |
-| `manifest.json`                     | PWA (`name`: Lost Number)                              |
-| `capacitor.config.json`             | Capacitor 7, `appName`: Lost Number, `webDir`: `_site` |
-| `assets/images/background.png`      | Фон №1                                                 |
-| `assets/images/background-alt.png`  | Фон №2                                                 |
-| `assets/images/background-alt2.png` | Фон №3                                                 |
-| `assets/icons/neon/icons/*.svg`     | Neon SVG для UI (`LostNumberIcons`)                    |
-| `css/lostnumber-icons.css`          | Стилі neon-іконок                                      |
-| `js/ui/icons.js`                    | `LostNumberIcons` — mount / `applyAll`                 |
-| `assets/icons/icon.png`             | Іконка 512×512 (PWA, favicon)                          |
-| `assets/icons/icon-1024.png`        | Мастер-іконка 1024×1024 (Android, maskable PWA)        |
-| `public/audio/`                     | Музика та SFX → `_site/audio/`                         |
-| `css/`                              | Стилі                                                  |
-| `js/`                               | Логіка гри                                             |
-| `android/`                          | Gradle-проєкт Android                                  |
-| `scripts/`                          | Збірка, перевірки, генерація іконок                    |
-| `docs/`                             | `ANDROID.md`, `AUDIO.md`, `PHASES.md`                  |
+| Шлях                            | Призначення                                            |
+| ------------------------------- | ------------------------------------------------------ |
+| `index.html`                    | Точка входу, послідовні `<script>` без `type="module"` |
+| `manifest.json`                 | PWA (`name`: Lost Number)                              |
+| `capacitor.config.json`         | Capacitor 7, `appName`: Lost Number, `webDir`: `_site` |
+| `assets/images/menu-skin-*.png` | 6 скіни головного меню                                 |
+| `assets/images/background*.png` | Legacy-фони, залишені для сумісності                   |
+| `assets/icons/neon/icons/*.svg` | Neon SVG для UI (`LostNumberIcons`)                    |
+| `css/lostnumber-icons.css`      | Стилі neon-іконок                                      |
+| `js/ui/icons.js`                | `LostNumberIcons` — mount / `applyAll`                 |
+| `assets/icons/icon.png`         | Іконка 512×512 (PWA, favicon)                          |
+| `assets/icons/icon-1024.png`    | Мастер-іконка 1024×1024 (Android, maskable PWA)        |
+| `public/audio/`                 | Музика та SFX → `_site/audio/`                         |
+| `css/`                          | Стилі                                                  |
+| `js/`                           | Логіка гри                                             |
+| `android/`                      | Gradle-проєкт Android                                  |
+| `scripts/`                      | Збірка, перевірки, генерація іконок                    |
+| `docs/`                         | `ANDROID.md`, `AUDIO.md`, `PHASES.md`                  |
 
 ## Фони (чергування)
 
@@ -31,7 +30,7 @@
 | `BackgroundRotator.init()`            | `js/system/platform/background.js` | inline-скрипт у `index.html` після `#appBackground`                 |
 | `BackgroundRotator.onMainMenuEnter()` | там же                             | `ScreenManager.showScreen('mainMenu')` у `js/ui/screens/screens.js` |
 
-Логіка: при кожному відкритті головного меню, якщо змінився календарний день — індекс фону циклічно `0 → 1 → 2 → 0`. Стан у `localStorage` ключ **`lostNumberBackground`** (`{ index: 0|1|2, lastDay: "YYYY-MM-DD" }`).
+Логіка: при кожному відкритті головного меню, якщо змінився календарний день — індекс скіна циклічно `0 → 1 → 2 → 3 → 4 → 5 → 0`. Стан у `localStorage` ключ **`lostNumberBackground`** (`{ index, lastDay: "YYYY-MM-DD", mode, manualSkin }`).
 
 CSS: `css/background.css` — `--app-bg-image` на `#appBackground`.
 

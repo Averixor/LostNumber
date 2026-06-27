@@ -37,7 +37,8 @@
   box-sizing: border-box;
 }
 
-html[data-visual-skin='ember'] .main-menu {
+html[data-visual-skin='skin-3'] .main-menu,
+html[data-visual-skin='skin-5'] .main-menu {
   --menu-title-gradient: linear-gradient(135deg, #ffd9a8 0%, #ff7b55 46%, #ff4fc8 100%);
   --menu-title-glow: rgba(255, 116, 72, 0.52);
   --menu-primary-bg: linear-gradient(92deg, #ff536d 0%, #ff8b57 100%);
@@ -56,7 +57,9 @@ html[data-visual-skin='ember'] .main-menu {
   );
 }
 
-html[data-visual-skin='crystal'] .main-menu {
+html[data-visual-skin='skin-2'] .main-menu,
+html[data-visual-skin='skin-4'] .main-menu,
+html[data-visual-skin='skin-6'] .main-menu {
   --menu-title-gradient: linear-gradient(135deg, #ffe8ff 0%, #c970ff 42%, #ff4ff0 100%);
   --menu-title-glow: rgba(184, 87, 255, 0.58);
   --menu-primary-bg: rgba(20, 6, 36, 0.26);
@@ -452,6 +455,120 @@ body[data-active-screen='mainMenu'] .app-background::after {
   inset: 0;
   background: var(--menu-overlay-x), var(--menu-overlay-y);
   pointer-events: none;
+}
+
+html[data-skin-artwork='mockup'] body[data-active-screen='mainMenu'] .app-background {
+  background-size: 100% 100%;
+  background-position: center center;
+}
+
+html[data-skin-artwork='mockup'] body[data-active-screen='mainMenu'] .app-background::after {
+  background: none;
+}
+
+html[data-skin-artwork='mockup'] .main-menu {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  padding: 0;
+}
+
+html[data-skin-artwork='mockup'] .main-menu__account {
+  position: absolute;
+  z-index: 4;
+  top: max(2.3%, env(safe-area-inset-top, 0px));
+  left: max(4.2%, env(safe-area-inset-left, 0px));
+  right: max(4.2%, env(safe-area-inset-right, 0px));
+  width: auto;
+  max-width: none;
+}
+
+html[data-skin-artwork='mockup'] .menu-account-btn {
+  width: min(30%, 116px);
+  min-height: 44px;
+  height: clamp(44px, 5.4dvh, 60px);
+  opacity: 0;
+}
+
+html[data-skin-artwork='mockup'] .main-menu__core {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  max-width: none;
+  padding: 0;
+  overflow: visible;
+}
+
+html[data-skin-artwork='mockup'] .main-menu__hero {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  right: 10%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+html[data-skin-artwork='mockup'] .main-menu__actions {
+  position: absolute;
+  z-index: 3;
+  top: 42%;
+  left: 50%;
+  width: 72%;
+  max-width: 640px;
+  transform: translateX(-50%);
+  gap: clamp(12px, 2.5dvh, 22px);
+}
+
+html[data-skin-artwork='mockup'] .main-menu__buttons {
+  width: 100%;
+  max-width: none;
+  gap: clamp(10px, 2.2dvh, 18px);
+}
+
+html[data-skin-artwork='mockup'] .main-menu__buttons .menu-btn {
+  width: 100%;
+  min-height: clamp(52px, 8.2dvh, 76px);
+  padding: 0;
+  opacity: 0;
+}
+
+html[data-skin-artwork='mockup'] .main-menu__actions .menu-btn.ghost {
+  min-height: clamp(42px, 6.4dvh, 60px);
+}
+
+html[data-skin-artwork='mockup'] .main-menu__quick-row {
+  width: 100%;
+  height: clamp(62px, 10dvh, 96px);
+  margin-top: clamp(2px, 0.5dvh, 6px);
+  padding: 0;
+  gap: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html[data-skin-artwork='mockup'] .menu-quick-btn--chip {
+  min-height: 100%;
+  padding: 0;
+  opacity: 0;
+}
+
+html[data-skin-artwork='mockup'] .main-menu__dock {
+  position: absolute;
+  z-index: 4;
+  bottom: max(2.2%, env(safe-area-inset-bottom, 0px));
+  left: max(3.6%, env(safe-area-inset-left, 0px));
+  right: max(3.6%, env(safe-area-inset-right, 0px));
+  width: auto;
+  max-width: none;
+  min-height: 78px;
+  height: 9.8%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
 }
 
 .menu-dock-btn {
@@ -1176,6 +1293,10 @@ html[data-theme='dusk'] .preview-bubble {
 @media (max-width: 430px) {
   body[data-active-screen='mainMenu'] .app-background {
     background-position: center 62%;
+  }
+
+  html[data-skin-artwork='mockup'] body[data-active-screen='mainMenu'] .app-background {
+    background-position: center center;
   }
 }
 

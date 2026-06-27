@@ -62,49 +62,69 @@ const factory = new Function(
 );
 const rotator = factory(localStorage, document, window);
 
+assert(rotator.SKINS.length === 6, 'visual skin registry contains six provided skins');
+for (let i = 1; i <= 6; i++) {
+  const skinId = `skin-${i}`;
+  const index = rotator.setPreferenceValue(skinId);
+  assert(index === i - 1, `${skinId} maps to its source image index`);
+  assert(rotator.getPreferenceValue() === skinId, `${skinId} persists as selected skin id`);
+  assert(
+    bgEl.style.backgroundImage.includes(`menu-skin-${i}.png`),
+    `${skinId} applies menu-skin-${i}.png`,
+  );
+}
+
+storage.clear();
+bgEl.style = {};
+bgEl.dataset = {};
+document.documentElement.dataset = {};
+document.documentElement.style.props = {};
+
 rotator.init();
 assert(rotator.getPreferenceValue() === 'auto', 'default preference is auto');
 let stored = JSON.parse(storage.get(rotator.STORAGE_KEY));
 assert(stored.mode === 'auto', 'init stores auto mode');
 assert(Number.isInteger(stored.index), 'init stores numeric index');
 assert(document.documentElement.dataset.visualSkin, 'init sets html visual skin dataset');
+assert(document.documentElement.dataset.skinArtwork === 'mockup', 'init sets full artwork dataset');
 assert(document.documentElement.dataset.quickRow, 'init sets quick-row variant dataset');
 assert(document.documentElement.dataset.primaryBtn, 'init sets primary button variant dataset');
 
-const manual = rotator.setPreferenceValue('ember');
-assert(manual === 1, 'manual set returns selected skin index');
-assert(bgEl.dataset.bgIndex === '1', 'manual set applies selected skin background');
-assert(bgEl.dataset.visualSkin === 'ember', 'manual set tags app background with skin id');
+const manual = rotator.setPreferenceValue('skin-3');
+assert(manual === 2, 'manual set returns selected skin index');
+assert(bgEl.dataset.bgIndex === '2', 'manual set applies selected skin background');
+assert(bgEl.dataset.visualSkin === 'skin-3', 'manual set tags app background with skin id');
+assert(bgEl.dataset.skinArtwork === 'mockup', 'manual set tags full artwork mode');
 assert(
-  document.documentElement.dataset.visualSkin === 'ember',
+  document.documentElement.dataset.visualSkin === 'skin-3',
   'manual set tags html with skin id',
 );
-assert(document.documentElement.dataset.titleFrame === 'arc', 'ember applies title frame variant');
-assert(document.documentElement.dataset.quickRow === 'boxed', 'ember applies quick-row variant');
+assert(document.documentElement.dataset.titleFrame === 'arc', 'skin 3 applies title frame variant');
+assert(document.documentElement.dataset.quickRow === 'boxed', 'skin 3 applies quick-row variant');
 assert(
   document.documentElement.dataset.primaryBtn === 'pill',
-  'ember applies primary button variant',
+  'skin 3 applies primary button variant',
 );
-assert(rotator.getPreferenceValue() === 'ember', 'manual preference reads selected skin id');
+assert(rotator.getPreferenceValue() === 'skin-3', 'manual preference reads selected skin id');
 stored = JSON.parse(storage.get(rotator.STORAGE_KEY));
 assert(stored.mode === 'manual', 'manual set stores manual mode');
-assert(stored.manualIndex === 1, 'manual set stores manual index');
-assert(stored.manualSkin === 'ember', 'manual set stores manual skin id');
-assert(rotator.onMainMenuEnter() === 1, 'manual mode does not rotate on menu enter');
+assert(stored.manualIndex === 2, 'manual set stores manual index');
+assert(stored.manualSkin === 'skin-3', 'manual set stores manual skin id');
+assert(rotator.onMainMenuEnter() === 2, 'manual mode does not rotate on menu enter');
 
-rotator.setPreferenceValue('crystal');
-assert(
-  document.documentElement.dataset.titleFrame === 'diamond',
-  'crystal applies diamond title frame',
-);
+rotator.setPreferenceValue('skin-4');
+assert(document.documentElement.dataset.titleFrame === 'none', 'skin 4 applies no title frame');
 assert(
   document.documentElement.dataset.quickRow === 'circles',
-  'crystal applies circle quick actions',
+  'skin 4 applies circle quick actions',
 );
 assert(
   document.documentElement.dataset.primaryBtn === 'skew',
-  'crystal applies skew primary button',
+  'skin 4 applies skew primary button',
 );
+
+rotator.setPreferenceValue('synthwave');
+assert(rotator.getPreferenceValue() === 'skin-1', 'legacy synthwave maps to skin 1');
 
 const autoIndex = rotator.setPreferenceValue('auto');
 assert(Number.isInteger(autoIndex), 'auto set returns numeric index');
@@ -119,8 +139,8 @@ storage.set(
     index: 1,
     lastDay: yesterday,
     mode: 'auto',
-    manualIndex: 1,
-    manualSkin: 'ember',
+    manualIndex: 2,
+    manualSkin: 'skin-3',
   }),
 );
 assert(rotator.onMainMenuEnter() === 2, 'auto mode rotates when stored day changes');

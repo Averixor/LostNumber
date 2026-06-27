@@ -3,7 +3,7 @@
   inset: 0;
   z-index: -10;
   background-color: #1b1028;
-  background-image: var(--app-bg-image, url('../assets/images/background.png'));
+  background-image: var(--app-bg-image, url('../assets/images/menu-skin-1.png'));
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;

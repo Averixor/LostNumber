@@ -19,13 +19,16 @@ npx serve .
 
 ## Брендинг та графіка
 
-**Фони** (чергуються раз на календарний день при вході в головне меню):
+**Скіни меню** (чергуються раз на календарний день при вході в головне меню):
 
-- `assets/images/background.png` — фон №1
-- `assets/images/background-alt.png` — фон №2
-- `assets/images/background-alt2.png` — фон №3
+- `assets/images/menu-skin-1.png` — скін №1
+- `assets/images/menu-skin-2.png` — скін №2
+- `assets/images/menu-skin-3.png` — скін №3
+- `assets/images/menu-skin-4.png` — скін №4
+- `assets/images/menu-skin-5.png` — скін №5
+- `assets/images/menu-skin-6.png` — скін №6
 
-Логіка: `js/system/platform/background.js` (`BackgroundRotator`), стан у `localStorage` ключ `lostNumberBackground` (індекс `0…2` + `lastDay`).
+Логіка: `js/system/platform/background.js` (`BackgroundRotator`), стан у `localStorage` ключ `lostNumberBackground` (індекс `0…5` + `lastDay` + ручний `manualSkin`).
 
 **Neon-іконки UI** (замість emoji в меню, HUD, досягненнях):
 
