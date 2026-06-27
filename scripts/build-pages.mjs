@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const outDir = join(root, '_site');
-const releaseEntries = ['index.html', 'manifest.json', 'assets', 'css', 'js'];
+const releaseEntries = ['index.html', 'manifest.json', 'privacy.html', 'assets', 'css', 'js'];
 
 rmSync(outDir, { recursive: true, force: true });
 mkdirSync(outDir, { recursive: true });

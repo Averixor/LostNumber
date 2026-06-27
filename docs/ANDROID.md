@@ -75,10 +75,19 @@ cd android
 Release AAB для Google Play:
 
 ```bash
+npm run android:bundle
+# android/app/build/outputs/bundle/release/app-release.aab
+```
+
+Або вручну:
+
+```bash
 cd android
 ./gradlew bundleRelease
 # android/app/build/outputs/bundle/release/app-release.aab
 ```
+
+Повний чекліст Play Console (іконка, скріншоти, опис, privacy, closed testing): **[PLAY_STORE.md](./PLAY_STORE.md)**.
 
 Для release потрібен підписаний keystore (Android Studio → Build → Generate Signed Bundle).
 

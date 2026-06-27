@@ -34,6 +34,8 @@
     "android:sync:debug-cheats": "node ./scripts/prepare-android.mjs --debug-cheats",
     "android:debug:cheats": "node ./scripts/android-debug-cheats.mjs",
     "android:release": "node ./scripts/android-release.mjs",
+    "android:bundle": "node ./scripts/android-bundle.mjs",
+    "store:prepare": "python3 ./scripts/prepare-play-store-assets.py && python3 ./scripts/generate-android-icons.py",
     "android:open": "node ./node_modules/@capacitor/cli/bin/capacitor open android",
     "android:run": "node ./scripts/prepare-android.mjs && node ./node_modules/@capacitor/cli/bin/capacitor run android",
     "cursor:audit": "node ./scripts/cursor-audit-local.mjs",

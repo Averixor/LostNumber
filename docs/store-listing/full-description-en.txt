@@ -1,0 +1,14 @@
+Lost Number is a relaxed number grid puzzle you can enjoy on your schedule.
+
+Connect neighboring tiles, build valid chains, and unlock new levels. No rush — play when it suits you.
+
+Features:
+• 5×8 grid with growing difficulty
+• Bonuses: explosion, shuffle, destroy tile
+• Fortune wheel for XP rewards
+• Daily quests and achievements
+• Two visual themes and multiple menu backgrounds
+• Progress saved locally on your device (offline)
+• Ukrainian, Russian, and English UI
+
+Great for short sessions and brain warm-ups. No account required. No ads in the current release.
