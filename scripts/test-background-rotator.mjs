@@ -63,15 +63,18 @@ const factory = new Function(
 const rotator = factory(localStorage, document, window);
 
 assert(rotator.SKINS.length === 6, 'visual skin registry contains six provided skins');
+assert(!code.includes("artwork: 'mockup'"), 'mockup artwork mode removed from skin registry');
+
 for (let i = 1; i <= 6; i++) {
   const skinId = `skin-${i}`;
   const index = rotator.setPreferenceValue(skinId);
   assert(index === i - 1, `${skinId} maps to its source image index`);
   assert(rotator.getPreferenceValue() === skinId, `${skinId} persists as selected skin id`);
   assert(
-    bgEl.style.backgroundImage.includes(`menu-skin-${i}.png`),
-    `${skinId} applies menu-skin-${i}.png`,
+    bgEl.style.backgroundImage.includes(`menu-bg-${i}.png`),
+    `${skinId} applies clean menu-bg-${i}.png`,
   );
+  assert(!bgEl.dataset.skinArtwork, `${skinId} does not tag mockup artwork mode`);
 }
 
 storage.clear();
@@ -86,7 +89,7 @@ let stored = JSON.parse(storage.get(rotator.STORAGE_KEY));
 assert(stored.mode === 'auto', 'init stores auto mode');
 assert(Number.isInteger(stored.index), 'init stores numeric index');
 assert(document.documentElement.dataset.visualSkin, 'init sets html visual skin dataset');
-assert(document.documentElement.dataset.skinArtwork === 'mockup', 'init sets full artwork dataset');
+assert(!document.documentElement.dataset.skinArtwork, 'init does not set mockup artwork dataset');
 assert(document.documentElement.dataset.quickRow, 'init sets quick-row variant dataset');
 assert(document.documentElement.dataset.primaryBtn, 'init sets primary button variant dataset');
 
@@ -94,7 +97,7 @@ const manual = rotator.setPreferenceValue('skin-3');
 assert(manual === 2, 'manual set returns selected skin index');
 assert(bgEl.dataset.bgIndex === '2', 'manual set applies selected skin background');
 assert(bgEl.dataset.visualSkin === 'skin-3', 'manual set tags app background with skin id');
-assert(bgEl.dataset.skinArtwork === 'mockup', 'manual set tags full artwork mode');
+assert(!bgEl.dataset.skinArtwork, 'manual set does not tag mockup artwork mode');
 assert(
   document.documentElement.dataset.visualSkin === 'skin-3',
   'manual set tags html with skin id',

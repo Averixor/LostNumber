@@ -9,8 +9,8 @@
 | `index.html`                    | Точка входу, послідовні `<script>` без `type="module"` |
 | `manifest.json`                 | PWA (`name`: Lost Number)                              |
 | `capacitor.config.json`         | Capacitor 7, `appName`: Lost Number, `webDir`: `_site` |
-| `assets/images/menu-skin-*.png` | 6 скіни головного меню                                 |
-| `assets/images/background*.png` | Legacy-фони, залишені для сумісності                   |
+| `assets/images/menu-bg-*.png`   | 6 чистих арт-фонів для VisualSkin (без UI)             |
+| `assets/images/background*.png` | Legacy clean placeholders / джерела для menu-bg        |
 | `assets/icons/neon/icons/*.svg` | Neon SVG для UI (`LostNumberIcons`)                    |
 | `css/lostnumber-icons.css`      | Стилі neon-іконок                                      |
 | `js/ui/icons.js`                | `LostNumberIcons` — mount / `applyAll`                 |

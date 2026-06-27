@@ -1,7 +1,9 @@
 /**
- * Rotating visual skins: background + menu composition variants, auto-advance
+ * Rotating visual skins: clean background art + menu CSS variants, auto-advance
  * when the calendar day changes (on main menu enter). State in localStorage key
  * lostNumberBackground for backward compatibility.
+ *
+ * TODO: replace menu-bg-1..6.png placeholders with dedicated clean art (no UI text).
  */
 const BackgroundRotator = {
   STORAGE_KEY: 'lostNumberBackground',
@@ -14,9 +16,8 @@ const BackgroundRotator = {
     {
       id: 'skin-1',
       nameKey: 'visual_skin_1',
-      background: './assets/images/menu-skin-1.png',
+      background: './assets/images/menu-bg-1.png',
       gameTheme: 'dusk',
-      artwork: 'mockup',
       titleFrame: 'none',
       quickRow: 'circles',
       primaryBtn: 'pill',
@@ -24,9 +25,8 @@ const BackgroundRotator = {
     {
       id: 'skin-2',
       nameKey: 'visual_skin_2',
-      background: './assets/images/menu-skin-2.png',
+      background: './assets/images/menu-bg-2.png',
       gameTheme: 'dusk',
-      artwork: 'mockup',
       titleFrame: 'diamond',
       quickRow: 'circles',
       primaryBtn: 'pill',
@@ -34,9 +34,8 @@ const BackgroundRotator = {
     {
       id: 'skin-3',
       nameKey: 'visual_skin_3',
-      background: './assets/images/menu-skin-3.png',
+      background: './assets/images/menu-bg-3.png',
       gameTheme: 'dawn',
-      artwork: 'mockup',
       titleFrame: 'arc',
       quickRow: 'boxed',
       primaryBtn: 'pill',
@@ -44,9 +43,8 @@ const BackgroundRotator = {
     {
       id: 'skin-4',
       nameKey: 'visual_skin_4',
-      background: './assets/images/menu-skin-4.png',
+      background: './assets/images/menu-bg-4.png',
       gameTheme: 'dusk',
-      artwork: 'mockup',
       titleFrame: 'none',
       quickRow: 'circles',
       primaryBtn: 'skew',
@@ -54,9 +52,8 @@ const BackgroundRotator = {
     {
       id: 'skin-5',
       nameKey: 'visual_skin_5',
-      background: './assets/images/menu-skin-5.png',
+      background: './assets/images/menu-bg-5.png',
       gameTheme: 'dawn',
-      artwork: 'mockup',
       titleFrame: 'arc',
       quickRow: 'boxed',
       primaryBtn: 'pill',
@@ -64,9 +61,8 @@ const BackgroundRotator = {
     {
       id: 'skin-6',
       nameKey: 'visual_skin_6',
-      background: './assets/images/menu-skin-6.png',
+      background: './assets/images/menu-bg-6.png',
       gameTheme: 'dusk',
-      artwork: 'mockup',
       titleFrame: 'none',
       quickRow: 'boxed',
       primaryBtn: 'pill',
@@ -235,6 +231,16 @@ const BackgroundRotator = {
     return index;
   },
 
+  applySkinDatasets(skin) {
+    const root = document.documentElement;
+    root.dataset.visualSkin = skin.id;
+    root.dataset.titleFrame = skin.titleFrame || 'none';
+    root.dataset.quickRow = skin.quickRow || 'chips';
+    root.dataset.primaryBtn = skin.primaryBtn || 'pill';
+    root.dataset.gameTheme = skin.gameTheme || 'dusk';
+    delete root.dataset.skinArtwork;
+  },
+
   apply(index) {
     const safe = this.normalizeIndex(index);
     const skin = this.getSkin(safe);
@@ -243,12 +249,7 @@ const BackgroundRotator = {
 
     try {
       document.documentElement.style.setProperty('--app-bg-image', cssValue);
-      document.documentElement.dataset.visualSkin = skin.id;
-      document.documentElement.dataset.skinArtwork = skin.artwork || 'native';
-      document.documentElement.dataset.titleFrame = skin.titleFrame || 'none';
-      document.documentElement.dataset.quickRow = skin.quickRow || 'chips';
-      document.documentElement.dataset.primaryBtn = skin.primaryBtn || 'pill';
-      document.documentElement.dataset.gameTheme = skin.gameTheme || 'dusk';
+      this.applySkinDatasets(skin);
     } catch (_) {}
 
     const el = document.getElementById('appBackground');
@@ -256,8 +257,8 @@ const BackgroundRotator = {
       el.style.backgroundImage = cssValue;
       el.dataset.bgIndex = String(safe);
       el.dataset.visualSkin = skin.id;
-      el.dataset.skinArtwork = skin.artwork || 'native';
       el.dataset.bgDay = this.getTodayKey();
+      delete el.dataset.skinArtwork;
     }
   },
 

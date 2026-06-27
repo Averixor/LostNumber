@@ -287,12 +287,12 @@ function runPostMergeSettle(game, gm, removedCells) {
 // --- required static assets ---
 {
   const required = [
-    'assets/images/menu-skin-1.png',
-    'assets/images/menu-skin-2.png',
-    'assets/images/menu-skin-3.png',
-    'assets/images/menu-skin-4.png',
-    'assets/images/menu-skin-5.png',
-    'assets/images/menu-skin-6.png',
+    'assets/images/menu-bg-1.png',
+    'assets/images/menu-bg-2.png',
+    'assets/images/menu-bg-3.png',
+    'assets/images/menu-bg-4.png',
+    'assets/images/menu-bg-5.png',
+    'assets/images/menu-bg-6.png',
     'css/lostnumber-icons.css',
     'js/ui/icons.js',
     'assets/icons/neon/icons.json',

@@ -52,6 +52,7 @@ body.no-animations *::after {
 .screen {
   position: absolute;
   inset: 0;
+  z-index: 0;
   height: 100dvh;
   max-height: 100dvh;
   overflow: hidden;
@@ -60,14 +61,22 @@ body.no-animations *::after {
   align-items: center;
   justify-content: center;
   padding: clamp(6px, 1.5vh, 12px);
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
+
+.screen.is-active {
+  z-index: 1;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
 .screen.hidden {
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  transform: translateY(10px);
 }
 
 @keyframes heartbeat {

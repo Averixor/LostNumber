@@ -10,16 +10,49 @@ const references = new Map();
 const expectedImageSizes = new Map();
 
 const REQUIRED_ASSETS = [
-  'assets/images/menu-skin-1.png',
-  'assets/images/menu-skin-2.png',
-  'assets/images/menu-skin-3.png',
-  'assets/images/menu-skin-4.png',
-  'assets/images/menu-skin-5.png',
-  'assets/images/menu-skin-6.png',
+  'assets/images/menu-bg-1.png',
+  'assets/images/menu-bg-2.png',
+  'assets/images/menu-bg-3.png',
+  'assets/images/menu-bg-4.png',
+  'assets/images/menu-bg-5.png',
+  'assets/images/menu-bg-6.png',
   'css/lostnumber-icons.css',
   'js/ui/icons.js',
   'assets/icons/neon/sprite/lostnumber-icons.svg',
 ];
+
+function verifyNoMockupUiMode() {
+  const backgroundJs = readFileSync(join(root, 'js/system/platform/background.js'), 'utf8');
+  const uiCss = readFileSync(join(root, 'css/ui.css'), 'utf8');
+  const baseCss = readFileSync(join(root, 'css/base.css'), 'utf8');
+
+  const forbidden = [
+    ["artwork: 'mockup'", backgroundJs],
+    ['dataset.skinArtwork =', backgroundJs],
+    ["html[data-skin-artwork='mockup']", uiCss],
+    ["data-skin-artwork='mockup'", uiCss],
+  ];
+
+  for (const [needle, haystack] of forbidden) {
+    if (haystack.includes(needle)) {
+      fail(`Forbidden mockup UI mode detected (${needle})`);
+    }
+  }
+
+  if (!baseCss.includes('.screen.is-active')) {
+    fail('Screen stack must define .screen.is-active for a single visible UI layer');
+  }
+
+  const hiddenRule = baseCss.match(/\.screen\.hidden\s*\{[^}]*\}/)?.[0] || '';
+  if (!hiddenRule.includes('visibility: hidden')) {
+    fail('.screen.hidden must use visibility: hidden');
+  }
+
+  const hitboxPattern = /html\[data-skin-artwork[\s\S]*?\.main-menu__buttons[\s\S]*?opacity:\s*0/;
+  if (hitboxPattern.test(uiCss)) {
+    fail('Menu buttons must not be hidden as mockup hitboxes');
+  }
+}
 
 function verifyRequiredAssets() {
   for (const rel of REQUIRED_ASSETS) {
@@ -316,6 +349,7 @@ for (const [ref, sources] of [...references.entries()].sort(([a], [b]) => a.loca
 }
 
 verifyRequiredAssets();
+verifyNoMockupUiMode();
 
 if (failures.length) {
   console.error('Static asset verification failed:');

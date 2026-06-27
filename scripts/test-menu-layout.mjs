@@ -130,13 +130,27 @@ assert(
 );
 assert(uiCss.includes("html[data-visual-skin='skin-3']"), 'skin 3 CSS variables defined');
 assert(uiCss.includes("html[data-visual-skin='skin-4']"), 'skin 4 CSS variables defined');
-assert(uiCss.includes("html[data-skin-artwork='mockup']"), 'full artwork skin mode defined');
-assert(uiCss.includes('opacity: 0'), 'full artwork mode hides duplicate HTML visuals');
+assert(!uiCss.includes("html[data-skin-artwork='mockup']"), 'mockup artwork skin mode removed');
+assert(
+  !/html\[data-skin-artwork[\s\S]*?\.main-menu__buttons[\s\S]*?opacity:\s*0/.test(uiCss),
+  'menu buttons are not hidden as mockup hitboxes',
+);
 assert(uiCss.includes("html[data-title-frame='arc']"), 'arc title frame variant defined');
 assert(uiCss.includes("html[data-title-frame='diamond']"), 'diamond title frame variant defined');
 assert(uiCss.includes("html[data-quick-row='boxed']"), 'boxed quick-row variant defined');
 assert(uiCss.includes("html[data-quick-row='circles']"), 'circle quick-row variant defined');
 assert(uiCss.includes("html[data-primary-btn='skew']"), 'skew primary button variant defined');
+
+const baseCss = readFileSync(join(root, 'css/base.css'), 'utf8');
+assert(baseCss.includes('.screen.is-active'), 'single active screen layer defined');
+const hiddenRule = baseCss.match(/\.screen\.hidden\s*\{[^}]*\}/)?.[0] || '';
+assert(hiddenRule.includes('visibility: hidden'), 'hidden screens use visibility: hidden');
+assert(screensJs.includes("classList.add('is-active')"), 'screen manager marks active screen');
+assert(screensJs.includes('aria-hidden'), 'screen manager updates aria-hidden');
+assert(
+  screensJs.includes('document.documentElement.dataset.activeScreen = name'),
+  'screen sets html dataset for layout hooks',
+);
 
 for (const id of [
   'dockPremiumBtn',

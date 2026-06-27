@@ -27,42 +27,42 @@
   ],
   "screenshots": [
     {
-      "src": "./assets/images/menu-skin-1.png",
+      "src": "./assets/images/menu-bg-1.png",
       "sizes": "941x1672",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Lost Number — skin 1"
     },
     {
-      "src": "./assets/images/menu-skin-2.png",
+      "src": "./assets/images/menu-bg-2.png",
       "sizes": "941x1672",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Lost Number — skin 2"
     },
     {
-      "src": "./assets/images/menu-skin-3.png",
+      "src": "./assets/images/menu-bg-3.png",
       "sizes": "941x1672",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Lost Number — skin 3"
     },
     {
-      "src": "./assets/images/menu-skin-4.png",
+      "src": "./assets/images/menu-bg-4.png",
       "sizes": "941x1672",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Lost Number — skin 4"
     },
     {
-      "src": "./assets/images/menu-skin-5.png",
+      "src": "./assets/images/menu-bg-5.png",
       "sizes": "941x1672",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Lost Number — skin 5"
     },
     {
-      "src": "./assets/images/menu-skin-6.png",
+      "src": "./assets/images/menu-bg-6.png",
       "sizes": "941x1672",
       "type": "image/png",
       "form_factor": "narrow",

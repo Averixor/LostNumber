@@ -3,23 +3,40 @@ class ScreenManager {
     this.game = game;
   }
 
+  setActiveScreenDatasets(name) {
+    if (document.body) {
+      document.body.dataset.activeScreen = name;
+    }
+    if (document.documentElement) {
+      document.documentElement.dataset.activeScreen = name;
+    }
+  }
+
+  hideAllScreens() {
+    document.querySelectorAll('.screen').forEach((screen) => {
+      try {
+        screen.classList.add('hidden');
+        screen.classList.remove('is-active');
+        screen.setAttribute('aria-hidden', 'true');
+      } catch (error) {
+        ErrorHandler.warn('Failed to hide screen', { screen: screen.id, error });
+      }
+    });
+  }
+
   showScreen(name) {
     try {
       const wasGame = this.game.screenState === 'game';
       this.game.screenState = name;
 
-      document.querySelectorAll('.screen').forEach((screen) => {
-        try {
-          screen.classList.add('hidden');
-        } catch (error) {
-          ErrorHandler.warn('Failed to hide screen', { screen: screen.id, error });
-        }
-      });
+      this.hideAllScreens();
 
       const target = document.getElementById(name + 'Screen');
       if (target) {
         try {
           target.classList.remove('hidden');
+          target.classList.add('is-active');
+          target.setAttribute('aria-hidden', 'false');
           ErrorHandler.debug('Screen shown', { name, wasGame });
         } catch (error) {
           ErrorHandler.handle(error, { type: 'screen_show', name });
@@ -28,9 +45,7 @@ class ScreenManager {
         ErrorHandler.warn('Screen not found', { name });
       }
 
-      if (document.body) {
-        document.body.dataset.activeScreen = name;
-      }
+      this.setActiveScreenDatasets(name);
 
       if (wasGame && name !== 'game') {
         if (typeof this.game.requestSaveGameState === 'function') {
@@ -54,10 +69,14 @@ class ScreenManager {
       }
     } catch (error) {
       ErrorHandler.handle(error, { type: 'screen_manager', method: 'showScreen', name });
-      const mainScreen = document.getElementById('mainMenuScreen');
-      if (mainScreen) {
-        mainScreen.classList.remove('hidden');
+      this.hideAllScreens();
+      const fallback = document.getElementById('mainMenuScreen');
+      if (fallback) {
+        fallback.classList.remove('hidden');
+        fallback.classList.add('is-active');
+        fallback.setAttribute('aria-hidden', 'false');
       }
+      this.setActiveScreenDatasets('mainMenu');
     }
   }
 }

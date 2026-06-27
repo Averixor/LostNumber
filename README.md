@@ -19,16 +19,14 @@ npx serve .
 
 ## Брендинг та графіка
 
-**Скіни меню** (чергуються раз на календарний день при вході в головне меню):
+**Скіни меню** (чисті фони без UI + HTML/CSS поверх; чергуються раз на календарний день при вході в головне меню):
 
-- `assets/images/menu-skin-1.png` — скін №1
-- `assets/images/menu-skin-2.png` — скін №2
-- `assets/images/menu-skin-3.png` — скін №3
-- `assets/images/menu-skin-4.png` — скін №4
-- `assets/images/menu-skin-5.png` — скін №5
-- `assets/images/menu-skin-6.png` — скін №6
+- `assets/images/menu-bg-1.png` … `menu-bg-6.png` — арт-фони (без тексту й кнопок)
+- `assets/images/background.png`, `background-alt.png`, `background-alt2.png` — legacy clean placeholders
 
-Логіка: `js/system/platform/background.js` (`BackgroundRotator`), стан у `localStorage` ключ `lostNumberBackground` (індекс `0…5` + `lastDay` + ручний `manualSkin`).
+Логіка: `js/system/platform/background.js` (`BackgroundRotator`), стан у `localStorage` ключ `lostNumberBackground` (`manualSkin` / auto + `lastDay`).
+
+Повноекранні mockup-скріншоти з намальованим меню **не** використовуються як runtime UI. Меню — окремий `.screen` поверх `#appBackground`.
 
 **Neon-іконки UI** (замість emoji в меню, HUD, досягненнях):
 

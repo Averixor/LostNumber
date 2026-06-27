@@ -87,9 +87,10 @@ Package: `com.averixor.lostnumber.dev` — окремий застосунок, 
 
 ### Фони (rotation)
 
-- [ ] 6 скинів меню: `menu-skin-1.png` … `menu-skin-6.png`
+- [ ] 6 скинів меню: `menu-bg-1.png` … `menu-bg-6.png` (чистий арт, без намальованого UI)
+- [ ] На settings/game меню з PNG **не** просвічує — UI лише з HTML `.screen`
 - [ ] Після зміни календарного дня (або dev: змінити `localStorage.lostNumberBackground`) — інший фон
-- [ ] Ключ `lostNumberBackground` у localStorage: `{ index: 0|1|2, lastDay: "YYYY-MM-DD" }`
+- [ ] Ключ `lostNumberBackground` у localStorage: `{ index, lastDay, mode, manualSkin }`
 
 ## Dev helper notes
 
