@@ -16,6 +16,8 @@ const tests = [
   'scripts/test-menu-layout.mjs',
   'scripts/test-background-rotator.mjs',
   'scripts/test-build-flags.mjs',
+  'scripts/test-audio-background.mjs',
+  'scripts/test-grid-chain-cancel.mjs',
 ];
 
 for (const test of tests) {

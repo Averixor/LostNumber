@@ -86,6 +86,7 @@ class LostNumberGame {
     this.applyTheme();
 
     if (this.audioManager) {
+      this.audioManager.setupLifecycleHandlers();
       this.audioManager.applySettings({
         soundEnabled: this.soundEnabled,
         musicEnabled: this.musicEnabled,

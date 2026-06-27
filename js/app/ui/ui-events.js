@@ -9,13 +9,16 @@ LostNumberGame.prototype.ensureGridEventListeners = function () {
       const onDown = (e) => this.handlePointerDown(e);
       const onMove = (e) => this.handlePointerMove(e);
       const onUp = (e) => this.handlePointerUp(e);
+      const onCancel = (e) => this.handlePointerCancel(e);
+      const onLeave = (e) => this.handleGridPointerLeave(e);
 
       grid.addEventListener('pointerdown', onDown, { passive: false });
       grid.addEventListener('pointermove', onMove, { passive: false });
       grid.addEventListener('pointerup', onUp, { passive: false });
-      grid.addEventListener('pointercancel', onUp, { passive: false });
+      grid.addEventListener('pointercancel', onCancel, { passive: false });
+      grid.addEventListener('pointerleave', onLeave, { passive: true });
 
-      grid._lnHandlers = { onDown, onMove, onUp };
+      grid._lnHandlers = { onDown, onMove, onUp, onCancel, onLeave };
 
       grid._listenersAttached = true;
     }
@@ -133,6 +136,12 @@ LostNumberGame.prototype.handlePointerDown = function (e) {
     this.isDragging = true;
     this._bubblePointerX = e.clientX;
     this._bubblePointerY = e.clientY;
+    const grid = document.getElementById('grid');
+    if (grid && typeof grid.setPointerCapture === 'function') {
+      try {
+        grid.setPointerCapture(e.pointerId);
+      } catch (_) {}
+    }
     this.selected = [posCell];
     Chain.numbers = [cellNumber];
     updateChainSum();
@@ -162,7 +171,11 @@ LostNumberGame.prototype.handlePointerMove = function (e) {
     e.preventDefault();
 
     const posCell = this.gridManager.getCellFromPoint(e.clientX, e.clientY);
-    if (!posCell) return;
+    if (!posCell) {
+      this._releaseGridPointerCapture(e);
+      this.resetChain();
+      return;
+    }
 
     const idx = posCell.y * this.GRID_W + posCell.x;
     if (this.isCellFrozen(idx)) return;
@@ -207,11 +220,42 @@ LostNumberGame.prototype.handlePointerMove = function (e) {
   }
 };
 
+LostNumberGame.prototype._releaseGridPointerCapture = function (e) {
+  const grid = document.getElementById('grid');
+  if (!grid || !e || e.pointerId == null) return;
+  try {
+    if (typeof grid.hasPointerCapture === 'function' && grid.hasPointerCapture(e.pointerId)) {
+      grid.releasePointerCapture(e.pointerId);
+    }
+  } catch (_) {}
+};
+
+LostNumberGame.prototype.handlePointerCancel = function (e) {
+  try {
+    if (!this.isDragging) return;
+    this._releaseGridPointerCapture(e);
+    this.resetChain();
+  } catch (error) {
+    ErrorHandler.handle(error, { type: 'pointer_cancel' });
+  }
+};
+
+LostNumberGame.prototype.handleGridPointerLeave = function (e) {
+  try {
+    if (!this.isDragging || this.activeBonus) return;
+    this._releaseGridPointerCapture(e);
+    this.resetChain();
+  } catch (error) {
+    ErrorHandler.handle(error, { type: 'pointer_leave' });
+  }
+};
+
 LostNumberGame.prototype.handlePointerUp = function (e) {
   try {
     if (!this.isDragging) return;
 
     if (!this.canAcceptGridInput()) {
+      this._releaseGridPointerCapture(e);
       this.resetChain();
       return;
     }
@@ -220,6 +264,13 @@ LostNumberGame.prototype.handlePointerUp = function (e) {
     this._bubblePointerX = null;
     this._bubblePointerY = null;
     this.hidePreviewBubble();
+    this._releaseGridPointerCapture(e);
+
+    const posCell = this.gridManager.getCellFromPoint(e.clientX, e.clientY);
+    if (!posCell) {
+      this.resetChain();
+      return;
+    }
 
     if (this.core.canFinishChain(Chain)) {
       this.mergeChain();

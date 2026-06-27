@@ -1,11 +1,11 @@
 const I18N = {
   ua: {
-    app_title: 'Lost Number — числова головоломка',
+    app_title: 'Lost Number — Panta mēn ta gignōskomena arithmon echontikai panta ga man',
     game_logo: 'Lost Number',
     loading: 'Завантаження…',
 
-    main_title: 'Числова головоломка',
-    main_subtitle: 'Panta mēn ta gignōskomena arithmon echonti.',
+    main_title: 'Panta mēn ta gignōskomena arithmon echontikai panta ga man',
+    main_subtitle: 'Panta mēn ta gignōskomena arithmon echontikai panta ga man',
 
     btn_continue: 'Продовжити',
     btn_no_save: 'Немає збереження',
@@ -53,8 +53,7 @@ const I18N = {
     feature_premium_note:
       'Покупки та підписка ще не підключені — зараз це перегляд майбутніх можливостей.',
     feature_tournaments_title: 'Турніри',
-    feature_tournaments_intro:
-      'Турніри дозволять змагатися з іншими гравцями, не відволікаючись від спокійного основного режиму.',
+    feature_tournaments_intro: 'Турніри дозволять змагатися з іншими гравцями у світі Lost Number.',
     feature_tournaments_bullet_weekly: 'Щотижневі змагання',
     feature_tournaments_bullet_records: 'Таблиці рекордів',
     feature_tournaments_bullet_rewards: 'Нагороди за місця',
@@ -81,7 +80,7 @@ const I18N = {
     seed_reset: 'Seed скинуто: {seed}',
     debug_skip_level: 'Рівень пропущено',
 
-    header_text: 'Lost Number — числова головоломка',
+    header_text: 'Lost Number — Panta mēn ta gignōskomena arithmon echontikai panta ga man',
     goal_label: 'Ціль',
     goal_full: '· Ціль:',
     level_label: 'Рівень {level}',
@@ -116,8 +115,8 @@ const I18N = {
     settings_language_ua: 'Українська',
     settings_language_ru: 'Російська',
     settings_language_en: 'English',
-    settings_visual_skin_label: 'Оформлення:',
-    settings_visual_skin_auto: 'Автощодня',
+    settings_visual_skin_label: 'Скін:',
+    settings_visual_skin_auto: 'Автозаміна',
     visual_skin_1: 'Скін 1',
     visual_skin_2: 'Скін 2',
     visual_skin_3: 'Скін 3',
@@ -132,10 +131,10 @@ const I18N = {
     settings_state_auto: 'Авто',
 
     about_title: 'Про гру',
-    about_p1: '«Lost Number» — це затишна медитативна головоломка, де панують спокій і логіка.',
+    about_p1: '«Lost Number» — Panta mēn ta gignōskomena arithmon echontikai panta ga man.',
     about_p2:
       'Поєднуйте числа в елегантні ланцюжки, створюйте правильні суми та відкривайте нові рівні.',
-    about_p3: 'Без таймерів і поштовхів — тільки ви, цифри та задоволення від процесу.',
+    about_p3: 'Panta mēn ta gignōskomena arithmon echontikai panta ga man.',
     about_heading_howto: 'Як грати',
     about_howto_1: 'Почніть з будь-якої клітинки та ведіть лінію по сусідах, зокрема по діагоналі.',
     about_howto_2:
@@ -289,12 +288,12 @@ const I18N = {
   },
 
   ru: {
-    app_title: 'Lost Number — числовая головоломка',
+    app_title: 'Lost Number — Panta mēn ta gignōskomena arithmon echontikai panta ga man',
     game_logo: 'Lost Number',
     loading: 'Загрузка…',
 
-    main_title: 'Числовая головоломка',
-    main_subtitle: 'Panta mēn ta gignōskomena arithmon echonti.',
+    main_title: 'Panta mēn ta gignōskomena arithmon echontikai panta ga man',
+    main_subtitle: 'Panta mēn ta gignōskomena arithmon echontikai panta ga man',
 
     btn_continue: 'Продолжить',
     btn_no_save: 'Нет сохранения',
@@ -343,7 +342,7 @@ const I18N = {
       'Покупки и подписка ещё не подключены — сейчас это предпросмотр возможностей.',
     feature_tournaments_title: 'Турниры',
     feature_tournaments_intro:
-      'Турниры позволят соревноваться с другими игроками, не отвлекаясь от спокойного основного режима.',
+      'Турниры позволят соревноваться с другими игроками в мире Lost Number.',
     feature_tournaments_bullet_weekly: 'Еженедельные соревнования',
     feature_tournaments_bullet_records: 'Таблицы рекордов',
     feature_tournaments_bullet_rewards: 'Награды за места',
@@ -358,7 +357,7 @@ const I18N = {
     feature_3: 'Сохранение прогресса',
     feature_4: 'Для всей семьи',
 
-    header_text: 'Lost Number — числовая головоломка',
+    header_text: 'Lost Number — Panta mēn ta gignōskomena arithmon echontikai panta ga man',
     goal_label: 'Цель',
     goal_full: '· Цель:',
     level_label: 'Уровень {level}',
@@ -409,10 +408,10 @@ const I18N = {
     settings_state_auto: 'Авто',
 
     about_title: 'О игре',
-    about_p1: '«Lost Number» — это уютная медитативная головоломка, где царят покой и логика.',
+    about_p1: '«Lost Number» — Panta mēn ta gignōskomena arithmon echontikai panta ga man.',
     about_p2:
       'Соединяйте числа в элегантные цепочки, создавайте нужные суммы и открывайте новые уровни.',
-    about_p3: 'Без таймеров и спешки — только вы, цифры и удовольствие от процесса.',
+    about_p3: 'Panta mēn ta gignōskomena arithmon echontikai panta ga man.',
     about_heading_howto: 'Как играть',
     about_howto_1: 'Начните с любой клетки и ведите линию по соседям, включая диагонали.',
     about_howto_2:
@@ -576,12 +575,12 @@ const I18N = {
   },
 
   en: {
-    app_title: 'Lost Number — number puzzle',
+    app_title: 'Lost Number — Panta mēn ta gignōskomena arithmon echontikai panta ga man',
     game_logo: 'Lost Number',
     loading: 'Loading…',
 
-    main_title: 'Number Puzzle',
-    main_subtitle: 'A calm number puzzle. Play at your own pace, with no timers and no pressure.',
+    main_title: 'Panta mēn ta gignōskomena arithmon echontikai panta ga man',
+    main_subtitle: 'Panta mēn ta gignōskomena arithmon echontikai panta ga man',
 
     btn_continue: 'Continue',
     btn_no_save: 'No saved game',
@@ -644,7 +643,7 @@ const I18N = {
     feature_3: 'Progress saving',
     feature_4: 'Family friendly',
 
-    header_text: 'Lost Number — number puzzle',
+    header_text: 'Lost Number — Panta mēn ta gignōskomena arithmon echontikai panta ga man',
     goal_label: 'Goal',
     goal_full: '· Goal:',
     level_label: 'Level {level}',
@@ -695,9 +694,9 @@ const I18N = {
     settings_state_auto: 'Auto',
 
     about_title: 'About',
-    about_p1: '\u201CLost Number\u201D is a cozy meditative puzzle where peace and logic thrive.',
+    about_p1: '«Lost Number» — Panta mēn ta gignōskomena arithmon echontikai panta ga man.',
     about_p2: 'Connect numbers into elegant chains, create the right sums, and unlock new levels.',
-    about_p3: 'No timers, no rush — just you, the numbers, and the joy of the process.',
+    about_p3: 'Panta mēn ta gignōskomena arithmon echontikai panta ga man.',
     about_heading_howto: 'How to Play',
     about_howto_1: 'Start from any cell and draw a line to neighboring cells, including diagonals.',
     about_howto_2:
@@ -707,8 +706,7 @@ const I18N = {
     about_howto_5:
       'Progress is saved automatically. Daily tasks and achievements are available in the menu.',
     about_heading_more: 'Features',
-    about_p4:
-      'Dozens of levels, visual themes, and detailed stats. Fully relaxed gameplay with no time limits.',
+    about_p4: 'Dozens of levels, visual themes, and detailed stats.',
     about_credits: 'Made with love for brainy games. Code: github.com/Averixor/LostNumber',
 
     victory_title: 'Congratulations!',

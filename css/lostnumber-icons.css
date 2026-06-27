@@ -6,6 +6,19 @@
   --ln-icon-muted: rgba(255, 214, 255, 0.55);
 }
 
+html[data-theme='dawn'] {
+  --ln-icon-pink: #c832b8;
+  --ln-icon-violet: #6b42e8;
+  --ln-icon-soft: #8a4dff;
+  --ln-icon-muted: rgba(58, 28, 72, 0.58);
+}
+
+html[data-theme='dawn'] .menu-dock-btn__icon img.ln-icon,
+html[data-theme='dawn'] .menu-quick-btn__icon img.ln-icon,
+html[data-theme='dawn'] .menu-account-btn__icon img.ln-icon {
+  filter: drop-shadow(0 0 4px rgba(138, 77, 255, 0.35)) saturate(1.2);
+}
+
 img.ln-icon {
   display: block;
   width: 24px;

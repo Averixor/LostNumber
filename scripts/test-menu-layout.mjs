@@ -143,6 +143,23 @@ assert(uiCss.includes("html[data-quick-row='circles']"), 'circle quick-row varia
 assert(uiCss.includes("html[data-primary-btn='skew']"), 'skew primary button variant defined');
 
 const baseCss = readFileSync(join(root, 'css/base.css'), 'utf8');
+const variablesCss = readFileSync(join(root, 'css/variables.css'), 'utf8');
+assert(variablesCss.includes('--screen-top-offset'), 'screen top offset variable defined');
+assert(
+  variablesCss.includes('calc(var(--app-safe-top) + 28px)'),
+  'screen top offset includes safe area plus breathing room',
+);
+assert(baseCss.includes('padding-top: var(--screen-top-offset)'), 'screens use global top offset');
+assert(
+  !/body\s*\{[^}]*padding-top:\s*env\(safe-area-inset-top/.test(baseCss),
+  'body does not duplicate safe-area top padding',
+);
+assert(uiCss.includes('.settings-screen'), 'settings screen styles present');
+assert(
+  uiCss.includes('padding-top: var(--screen-top-offset)') &&
+    /\.settings-screen[\s\S]*padding-top:\s*var\(--screen-top-offset\)/.test(uiCss),
+  'settings screen uses global top offset',
+);
 assert(baseCss.includes('.screen.is-active'), 'single active screen layer defined');
 const hiddenRule = baseCss.match(/\.screen\.hidden\s*\{[^}]*\}/)?.[0] || '';
 assert(hiddenRule.includes('visibility: hidden'), 'hidden screens use visibility: hidden');

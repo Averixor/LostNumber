@@ -59,6 +59,7 @@ function createMockDOM() {
     if (sel === '.snowflake') return el.classList.contains('snowflake');
     if (sel === '.freeze-counter') return el.classList.contains('freeze-counter');
     if (sel === '.cell-inner') return el.classList.contains('cell-inner');
+    if (sel === '.tile-crown') return el.classList.contains('tile-crown');
     const m = sel.match(/^\.cell\[data-x="(\d+)"\]\[data-y="(\d+)"\]$/);
     if (m) {
       return el.classList.contains('cell') && el.dataset.x === m[1] && el.dataset.y === m[2];
@@ -379,6 +380,9 @@ fillGrid(game, (x, y) => 2 ** (((x + y) % 5) + 1));
 gm.performFullRender();
 assertEq(grid.childElementCount, game.GRID_W * game.GRID_H, 'performFullRender creates all cells');
 assertGridDOMMatchesModel(game, gm, 'after performFullRender');
+const largestCell = gm.cellCache.flat().find((cell) => cell.classList.contains('tile--largest'));
+assert(!!largestCell, 'performFullRender marks largest tile with crown class');
+assert(!!largestCell?.querySelector('.tile-crown'), 'largest tile renders crown icon');
 
 game.grid[2][3].number = 16;
 game.grid[2][3].merged = true;

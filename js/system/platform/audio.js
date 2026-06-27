@@ -46,6 +46,9 @@ class AudioManager {
     this._unlocked = false;
     this._currentMusic = null;
     this._currentMusicKey = null;
+    this._wasMusicPlayingBeforeBackground = false;
+    this._appInBackground = false;
+    this._lifecycleHandlersReady = false;
   }
 
   init() {
@@ -205,6 +208,78 @@ class AudioManager {
 
     try {
       track.play().catch(() => {});
+    } catch (_) {}
+  }
+
+  _isMusicPlaying() {
+    return !!(this._currentMusic && !this._currentMusic.paused);
+  }
+
+  pauseMusic() {
+    if (!this._currentMusic) return false;
+    try {
+      if (!this._currentMusic.paused) {
+        this._currentMusic.pause();
+        return true;
+      }
+    } catch (_) {}
+    return false;
+  }
+
+  resumeMusic() {
+    if (!this.musicEnabled || !this._unlocked || !this._currentMusic) return;
+    try {
+      if (this._currentMusic.paused) {
+        this._currentMusic.play().catch(() => {});
+      }
+    } catch (_) {}
+  }
+
+  handleAppBackground() {
+    if (this._appInBackground) return;
+    this._appInBackground = true;
+    this._wasMusicPlayingBeforeBackground = this.musicEnabled && this._isMusicPlaying();
+    if (this._wasMusicPlayingBeforeBackground) {
+      this.pauseMusic();
+    }
+  }
+
+  handleAppForeground() {
+    if (!this._appInBackground) return;
+    this._appInBackground = false;
+    if (this._wasMusicPlayingBeforeBackground && this.musicEnabled && this._unlocked) {
+      this.resumeMusic();
+    }
+    this._wasMusicPlayingBeforeBackground = false;
+  }
+
+  setupLifecycleHandlers() {
+    if (this._lifecycleHandlersReady) return;
+    this._lifecycleHandlersReady = true;
+
+    const onHide = () => this.handleAppBackground();
+    const onShow = () => this.handleAppForeground();
+
+    document.addEventListener(
+      'visibilitychange',
+      () => {
+        if (document.hidden) onHide();
+        else onShow();
+      },
+      { passive: true },
+    );
+
+    window.addEventListener('blur', onHide, { passive: true });
+    window.addEventListener('focus', onShow, { passive: true });
+
+    try {
+      const App = window.Capacitor?.Plugins?.App;
+      if (App && typeof App.addListener === 'function') {
+        App.addListener('appStateChange', ({ isActive }) => {
+          if (isActive) onShow();
+          else onHide();
+        });
+      }
     } catch (_) {}
   }
 

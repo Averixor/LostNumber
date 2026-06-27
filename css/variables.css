@@ -35,6 +35,34 @@
   /* PWA: браузерна панель / manifest — узгоджено з applyTheme */
   --pwa-theme-color: #1b1028;
   --pwa-background-color: #1b1028;
+
+  /* Safe area + global screen top breathing room (status bar clearance) */
+  --app-safe-top: env(safe-area-inset-top, 0px);
+  --app-safe-right: env(safe-area-inset-right, 0px);
+  --app-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --app-safe-left: env(safe-area-inset-left, 0px);
+  --screen-top-offset: calc(var(--app-safe-top) + 28px);
+  --screen-side-padding: clamp(6px, 1.5vw, 12px);
+  --screen-bottom-padding: max(clamp(6px, 1.5vh, 12px), var(--app-safe-bottom));
+}
+
+html[data-theme='dawn'] {
+  --bg-color: #fff5fb;
+  --bg2-color: #f8ebf6;
+  --panel-bg: rgba(255, 245, 255, 0.72);
+  --panel-border: rgba(126, 64, 156, 0.32);
+  --cell-color: rgba(255, 240, 252, 0.94);
+  --btn-bg: rgba(255, 228, 248, 0.9);
+  --btn-border: rgba(147, 78, 178, 0.38);
+  --primary-color: #b832d9;
+  --secondary-color: #8a4dff;
+  --accent-color: #e8a0ff;
+  --text-color: #2c1838;
+  --muted-color: rgba(44, 24, 56, 0.78);
+  --cell-number-color: #2c1838;
+  --preview-valid: #2e7d32;
+  --preview-invalid: #c62828;
+  --shadow: 0.22;
 }
 
 html[data-theme='dusk'] {

@@ -9,7 +9,11 @@
   justify-content: center;
   z-index: 100;
   overflow: hidden;
-  padding: clamp(4px, 1vh, 10px);
+  box-sizing: border-box;
+  padding-top: var(--screen-top-offset);
+  padding-right: max(clamp(4px, 1vh, 10px), var(--app-safe-right));
+  padding-bottom: max(clamp(4px, 1vh, 10px), var(--app-safe-bottom));
+  padding-left: max(clamp(4px, 1vh, 10px), var(--app-safe-left));
 }
 
 html[data-theme='dusk'] .victory-overlay,
@@ -274,7 +278,11 @@ html[data-theme='dusk'] .wheel-overlay {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(12px, 4vw, 24px);
+  box-sizing: border-box;
+  padding-top: var(--screen-top-offset);
+  padding-right: max(clamp(12px, 4vw, 24px), var(--app-safe-right));
+  padding-bottom: max(clamp(12px, 4vw, 24px), var(--app-safe-bottom));
+  padding-left: max(clamp(12px, 4vw, 24px), var(--app-safe-left));
 }
 
 .confirm-overlay.hidden {

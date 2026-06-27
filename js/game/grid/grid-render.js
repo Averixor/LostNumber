@@ -1,3 +1,57 @@
+GridManager.prototype._findLargestTilePosition = function () {
+  const W = this.game.GRID_W;
+  const H = this.game.GRID_H;
+  let maxNum = -Infinity;
+  let position = null;
+
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      const num = this.game.grid?.[x]?.[y]?.number;
+      if (num == null || !Number.isFinite(Number(num))) continue;
+      if (num > maxNum) {
+        maxNum = num;
+        position = { x, y };
+      }
+    }
+  }
+
+  return position;
+};
+
+GridManager.prototype._updateLargestTileMarkers = function () {
+  const W = this.game.GRID_W;
+  const H = this.game.GRID_H;
+  const largest = this._findLargestTilePosition();
+
+  if (!this.cellCache || this.cellCache.length !== W) return;
+
+  for (let x = 0; x < W; x++) {
+    if (!this.cellCache[x] || this.cellCache[x].length !== H) return;
+    for (let y = 0; y < H; y++) {
+      const cellEl = this.cellCache[x][y];
+      if (!cellEl) continue;
+
+      const isLargest = !!(largest && largest.x === x && largest.y === y);
+      cellEl.classList.toggle('tile--largest', isLargest);
+
+      let crown = cellEl.querySelector('.tile-crown');
+      if (isLargest) {
+        if (!crown) {
+          crown = document.createElement('img');
+          crown.className = 'tile-crown';
+          crown.src = 'assets/icons/neon/icons/tile-crown.svg';
+          crown.alt = '';
+          crown.setAttribute?.('aria-hidden', 'true');
+          crown.draggable = false;
+          cellEl.appendChild(crown);
+        }
+      } else if (crown) {
+        crown.remove();
+      }
+    }
+  }
+};
+
 GridManager.prototype._applyCellDisplayClasses = function (cell, num) {
   const readable = num != null && num >= 8192;
   const compact = num != null && num >= 1024;
@@ -137,6 +191,7 @@ GridManager.prototype.performFullRender = function () {
     }
 
     gridDiv.appendChild(fragment);
+    this._updateLargestTileMarkers();
     this.renderCount++;
   } catch (error) {
     ErrorHandler.handle(error, {
@@ -229,6 +284,7 @@ GridManager.prototype.syncGridDOMFromModel = function () {
       }
     }
 
+    this._updateLargestTileMarkers();
     return true;
   } catch (error) {
     ErrorHandler.warn('syncGridDOMFromModel failed', { error });

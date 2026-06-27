@@ -30,10 +30,10 @@
   gap: clamp(4px, 1.2vh, 10px);
   min-height: 100dvh;
   max-height: 100dvh;
-  padding-top: max(clamp(8px, 2vh, 16px), env(safe-area-inset-top, 0px));
-  padding-bottom: max(clamp(8px, 2vh, 14px), env(safe-area-inset-bottom, 0px));
-  padding-left: max(clamp(8px, 2vw, 14px), env(safe-area-inset-left, 0px));
-  padding-right: max(clamp(8px, 2vw, 14px), env(safe-area-inset-right, 0px));
+  padding-top: var(--screen-top-offset);
+  padding-bottom: max(clamp(8px, 2vh, 14px), var(--app-safe-bottom));
+  padding-left: max(clamp(8px, 2vw, 14px), var(--app-safe-left));
+  padding-right: max(clamp(8px, 2vw, 14px), var(--app-safe-right));
   box-sizing: border-box;
 }
 
@@ -580,7 +580,10 @@ body[data-active-screen='mainMenu'] .app-background::after {
 
 .game-screen {
   justify-content: flex-start;
-  padding: clamp(4px, 1vh, 10px) clamp(6px, 2vw, 12px);
+  padding-top: var(--screen-top-offset);
+  padding-right: max(clamp(6px, 2vw, 12px), var(--app-safe-right));
+  padding-bottom: var(--screen-bottom-padding);
+  padding-left: max(clamp(6px, 2vw, 12px), var(--app-safe-left));
   height: 100dvh;
   max-height: 100dvh;
   overflow: hidden;
@@ -588,7 +591,7 @@ body[data-active-screen='mainMenu'] .app-background::after {
 
 .goal-box {
   width: 100%;
-  margin: 10px 0 4px;
+  margin: 6px 0 2px;
   padding: 6px 8px;
   border-radius: 10px;
   background: var(--panel-bg);
@@ -606,7 +609,7 @@ body[data-active-screen='mainMenu'] .app-background::after {
 
 .xp-wrap {
   width: 100%;
-  margin: 8px 0 4px;
+  margin: 4px 0 2px;
   position: relative;
 }
 
@@ -864,8 +867,10 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
 }
 
 .settings-screen {
-  padding: clamp(12px, 3vh, 20px) clamp(12px, 3vw, 18px)
-    max(clamp(20px, 5vh, 36px), env(safe-area-inset-bottom, 0px));
+  padding-top: var(--screen-top-offset);
+  padding-right: max(clamp(12px, 3vw, 18px), var(--app-safe-right));
+  padding-bottom: max(clamp(20px, 5vh, 36px), var(--app-safe-bottom));
+  padding-left: max(clamp(12px, 3vw, 18px), var(--app-safe-left));
   text-align: center;
   justify-content: flex-start;
   overflow-x: hidden;
@@ -980,8 +985,10 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
 .achievements-screen,
 .stats-screen,
 .daily-quests-screen {
-  padding: clamp(10px, 2.5vh, 20px) clamp(10px, 3vw, 18px)
-    max(clamp(20px, 5vh, 36px), env(safe-area-inset-bottom, 0px));
+  padding-top: var(--screen-top-offset);
+  padding-right: max(clamp(10px, 3vw, 18px), var(--app-safe-right));
+  padding-bottom: max(clamp(20px, 5vh, 36px), var(--app-safe-bottom));
+  padding-left: max(clamp(10px, 3vw, 18px), var(--app-safe-left));
   text-align: center;
   justify-content: flex-start;
   overflow-y: hidden;
@@ -1195,8 +1202,8 @@ html[data-theme='dusk'] .preview-bubble {
 
 @media (max-height: 520px) {
   .main-menu {
-    padding-top: max(clamp(6px, 1.5vh, 10px), env(safe-area-inset-top, 0px));
-    padding-bottom: max(clamp(6px, 1.5vh, 10px), env(safe-area-inset-bottom, 0px));
+    padding-top: var(--screen-top-offset);
+    padding-bottom: max(clamp(6px, 1.5vh, 10px), var(--app-safe-bottom));
     gap: 4px;
   }
 
@@ -1220,4 +1227,56 @@ html[data-theme='dusk'] .preview-bubble {
   .subtitle {
     display: none;
   }
+}
+
+html[data-theme='dawn'] .main-menu__tagline {
+  color: rgba(44, 24, 56, 0.9);
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.75);
+}
+
+html[data-theme='dawn'] .main-menu__actions .menu-btn.ghost .menu-btn__label {
+  color: #3a1f4a;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.65);
+}
+
+html[data-theme='dawn'] .main-menu__dock {
+  background: rgba(55, 31, 68, 0.48);
+  border-color: rgba(126, 64, 156, 0.38);
+  box-shadow: 0 8px 24px rgba(55, 31, 68, 0.22);
+}
+
+html[data-theme='dawn'] .menu-dock-btn__label {
+  color: rgba(255, 248, 255, 0.96);
+  text-shadow: 0 1px 3px rgba(34, 12, 44, 0.55);
+}
+
+html[data-theme='dawn'] .menu-quick-btn--chip {
+  --menu-chip-bg: rgba(68, 36, 88, 0.44);
+  --menu-chip-border: rgba(126, 64, 156, 0.46);
+  color: #fff;
+}
+
+html[data-theme='dawn'] .menu-quick-btn--chip .menu-quick-btn__label {
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(34, 12, 44, 0.45);
+}
+
+html[data-theme='dawn'] .menu-account-btn {
+  color: #2c1838;
+  background: rgba(255, 245, 255, 0.72);
+  border-color: rgba(126, 64, 156, 0.32);
+}
+
+html[data-theme='dawn'] .menu-account-btn--ghost {
+  color: rgba(44, 24, 56, 0.82);
+}
+
+html[data-theme='dawn'] .settings-title {
+  color: var(--primary-color);
+}
+
+html[data-theme='dawn'] .goal-box,
+html[data-theme='dawn'] .chain-sum-hud,
+html[data-theme='dawn'] .xp-bar {
+  box-shadow: 0 4px 10px rgba(55, 31, 68, 0.12);
 }

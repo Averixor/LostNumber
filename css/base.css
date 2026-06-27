@@ -22,10 +22,6 @@ body {
   overflow: hidden;
   touch-action: manipulation;
   color: var(--text-color);
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-right: env(safe-area-inset-right, 0px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  padding-left: env(safe-area-inset-left, 0px);
 }
 
 .sr-only {
@@ -60,7 +56,11 @@ body.no-animations *::after {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: clamp(6px, 1.5vh, 12px);
+  box-sizing: border-box;
+  padding-top: var(--screen-top-offset);
+  padding-right: max(var(--screen-side-padding), var(--app-safe-right));
+  padding-bottom: var(--screen-bottom-padding);
+  padding-left: max(var(--screen-side-padding), var(--app-safe-left));
   opacity: 0;
   visibility: hidden;
   pointer-events: none;

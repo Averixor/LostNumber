@@ -76,6 +76,26 @@
   }
 }
 
+.cell.tile--largest {
+  position: relative;
+}
+
+.tile-crown {
+  position: absolute;
+  top: clamp(2px, 8%, 6px);
+  left: 50%;
+  width: clamp(14px, 28%, 18px);
+  height: clamp(14px, 28%, 18px);
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 3;
+  filter: drop-shadow(0 0 6px rgba(255, 92, 220, 0.75));
+}
+
+.cell.tile--largest .cell-inner {
+  transform: translateY(clamp(4px, 12%, 6px));
+}
+
 .cell::before {
   content: '';
   display: block;
