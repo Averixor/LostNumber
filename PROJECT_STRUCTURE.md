@@ -4,21 +4,25 @@
 
 ## Корінь репозиторію
 
-| Шлях                               | Призначення                                            |
-| ---------------------------------- | ------------------------------------------------------ |
-| `index.html`                       | Точка входу, послідовні `<script>` без `type="module"` |
-| `manifest.json`                    | PWA (`name`: Lost Number)                              |
-| `capacitor.config.json`            | Capacitor 7, `appName`: Lost Number, `webDir`: `_site` |
-| `assets/images/background.png`     | Фон №1                                                 |
-| `assets/images/background-alt.png` | Фон №2 (чергування)                                    |
-| `assets/icons/icon.png`            | Іконка 512×512 (PWA, favicon)                          |
-| `assets/icons/icon-1024.png`       | Мастер-іконка 1024×1024 (Android, maskable PWA)        |
-| `public/audio/`                    | Музика та SFX → `_site/audio/`                         |
-| `css/`                             | Стилі                                                  |
-| `js/`                              | Логіка гри                                             |
-| `android/`                         | Gradle-проєкт Android                                  |
-| `scripts/`                         | Збірка, перевірки, генерація іконок                    |
-| `docs/`                            | `ANDROID.md`, `AUDIO.md`, `PHASES.md`                  |
+| Шлях                                | Призначення                                            |
+| ----------------------------------- | ------------------------------------------------------ |
+| `index.html`                        | Точка входу, послідовні `<script>` без `type="module"` |
+| `manifest.json`                     | PWA (`name`: Lost Number)                              |
+| `capacitor.config.json`             | Capacitor 7, `appName`: Lost Number, `webDir`: `_site` |
+| `assets/images/background.png`      | Фон №1                                                 |
+| `assets/images/background-alt.png`  | Фон №2                                                 |
+| `assets/images/background-alt2.png` | Фон №3                                                 |
+| `assets/icons/neon/icons/*.svg`     | Neon SVG для UI (`LostNumberIcons`)                    |
+| `css/lostnumber-icons.css`          | Стилі neon-іконок                                      |
+| `js/ui/icons.js`                    | `LostNumberIcons` — mount / `applyAll`                 |
+| `assets/icons/icon.png`             | Іконка 512×512 (PWA, favicon)                          |
+| `assets/icons/icon-1024.png`        | Мастер-іконка 1024×1024 (Android, maskable PWA)        |
+| `public/audio/`                     | Музика та SFX → `_site/audio/`                         |
+| `css/`                              | Стилі                                                  |
+| `js/`                               | Логіка гри                                             |
+| `android/`                          | Gradle-проєкт Android                                  |
+| `scripts/`                          | Збірка, перевірки, генерація іконок                    |
+| `docs/`                             | `ANDROID.md`, `AUDIO.md`, `PHASES.md`                  |
 
 ## Фони (чергування)
 
@@ -27,7 +31,7 @@
 | `BackgroundRotator.init()`            | `js/system/platform/background.js` | inline-скрипт у `index.html` після `#appBackground`                 |
 | `BackgroundRotator.onMainMenuEnter()` | там же                             | `ScreenManager.showScreen('mainMenu')` у `js/ui/screens/screens.js` |
 
-Логіка: при кожному відкритті головного меню, якщо змінився календарний день — індекс фону `0 ↔ 1`. Стан у `localStorage` ключ **`lostNumberBackground`**.
+Логіка: при кожному відкритті головного меню, якщо змінився календарний день — індекс фону циклічно `0 → 1 → 2 → 0`. Стан у `localStorage` ключ **`lostNumberBackground`** (`{ index: 0|1|2, lastDay: "YYYY-MM-DD" }`).
 
 CSS: `css/background.css` — `--app-bg-image` на `#appBackground`.
 
@@ -43,16 +47,27 @@ public/audio/
 
 ## `css/`
 
-| Файл                  | Призначення                                      |
-| --------------------- | ------------------------------------------------ |
-| `variables.css`       | Токени теми, PWA-кольори                         |
-| `background.css`      | `#appBackground`, CSS-змінна фону                |
-| `base.css`            | Базова типографіка, `.screen`                    |
-| `ui.css`              | Меню (центроване), кнопки [іконка 32px \| текст] |
-| `grid.css`            | Поле, клітини, підсвітка ланцюга                 |
-| `overlays.css`        | Перемога, рівень, колесо, confirm                |
-| `critical.css`        | Splash, критична помилка                         |
-| `low-performance.css` | Lite-режим (`html.low-performance`)              |
+| Файл                   | Призначення                                      |
+| ---------------------- | ------------------------------------------------ |
+| `variables.css`        | Токени теми, PWA-кольори                         |
+| `background.css`       | `#appBackground`, CSS-змінна фону                |
+| `base.css`             | Базова типографіка, `.screen`                    |
+| `ui.css`               | Меню (центроване), кнопки [іконка 32px \| текст] |
+| `grid.css`             | Поле, клітини, підсвітка ланцюга                 |
+| `overlays.css`         | Перемога, рівень, колесо, confirm                |
+| `critical.css`         | Splash, критична помилка                         |
+| `low-performance.css`  | Lite-режим (`html.low-performance`)              |
+| `lostnumber-icons.css` | Neon SVG іконки (`ln-icon`, слоти HUD/меню)      |
+
+## Neon icons
+
+| Компонент         | Файл                       | Хто викликає                                     |
+| ----------------- | -------------------------- | ------------------------------------------------ |
+| `LostNumberIcons` | `js/ui/icons.js`           | `index.html`; `i18n-theme.js`, `daily.js`, wheel |
+| SVG assets        | `assets/icons/neon/icons/` | `LostNumberIcons.resolveUrl`                     |
+| Стилі             | `css/lostnumber-icons.css` | `index.html`                                     |
+
+Mount: елемент з `data-ln-icon="slug"`. Після `innerHTML` — `LostNumberIcons.applyAll(container)`.
 
 ## `js/bootstrap/`
 
@@ -100,7 +115,7 @@ public/audio/
 | `grid-init.js`       | `initGame`, `performFullRender`                            | `game-flow`, `save-load`, `bonuses`                                  |
 | `grid-render.js`     | `render`, `syncGridDOMFromModel`, `preferSyncOrFullRender` | `ui-events`, `game-flow`, `grid-physics`, `grid-safety`, `save-load` |
 | `grid-physics.js`    | `applyLocalGravity`, `shuffleGrid`                         | `game-flow`, `bonuses`                                               |
-| `grid-animations.js` | `animateGravity`, `animatePopping`                         | `game-flow`, `bonuses`                                               |
+| `grid-animations.js` | `runPostMergeEffects`, `animateGravity`                    | `game-flow`, `bonuses`                                               |
 | `grid-freeze.js`     | `updateFrozenCells`, `initFreezeSystem`                    | `game-flow`, `grid-render`                                           |
 | `grid-safety.js`     | `validateGrid`, `repairGrid`                               | `save-load.js`                                                       |
 
@@ -162,7 +177,7 @@ public/audio/
 | ---------------------- | ------------------------------------------------------------------------------------------------------------- |
 | `lostNumberSave`       | Активна партія (grid v2, рівень, XP…)                                                                         |
 | `lostNumberSettings`   | `soundEnabled`, `musicEnabled`, гучності, `musicTrack`, `theme`, `lang`, `animationEnabled`, `liteVisualMode` |
-| `lostNumberBackground` | `{ index: 0\|1, lastDay: "YYYY-MM-DD" }` — чергування фонів                                                   |
+| `lostNumberBackground` | `{ index: 0\|1\|2, lastDay: "YYYY-MM-DD" }` — чергування фонів                                                |
 | `dailyQuests`          | Щоденні завдання                                                                                              |
 | `lostNumberFirstRun`   | Прапорець першого запуску                                                                                     |
 
@@ -170,9 +185,9 @@ public/audio/
 
 ```
 pointerdown/up (ui-events) → validateMove (GameCore) → mergeChain (game-flow)
-  → render / animatePopping / animateGravity
-  → applyLocalGravity (grid-physics) → preferSyncOrFullRender (grid-render)
-  → saveGameState → checkWin → handleLevelComplete (overlays)
+  → runPostMergeEffects (grid-animations) → applyLocalGravity (grid-physics)
+  → preferSyncOrFullRender (grid-render) → saveGameState → checkWin
+bonuses destroy/explosion → runPostMergeEffects (той самий pipeline)
 ```
 
 ## `docs/`

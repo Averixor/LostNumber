@@ -23,10 +23,17 @@ npx serve .
 
 - `assets/images/background.png` — фон №1
 - `assets/images/background-alt.png` — фон №2
+- `assets/images/background-alt2.png` — фон №3
 
-Логіка: `js/system/platform/background.js` (`BackgroundRotator`), стан у `localStorage` ключ `lostNumberBackground`.
+Логіка: `js/system/platform/background.js` (`BackgroundRotator`), стан у `localStorage` ключ `lostNumberBackground` (індекс `0…2` + `lastDay`).
 
-**Іконки:**
+**Neon-іконки UI** (замість emoji в меню, HUD, досягненнях):
+
+- `js/ui/icons.js` — `LostNumberIcons` (`data-ln-icon`, `applyAll`)
+- `css/lostnumber-icons.css` — розміри та стилі слотів
+- `assets/icons/neon/icons/*.svg` — набір SVG-іконок
+
+**PWA / launcher іконки:**
 
 - `assets/icons/icon.png` — 512×512 (PWA, favicon, браузер)
 - `assets/icons/icon-1024.png` — 1024×1024 (Android adaptive icon, PWA maskable)
