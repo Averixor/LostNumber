@@ -15,8 +15,32 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  pages-ready:
+    runs-on: ubuntu-latest
+    outputs:
+      enabled: ${{ steps.detect.outputs.enabled }}
+    steps:
+      - name: Detect GitHub Pages site
+        id: detect
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if gh api "repos/${GITHUB_REPOSITORY}/pages" --silent >/dev/null 2>&1; then
+            echo "GitHub Pages site exists for ${GITHUB_REPOSITORY}"
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::GitHub Pages is not enabled for this repository."
+            echo "::warning::CI still runs via .github/workflows/ci.yml (release:check)."
+            echo "::warning::Enable Pages (public repo or GitHub Pro) and set Source: GitHub Actions."
+            echo "::warning::See docs/GITHUB_PAGES.md"
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
   build:
     runs-on: ubuntu-latest
+    needs: pages-ready
+    if: needs.pages-ready.outputs.enabled == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,18 +56,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run release checks
-        run: npm run release:check
-
       - name: Build Pages artifact
         run: npm run build:pages
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        with:
-          # Auto-enable Pages (GitHub Actions source) on first successful run.
-          # If this still 404s, enable manually: Settings → Pages → Source: GitHub Actions.
-          enablement: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -56,6 +73,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
+    if: needs.pages-ready.outputs.enabled == 'true'
     steps:
       - name: Deploy to GitHub Pages
         id: deployment

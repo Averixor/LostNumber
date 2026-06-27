@@ -1,6 +1,7 @@
 # GitHub Pages — увімкнення та деплой
 
-Workflow: `.github/workflows/pages.yml`  
+Workflow: `.github/workflows/pages.yml` (деплой, лише якщо Pages увімкнено)  
+Перевірки якості: `.github/workflows/ci.yml` (`npm run release:check` на кожному push/PR)  
 Сайт після деплою: `https://averixor.github.io/LostNumber/`
 
 ## Помилка `Get Pages site failed` / `Not Found`
@@ -15,7 +16,7 @@ REST API Pages для репозиторію повертає **404**, бо са
 HTTP 422: Your current plan does not support GitHub Pages for this repository.
 ```
 
-`actions/configure-pages` не зможе увімкнути Pages, поки не зміниться план або видимість репо.
+`actions/configure-pages` не зможе увімкнути Pages, поки не зміниться план або видимість репо. Workflow **не падає**: крок деплою пропускається, а **`ci.yml` продовжує запускати `release:check`**.
 
 **Варіанти:**
 
@@ -36,7 +37,7 @@ HTTP 422: Your current plan does not support GitHub Pages for this repository.
 gh workflow run pages.yml
 ```
 
-У workflow вже є `enablement: true` і **Node 24** (замість застарілого Node 20 на раннерах).
+У workflow Pages використовується **Node 24** (замість застарілого Node 20 на раннерах). `enablement: true` прибрано — автостворення Pages через `GITHUB_TOKEN` на private/free плані дає `Resource not accessible by integration`.
 
 ## Перевірка статусу
 

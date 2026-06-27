@@ -47,7 +47,7 @@ Android mipmap: `python3 scripts/generate-android-icons.py` (джерело — 
 
 Живий приклад на GitHub Pages: <https://averixor.github.io/LostNumber/>
 
-Деплой налаштований через GitHub Pages як статичний сайт без Jekyll. Workflow запускає `npm run release:check`, готує `_site/` командою `npm run build:pages` і публікує лише runtime-асети гри. Якщо CI падає на `configure-pages` — див. [docs/GITHUB_PAGES.md](docs/GITHUB_PAGES.md) (увімкнути Pages → Source: GitHub Actions).
+Деплой налаштований через GitHub Pages як статичний сайт без Jekyll. **`ci.yml`** запускає `npm run release:check` на кожному push; **`pages.yml`** деплоїть `_site/` лише якщо Pages увімкнено. Якщо CI падає на `configure-pages` — див. [docs/GITHUB_PAGES.md](docs/GITHUB_PAGES.md).
 
 ## Android (APK / Google Play)
 
