@@ -371,44 +371,129 @@
       </div>
     </div>
 
+    <div
+      class="confirm-overlay hidden"
+      id="featureStubOverlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="featureStubTitle"
+    >
+      <button
+        type="button"
+        class="confirm-overlay__backdrop"
+        id="featureStubBackdrop"
+        data-i18n-aria-label="btn_close"
+      ></button>
+      <div class="confirm-dialog">
+        <h2 class="confirm-dialog__title" id="featureStubTitle"></h2>
+        <p class="confirm-dialog__text" id="featureStubText"></p>
+        <div class="confirm-dialog__actions menu-buttons">
+          <button type="button" class="menu-btn primary" id="featureStubClose">
+            <span class="menu-btn__icon" data-ln-icon="back" aria-hidden="true"></span>
+            <span class="menu-btn__label" data-i18n="feature_stub_ok"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="screen main-menu" id="mainMenuScreen">
       <h1 class="sr-only" data-i18n="game_logo">Lost Number</h1>
-      <div class="menu-buttons main-menu__buttons">
-        <button
-          class="menu-btn primary"
-          id="continueBtn"
-          type="button"
-          disabled
-          aria-disabled="true"
-        >
-          <span class="menu-btn__icon" data-ln-icon="continue" aria-hidden="true"></span>
-          <span class="menu-btn__label" data-i18n="btn_continue"></span>
+
+      <div class="main-menu__account">
+        <button type="button" class="menu-account-btn" id="loginBtn">
+          <span
+            class="menu-account-btn__icon ln-icon-slot"
+            data-ln-icon="unlock"
+            aria-hidden="true"
+          ></span>
+          <span class="menu-account-btn__label" data-i18n="btn_login"></span>
         </button>
-        <button class="menu-btn secondary" id="newGameBtn" type="button">
-          <span class="menu-btn__icon" data-ln-icon="new-game" aria-hidden="true"></span>
-          <span class="menu-btn__label" data-i18n="btn_new_game"></span>
-        </button>
-        <button class="menu-btn secondary" id="settingsBtn" type="button">
-          <span class="menu-btn__icon" data-ln-icon="settings" aria-hidden="true"></span>
-          <span class="menu-btn__label" data-i18n="btn_settings"></span>
-        </button>
-        <button class="menu-btn secondary" id="dailyQuestsBtn" type="button">
-          <span class="menu-btn__icon" data-ln-icon="daily-tasks" aria-hidden="true"></span>
-          <span class="menu-btn__label" data-i18n="btn_daily_quests"></span>
-        </button>
-        <button class="menu-btn secondary" id="achievementsBtn" type="button">
-          <span class="menu-btn__icon" data-ln-icon="achievements" aria-hidden="true"></span>
-          <span class="menu-btn__label" data-i18n="btn_achievements"></span>
-        </button>
-        <button class="menu-btn secondary" id="statsBtn" type="button">
-          <span class="menu-btn__icon" data-ln-icon="statistics" aria-hidden="true"></span>
-          <span class="menu-btn__label" data-i18n="btn_stats"></span>
-        </button>
-        <button class="menu-btn secondary" id="aboutBtn" type="button">
-          <span class="menu-btn__icon" data-ln-icon="about" aria-hidden="true"></span>
-          <span class="menu-btn__label" data-i18n="btn_about"></span>
+        <button type="button" class="menu-account-btn menu-account-btn--ghost" id="exitAppBtn">
+          <span
+            class="menu-account-btn__icon ln-icon-slot"
+            data-ln-icon="exit"
+            aria-hidden="true"
+          ></span>
+          <span class="menu-account-btn__label" data-i18n="btn_exit"></span>
         </button>
       </div>
+
+      <div class="main-menu__core">
+        <p class="main-menu__tagline" data-i18n="main_subtitle"></p>
+        <div class="menu-buttons main-menu__buttons">
+          <button
+            class="menu-btn primary"
+            id="continueBtn"
+            type="button"
+            disabled
+            aria-disabled="true"
+          >
+            <span class="menu-btn__icon" data-ln-icon="continue" aria-hidden="true"></span>
+            <span class="menu-btn__label" data-i18n="btn_continue"></span>
+          </button>
+          <button class="menu-btn secondary" id="newGameBtn" type="button">
+            <span class="menu-btn__icon" data-ln-icon="new-game" aria-hidden="true"></span>
+            <span class="menu-btn__label" id="newGameBtnLabel" data-i18n="btn_play"></span>
+          </button>
+        </div>
+        <div class="main-menu__secondary menu-buttons">
+          <button class="menu-btn secondary menu-btn--compact" id="settingsBtn" type="button">
+            <span class="menu-btn__icon" data-ln-icon="settings" aria-hidden="true"></span>
+            <span class="menu-btn__label" data-i18n="btn_settings"></span>
+          </button>
+          <button class="menu-btn secondary menu-btn--compact" id="statsBtn" type="button">
+            <span class="menu-btn__icon" data-ln-icon="statistics" aria-hidden="true"></span>
+            <span class="menu-btn__label" data-i18n="btn_stats"></span>
+          </button>
+          <button class="menu-btn secondary menu-btn--compact" id="aboutBtn" type="button">
+            <span class="menu-btn__icon" data-ln-icon="about" aria-hidden="true"></span>
+            <span class="menu-btn__label" data-i18n="btn_about"></span>
+          </button>
+        </div>
+      </div>
+
+      <nav class="main-menu__dock" id="mainMenuDock" data-i18n-aria-label="menu_dock_aria">
+        <button type="button" class="menu-dock-btn" id="dockPremiumBtn">
+          <span
+            class="menu-dock-btn__icon ln-icon-slot"
+            data-ln-icon="premium"
+            aria-hidden="true"
+          ></span>
+          <span class="menu-dock-btn__label" data-i18n="dock_premium"></span>
+        </button>
+        <button type="button" class="menu-dock-btn" id="dockTournamentsBtn">
+          <span
+            class="menu-dock-btn__icon ln-icon-slot"
+            data-ln-icon="tournaments"
+            aria-hidden="true"
+          ></span>
+          <span class="menu-dock-btn__label" data-i18n="dock_tournaments"></span>
+        </button>
+        <button type="button" class="menu-dock-btn" id="dockAchievementsBtn">
+          <span
+            class="menu-dock-btn__icon ln-icon-slot"
+            data-ln-icon="achievements"
+            aria-hidden="true"
+          ></span>
+          <span class="menu-dock-btn__label" data-i18n="dock_achievements"></span>
+        </button>
+        <button type="button" class="menu-dock-btn" id="dockDailyBtn">
+          <span
+            class="menu-dock-btn__icon ln-icon-slot"
+            data-ln-icon="daily-tasks"
+            aria-hidden="true"
+          ></span>
+          <span class="menu-dock-btn__label" data-i18n="dock_daily"></span>
+        </button>
+        <button type="button" class="menu-dock-btn" id="dockBonusesBtn">
+          <span
+            class="menu-dock-btn__icon ln-icon-slot"
+            data-ln-icon="bonus"
+            aria-hidden="true"
+          ></span>
+          <span class="menu-dock-btn__label" data-i18n="dock_bonuses"></span>
+        </button>
+      </nav>
     </div>
 
     <div class="screen achievements-screen hidden" id="achievementsScreen">

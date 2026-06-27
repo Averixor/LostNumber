@@ -50,6 +50,25 @@ img.ln-icon {
   height: 32px;
 }
 
+.menu-dock-btn__icon.ln-icon-slot,
+.menu-dock-btn__icon {
+  width: 36px;
+  height: 36px;
+}
+
+.menu-account-btn__icon.ln-icon-slot,
+.menu-account-btn__icon {
+  width: 22px;
+  height: 22px;
+}
+
+html.low-performance .main-menu__dock,
+html.low-performance .menu-dock-btn__icon img.ln-icon,
+html.low-performance .menu-account-btn__icon img.ln-icon {
+  opacity: 1;
+  visibility: visible;
+}
+
 .footer-btn .ln-icon-slot {
   width: 28px;
   height: 28px;

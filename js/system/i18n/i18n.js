@@ -8,7 +8,10 @@ const I18N = {
     main_subtitle: 'Спокійна головоломка з числами. Грайте у своєму темпі, без таймерів і поспіху.',
 
     btn_continue: 'Продовжити',
+    btn_play: 'Грати',
     btn_new_game: 'Нова гра',
+    btn_login: 'Увійти',
+    btn_exit: 'Вийти',
     btn_settings: 'Налаштування',
     btn_daily_quests: 'Щоденні завдання',
     btn_about: 'Про гру',
@@ -25,6 +28,27 @@ const I18N = {
     btn_home: 'Головне меню',
     btn_sound: 'Звук',
     btn_save: 'Зберегти прогрес',
+
+    dock_premium: 'Преміум',
+    dock_tournaments: 'Турніри',
+    dock_achievements: 'Досягнення',
+    dock_daily: 'Завдання',
+    dock_bonuses: 'Бонуси',
+    menu_dock_aria: 'Преміум та можливості',
+
+    feature_stub_ok: 'Зрозуміло',
+    feature_login_title: 'Вхід в акаунт',
+    feature_login_text:
+      'Скоро з’явиться вхід через акаунт для синхронізації прогресу між пристроями.',
+    feature_premium_title: 'Преміум',
+    feature_premium_text:
+      'Преміум-режим із додатковими темами та бонусами — у наступних оновленнях.',
+    feature_tournaments_title: 'Турніри',
+    feature_tournaments_text: 'Змагальні турніри та таблиці лідерів — скоро в Lost Number.',
+    feature_bonuses_title: 'Магазин бонусів',
+    feature_bonuses_text:
+      'Окремий магазин бонусів з’явиться пізніше. Зараз бонуси — у грі та на колесі.',
+    exit_web_hint: 'Закрийте вкладку браузера, щоб вийти з гри.',
 
     feature_1: 'З шармом',
     feature_2: 'Поступове ускладнення',
@@ -251,7 +275,10 @@ const I18N = {
     main_subtitle: 'Спокойная игра с числами. Играйте в своём темпе, без таймеров и спешки.',
 
     btn_continue: 'Продолжить',
+    btn_play: 'Играть',
     btn_new_game: 'Новая игра',
+    btn_login: 'Войти',
+    btn_exit: 'Выйти',
     btn_settings: 'Настройки',
     btn_daily_quests: 'Ежедневные задания',
     btn_about: 'О игре',
@@ -268,6 +295,27 @@ const I18N = {
     btn_home: 'Главное меню',
     btn_sound: 'Звук',
     btn_save: 'Сохранить прогресс',
+
+    dock_premium: 'Премиум',
+    dock_tournaments: 'Турниры',
+    dock_achievements: 'Достижения',
+    dock_daily: 'Задания',
+    dock_bonuses: 'Бонусы',
+    menu_dock_aria: 'Премиум и возможности',
+
+    feature_stub_ok: 'Понятно',
+    feature_login_title: 'Вход в аккаунт',
+    feature_login_text:
+      'Скоро появится вход через аккаунт для синхронизации прогресса между устройствами.',
+    feature_premium_title: 'Премиум',
+    feature_premium_text:
+      'Премиум-режим с дополнительными темами и бонусами — в следующих обновлениях.',
+    feature_tournaments_title: 'Турниры',
+    feature_tournaments_text: 'Соревновательные турниры и таблицы лидеров — скоро в Lost Number.',
+    feature_bonuses_title: 'Магазин бонусов',
+    feature_bonuses_text:
+      'Отдельный магазин бонусов появится позже. Сейчас бонусы — в игре и на колесе.',
+    exit_web_hint: 'Закройте вкладку браузера, чтобы выйти из игры.',
 
     feature_1: 'Без спешки',
     feature_2: 'Плавное усложнение',
@@ -492,7 +540,10 @@ const I18N = {
     main_subtitle: 'A calm number puzzle. Play at your own pace, with no timers and no pressure.',
 
     btn_continue: 'Continue',
+    btn_play: 'Play',
     btn_new_game: 'New Game',
+    btn_login: 'Sign in',
+    btn_exit: 'Exit',
     btn_settings: 'Settings',
     btn_daily_quests: 'Daily Quests',
     btn_about: 'About',
@@ -509,6 +560,27 @@ const I18N = {
     btn_home: 'Main menu',
     btn_sound: 'Sound',
     btn_save: 'Save progress',
+
+    dock_premium: 'Premium',
+    dock_tournaments: 'Tournaments',
+    dock_achievements: 'Achievements',
+    dock_daily: 'Quests',
+    dock_bonuses: 'Bonuses',
+    menu_dock_aria: 'Premium and features',
+
+    feature_stub_ok: 'Got it',
+    feature_login_title: 'Account sign-in',
+    feature_login_text: 'Cloud account sign-in for cross-device progress sync is coming soon.',
+    feature_premium_title: 'Premium',
+    feature_premium_text:
+      'Premium mode with extra themes and bonuses is coming in a future update.',
+    feature_tournaments_title: 'Tournaments',
+    feature_tournaments_text:
+      'Competitive tournaments and leaderboards are coming soon to Lost Number.',
+    feature_bonuses_title: 'Bonus shop',
+    feature_bonuses_text:
+      'A dedicated bonus shop will arrive later. For now, bonuses are earned in-game and via the wheel.',
+    exit_web_hint: 'Close the browser tab to exit the game.',
 
     feature_1: 'No pressure',
     feature_2: 'Smooth difficulty',

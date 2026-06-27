@@ -1,5 +1,9 @@
 LostNumberGame.prototype.handleBackNavigation = function () {
   try {
+    if (this.menuManager?.dismissFeatureStubFromBack?.()) {
+      return;
+    }
+
     if (this.menuManager?.dismissNewGameConfirmFromBack?.()) {
       return;
     }
@@ -47,6 +51,24 @@ LostNumberGame.prototype.handleBackNavigation = function () {
     }
   } catch (error) {
     ErrorHandler.handle(error, { type: 'back_navigation' });
+  }
+};
+
+LostNumberGame.prototype.requestAppExit = function () {
+  try {
+    const App = window.Capacitor?.Plugins?.App;
+    if (App && typeof App.exitApp === 'function') {
+      App.exitApp();
+      return;
+    }
+    if (App && typeof App.minimizeApp === 'function') {
+      App.minimizeApp();
+      return;
+    }
+    this.showMessage(this.t('exit_web_hint'));
+  } catch (error) {
+    ErrorHandler.handle(error, { type: 'app_exit' });
+    this.showMessage(this.t('exit_web_hint'));
   }
 };
 

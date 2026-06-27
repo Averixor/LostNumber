@@ -44,6 +44,9 @@ class ScreenManager {
         if (typeof this.game.checkExistingSave === 'function') {
           this.game.checkExistingSave();
         }
+        if (typeof this.game.menuManager?.refreshMainMenuUI === 'function') {
+          this.game.menuManager.refreshMainMenuUI();
+        }
       }
     } catch (error) {
       ErrorHandler.handle(error, { type: 'screen_manager', method: 'showScreen', name });

@@ -12,6 +12,7 @@ const tests = [
   'scripts/test-grid-dom-sync.mjs',
   'scripts/test-critical-fixes.mjs',
   'scripts/test-package2.mjs',
+  'scripts/test-menu-navigation.mjs',
 ];
 
 for (const test of tests) {

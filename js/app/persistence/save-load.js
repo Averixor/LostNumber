@@ -51,6 +51,10 @@ LostNumberGame.prototype.updateContinueButton = function (hasSave) {
 
   continueBtn.disabled = !enabled;
   continueBtn.setAttribute('aria-disabled', enabled ? 'false' : 'true');
+
+  if (typeof this.menuManager?.refreshMainMenuUI === 'function') {
+    this.menuManager.refreshMainMenuUI();
+  }
 };
 
 LostNumberGame.prototype.checkExistingSave = function () {
