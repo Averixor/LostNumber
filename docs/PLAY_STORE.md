@@ -11,7 +11,7 @@
 | Іконка Play (512)                | `store/play-high-res-icon-512.png`                                                    |
 | Feature graphic                  | `store/feature-graphic-1024x500.png`                                                  |
 | Чернетки скріншотів              | `store/screenshots/phone/`                                                            |
-| Описи магазину                   | `docs/store-listing/`                                                                 |
+| Описи магазину                   | `docs/store-listing/` + **`store/PLAY_CONSOLE_LISTING.md`** (все поля в одном месте) |
 | Privacy Policy URL               | `https://averixor.github.io/LostNumber/privacy.html`                                  |
 
 ## 1. Збірка AAB
@@ -65,7 +65,7 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 
 **Категорія:** Games → Puzzle  
 **Теги (приклад):** puzzle, numbers, logic, casual, offline  
-**Контакт:** email розробника або GitHub Issues URL  
+**Контакт:** `ryabinin.sergei.alekseevich@gmail.com` (див. `store/PLAY_CONSOLE_LISTING.md`)
 **Ціна:** безкоштовно
 
 ## 5. Закрите тестування (Closed testing)

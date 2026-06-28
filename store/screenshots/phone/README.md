@@ -1,8 +1,10 @@
-# Phone screenshots (portrait)
+# Phone screenshots (portrait 1080×1920)
 
 Play Console requires at least 2 phone screenshots.
 
-- `01-menu-dark.png` — 941×1672 — Draft: dark menu background (replace with in-app screenshot after QA)
-- `02-menu-light.png` — 941×1672 — Draft: light menu background (replace with in-app screenshot after QA)
-- `03-menu-skin.png` — 941×1672 — Draft: alternate skin (replace with settings/game capture)
-- `04-menu-skin.png` — 941×1672 — Draft: light skin variant (replace before public release)
+Promo composites from menu art + branding. Replace with real in-app captures before public launch.
+
+- `01-menu-dark.png` — 1080×1920 — Lost Number: Логічна головоломка з числами (promo draft)
+- `02-menu-light.png` — 1080×1920 — Дві теми: Темна та світла (promo draft)
+- `03-levels-bonuses.png` — 1080×1920 — Рівні та бонуси: Сітка 5×8 (promo draft)
+- `04-offline-calm.png` — 1080×1920 — Без реклами: Грай у своєму темпі (promo draft)
