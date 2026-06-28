@@ -7,11 +7,11 @@
 
 ## Основные поля
 
-| Поле | Значение |
-| ---- | -------- |
-| **Название** | `Lost Number` |
-| **Категория** | **Игры** → **Головоломки** (Games → Puzzle) |
-| **Email поддержки** | `ryabinin.sergei.alekseevich@gmail.com` |
+| Поле                   | Значение                                             |
+| ---------------------- | ---------------------------------------------------- |
+| **Название**           | `Lost Number`                                        |
+| **Категория**          | **Игры** → **Головоломки** (Games → Puzzle)          |
+| **Email поддержки**    | `ryabinin.sergei.alekseevich@gmail.com`              |
 | **Privacy Policy URL** | `https://averixor.github.io/LostNumber/privacy.html` |
 
 > **Privacy URL:** работает после деплоя GitHub Pages. Пока Pages выключен — временно укажите другой хостинг или опубликуйте `privacy.html` (см. `docs/PLAY_STORE.md`).
@@ -113,10 +113,10 @@ Lost Number — логическая головоломка с числами в
 
 ## Графика (загрузить в Console)
 
-| Тип | Файл | Размер |
-| --- | ---- | ------ |
-| **Иконка** | `store/play-high-res-icon-512.png` | 512×512 PNG |
-| **Feature graphic** | `store/feature-graphic-1024x500.png` | 1024×500 PNG |
+| Тип                    | Файл                                            | Размер                  |
+| ---------------------- | ----------------------------------------------- | ----------------------- |
+| **Иконка**             | `store/play-high-res-icon-512.png`              | 512×512 PNG             |
+| **Feature graphic**    | `store/feature-graphic-1024x500.png`            | 1024×500 PNG            |
 | **Скриншоты телефона** | `store/screenshots/phone/01-*.png` … `04-*.png` | 1080×1920 PNG (портрет) |
 
 Минимум **2** скриншота для публикации. Рекомендуется 4–8.
@@ -127,14 +127,14 @@ Lost Number — логическая головоломка с числами в
 
 ## Дополнительно в Console
 
-| Поле | Рекомендация |
-| ---- | ------------ |
-| **Тип приложения** | Игра |
-| **Бесплатно / платно** | Бесплатно |
-| **Теги** | puzzle, numbers, logic, casual, offline |
-| **Целевая аудитория** | Everyone / 3+ (после анкеты Content rating) |
-| **Package name** | `com.averixor.lostnumber` |
-| **Версия** | `1.0` (versionCode 1) |
+| Поле                   | Рекомендация                                |
+| ---------------------- | ------------------------------------------- |
+| **Тип приложения**     | Игра                                        |
+| **Бесплатно / платно** | Бесплатно                                   |
+| **Теги**               | puzzle, numbers, logic, casual, offline     |
+| **Целевая аудитория**  | Everyone / 3+ (после анкеты Content rating) |
+| **Package name**       | `com.averixor.lostnumber`                   |
+| **Версия**             | `1.0` (versionCode 1)                       |
 
 ---
 
