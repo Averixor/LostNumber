@@ -37,22 +37,22 @@ A chain can be committed when:
 
 ## Levels (MVP)
 
-| Level | Target |
-|-------|--------|
-| 1     | 64     |
-| 2     | 128    |
-| 3     | 256    |
+| Level | Target       |
+| ----- | ------------ |
+| 1     | 64           |
+| 2     | 128          |
+| 3     | 256          |
 | n     | 64 × 2^(n-1) |
 
 ## XP (base by chain length)
 
-| Length | XP |
-|--------|-----|
-| 2      | 4  |
-| 3      | 8  |
-| 4      | 12 |
-| 5      | 18 |
-| 6+     | 25 |
+| Length | XP  |
+| ------ | --- |
+| 2      | 4   |
+| 3      | 8   |
+| 4      | 12  |
+| 5      | 18  |
+| 6+     | 25  |
 
 Surplus XP when `sum > target` on level complete.
 

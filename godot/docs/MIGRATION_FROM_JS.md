@@ -4,17 +4,17 @@ Lost Number **2.0** — Godot 4 / GDScript. The HTML/Capacitor build remains a r
 
 ## Architecture map
 
-| JS (vanilla) | Godot MVP |
-|--------------|-----------|
-| `js/core/rules.js` | `scripts/core/Rules.gd` |
-| `js/game/GameCore.js` + `grid-physics.js` | `scripts/core/BoardLogic.gd` |
-| `js/game/state.js` (levels/spawn) | `scripts/core/LevelManager.gd` |
-| `js/game/state.js` (session) | `scripts/core/GameState.gd` |
-| `js/app/persistence/save-load.js` | `scripts/managers/SaveManager.gd` |
-| `GridManager` + grid render | `scripts/game/Board.gd` + `Tile.gd` |
-| `LostNumberGame` | `scripts/game/Game.gd` + `scenes/Game.tscn` |
-| `js/system/platform/audio.js` | `scripts/managers/AudioManager.gd` (stub) |
-| `menu.js` | `scenes/MainMenu.tscn` |
+| JS (vanilla)                              | Godot MVP                                   |
+| ----------------------------------------- | ------------------------------------------- |
+| `js/core/rules.js`                        | `scripts/core/Rules.gd`                     |
+| `js/game/GameCore.js` + `grid-physics.js` | `scripts/core/BoardLogic.gd`                |
+| `js/game/state.js` (levels/spawn)         | `scripts/core/LevelManager.gd`              |
+| `js/game/state.js` (session)              | `scripts/core/GameState.gd`                 |
+| `js/app/persistence/save-load.js`         | `scripts/managers/SaveManager.gd`           |
+| `GridManager` + grid render               | `scripts/game/Board.gd` + `Tile.gd`         |
+| `LostNumberGame`                          | `scripts/game/Game.gd` + `scenes/Game.tscn` |
+| `js/system/platform/audio.js`             | `scripts/managers/AudioManager.gd` (stub)   |
+| `menu.js`                                 | `scenes/MainMenu.tscn`                      |
 
 ## Parity checklist (MVP)
 
