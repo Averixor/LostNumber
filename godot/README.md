@@ -9,13 +9,25 @@ Offline puzzle port from the HTML/Capacitor build. Core gameplay only.
 
 ## Open project
 
+First-time import (registers `class_name` globals):
+
+```bash
+godot4 --path godot --import --headless
+```
+
+Then open or run:
+
 ```bash
 godot4 --path godot
 ```
 
-Or import `godot/project.godot` from Godot Editor.
+## Tests
 
-## MVP features
+```bash
+godot4 --path godot --headless --script res://scripts/tests/run_rules_tests.gd
+```
+
+Expected: `Rules tests passed`, exit code `0`.
 
 - 5×8 grid, drag chain, rules validation
 - Merge, gravity, spawn

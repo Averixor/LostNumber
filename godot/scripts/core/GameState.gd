@@ -60,7 +60,7 @@ func extend_chain(cell: Vector2i) -> bool:
 		if existing == cell:
 			return false
 
-	var last := selected_path.back()
+	var last: Vector2i = selected_path.back()
 	if not Rules.is_adjacent(last, cell):
 		return false
 
@@ -68,7 +68,7 @@ func extend_chain(cell: Vector2i) -> bool:
 	for p in selected_path:
 		numbers.append(board.grid[p.x][p.y])
 	var next_val: int = board.grid[cell.x][cell.y]
-	var partial := Rules.chain_sum(numbers)
+	var partial: int = Rules.chain_sum(numbers)
 	if not Rules.is_valid_next_number(next_val, numbers[numbers.size() - 1], partial):
 		return false
 
@@ -90,21 +90,21 @@ func can_finish_current_chain() -> bool:
 
 
 func merge_current_chain() -> Dictionary:
-	var validation := Rules.validate_chain(selected_path, board.grid, board.grid_w, board.grid_h)
+	var validation: Dictionary = Rules.validate_chain(selected_path, board.grid, board.grid_w, board.grid_h)
 	if not validation.valid:
 		return {"ok": false, "reason": validation.get("reason", "invalid")}
 
 	var numbers: PackedInt32Array = validation.numbers
 	var sum: int = validation.sum
-	var level := board.level_manager.get_level_config(current_level)
-	var target: int = level.target
+	var level: Dictionary = board.level_manager.get_level_config(current_level)
+	var target: int = level["target"]
 	var is_level_complete := sum >= target
 	var result_number := target if is_level_complete else sum
 	var surplus := maxi(0, sum - target) if is_level_complete else 0
 
 	max_reached_number = maxi(max_reached_number, result_number)
 
-	var anchor := selected_path.back()
+	var anchor: Vector2i = selected_path.back()
 	var removed: Array[Vector2i] = []
 	for i in selected_path.size() - 1:
 		removed.append(selected_path[i])
@@ -113,13 +113,13 @@ func merge_current_chain() -> Dictionary:
 	board.apply_gravity()
 	board.spawn_new_cells(current_level, carry_number, max_reached_number)
 
-	var chain_len := selected_path.size()
+	var chain_len: int = selected_path.size()
 	var xp_earned := _calculate_xp(chain_len)
 	xp += xp_earned + surplus
 
 	selected_path.clear()
 
-	var won := board.has_value_on_board(target)
+	var won: bool = board.has_value_on_board(target)
 	if won:
 		_start_level_complete(target)
 
@@ -133,7 +133,7 @@ func merge_current_chain() -> Dictionary:
 
 
 func _calculate_xp(chain_len: int) -> int:
-	var base := Rules.base_xp_by_len(chain_len)
+	var base: int = Rules.base_xp_by_len(chain_len)
 	return base * xp_multiplier
 
 
@@ -163,7 +163,7 @@ func complete_level_transition() -> void:
 
 
 func get_target() -> int:
-	return board.level_manager.get_level_config(current_level).target
+	return board.level_manager.get_level_config(current_level)["target"]
 
 
 func to_save_dict() -> Dictionary:

@@ -35,11 +35,12 @@ See `GAME_RULES.md` — bonuses, wheel, daily, achievements, i18n, themes, monet
 ## Running
 
 ```bash
-# Open in Godot 4.3+
+# once per clone / after adding new class_name scripts
+godot4 --path godot --import --headless
+
 godot4 --path godot
 
-# Headless rules smoke test (requires Godot binary)
-godot4 --path godot --headless --script res://scripts/tests/run_rules_tests.gd -- --test-rules
+godot4 --path godot --headless --script res://scripts/tests/run_rules_tests.gd
 ```
 
 ## Save format

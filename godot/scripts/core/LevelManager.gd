@@ -18,9 +18,9 @@ func get_level_config(level_index: int) -> Dictionary:
 	if idx < _manual_levels.size():
 		var level: Dictionary = _manual_levels[idx]
 		return {
-			"target": level.target,
-			"numbers": level.numbers.duplicate(),
-			"new_numbers": level.new_numbers.duplicate(),
+			"target": level["target"],
+			"numbers": level["numbers"].duplicate(),
+			"new_numbers": level["new_numbers"].duplicate(),
 		}
 
 	var target := _procedural_target(idx)
@@ -33,7 +33,7 @@ func get_level_config(level_index: int) -> Dictionary:
 
 func get_minimum_spawn_tile(level_index: int) -> int:
 	var idx := maxi(0, level_index)
-	var target: int = get_level_config(idx).target
+	var target: int = get_level_config(idx)["target"]
 	var human_level := idx + 1
 	var raw: int
 
@@ -71,7 +71,7 @@ func _generate_manual_levels(count: int) -> Array[Dictionary]:
 
 func _procedural_target(level_index: int) -> int:
 	if level_index < MANUAL_LEVEL_COUNT:
-		return _manual_levels[level_index].target
+		return _manual_levels[level_index]["target"]
 	var doubled := 64 * int(pow(2, level_index))
 	return mini(doubled, int(pow(2, 52)))
 

@@ -30,18 +30,18 @@ func _create_empty_grid() -> Array:
 
 
 func fill_random(level_index: int, carry_number: int = 0) -> void:
-	var level := level_manager.get_level_config(level_index)
-	var spawn_pool: Array[int] = level.numbers
+	var level: Dictionary = level_manager.get_level_config(level_index)
+	var spawn_pool: Array = level["numbers"]
 
 	for x in grid_w:
 		for y in grid_h:
-			var n := _pick_spawn_value(level_index, carry_number, level.target, spawn_pool, 8)
+			var n: int = _pick_spawn_value(level_index, carry_number, level["target"], spawn_pool, 8)
 			grid[x][y] = n
 
 
 func _pick_spawn_value(level_index: int, carry_number: int, level_target: int, _pool: Array, max_reached: int = 8) -> int:
 	var allowed := _get_allowed_numbers(level_index, max_reached)
-	var min_spawn := level_manager.get_minimum_spawn_tile(level_index)
+	var min_spawn: int = level_manager.get_minimum_spawn_tile(level_index)
 	var filtered: Array[Dictionary] = []
 
 	for i in allowed.size():
@@ -66,7 +66,7 @@ func _pick_spawn_value(level_index: int, carry_number: int, level_target: int, _
 
 func _get_allowed_numbers(level_index: int, max_reached: int = 8) -> Array[int]:
 	const WINDOW := 9
-	var min_spawn := level_manager.get_minimum_spawn_tile(level_index)
+	var min_spawn: int = level_manager.get_minimum_spawn_tile(level_index)
 	var max_val := maxi(max_reached, min_spawn)
 	var arr: Array[int] = []
 	var current := _floor_power_of_two(min_spawn)
@@ -113,11 +113,11 @@ func apply_gravity() -> void:
 
 
 func spawn_new_cells(level_index: int = 0, carry_number: int = 0, max_reached: int = 8) -> void:
-	var level := level_manager.get_level_config(level_index)
+	var level: Dictionary = level_manager.get_level_config(level_index)
 	for x in grid_w:
 		for y in grid_h:
 			if grid[x][y] == EMPTY:
-				grid[x][y] = _pick_spawn_value(level_index, carry_number, level.target, level.numbers, max_reached)
+				grid[x][y] = _pick_spawn_value(level_index, carry_number, level["target"], level["numbers"], max_reached)
 
 
 func has_value_on_board(value: int) -> bool:
@@ -143,8 +143,8 @@ func place_carry_unique(carry_number: int, level_index: int, max_reached: int = 
 		for x in grid_w:
 			for y in grid_h:
 				if grid[x][y] == carry_number:
-					var level := level_manager.get_level_config(level_index)
-					grid[x][y] = _pick_spawn_value(level_index, carry_number, level.target, level.numbers, max_reached)
+					var level: Dictionary = level_manager.get_level_config(level_index)
+					grid[x][y] = _pick_spawn_value(level_index, carry_number, level["target"], level["numbers"], max_reached)
 		return
 
 	var rx := rng.randi_range(0, grid_w - 1)
