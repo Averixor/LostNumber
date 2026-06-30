@@ -22,6 +22,7 @@
     "verify:static": "node ./scripts/verify-static-assets.mjs",
     "verify:tagline": "node ./scripts/verify-tagline.mjs",
     "verify:android": "node ./scripts/verify-android-release.mjs",
+    "test": "node ./scripts/smoke-tests.mjs",
     "test:smoke": "node ./scripts/smoke-tests.mjs",
     "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit -p tsconfig.json",
     "release:check": "node ./scripts/release-check.mjs",

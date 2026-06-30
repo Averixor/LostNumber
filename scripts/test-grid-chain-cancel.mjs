@@ -176,6 +176,7 @@ dom.cell.classList.add('selected');
 dom.grid._selected = [dom.cell];
 
 game.handlePointerMove({ clientX: 200, clientY: 200, preventDefault() {} });
+game._flushPendingPointerMove();
 assertEq(game.isDragging, false, 'pointer move outside grid stops dragging');
 assertEq(game.selected.length, 0, 'pointer move outside grid clears selection');
 assertEq(Chain.numbers.length, 0, 'pointer move outside grid clears chain numbers');

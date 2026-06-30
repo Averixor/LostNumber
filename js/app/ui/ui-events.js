@@ -157,19 +157,57 @@ LostNumberGame.prototype.handlePointerDown = function (e) {
   }
 };
 
+LostNumberGame.prototype._cancelPendingPointerMove = function () {
+  if (this._pointerMoveRaf) {
+    cancelAnimationFrame(this._pointerMoveRaf);
+    this._pointerMoveRaf = 0;
+  }
+  this._pendingPointerMoveEvent = null;
+};
+
+LostNumberGame.prototype._flushPendingPointerMove = function () {
+  if (this._pointerMoveRaf) {
+    cancelAnimationFrame(this._pointerMoveRaf);
+    this._pointerMoveRaf = 0;
+  }
+  const latestEvent = this._pendingPointerMoveEvent;
+  this._pendingPointerMoveEvent = null;
+  if (!latestEvent || !this.isDragging) return;
+  this._processPointerMove(latestEvent);
+};
+
 LostNumberGame.prototype.handlePointerMove = function (e) {
   try {
     if (!this.isDragging || this.activeBonus) return;
 
     if (!this.canAcceptGridInput()) {
+      this._cancelPendingPointerMove();
       this.resetChain();
       return;
     }
 
     this._bubblePointerX = e.clientX;
     this._bubblePointerY = e.clientY;
+    this._schedulePreviewBubbleUpdate?.();
     e.preventDefault();
 
+    this._pendingPointerMoveEvent = e;
+    if (this._pointerMoveRaf) return;
+
+    this._pointerMoveRaf = requestAnimationFrame(() => {
+      this._pointerMoveRaf = 0;
+      const latestEvent = this._pendingPointerMoveEvent;
+      this._pendingPointerMoveEvent = null;
+      if (!latestEvent || !this.isDragging) return;
+      this._processPointerMove(latestEvent);
+    });
+  } catch (error) {
+    ErrorHandler.handle(error, { type: 'pointer_move', clientX: e.clientX, clientY: e.clientY });
+  }
+};
+
+LostNumberGame.prototype._processPointerMove = function (e) {
+  try {
     const posCell = this.gridManager.getCellFromPoint(e.clientX, e.clientY);
     if (!posCell) {
       this._releaseGridPointerCapture(e);
@@ -233,6 +271,7 @@ LostNumberGame.prototype._releaseGridPointerCapture = function (e) {
 LostNumberGame.prototype.handlePointerCancel = function (e) {
   try {
     if (!this.isDragging) return;
+    this._cancelPendingPointerMove();
     this._releaseGridPointerCapture(e);
     this.resetChain();
   } catch (error) {
@@ -243,6 +282,7 @@ LostNumberGame.prototype.handlePointerCancel = function (e) {
 LostNumberGame.prototype.handleGridPointerLeave = function (e) {
   try {
     if (!this.isDragging || this.activeBonus) return;
+    this._cancelPendingPointerMove();
     this._releaseGridPointerCapture(e);
     this.resetChain();
   } catch (error) {
@@ -255,11 +295,13 @@ LostNumberGame.prototype.handlePointerUp = function (e) {
     if (!this.isDragging) return;
 
     if (!this.canAcceptGridInput()) {
+      this._cancelPendingPointerMove();
       this._releaseGridPointerCapture(e);
       this.resetChain();
       return;
     }
 
+    this._cancelPendingPointerMove();
     this.isDragging = false;
     this._bubblePointerX = null;
     this._bubblePointerY = null;
@@ -300,6 +342,7 @@ LostNumberGame.prototype.clearSelectionHighlight = function (selectedCells) {
 
 LostNumberGame.prototype.resetChain = function (reason = null) {
   try {
+    this._cancelPendingPointerMove();
     this.isDragging = false;
     this._bubblePointerX = null;
     this._bubblePointerY = null;
