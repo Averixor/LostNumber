@@ -6,7 +6,8 @@ config_version=5
 [application]
 
 config/name="Lost Number"
-config/description="Offline number-chain puzzle. Godot 2.0 MVP."
+config/description="Offline number-chain puzzle. Godot 2.0."
+config/version="2.0.0"
 run/main_scene="res://scenes/MainMenu.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"

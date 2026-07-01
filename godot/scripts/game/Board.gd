@@ -9,14 +9,20 @@ const GRID_H := 8
 
 @export var cell_size: Vector2 = Vector2(72, 72)
 @export var cell_gap: float = 6.0
+@export var gap_tolerance: float = 14.0
 
 var state: GameState
 var _tiles: Array = []
 var _dragging: bool = false
+var _last_pointer_local: Vector2 = Vector2.INF
+var _highlighted_cells: Dictionary = {}
+var _drag_flush_queued: bool = false
+var _pending_drag_local: Vector2 = Vector2.ZERO
 
 
 func _ready() -> void:
 	_build_grid()
+	mouse_filter = Control.MOUSE_FILTER_STOP
 
 
 func bind_state(game_state: GameState) -> void:
@@ -26,105 +32,256 @@ func bind_state(game_state: GameState) -> void:
 
 func _build_grid() -> void:
 	_tiles.clear()
+
 	for child in get_children():
 		child.queue_free()
 
-	var total_w := GRID_W * cell_size.x + (GRID_W - 1) * cell_gap
-	var total_h := GRID_H * cell_size.y + (GRID_H - 1) * cell_gap
-	custom_minimum_size = Vector2(total_w, total_h)
+	custom_minimum_size = Vector2(
+		GRID_W * cell_size.x + (GRID_W - 1) * cell_gap,
+		GRID_H * cell_size.y + (GRID_H - 1) * cell_gap
+	)
 
 	for x in GRID_W:
 		var col: Array = []
+
 		for y in GRID_H:
 			var tile := TileView.new()
 			tile.cell_size = cell_size
-			tile.setup(Vector2i(x, y), 0)
 			tile.position = Vector2(
 				x * (cell_size.x + cell_gap),
 				y * (cell_size.y + cell_gap)
 			)
-			tile.pressed.connect(_on_tile_pressed)
+
 			add_child(tile)
+			tile.setup(Vector2i(x, y), 0)
 			col.append(tile)
+
 		_tiles.append(col)
 
 
 func refresh_all() -> void:
 	if state == null:
 		return
+
 	var target := state.get_target()
+	_clear_chain_highlights()
+
 	for x in GRID_W:
 		for y in GRID_H:
-			var v: int = state.board.grid[x][y]
-			_tiles[x][y].set_value(v)
-			_tiles[x][y].set_target_highlight(v == target)
-			_tiles[x][y].set_chain_selected(false)
+			var value: int = state.board.grid[x][y]
+			var tile: TileView = _tiles[x][y]
+
+			tile.set_value(value)
+			tile.set_target_highlight(value == target)
+			tile.set_chain_selected(false)
+
+	_update_chain_visual()
 
 
-func _on_tile_pressed(cell: Vector2i) -> void:
+func _gui_input(event: InputEvent) -> void:
+	if not is_inside_tree():
+		return
 	if state == null or state.phase != GameState.Phase.PLAYING:
 		return
+
+	var local_pos: Vector2 = _pointer_local_from_gui_event(event)
+
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			_start_drag_at_local(local_pos)
+		else:
+			_finish_drag()
+		accept_event()
+		return
+
+	if event is InputEventMouseMotion:
+		if _dragging:
+			_queue_drag(local_pos)
+			accept_event()
+		return
+
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			_start_drag_at_local(local_pos)
+		else:
+			_finish_drag()
+		accept_event()
+		return
+
+	if event is InputEventScreenDrag:
+		if _dragging:
+			_queue_drag(local_pos)
+			accept_event()
+		return
+
+
+func _queue_drag(local_pos: Vector2) -> void:
+	_pending_drag_local = local_pos
+	if _drag_flush_queued:
+		return
+	_drag_flush_queued = true
+	call_deferred("_flush_pending_drag")
+
+
+func _flush_pending_drag() -> void:
+	_drag_flush_queued = false
+	if not _dragging:
+		return
+	_extend_drag_at_local(_pending_drag_local)
+
+
+func _start_drag_at_local(local_pos: Vector2) -> void:
+	var cell := _cell_at_local(local_pos)
+
+	if cell.x < 0:
+		return
+
 	_dragging = true
+	_last_pointer_local = local_pos
 	state.begin_chain(cell)
 	_update_chain_visual()
 
 
-func _input(event: InputEvent) -> void:
-	if not _dragging or state == null:
+func _extend_drag_at_local(local_pos: Vector2) -> void:
+	var cells := _collect_cells_along_pointer_path(local_pos)
+	if cells.is_empty():
 		return
 
-	if event is InputEventMouseMotion:
-		var cell := _cell_at_screen(event.position)
-		if cell.x >= 0:
-			state.extend_chain(cell)
-			_update_chain_visual()
+	var path_changed := false
+	for cell in cells:
+		var path_len_before := state.selected_path.size()
+		if not state.extend_chain(cell):
+			continue
+		path_changed = true
+		if state.selected_path.size() > path_len_before:
+			AudioManager.play_sfx("connect")
 
-	if event is InputEventMouseButton and not event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_finish_drag()
-
-	if event is InputEventScreenDrag:
-		var cell := _cell_at_screen(event.position)
-		if cell.x >= 0:
-			state.extend_chain(cell)
-			_update_chain_visual()
-
-	if event is InputEventScreenTouch and not event.pressed:
-		_finish_drag()
+	if path_changed:
+		_update_chain_visual()
 
 
-func _finish_drag() -> void:
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_WINDOW_FOCUS_OUT and _dragging:
+		_finish_drag(false)
+
+
+func _collect_cells_along_pointer_path(local_pos: Vector2) -> Array[Vector2i]:
+	var cells: Array[Vector2i] = []
+	var cell := _cell_at_local(local_pos)
+
+	if cell.x < 0:
+		_last_pointer_local = local_pos
+		return cells
+
+	if not _last_pointer_local.is_finite():
+		_last_pointer_local = local_pos
+		return [cell]
+
+	var dx := local_pos.x - _last_pointer_local.x
+	var dy := local_pos.y - _last_pointer_local.y
+	var distance := sqrt(dx * dx + dy * dy)
+	var min_side := minf(cell_size.x, cell_size.y)
+	var step := maxf(min_side * 0.35, 10.0)
+
+	if distance < step * 0.45:
+		_last_pointer_local = local_pos
+		return [cell]
+
+	var count := maxi(1, int(ceil(distance / step)))
+	for i in range(1, count + 1):
+		var t := float(i) / float(count)
+		var sample := Vector2(
+			_last_pointer_local.x + dx * t,
+			_last_pointer_local.y + dy * t
+		)
+		var sample_cell := _cell_at_local(sample)
+		if sample_cell.x < 0:
+			continue
+		if cells.is_empty() or cells.back() != sample_cell:
+			cells.append(sample_cell)
+
+	_last_pointer_local = local_pos
+	return cells
+
+
+func _finish_drag(play_cancel_signal: bool = true) -> void:
+	if not _dragging:
+		return
+
 	_dragging = false
+	_drag_flush_queued = false
+	_last_pointer_local = Vector2.INF
+
 	if state == null:
 		return
 
 	if state.can_finish_current_chain():
-		chain_finished.emit(state.selected_path.duplicate())
+		var finished_path := state.selected_path.duplicate()
+		chain_finished.emit(finished_path)
 	else:
 		state.clear_chain()
-		chain_cancelled.emit()
+
+		if play_cancel_signal:
+			chain_cancelled.emit()
+
 	_update_chain_visual()
 
 
-func _cell_at_screen(screen_pos: Vector2) -> Vector2i:
-	var local := get_global_transform().affine_inverse() * screen_pos
+func _pointer_local_from_gui_event(event: InputEvent) -> Vector2:
+	# _gui_input delivers event.position in this control's local space already.
+	# make_input_local() expects viewport coords and double-transforms here (~HUD offset).
+	return event.position
+
+
+func _cell_at_local(local_pos: Vector2) -> Vector2i:
 	var step := cell_size + Vector2(cell_gap, cell_gap)
-	var x := int(floor(local.x / step.x))
-	var y := int(floor(local.y / step.y))
-	if x < 0 or x >= GRID_W or y < 0 or y >= GRID_H:
+
+	var x := int(floor(local_pos.x / step.x))
+	var y := int(floor(local_pos.y / step.y))
+
+	if x < 0 or x >= GRID_W:
 		return Vector2i(-1, -1)
-	var in_cell := local - Vector2(x, y) * step
-	if in_cell.x > cell_size.x or in_cell.y > cell_size.y:
+
+	if y < 0 or y >= GRID_H:
 		return Vector2i(-1, -1)
+
+	var cell_origin := Vector2(x, y) * step
+	var in_cell := local_pos - cell_origin
+
+	var inside := (
+		in_cell.x >= -gap_tolerance
+		and in_cell.y >= -gap_tolerance
+		and in_cell.x <= cell_size.x + gap_tolerance
+		and in_cell.y <= cell_size.y + gap_tolerance
+	)
+
+	if not inside:
+		return Vector2i(-1, -1)
+
 	return Vector2i(x, y)
 
 
+func _clear_chain_highlights() -> void:
+	for cell in _highlighted_cells:
+		_tiles[cell.x][cell.y].set_chain_selected(false)
+	_highlighted_cells.clear()
+
+
 func _update_chain_visual() -> void:
+	if state == null:
+		return
+
 	var can_finish := state.can_finish_current_chain()
-	for x in GRID_W:
-		for y in GRID_H:
-			var selected := false
-			for p in state.selected_path:
-				if p == Vector2i(x, y):
-					selected = true
-					break
-			_tiles[x][y].set_chain_selected(selected, can_finish)
+	var next: Dictionary = {}
+
+	for p in state.selected_path:
+		next[p] = true
+
+	for cell in _highlighted_cells:
+		if not next.has(cell):
+			_tiles[cell.x][cell.y].set_chain_selected(false)
+
+	for p in state.selected_path:
+		_tiles[p.x][p.y].set_chain_selected(true, can_finish)
+
+	_highlighted_cells = next
