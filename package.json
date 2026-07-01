@@ -30,16 +30,32 @@
     "build:flags:release": "node ./scripts/build-flags.mjs release",
     "build:flags:debug-cheats": "node ./scripts/build-flags.mjs debug-cheats",
     "build:pages": "node ./scripts/build-pages.mjs",
+    "privacy:package": "node ./scripts/package-privacy-host.mjs",
     "android:prepare": "node ./scripts/prepare-android.mjs",
     "android:sync": "node ./scripts/prepare-android.mjs",
     "android:sync:debug-cheats": "node ./scripts/prepare-android.mjs --debug-cheats",
     "android:debug:cheats": "node ./scripts/android-debug-cheats.mjs",
     "android:release": "node ./scripts/android-release.mjs",
     "android:bundle": "node ./scripts/android-bundle.mjs",
+    "keystore:info": "node ./scripts/keystore-info.mjs",
     "store:prepare": "python3 ./scripts/prepare-play-store-assets.py && python3 ./scripts/generate-android-icons.py",
     "android:open": "node ./node_modules/@capacitor/cli/bin/capacitor open android",
     "android:run": "node ./scripts/prepare-android.mjs && node ./node_modules/@capacitor/cli/bin/capacitor run android",
+    "godot:import": "godot4 --path godot --import --headless",
+    "godot:test": "godot4 --path godot --headless --script res://scripts/tests/run_rules_tests.gd",
+    "godot:test:save": "godot4 --path godot --headless --script res://scripts/tests/run_save_tests.gd",
+    "godot:test:all": "npm run godot:test && npm run godot:test:save",
+    "godot:android:debug": "bash ./scripts/godot-android-export.sh debug",
+    "godot:android:install": "bash ./scripts/godot-android-install.sh",
+    "godot:android:log": "bash ./scripts/godot-android-logcat.sh",
+    "godot:android:pull-debug-log": "bash ./scripts/godot-android-pull-debug-log.sh",
+    "godot:android:release": "bash ./scripts/godot-android-export.sh release",
+    "pack:unified": "bash ./scripts/pack-unified.sh",
+    "release:ideal": "node ./scripts/release-ideal.mjs",
     "cursor:audit": "node ./scripts/cursor-audit-local.mjs",
     "cursor:audit:stream": "node ./scripts/cursor-audit-local.mjs --stream"
+  },
+  "engines": {
+    "node": ">=20.19.0"
   }
 }

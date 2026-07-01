@@ -8,6 +8,7 @@ android/keystore.properties
 
 node_modules/
 _site/
+privacy-host/
 
 # Capacitor / Android build artifacts
 android/.gradle/
@@ -16,6 +17,7 @@ android/build/
 android/local.properties
 *.apk
 *.aab
+build/
 
 # Local browser/debug profiles
 .chrome-*/
