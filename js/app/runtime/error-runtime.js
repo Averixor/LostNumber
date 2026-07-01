@@ -12,7 +12,7 @@ LostNumberGame.prototype.initializeErrorHandler = function () {
         logToConsole: isDev,
         maxErrorsPerMinute: isDev ? 100 : 50,
         collectStackTraces: true,
-        onErrorReport: isDev ? null : this.reportErrorToAnalytics.bind(this),
+        onErrorReport: null,
       });
     }
 
@@ -93,34 +93,4 @@ LostNumberGame.prototype.wrapMethod = function (obj, methodName, label) {
       throw error;
     }
   };
-};
-
-LostNumberGame.prototype.reportErrorToAnalytics = function (errorData) {
-  try {
-    const importantErrors = ['resource', 'runtime', 'promise'];
-    if (!importantErrors.includes(errorData.meta?.type)) {
-      return;
-    }
-
-    const analyticsData = {
-      event: 'game_error',
-      error_id: errorData.id,
-      message: errorData.message?.substring(0, 200),
-      type: errorData.meta?.type,
-      timestamp: errorData.timestamp,
-      currentLevel: errorData.context?.currentLevel ?? 0,
-      gamePhase: errorData.context?.gamePhase || 'unknown',
-      url: window.location.href,
-      user_agent: navigator.userAgent.substring(0, 100),
-    };
-
-    if (typeof analytics !== 'undefined' && typeof analytics.track === 'function') {
-      analytics.track('game_error', analyticsData);
-    }
-
-    if (navigator.sendBeacon && window.ANALYTICS_ENDPOINT) {
-      const blob = new Blob([JSON.stringify(analyticsData)], { type: 'application/json' });
-      navigator.sendBeacon(window.ANALYTICS_ENDPOINT + '/error', blob);
-    }
-  } catch (e) {}
 };

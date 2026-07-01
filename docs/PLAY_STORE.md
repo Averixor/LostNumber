@@ -93,25 +93,49 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 
 **Testing → Internal testing** → той самий AAB.
 
-## 6. Контентний рейтинг
+## 6. Контентний рейтинг (IARC)
 
-Заповніть анкету **Policy → App content → Content rating**:
+**Policy → App content → Content rating** — заповнити анкету **чесно**:
 
-- Насильство, секс, наркотики — ні
-- Gambling — ні (колесо фортуни — ігровий бонус без реальних грошей)
-- User-generated content — ні
-- Online interaction — ні (офлайн)
+| Питання                     | Відповідь                                          |
+| --------------------------- | -------------------------------------------------- |
+| Категорія                   | Гра / головоломка                                  |
+| Насильство, секс, наркотики | Ні                                                 |
+| Gambling                    | Ні (колесо фортуни — ігровий XP, не реальні гроші) |
+| IAP / paid random items     | Ні                                                 |
+| User-generated content      | Ні                                                 |
+| Online interaction          | Ні (офлайн)                                        |
+| Реклама                     | Ні                                                 |
 
 Очікуваний результат: **Everyone / 3+**.
 
+## 6b. Цільова аудиторія
+
+**Policy → App content → Target audience and content**:
+
+- **Ні** — «застосунок переважно для дітей»
+- **Так** — широка аудиторія / усі віки
+- **Не** вмикати Designed for Families без окремої програми Google
+
 ## 7. Data safety
 
-У формі **Data safety** вкажіть:
+**Policy → App content → Data safety** — вказати **фактичну** відсутність збору персональних даних:
 
-- **Data collected:** None (або «No data shared with third parties»)
-- Локальні дані на пристрої не синхронізуються з сервером розробника
-- Privacy policy URL: `https://averixor.github.io/LostNumber/privacy.html`
-- Потрібен успішний деплой GitHub Pages — див. [GITHUB_PAGES.md](./GITHUB_PAGES.md), якщо workflow падає на `configure-pages`.
+| Питання                                       | Відповідь                                            |
+| --------------------------------------------- | ---------------------------------------------------- |
+| Збирає або передає дані користувачів?         | **Ні**                                               |
+| Усі типи даних (ім'я, email, геолокація тощо) | **Не збирається**                                    |
+| Шифрування при передачі                       | Не застосовується                                    |
+| Видалення даних                               | Користувач очищає дані застосунку в Android          |
+| Privacy policy URL                            | `https://averixor.github.io/LostNumber/privacy.html` |
+
+Локальний прогрес у `localStorage` **не передається** на сервери розробника — у формі це «дані не збираються».
+
+Додатково в **App content**: Ads — No; In-app purchases — No.
+
+Потрібен успішний деплой privacy URL — див. [GITHUB_PAGES.md](./GITHUB_PAGES.md).
+
+Детальна таблиця відповідей: **`store/PLAY_CONSOLE_LISTING.md`** → розділ «Политики Google Play».
 
 ## 8. Чекліст перед Production
 
@@ -119,7 +143,11 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 - [ ] `npm run release:check` зелений
 - [ ] AAB зібраний з release flags (`cheatsEnabled=false`)
 - [ ] Скріншоти з реального APK на телефоні
-- [ ] Privacy policy опублікована на GitHub Pages
+- [ ] Privacy policy опублікована (URL відкривається)
+- [ ] IARC (Content rating) заповнено чесно
+- [ ] Target audience — **не** «переважно для дітей»
+- [ ] Data safety — «дані не збираються»
+- [ ] Email підтримки вказано в Store listing
 - [ ] Closed testing пройдено без критичних багів
 - [ ] versionCode збільшено для наступного релізу (`android/app/build.gradle`)
 

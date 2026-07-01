@@ -110,26 +110,7 @@
     collectStackTraces: true,
     maxErrorsPerMinute: isDebugFull ? 250 : isDev ? 120 : 50,
     errorHistorySize: isDebugFull ? 300 : 100,
-    onErrorReport(errorData) {
-      try {
-        if (!isDev && navigator.sendBeacon && window.ANALYTICS_ENDPOINT) {
-          const important = ['fatal', 'runtime', 'resource', 'promise', 'game_logic'];
-          if (important.includes(errorData.meta?.type)) {
-            const report = {
-              id: errorData.id,
-              type: errorData.meta?.type,
-              message: (errorData.message || '').substring(0, 200),
-              timestamp: errorData.timestamp,
-              url: window.location.href,
-            };
-            navigator.sendBeacon(
-              window.ANALYTICS_ENDPOINT + '/error',
-              new Blob([JSON.stringify(report)], { type: 'application/json' }),
-            );
-          }
-        }
-      } catch (_) {}
-    },
+    onErrorReport: null,
   };
 
   if (isDebugFull) {
