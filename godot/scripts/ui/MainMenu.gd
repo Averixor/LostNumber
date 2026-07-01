@@ -1,15 +1,21 @@
 extends Control
 
-@onready var new_game_button: Button = $VBox/NewGameButton
 @onready var continue_button: Button = $VBox/ContinueButton
+@onready var new_game_button: Button = $VBox/NewGameButton
 @onready var settings_button: Button = $VBox/SettingsButton
+@onready var title_label: Label = $VBox/Title
 
 
 func _ready() -> void:
-	continue_button.visible = SaveManager.has_save()
+	title_label.text = "Lost Number"
+	continue_button.text = "Продовжити"
+	new_game_button.text = "Нова гра"
+	settings_button.text = "Налаштування"
+	continue_button.disabled = not SaveManager.has_save()
 	continue_button.pressed.connect(_on_continue)
 	new_game_button.pressed.connect(_on_new_game)
 	settings_button.pressed.connect(_on_settings)
+	AudioManager.play_music("ambient")
 
 
 func _on_continue() -> void:

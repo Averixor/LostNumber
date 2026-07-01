@@ -2,10 +2,13 @@ extends RefCounted
 class_name GameState
 
 ## Session state — logic only, no nodes.
+## Pulled forward from the JS prototype: core rules, level flow, compact numbers,
+## stats/achievements, deterministic seed hooks, and Android-safe chain behavior.
 
 enum Phase { MENU, PLAYING, ANIMATING, WIN, TRANSITIONING }
 
 var board: BoardLogic
+var progress: PlayerProgress = PlayerProgress.new()
 var current_level: int = 0
 var xp: int = 0
 var carry_number: int = 0
@@ -17,6 +20,7 @@ var selected_path: Array[Vector2i] = []
 
 var xp_multiplier: int = 1
 var xp_multiplier_turns: int = 0
+var bonus_inventory := {"destroy": 0, "shuffle": 0, "explosion": 0}
 
 
 func _init() -> void:
@@ -36,19 +40,29 @@ func start_new_game(seed_value: int = -1) -> void:
 	pending_transition = {}
 	selected_path.clear()
 	phase = Phase.PLAYING
+	bonus_inventory = {"destroy": 0, "shuffle": 0, "explosion": 0}
+	progress.record_new_game()
 
 	board.grid = board._create_empty_grid()
 	board.fill_random(current_level, carry_number)
 
 
 func begin_chain(cell: Vector2i) -> void:
+	if not _is_valid_cell(cell):
+		return
 	selected_path = [cell]
 
 
 func extend_chain(cell: Vector2i) -> bool:
+	if not _is_valid_cell(cell):
+		return false
+
 	if selected_path.is_empty():
 		begin_chain(cell)
 		return true
+
+	if selected_path.back() == cell:
+		return false
 
 	if selected_path.size() >= 2:
 		var prev2 := selected_path[selected_path.size() - 2]
@@ -62,6 +76,8 @@ func extend_chain(cell: Vector2i) -> bool:
 
 	var last: Vector2i = selected_path.back()
 	if not Rules.is_adjacent(last, cell):
+		# Important Android fix: low FPS can skip pointer positions.
+		# Do not reset the chain here; ignore the skipped cell and wait for a valid neighbour.
 		return false
 
 	var numbers := PackedInt32Array()
@@ -70,6 +86,7 @@ func extend_chain(cell: Vector2i) -> bool:
 	var next_val: int = board.grid[cell.x][cell.y]
 	var partial: int = Rules.chain_sum(numbers)
 	if not Rules.is_valid_next_number(next_val, numbers[numbers.size() - 1], partial):
+		# Same policy: invalid next number is rejected, but the drag is not killed.
 		return false
 
 	selected_path.append(cell)
@@ -116,11 +133,13 @@ func merge_current_chain() -> Dictionary:
 	var chain_len: int = selected_path.size()
 	var xp_earned := _calculate_xp(chain_len)
 	xp += xp_earned + surplus
+	progress.record_merge(chain_len, xp_earned + surplus, current_level)
 
 	selected_path.clear()
 
 	var won: bool = board.has_value_on_board(target)
 	if won:
+		progress.record_level_complete(current_level)
 		_start_level_complete(target)
 
 	return {
@@ -132,9 +151,16 @@ func merge_current_chain() -> Dictionary:
 	}
 
 
+func level_xp_mult() -> float:
+	return 1.0 + (current_level + 1) * 0.06
+
+
 func _calculate_xp(chain_len: int) -> int:
 	var base: int = Rules.base_xp_by_len(chain_len)
-	return base * xp_multiplier
+	var xp_earned := maxi(0, int(round(float(base) * level_xp_mult())))
+	if xp_multiplier > 1 and xp_multiplier_turns > 0:
+		xp_earned = int(round(float(xp_earned) * float(xp_multiplier)))
+	return xp_earned
 
 
 func _start_level_complete(completed_target: int) -> void:
@@ -166,15 +192,23 @@ func get_target() -> int:
 	return board.level_manager.get_level_config(current_level)["target"]
 
 
+func format_value(value: int) -> String:
+	return NumberFormatter.format_number(value)
+
+
 func to_save_dict() -> Dictionary:
 	return {
-		"version": 1,
+		"version": 2,
 		"current_level": current_level,
 		"xp": xp,
 		"carry_number": carry_number,
 		"max_reached_number": max_reached_number,
 		"grid": board.grid_to_arrays(),
 		"pending_transition": pending_transition.duplicate(true),
+		"xp_multiplier": xp_multiplier,
+		"xp_multiplier_turns": xp_multiplier_turns,
+		"bonus_inventory": bonus_inventory.duplicate(true),
+		"progress": progress.to_dict(),
 	}
 
 
@@ -187,7 +221,32 @@ func load_from_save_dict(data: Dictionary) -> bool:
 	carry_number = int(data.get("carry_number", 0))
 	max_reached_number = int(data.get("max_reached_number", 8))
 	pending_transition = data.get("pending_transition", {})
+	xp_multiplier = int(data.get("xp_multiplier", 1))
+	xp_multiplier_turns = int(data.get("xp_multiplier_turns", 0))
+	bonus_inventory = data.get("bonus_inventory", {"destroy": 0, "shuffle": 0, "explosion": 0})
+	if data.has("progress") and typeof(data.progress) == TYPE_DICTIONARY:
+		progress.load_from_dict(data.progress)
 	board.load_from_arrays(data.get("grid", []))
 	selected_path.clear()
-	phase = Phase.PLAYING if pending_transition.is_empty() else Phase.WIN
+	_sanitize_win_phase()
 	return true
+
+
+func sanitize_win_phase() -> void:
+	_sanitize_win_phase()
+
+
+func _sanitize_win_phase() -> void:
+	if pending_transition.get("active", false):
+		phase = Phase.WIN
+	else:
+		pending_transition = {}
+		phase = Phase.PLAYING
+
+
+func should_show_level_complete() -> bool:
+	return phase == Phase.WIN and pending_transition.get("active", false)
+
+
+func _is_valid_cell(cell: Vector2i) -> bool:
+	return cell.x >= 0 and cell.x < board.grid_w and cell.y >= 0 and cell.y < board.grid_h
