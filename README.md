@@ -45,9 +45,9 @@ Android mipmap: `python3 scripts/generate-android-icons.py` (джерело — 
 
 ## PWA та публічний демо
 
-Живий приклад на GitHub Pages: <https://averixor.github.io/LostNumber/>
+Живий демо / privacy на GitHub Pages: <https://averixor.github.io/LostNumber/> — **працює лише після public repo + увімкнення Pages** (зараз private → 404). Обхід: `npm run privacy:package` → Netlify Drop — див. [docs/GITHUB_PAGES.md](docs/GITHUB_PAGES.md).
 
-Деплой налаштований через GitHub Pages як статичний сайт без Jekyll. **`ci.yml`** запускає `npm run release:check` на кожному push; **`pages.yml`** деплоїть `_site/` лише якщо Pages увімкнено. Якщо CI падає на `configure-pages` — див. [docs/GITHUB_PAGES.md](docs/GITHUB_PAGES.md).
+Деплой: **`ci.yml`** — `release:check` на кожному push; **`pages.yml`** — деплой `_site/` лише коли Pages увімкнено (на private repo без Pages run завершується без деплою — див. [docs/GITHUB_PAGES.md](docs/GITHUB_PAGES.md)).
 
 ## Android (APK / Google Play)
 
@@ -59,7 +59,8 @@ npm run android:prepare   # зібрати web + sync у android/
 npm run android:open      # Android Studio
 ```
 
-Детально: **[docs/ANDROID.md](docs/ANDROID.md)** (JDK, SDK, кнопка «Назад», debug/release APK).
+Детально: **[docs/ANDROID.md](docs/ANDROID.md)** (JDK, SDK, кнопка «Назад», debug/release APK).  
+Публікація в Google Play: **[docs/PLAY_STORE.md](docs/PLAY_STORE.md)**. Повний навігатор: **[docs/README.md](docs/README.md)**.
 
 Без магазину можна просто встановити PWA з GitHub Pages («Додати на головний екран»).
 
@@ -82,10 +83,16 @@ npm run android:open      # Android Studio
 | `npm run check`               | **`format:check` + `lint`** через `scripts/check.mjs` (Node, без прив’язки до shell)                                                                 |
 | `npm run verify:static`       | Перевіряє локальні посилання з `index.html`, `manifest.json`, CSS/JS string refs та синхронність PWA-кольорів                                        |
 | `npm run typecheck`           | TypeScript **`tsc --noEmit`** — baseline перевірка типів без збірки й без emit (див. `tsconfig.json`, `js/types.d.ts`; `checkJs` глобально вимкнено) |
+| `npm run test`                | Те саме, що `test:smoke` — швидкі gameplay/storage smoke-тести                                                                                       |
 | `npm run test:smoke`          | Gameplay/storage/error-handler smoke-перевірки без test framework                                                                                    |
 | `npm run release:check`       | Повний предрелізний gate: format, lint, typecheck, static verifier і smoke-тести                                                                     |
-| `npm run build:pages`         | Готує `_site/` для GitHub Pages / Capacitor: `index.html`, `manifest.json`, `assets/`, `public/audio/` → `_site/audio/`, `css/`, `js/`               |
+| `npm run verify:android`      | Release security + перевірка `_site` перед Android bundle                                                                                            |
+| `npm run build:pages`         | Готує `_site/` для GitHub Pages / Capacitor: `index.html`, `manifest.json`, `privacy.html`, `assets/`, `css/`, `js/`                                 |
 | `npm run android:prepare`     | `build:pages` + синхронізація web-асетів у `android/` (Capacitor)                                                                                    |
+| `npm run android:sync`        | Те саме, що `android:prepare`                                                                                                                        |
+| `npm run android:release`     | Підписаний release APK                                                                                                                               |
+| `npm run android:bundle`      | Підписаний release AAB для Google Play                                                                                                               |
+| `npm run store:prepare`       | Графіка Play Console у `store/` + оновлення mipmap                                                                                                   |
 | `npm run android:open`        | Відкрити Gradle-проєкт у Android Studio                                                                                                              |
 | `npm run android:run`         | prepare + `cap run android` (потрібен SDK + пристрій/емулятор)                                                                                       |
 | `npm run cursor:audit`        | Допоміжний скрипт для локального аудиту з Cursor SDK                                                                                                 |
@@ -159,7 +166,7 @@ localStorage.setItem('lostnumber_debug', 'full');
 - **`js/bootstrap/`** — `env.js`, `boot.js`, `capacitor-bridge.js` (запуск, native).
 - **`js/app/navigation/`** — Android «Назад», навігація між екранами.
 
-Додаткові нотатки: **`docs/PHASES.md`**, **`docs/AUDIO.md`**, **`docs/ANDROID.md`**.
+Додаткові нотатки: **[docs/README.md](docs/README.md)** (навігатор), **`docs/PHASES.md`**, **`docs/AUDIO.md`**, **`docs/ANDROID.md`**.
 
 ## Ліцензія та внесок
 

@@ -1,24 +1,26 @@
 # Google Play Console — Lost Number
 
-Готовые поля для **Store listing** (украинский — основной язык листинга).  
-Файлы графики: `npm run store:prepare` → папка `store/`.
+Готові поля для **Store listing** (основна локаль листингу — українська).  
+Повна процедура публікації: **[docs/PLAY_STORE.md](../docs/PLAY_STORE.md)**.
+
+Файли графіки: `npm run store:prepare` → папка `store/`.
 
 ---
 
-## Основные поля
+## Основні поля
 
-| Поле                   | Значение                                             |
+| Поле                   | Значення                                             |
 | ---------------------- | ---------------------------------------------------- |
-| **Название**           | `Lost Number`                                        |
-| **Категория**          | **Игры** → **Головоломки** (Games → Puzzle)          |
-| **Email поддержки**    | `ryabinin.sergei.alekseevich@gmail.com`              |
+| **Назва**              | `Lost Number`                                        |
+| **Категорія**          | **Ігри** → **Головоломки** (Games → Puzzle)          |
+| **Email підтримки**    | `ryabinin.sergei.alekseevich@gmail.com`              |
 | **Privacy Policy URL** | `https://averixor.github.io/LostNumber/privacy.html` |
 
-> **Privacy URL:** работает после деплоя GitHub Pages. Пока Pages выключен — временно укажите другой хостинг или опубликуйте `privacy.html` (см. `docs/PLAY_STORE.md`).
+> **Privacy URL** має відкриватися в браузері до відправки на перевірку. Якщо GitHub Pages недоступний — див. [docs/GITHUB_PAGES.md](../docs/GITHUB_PAGES.md).
 
 ---
 
-## Краткое описание (до 80 символов)
+## Короткий опис (до 80 символів)
 
 **Українська** — скопіювати в Play Console:
 
@@ -48,7 +50,7 @@ Calm number grid puzzle. Levels, bonuses, offline save.
 
 ---
 
-## Полное описание
+## Повний опис
 
 ### Українська
 
@@ -111,123 +113,49 @@ Lost Number — логическая головоломка с числами в
 
 ---
 
-## Графика (загрузить в Console)
+## Графіка (завантажити в Console)
 
-| Тип                    | Файл                                            | Размер                  |
-| ---------------------- | ----------------------------------------------- | ----------------------- |
-| **Иконка**             | `store/play-high-res-icon-512.png`              | 512×512 PNG             |
-| **Feature graphic**    | `store/feature-graphic-1024x500.png`            | 1024×500 PNG            |
-| **Скриншоты телефона** | `store/screenshots/phone/01-*.png` … `04-*.png` | 1080×1920 PNG (портрет) |
+| Тип                 | Файл                                            | Розмір                  |
+| ------------------- | ----------------------------------------------- | ----------------------- |
+| **Іконка**          | `store/play-high-res-icon-512.png`              | 512×512 PNG             |
+| **Feature graphic** | `store/feature-graphic-1024x500.png`            | 1024×500 PNG            |
+| **Скріншоти**       | `store/screenshots/phone/01-*.png` … `04-*.png` | 1080×1920 PNG (портрет) |
 
-Минимум **2** скриншота для публикации. Рекомендуется 4–8.
-
-Перед публичным релизом замените промо-скриншоты на реальные снимки с телефона (меню, игра, настройки).
+Мінімум **2** скріншоти. Рекомендовано 4–8. Перед публічним релізом замініть чернетки на знімки з реального APK (меню, гра, налаштування). Див. `store/screenshots/phone/README.md`.
 
 ---
 
-## Дополнительно в Console
+## Додатково в Console
 
-| Поле                   | Рекомендация                                |
-| ---------------------- | ------------------------------------------- |
-| **Тип приложения**     | Игра                                        |
-| **Бесплатно / платно** | Бесплатно                                   |
-| **Теги**               | puzzle, numbers, logic, casual, offline     |
-| **Целевая аудитория**  | Everyone / 3+ (после анкеты Content rating) |
-| **Package name**       | `com.averixor.lostnumber`                   |
-| **Версия**             | `1.0` (versionCode 1)                       |
-
----
-
-## Политики Google Play (обязательно)
-
-### IARC — Content rating (честно)
-
-**Policy → App content → Content rating** → заполнить анкету IARC:
-
-| Вопрос                       | Ответ                                                       |
-| ---------------------------- | ----------------------------------------------------------- |
-| Категория                    | Игра / головоломка                                          |
-| Насилие                      | Нет (или минимальное, без крови)                            |
-| Сексуальный контент          | Нет                                                         |
-| Наркотики                    | Нет                                                         |
-| Азартные игры / ставки       | Нет (колесо фортуны — внутриигровой XP, не реальные деньги) |
-| Покупки в приложении         | Нет                                                         |
-| Лутбоксы / paid random items | Нет                                                         |
-| Онлайн-взаимодействие        | Нет (офлайн)                                                |
-| User-generated content       | Нет                                                         |
-| Реклама                      | Нет                                                         |
-
-Ожидаемый рейтинг: **Everyone / 3+ / Livre**.
-
-### Целевая аудитория — НЕ «приложение для детей»
-
-**Policy → App content → Target audience and content**:
-
-| Вопрос                           | Ответ                                                          |
-| -------------------------------- | -------------------------------------------------------------- |
-| Приложение в основном для детей? | **Нет**                                                        |
-| Аудитория                        | Широкая / все возрасты (семейная головоломка)                  |
-| Designed for Families            | **Не включать** (если не проходите отдельную программу Google) |
-
-Семейная игра ≠ детское приложение в смысле Play Console.
-
-### Privacy Policy — обязательна
-
-| Поле                   | Значение                                             |
-| ---------------------- | ---------------------------------------------------- |
-| **Privacy Policy URL** | `https://averixor.github.io/LostNumber/privacy.html` |
-| Файл в репо            | `privacy.html`                                       |
-| Контакт в политике     | `ryabinin.sergei.alekseevich@gmail.com`              |
-
-Перед отправкой на проверку URL должен открываться в браузере (GitHub Pages или другой хостинг).
-
-### Email поддержки — обязателен
-
-```
-ryabinin.sergei.alekseevich@gmail.com
-```
-
-Указать в **Store listing → Contact details** и в `privacy.html`.
-
-### Data safety — данные не собираются
-
-**Policy → App content → Data safety**:
-
-| Вопрос                                                             | Ответ                                                |
-| ------------------------------------------------------------------ | ---------------------------------------------------- |
-| Собирает или передаёт данные пользователей?                        | **Нет**                                              |
-| Все типы данных (имя, email, местоположение, финансы, фото и т.д.) | **Не собирается**                                    |
-| Шифрование при передаче                                            | Не применимо                                         |
-| Удаление данных пользователем                                      | Очистка данных приложения в настройках Android       |
-| Privacy policy URL                                                 | `https://averixor.github.io/LostNumber/privacy.html` |
-
-**Фактическое поведение приложения** (release 1.0):
-
-- прогресс, настройки, квесты — только `localStorage` на устройстве;
-- нет Firebase, AdMob, аналитики, аккаунтов, геолокации;
-- разрешение `INTERNET` — для Capacitor WebView, не для отправки игровых данных.
-
-Дополнительно в **App content**:
-
-| Раздел             | Ответ                           |
-| ------------------ | ------------------------------- |
-| Ads                | No, my app does not contain ads |
-| In-app purchases   | No                              |
-| Financial features | No                              |
+| Поле                     | Рекомендація                            |
+| ------------------------ | --------------------------------------- |
+| **Тип застосунку**       | Гра                                     |
+| **Безкоштовно / платно** | Безкоштовно                             |
+| **Теги**                 | puzzle, numbers, logic, casual, offline |
+| **Цільова аудиторія**    | Everyone / 3+ (після IARC)              |
+| **Package name**         | `com.averixor.lostnumber`               |
+| **Версія**               | `1.0` (versionCode 1)                   |
 
 ---
 
-## Чеклист загрузки
+## Політики Google Play
 
-1. [ ] `npm run store:prepare` — обновить `store/`
-2. [ ] Store listing → загрузить иконку, feature graphic, скриншоты
-3. [ ] Вставить краткое и полное описание (UK + EN + RU)
-4. [ ] Email поддержки: `ryabinin.sergei.alekseevich@gmail.com`
-5. [ ] Privacy Policy URL живой и совпадает с Console
-6. [ ] IARC (Content rating) — анкета заполнена честно
-7. [ ] Target audience — **не** «приложение для детей»
-8. [ ] Data safety — «данные не собираются»
-9. [ ] Категория: Games → Puzzle
-10. [ ] Testing → Closed testing → загрузить `app-release.aab`
+Повні таблиці IARC, Target audience, Data safety і production-чекліст — у **[docs/PLAY_STORE.md](../docs/PLAY_STORE.md)** (розділи 6–8).
 
-Подробнее: [docs/PLAY_STORE.md](../docs/PLAY_STORE.md)
+Коротко:
+
+- IARC — чесно: головоломка, без насильства / реклами / IAP
+- Target audience — **не** «переважно для дітей»
+- Data safety — **дані не збираються** (лише `localStorage` на пристрої)
+- Ads, IAP, Financial features — **No**
+
+---
+
+## Чекліст листингу
+
+1. [ ] `npm run store:prepare`
+2. [ ] Завантажити іконку, feature graphic, скріншоти
+3. [ ] Вставити описи (UK + EN + RU)
+4. [ ] Email і Privacy URL (див. вище)
+5. [ ] Категорія: Games → Puzzle
+6. [ ] Далі — [docs/PLAY_STORE.md](../docs/PLAY_STORE.md): IARC, Data safety, AAB у Closed testing

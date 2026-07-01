@@ -37,7 +37,7 @@
 
 1. **Node.js** 18+ і `npm install` у корені репозиторію.
 2. **JDK 17** — `openjdk-17-jdk` або SDKMAN (`sdk install java 17.0.13-tem`).
-3. **Android Studio** + Android SDK 34+.
+3. **Android Studio** + Android SDK **35** (`targetSdkVersion` / `compileSdkVersion` у `android/variables.gradle`).
 
 Швидка установка на Linux (у **своєму** терміналі, не в агенті без sudo):
 

@@ -1,4 +1,4 @@
-# Google Play — закритe тестування та публікація
+# Google Play — закрите тестування та публікація
 
 Підготовка для **Lost Number** (`com.averixor.lostnumber`). Повноцінна публікація в Production можлива після **завершення перевірки особи** в Google Play Console.
 
@@ -11,7 +11,7 @@
 | Іконка Play (512)                | `store/play-high-res-icon-512.png`                                                    |
 | Feature graphic                  | `store/feature-graphic-1024x500.png`                                                  |
 | Чернетки скріншотів              | `store/screenshots/phone/`                                                            |
-| Описи магазину                   | `docs/store-listing/` + **`store/PLAY_CONSOLE_LISTING.md`** (все поля в одном месте)  |
+| Описи магазину                   | `docs/store-listing/` + **`store/PLAY_CONSOLE_LISTING.md`** (готові поля для Console) |
 | Privacy Policy URL               | `https://averixor.github.io/LostNumber/privacy.html`                                  |
 
 ## 1. Збірка AAB
@@ -22,14 +22,24 @@ npm run release:check
 npm run android:bundle
 ```
 
-Потрібен `android/keystore.properties` (не в git). Приклад:
+Потрібен `android/keystore.properties` (не в git). У цьому проєкті типово:
 
 ```properties
-storeFile=release-keystore.jks
+storeFile=keystore/lostnumber-release-2026.jks
 storePassword=***
-keyAlias=upload
+keyAlias=lostnumber_release_2026
 keyPassword=***
 ```
+
+**Не копіюйте** плейсхолдери на кшталт `/путь/к/your-release-key.jks` — це лише приклади з інтернету.
+
+Відбиток сертифіката (SHA-1 / SHA-256 для Play Console):
+
+```bash
+npm run keystore:info
+```
+
+Скрипт читає `android/keystore.properties` і викликає `keytool` з правильним шляхом.
 
 Після збірки завантажте **app-release.aab** у Play Console.
 
@@ -56,16 +66,17 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 
 ## 4. Заповнення сторінки застосунку
 
-Скопіюйте тексти з:
+Скопіюйте тексти з `docs/store-listing/` або **`store/PLAY_CONSOLE_LISTING.md`**:
 
-- `docs/store-listing/short-description-uk.txt` (80 символів)
-- `docs/store-listing/full-description-uk.txt`
-- `docs/store-listing/short-description-en.txt`
-- `docs/store-listing/full-description-en.txt`
+| Локаль | Короткий опис              | Повний опис               |
+| ------ | -------------------------- | ------------------------- |
+| UK     | `short-description-uk.txt` | `full-description-uk.txt` |
+| EN     | `short-description-en.txt` | `full-description-en.txt` |
+| RU     | `short-description-ru.txt` | `full-description-ru.txt` |
 
 **Категорія:** Games → Puzzle  
 **Теги (приклад):** puzzle, numbers, logic, casual, offline  
-**Контакт:** `ryabinin.sergei.alekseevich@gmail.com` (див. `store/PLAY_CONSOLE_LISTING.md`)
+**Контакт:** `ryabinin.sergei.alekseevich@gmail.com`  
 **Ціна:** безкоштовно
 
 ## 5. Закрите тестування (Closed testing)
@@ -135,7 +146,7 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 
 Потрібен успішний деплой privacy URL — див. [GITHUB_PAGES.md](./GITHUB_PAGES.md).
 
-Детальна таблиця відповідей: **`store/PLAY_CONSOLE_LISTING.md`** → розділ «Политики Google Play».
+Детальна таблиця відповідей для листингу: **`store/PLAY_CONSOLE_LISTING.md`**. Процедура нижче — канонічна.
 
 ## 8. Чекліст перед Production
 
@@ -169,4 +180,4 @@ npm run android:bundle        # signed AAB для Play
 python3 scripts/prepare-play-store-assets.py
 ```
 
-Див. також: [ANDROID.md](./ANDROID.md), [ANDROID_QA.md](./ANDROID_QA.md).
+Див. також: [README.md](./README.md), [ANDROID.md](./ANDROID.md), [ANDROID_QA.md](./ANDROID_QA.md).
