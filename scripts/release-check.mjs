@@ -12,6 +12,7 @@ const steps = [
   ['scripts/verify-static-assets.mjs', []],
   ['scripts/verify-tagline.mjs', []],
   ['scripts/verify-android-release.mjs', []],
+  ['scripts/verify-godot-release.mjs', []],
   ['scripts/smoke-tests.mjs', []],
 ];
 
