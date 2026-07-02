@@ -87,3 +87,5 @@ copilot-messages.log
 
 # Local/generated duplicate image exports
 public/images/
+
+.vscode/
