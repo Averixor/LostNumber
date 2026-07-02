@@ -11,6 +11,15 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_settings")
 
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
 [node name="VBox" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 8
@@ -18,13 +27,13 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -120.0
-offset_top = -100.0
-offset_right = 120.0
-offset_bottom = 100.0
+offset_left = -150.0
+offset_top = -160.0
+offset_right = 150.0
+offset_bottom = 160.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 12
 alignment = 1
 
 [node name="Title" type="Label" parent="VBox"]
@@ -41,6 +50,17 @@ button_pressed = true
 layout_mode = 2
 text = "Music"
 button_pressed = true
+
+[node name="LanguageOption" type="OptionButton" parent="VBox"]
+layout_mode = 2
+
+[node name="LeaderboardCheck" type="CheckButton" parent="VBox"]
+layout_mode = 2
+text = "Leaderboard opt-in"
+
+[node name="ThemeButton" type="Button" parent="VBox"]
+layout_mode = 2
+text = "Theme"
 
 [node name="BackButton" type="Button" parent="VBox"]
 layout_mode = 2

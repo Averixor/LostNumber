@@ -17,6 +17,9 @@ config/icon="res://icon.svg"
 SaveManager="*res://scripts/managers/SaveManager.gd"
 SettingsManager="*res://scripts/managers/SettingsManager.gd"
 AudioManager="*res://scripts/managers/AudioManager.gd"
+I18nManager="*res://scripts/managers/I18nManager.gd"
+ThemeManager="*res://scripts/managers/ThemeManager.gd"
+LeaderboardService="*res://scripts/managers/LeaderboardService.gd"
 
 [display]
 

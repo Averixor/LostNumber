@@ -1,5 +1,6 @@
 {
   "name": "lostnumber",
+  "version": "2.0.0",
   "private": true,
   "devDependencies": {
     "@capacitor/android": "^7.6.7",
@@ -44,7 +45,8 @@
     "godot:import": "godot4 --path godot --import --headless",
     "godot:test": "godot4 --path godot --headless --script res://scripts/tests/run_rules_tests.gd",
     "godot:test:save": "godot4 --path godot --headless --script res://scripts/tests/run_save_tests.gd",
-    "godot:test:all": "npm run godot:test && npm run godot:test:save",
+    "godot:test:smoke": "godot4 --path godot --headless --script res://scripts/tests/run_smoke_tests.gd",
+    "godot:test:all": "npm run godot:test && npm run godot:test:save && npm run godot:test:smoke",
     "godot:android:debug": "bash ./scripts/godot-android-export.sh debug",
     "godot:android:install": "bash ./scripts/godot-android-install.sh",
     "godot:android:log": "bash ./scripts/godot-android-logcat.sh",

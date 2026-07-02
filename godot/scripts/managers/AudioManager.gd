@@ -40,6 +40,10 @@ const SFX_COOLDOWN_MS := {
 }
 
 
+func _autoload(name: String) -> Node:
+	return get_node_or_null("/root/" + name)
+
+
 func _ready() -> void:
 	_music_player = AudioStreamPlayer.new()
 	_music_player.bus = "Master"
@@ -71,8 +75,22 @@ func _load_stream(path: String) -> AudioStream:
 	return stream
 
 
+func _sound_enabled() -> bool:
+	var settings := _autoload("SettingsManager")
+	if settings == null:
+		return true
+	return bool(settings.get("sound_enabled"))
+
+
+func _music_enabled() -> bool:
+	var settings := _autoload("SettingsManager")
+	if settings == null:
+		return true
+	return bool(settings.get("music_enabled"))
+
+
 func play_sfx(name: String) -> void:
-	if not SettingsManager.sound_enabled:
+	if not _sound_enabled():
 		return
 
 	var now_ms := Time.get_ticks_msec()
@@ -101,7 +119,7 @@ func play_sfx(name: String) -> void:
 
 
 func play_music(track: String = "ambient") -> void:
-	if not SettingsManager.music_enabled:
+	if not _music_enabled():
 		return
 
 	var cache_key := "music:" + track
@@ -126,19 +144,23 @@ func stop_music() -> void:
 
 
 func apply_audio_settings() -> void:
-	if SettingsManager.music_enabled:
+	if _music_enabled():
 		play_music(_current_music_track if _current_music_track else "ambient")
 	else:
 		stop_music()
 
 
 func is_audio_enabled() -> bool:
-	return SettingsManager.sound_enabled and SettingsManager.music_enabled
+	return _sound_enabled() and _music_enabled()
 
 
 func toggle_all_audio() -> void:
+	var settings := _autoload("SettingsManager")
+	if settings == null:
+		return
 	var next := not is_audio_enabled()
-	SettingsManager.sound_enabled = next
-	SettingsManager.music_enabled = next
-	SettingsManager.save_settings()
+	settings.set("sound_enabled", next)
+	settings.set("music_enabled", next)
+	if settings.has_method("save_settings"):
+		settings.call("save_settings")
 	apply_audio_settings()

@@ -30,7 +30,19 @@ Lost Number **2.0** — Godot 4 / GDScript. The HTML/Capacitor build remains a r
 - [x] Drag chain with path interpolation (Android low-FPS fix)
 - [x] AudioManager (SFX pool + music)
 - [x] Android export preset + `scripts/godot-android-export.sh`
-- [ ] Full parity: bonuses, wheel, daily, achievements, i18n
+- [x] Bonuses (shuffle, destroy, explosion) — `BonusManager.gd` + HUD
+- [x] Daily quests — `DailyQuestManager.gd` + `DailyQuests.tscn`
+- [x] Wheel — `WheelManager.gd` + `Wheel.tscn` (logic; no canvas animation yet)
+- [x] Achievements UI — `Achievements.tscn` + save via `PlayerProgress`
+- [x] i18n UA/RU/EN — `I18nManager.gd` autoload
+- [x] Themes dawn/dusk tokens — `ThemeManager.gd` (colors; art backgrounds deferred)
+- [x] Leaderboard stub — `LeaderboardService.gd` + offline queue in save
+- [x] Tile merge pulse — `Tile.gd` tween
+- [ ] Full neon icon UI parity with JS
+- [ ] Wheel canvas animation
+- [ ] Freeze bonus + pressure transfer
+- [ ] Web save import (`localStorage` v2 → Godot)
+- [ ] Play Games / Firebase leaderboard HTTP wiring
 
 ## Intentionally deferred
 

@@ -52,6 +52,7 @@ func setup(pos: Vector2i, number: int) -> void:
 
 func set_value(number: int) -> void:
 	_ensure_ui()
+	var changed := value != number
 	value = number
 	if number <= 0:
 		_label.text = ""
@@ -59,6 +60,11 @@ func set_value(number: int) -> void:
 	else:
 		_label.text = str(number)
 		_bg.color = _color_for_value(number)
+	if changed and number > 0 and is_inside_tree():
+		var tween := create_tween()
+		scale = Vector2.ONE
+		tween.tween_property(self, "scale", Vector2(1.08, 1.08), 0.08)
+		tween.tween_property(self, "scale", Vector2.ONE, 0.1)
 
 
 func set_chain_selected(selected: bool, valid_finish: bool = true) -> void:

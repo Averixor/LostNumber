@@ -21,6 +21,8 @@ var selected_path: Array[Vector2i] = []
 var xp_multiplier: int = 1
 var xp_multiplier_turns: int = 0
 var bonus_inventory := {"destroy": 0, "shuffle": 0, "explosion": 0}
+var active_bonus: String = ""
+var daily_quests: Dictionary = {}
 
 
 func _init() -> void:
@@ -41,6 +43,8 @@ func start_new_game(seed_value: int = -1) -> void:
 	selected_path.clear()
 	phase = Phase.PLAYING
 	bonus_inventory = {"destroy": 0, "shuffle": 0, "explosion": 0}
+	active_bonus = ""
+	daily_quests = {}
 	progress.record_new_game()
 
 	board.grid = board._create_empty_grid()
@@ -132,6 +136,10 @@ func merge_current_chain() -> Dictionary:
 
 	var chain_len: int = selected_path.size()
 	var xp_earned := _calculate_xp(chain_len)
+	if xp_multiplier > 1 and xp_multiplier_turns > 0:
+		xp_multiplier_turns -= 1
+		if xp_multiplier_turns <= 0:
+			xp_multiplier = 1
 	xp += xp_earned + surplus
 	progress.record_merge(chain_len, xp_earned + surplus, current_level)
 
@@ -196,6 +204,24 @@ func format_value(value: int) -> String:
 	return NumberFormatter.format_number(value)
 
 
+func get_bonus_count(type: String) -> int:
+	return int(bonus_inventory.get(type, 0))
+
+
+func grant_bonus(type: String, amount: int = 1) -> void:
+	if not bonus_inventory.has(type):
+		bonus_inventory[type] = 0
+	bonus_inventory[type] = int(bonus_inventory.get(type, 0)) + amount
+
+
+func consume_bonus(type: String, amount: int = 1) -> bool:
+	var current := get_bonus_count(type)
+	if current < amount:
+		return false
+	bonus_inventory[type] = current - amount
+	return true
+
+
 func to_save_dict() -> Dictionary:
 	return {
 		"version": 2,
@@ -208,6 +234,8 @@ func to_save_dict() -> Dictionary:
 		"xp_multiplier": xp_multiplier,
 		"xp_multiplier_turns": xp_multiplier_turns,
 		"bonus_inventory": bonus_inventory.duplicate(true),
+		"active_bonus": active_bonus,
+		"daily_quests": daily_quests.duplicate(true),
 		"progress": progress.to_dict(),
 	}
 
@@ -224,12 +252,34 @@ func load_from_save_dict(data: Dictionary) -> bool:
 	xp_multiplier = int(data.get("xp_multiplier", 1))
 	xp_multiplier_turns = int(data.get("xp_multiplier_turns", 0))
 	bonus_inventory = data.get("bonus_inventory", {"destroy": 0, "shuffle": 0, "explosion": 0})
+	active_bonus = str(data.get("active_bonus", ""))
+	daily_quests = data.get("daily_quests", {})
+	if typeof(daily_quests) != TYPE_DICTIONARY:
+		daily_quests = {}
 	if data.has("progress") and typeof(data.progress) == TYPE_DICTIONARY:
 		progress.load_from_dict(data.progress)
+	else:
+		progress.ensure_defaults()
 	board.load_from_arrays(data.get("grid", []))
 	selected_path.clear()
+	_sanitize_loaded_state()
 	_sanitize_win_phase()
 	return true
+
+
+func _sanitize_loaded_state() -> void:
+	var defaults := {"destroy": 0, "shuffle": 0, "explosion": 0}
+	for key in defaults.keys():
+		bonus_inventory[key] = maxi(0, int(bonus_inventory.get(key, defaults[key])))
+
+	# Transient UI state — never restore pick mode from save.
+	if active_bonus != "":
+		active_bonus = ""
+
+	if xp_multiplier < 1:
+		xp_multiplier = 1
+	if xp_multiplier_turns < 0:
+		xp_multiplier_turns = 0
 
 
 func sanitize_win_phase() -> void:

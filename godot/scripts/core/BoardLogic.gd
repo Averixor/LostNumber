@@ -167,3 +167,30 @@ func load_from_arrays(data: Array) -> void:
 	for x in mini(data.size(), grid_w):
 		for y in mini(data[x].size(), grid_h):
 			grid[x][y] = int(data[x][y])
+
+
+func shuffle_grid() -> void:
+	var values: Array[int] = []
+	for x in grid_w:
+		for y in grid_h:
+			var v: int = grid[x][y]
+			values.append(v if v != EMPTY else 2)
+
+	for i in range(values.size() - 1, 0, -1):
+		var j := rng.randi_range(0, i)
+		var tmp := values[i]
+		values[i] = values[j]
+		values[j] = tmp
+
+	var k := 0
+	for x in grid_w:
+		for y in grid_h:
+			grid[x][y] = values[k]
+			k += 1
+
+
+func remove_cells(cells: Array[Vector2i]) -> void:
+	for cell in cells:
+		if cell.x >= 0 and cell.x < grid_w and cell.y >= 0 and cell.y < grid_h:
+			grid[cell.x][cell.y] = EMPTY
+	apply_gravity()

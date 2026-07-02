@@ -53,6 +53,7 @@ godot4 --path godot --headless --script res://scripts/tests/run_rules_tests.gd -
 
 ## Next steps
 
-1. Import SFX from `../public/audio/sfx/`
-2. Android export template + touch polish
-3. Level complete overlay on save resume (pending transition)
+1. Play Games / Firebase leaderboard HTTP wiring
+2. Wheel canvas animation + neon icon UI
+3. Web save import script
+4. Real background art from `assets/images/`

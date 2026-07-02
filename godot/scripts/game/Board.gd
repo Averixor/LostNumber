@@ -3,6 +3,7 @@ class_name BoardView
 
 signal chain_finished(path: Array[Vector2i])
 signal chain_cancelled()
+signal cell_picked(cell: Vector2i)
 
 const GRID_W := 5
 const GRID_H := 8
@@ -18,6 +19,7 @@ var _last_pointer_local: Vector2 = Vector2.INF
 var _highlighted_cells: Dictionary = {}
 var _drag_flush_queued: bool = false
 var _pending_drag_local: Vector2 = Vector2.ZERO
+var bonus_pick_mode: bool = false
 
 
 func _ready() -> void:
@@ -78,6 +80,16 @@ func refresh_all() -> void:
 	_update_chain_visual()
 
 
+func _autoload(name: String) -> Node:
+	return get_node_or_null("/root/" + name)
+
+
+func _play_connect_sfx() -> void:
+	var audio := _autoload("AudioManager")
+	if audio != null and audio.has_method("play_sfx"):
+		audio.call("play_sfx", "connect")
+
+
 func _gui_input(event: InputEvent) -> void:
 	if not is_inside_tree():
 		return
@@ -136,6 +148,10 @@ func _start_drag_at_local(local_pos: Vector2) -> void:
 	if cell.x < 0:
 		return
 
+	if bonus_pick_mode:
+		cell_picked.emit(cell)
+		return
+
 	_dragging = true
 	_last_pointer_local = local_pos
 	state.begin_chain(cell)
@@ -154,7 +170,7 @@ func _extend_drag_at_local(local_pos: Vector2) -> void:
 			continue
 		path_changed = true
 		if state.selected_path.size() > path_len_before:
-			AudioManager.play_sfx("connect")
+			_play_connect_sfx()
 
 	if path_changed:
 		_update_chain_visual()

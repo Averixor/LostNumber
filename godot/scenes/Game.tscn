@@ -12,6 +12,15 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_game")
 
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
 [node name="VBox" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
@@ -19,12 +28,12 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 8
 alignment = 1
 
 [node name="HUD" type="HBoxContainer" parent="VBox"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 8
 alignment = 1
 
 [node name="LevelLabel" type="Label" parent="VBox/HUD"]
@@ -46,6 +55,27 @@ text = "Menu"
 [node name="SoundButton" type="Button" parent="VBox/HUD"]
 layout_mode = 2
 text = "🔊"
+
+[node name="BonusRow" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="ShuffleButton" type="Button" parent="VBox/BonusRow"]
+layout_mode = 2
+text = "Shuffle (0)"
+
+[node name="DestroyButton" type="Button" parent="VBox/BonusRow"]
+layout_mode = 2
+text = "Destroy (0)"
+
+[node name="ExplosionButton" type="Button" parent="VBox/BonusRow"]
+layout_mode = 2
+text = "Blast (0)"
+
+[node name="MessageLabel" type="Label" parent="VBox"]
+layout_mode = 2
+horizontal_alignment = 1
 
 [node name="BoardView" type="Control" parent="VBox"]
 custom_minimum_size = Vector2(396, 630)
