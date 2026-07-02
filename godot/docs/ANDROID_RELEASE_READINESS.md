@@ -4,16 +4,16 @@ Checklist before `npm run godot:android:release`.
 
 ## Export preset (`export_presets.cfg`)
 
-| Field | Release (`preset.0`) | Debug (`preset.1`) |
-|-------|----------------------|---------------------|
-| Package | `com.averixor.lostnumber` | `com.averixor.lostnumber.dev` |
-| versionCode | `2` | `2` |
-| versionName | `2.0.0` | `2.0.0-dev` |
-| Format | AAB (`export_format=1`) | APK |
-| minSdk | 24 | 24 |
-| targetSdk | 35 | 35 |
-| ABI | arm64-v8a | arm64-v8a |
-| Output | `build/godot/android/lost-number.aab` | `build/godot/android/lost-number-debug.apk` |
+| Field       | Release (`preset.0`)                  | Debug (`preset.1`)                          |
+| ----------- | ------------------------------------- | ------------------------------------------- |
+| Package     | `com.averixor.lostnumber`             | `com.averixor.lostnumber.dev`               |
+| versionCode | `2`                                   | `2`                                         |
+| versionName | `2.0.0`                               | `2.0.0-dev`                                 |
+| Format      | AAB (`export_format=1`)               | APK                                         |
+| minSdk      | 24                                    | 24                                          |
+| targetSdk   | 35                                    | 35                                          |
+| ABI         | arm64-v8a                             | arm64-v8a                                   |
+| Output      | `build/godot/android/lost-number.aab` | `build/godot/android/lost-number-debug.apk` |
 
 Increment **versionCode** on every Play upload.
 
@@ -73,9 +73,9 @@ npm run godot:android:release  # Play AAB
 
 ## If release fails
 
-| Error | Fix |
-|-------|-----|
-| `Missing android/keystore.properties` | Create file + keystore (see above) |
-| `Keystore not found` | Check `storeFile` path relative to `android/` |
-| Export templates missing | Re-run export script (auto-download) |
-| JDK / SDK not found | Set `JAVA_HOME`, `ANDROID_HOME` in shell or export script |
+| Error                                 | Fix                                                       |
+| ------------------------------------- | --------------------------------------------------------- |
+| `Missing android/keystore.properties` | Create file + keystore (see above)                        |
+| `Keystore not found`                  | Check `storeFile` path relative to `android/`             |
+| Export templates missing              | Re-run export script (auto-download)                      |
+| JDK / SDK not found                   | Set `JAVA_HOME`, `ANDROID_HOME` in shell or export script |
