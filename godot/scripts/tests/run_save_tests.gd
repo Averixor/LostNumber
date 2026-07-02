@@ -20,16 +20,19 @@ func _init() -> void:
 	_test_legacy_flat_save()
 	_test_stale_pending_transition_resets_to_playing()
 	_test_both_corrupt_returns_null()
+	_test_meta_roundtrip()
 
 	_save.disable_test_root()
 	_cleanup_test_dir()
 
 	if failed > 0:
 		push_error("Save tests failed: %s" % failed)
+		_cleanup()
 		quit(1)
-	else:
-		print("Save tests passed")
-		quit(0)
+
+	print("Save tests passed")
+	_cleanup()
+	quit(0)
 
 
 func _test_roundtrip() -> void:
@@ -120,6 +123,24 @@ func _test_stale_pending_transition_resets_to_playing() -> void:
 	_assert_true(not loaded.should_show_level_complete(), "stale pending hides overlay")
 
 
+func _test_meta_roundtrip() -> void:
+	_save.delete_save()
+	var state := GameStateScript.new()
+	state.start_new_game(99)
+	state.grant_bonus("shuffle", 2)
+	state.daily_quests = {"date": "2026-07-02", "completed": {"useBonus": true}, "list": []}
+	state.progress.leaderboard["opt_in"] = true
+	state.progress.leaderboard["pending_submits"] = [{"board": "best_level", "score": 3}]
+	_assert_true(_save.save_game(state), "meta save")
+
+	var loaded = _save.load_game()
+	_assert_true(loaded != null, "meta load")
+	_assert_eq(int(loaded.get_bonus_count("shuffle")), 2, "bonus inventory preserved")
+	_assert_true(bool(loaded.daily_quests.get("completed", {}).get("useBonus", false)), "daily quests preserved")
+	_assert_true(bool(loaded.progress.leaderboard.get("opt_in", false)), "leaderboard opt-in preserved")
+	_assert_true(loaded.active_bonus.is_empty(), "active_bonus cleared on load")
+
+
 func _write_file(path: String, text: String) -> void:
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	file.store_string(text)
@@ -136,6 +157,12 @@ func _cleanup_test_dir() -> void:
 				dir.remove(name)
 			name = dir.get_next()
 		DirAccess.remove_absolute(_test_dir)
+
+
+func _cleanup() -> void:
+	if _save != null:
+		_save.free()
+		_save = null
 
 
 func _assert_true(value: bool, message: String) -> void:
