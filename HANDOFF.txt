@@ -1,0 +1,49 @@
+Lost Number — єдиний проєкт (консолідація 2026-07-01)
+=====================================================
+
+Це ОДИН канонічний репозиторій. Архіви good-project, handoff і «Нова тека»
+вже злиті сюди. Деталі: MERGE_NOTES.md
+
+Структура
+---------
+  js/, css/, index.html     — браузерна гра (PWA)
+  godot/                   — Godot 4 → Android для Play Market (ОСНОВНИЙ)
+  android/                 — Capacitor/WebView (legacy, для web-прототипу)
+  assets/, public/audio/    — графіка, звук
+  store/                   — Play Console: іконки, описи, скріншоти
+  build/godot/android/     — готові APK/AAB (якщо зібрані)
+  docs/, godot/docs/       — документація
+
+Швидкий старт (браузер)
+-----------------------
+  npm ci
+  npm run build:pages
+  # відкрити _site/index.html або Live Server
+
+Godot на телефон (рекомендовано)
+--------------------------------
+  npm run godot:import
+  npm run godot:android:debug
+  adb uninstall com.averixor.lostnumber.dev 2>/dev/null || true
+  adb install -r build/godot/android/lost-number-debug.apk
+
+Play Market (AAB)
+-----------------
+  npm run godot:android:release
+  # завантажити build/godot/android/lost-number.aab у Play Console
+  # package: com.averixor.lostnumber, version 2.0.0
+
+Legacy Capacitor Android
+------------------------
+  npm ci && npm run android:debug:cheats
+  # WebView — не для Play, якщо вже є Godot AAB
+
+Чого немає в git (нормально)
+----------------------------
+  node_modules/          — npm ci
+  android/keystore*      — локальний підпис
+  godot/android/         — генерується при export
+  build/                 — збірки
+
+Запакувати для передачі: ./scripts/pack-unified.sh
+Повний production handoff: HANDOFF-IDEAL.md

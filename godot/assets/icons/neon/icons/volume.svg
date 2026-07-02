@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="volume">
+  <defs>
+    <linearGradient id="ln_volume_stroke" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE6FF"/>
+      <stop offset="0.38" stop-color="#FF7AE6"/>
+      <stop offset="1" stop-color="#8D6BFF"/>
+    </linearGradient>
+    <filter id="ln_volume_glow" x="-45%" y="-45%" width="190%" height="190%">
+      <feGaussianBlur stdDeviation="1.6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <g fill="none" stroke="url(#ln_volume_stroke)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" filter="url(#ln_volume_glow)">
+<path d="M13 28 H24 L38 16 V48 L24 36 H13 Z"/>
+<path d="M45 22 C50 27 50 37 45 42"/>
+<path d="M51 16 C61 26 61 38 51 48"/>
+  </g>
+</svg>

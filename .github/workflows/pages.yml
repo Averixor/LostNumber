@@ -30,10 +30,12 @@ jobs:
             echo "GitHub Pages site exists for ${GITHUB_REPOSITORY}"
             echo "enabled=true" >> "$GITHUB_OUTPUT"
           else
-            echo "::warning::GitHub Pages is not enabled for this repository."
-            echo "::warning::CI still runs via .github/workflows/ci.yml (release:check)."
-            echo "::warning::Enable Pages (public repo or GitHub Pro) and set Source: GitHub Actions."
-            echo "::warning::See docs/GITHUB_PAGES.md"
+            {
+              echo '::notice title=GitHub Pages не увімкнено::Деплой пропущено (private repo або Pages ще не налаштовано).'
+              echo 'CI працює через ci.yml (release:check).'
+              echo 'Увімкнення: Settings → Pages → Source: GitHub Actions (потрібен public repo або GitHub Pro).'
+              echo 'Документація: docs/GITHUB_PAGES.md'
+            } >> "$GITHUB_STEP_SUMMARY"
             echo "enabled=false" >> "$GITHUB_OUTPUT"
           fi
 

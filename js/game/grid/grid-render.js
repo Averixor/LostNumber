@@ -59,6 +59,60 @@ GridManager.prototype._applyCellDisplayClasses = function (cell, num) {
   cell.classList.toggle('cell-value-compact', compact);
 };
 
+GridManager.prototype._getNearestCellFromGridPoint = function (clientX, clientY) {
+  try {
+    const grid = document.getElementById('grid');
+    if (!grid || typeof grid.getBoundingClientRect !== 'function') return null;
+
+    const rect = grid.getBoundingClientRect();
+    const W = this.game.GRID_W || 5;
+    const H = this.game.GRID_H || 8;
+
+    if (!rect || rect.width <= 0 || rect.height <= 0 || W <= 0 || H <= 0) return null;
+
+    const style = window.getComputedStyle ? window.getComputedStyle(grid) : null;
+    const px = (value) => {
+      const number = parseFloat(value || '0');
+      return Number.isFinite(number) ? number : 0;
+    };
+
+    const padLeft = px(style?.paddingLeft);
+    const padRight = px(style?.paddingRight);
+    const padTop = px(style?.paddingTop);
+    const padBottom = px(style?.paddingBottom);
+    const gapX = px(style?.columnGap || style?.gap);
+    const gapY = px(style?.rowGap || style?.gap);
+
+    const contentLeft = rect.left + padLeft;
+    const contentTop = rect.top + padTop;
+    const contentW = rect.width - padLeft - padRight;
+    const contentH = rect.height - padTop - padBottom;
+    if (contentW <= 0 || contentH <= 0) return null;
+
+    const cellW = (contentW - gapX * (W - 1)) / W;
+    const cellH = (contentH - gapY * (H - 1)) / H;
+    if (cellW <= 0 || cellH <= 0) return null;
+
+    const localX = clientX - contentLeft;
+    const localY = clientY - contentTop;
+    const tolerance = Math.max(10, Math.min(cellW, cellH) * 0.24);
+
+    if (localX < -tolerance || localY < -tolerance) return null;
+    if (localX > contentW + tolerance || localY > contentH + tolerance) return null;
+
+    const stepX = cellW + gapX;
+    const stepY = cellH + gapY;
+    const x = Math.round((localX - cellW / 2) / stepX);
+    const y = Math.round((localY - cellH / 2) / stepY);
+
+    if (x < 0 || x >= W || y < 0 || y >= H) return null;
+    return { x, y };
+  } catch (error) {
+    ErrorHandler.warn('_getNearestCellFromGridPoint failed', { clientX, clientY, error });
+    return null;
+  }
+};
+
 GridManager.prototype.getCellFromPoint = function (clientX, clientY) {
   try {
     if (
@@ -71,11 +125,12 @@ GridManager.prototype.getCellFromPoint = function (clientX, clientY) {
       return null;
     }
 
+    const fallbackCell = this._getNearestCellFromGridPoint(clientX, clientY);
     const el = document.elementFromPoint(clientX, clientY);
-    if (!el) return null;
+    if (!el) return fallbackCell;
 
     const cell = el.classList.contains('cell') ? el : el.closest('.cell');
-    if (!cell) return null;
+    if (!cell) return fallbackCell;
 
     const x = parseInt(cell.dataset.x, 10);
     const y = parseInt(cell.dataset.y, 10);
@@ -88,7 +143,7 @@ GridManager.prototype.getCellFromPoint = function (clientX, clientY) {
       y < 0 ||
       y >= (this.game.GRID_H || 8)
     ) {
-      return null;
+      return fallbackCell;
     }
 
     return { x, y };

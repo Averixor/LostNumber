@@ -3,7 +3,7 @@
 ## Фаза 5 — performance (локально завершувати перед хмарними збереженнями)
 
 - **5.6 FPS** — моніторинг FPS у dev-інструментах (`performance-monitor.js`); **плаваючі числа на фоні прибрані** з продукту (`createFloatingNumbers` — no-op). Подія `lostnumber:floating-numbers-auto-disable` лишається в dev-коді для сумісності, але не керує UI гравця.
-- **5.7 Grid / інтеракція** — менше зайвих повних `render` під час взаємодії (`ui-events`, rAF для підказки ланцюга); `syncGridDOMFromModel` / `preferSyncOrFullRender` у `grid-render`; після перемішування та локальної гравітації — `grid-physics.js`; `grid-safety` — `preferSyncOrFullRender`.
+- **5.7 Grid / інтеракція** — `syncGridDOMFromModel` / `preferSyncOrFullRender` у `grid-render`; rAF для pointer move (`ui-events`); квадратні клітини (`aspect-ratio` у `grid.css`); після перемішування та гравітації — `grid-physics.js`.
 - **5.8 Lite (MIUI / слабкі пристрої)** — `PlatformDetector.shouldPreferLiteVisual()`, клас `html.low-performance` + `css/low-performance.css`, налаштування `liteVisualMode`: auto/on/off у `settings.js`.
 
 **Критерій «фаза 5 закрита»:** немає помітних регресій UI; після тривалої гри сітка синхронна з моделлю; lite-режим працює згідно збережених налаштувань.

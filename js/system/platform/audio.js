@@ -299,10 +299,11 @@ class AudioManager {
   }
 
   updateSoundStateUI() {
+    const audioEnabled = this.soundEnabled && this.musicEnabled;
     const iconHost = document.getElementById('footerSoundIcon');
     if (iconHost && typeof LostNumberIcons !== 'undefined') {
-      LostNumberIcons.setSlug(iconHost, this.soundEnabled ? 'sound' : 'volume', {
-        muted: !this.soundEnabled,
+      LostNumberIcons.setSlug(iconHost, audioEnabled ? 'sound' : 'volume', {
+        muted: !audioEnabled,
       });
       return;
     }
@@ -311,8 +312,8 @@ class AudioManager {
     if (soundBtn && typeof LostNumberIcons !== 'undefined') {
       const slot = soundBtn.querySelector('[data-ln-icon]');
       if (slot) {
-        LostNumberIcons.setSlug(slot, this.soundEnabled ? 'sound' : 'volume', {
-          muted: !this.soundEnabled,
+        LostNumberIcons.setSlug(slot, audioEnabled ? 'sound' : 'volume', {
+          muted: !audioEnabled,
         });
       }
     }

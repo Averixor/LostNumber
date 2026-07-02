@@ -1,0 +1,148 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+<symbol id="ln-home" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 31 L32 14 L52 31"/>
+<path d="M18 29 V52 H46 V29"/>
+<path d="M27 52 V39 H37 V52"/>
+<path d="M32 8 L35 14 L42 15 L36 19 L38 26 L32 22 L26 26 L28 19 L22 15 L29 14 Z"/></g></symbol>
+<symbol id="ln-continue" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 14 V50 L48 32 Z"/>
+<path d="M9 16 V48"/>
+<path d="M54 18 V46"/></g></symbol>
+<symbol id="ln-new-game" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 34 C13 34 10 38 9 44 C8 50 12 54 17 50 L24 44 H40 L47 50 C52 54 56 50 55 44 C54 38 51 34 47 34 Z"/>
+<path d="M24 34 V26 C24 21 28 18 32 18 C36 18 40 21 40 26 V34"/>
+<path d="M21 42 H31"/><path d="M26 37 V47"/>
+<path d="M42 40 H42.1"/><path d="M48 45 H48.1"/></g></symbol>
+<symbol id="ln-settings" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M32 22 A10 10 0 1 0 32 42 A10 10 0 1 0 32 22"/>
+<path d="M32 8 V15"/><path d="M32 49 V56"/>
+<path d="M8 32 H15"/><path d="M49 32 H56"/>
+<path d="M15 15 L20 20"/><path d="M44 44 L49 49"/>
+<path d="M49 15 L44 20"/><path d="M20 44 L15 49"/></g></symbol>
+<symbol id="ln-daily-tasks" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><rect x="13" y="15" width="38" height="40" rx="7"/>
+<path d="M21 10 V20"/><path d="M43 10 V20"/>
+<path d="M13 27 H51"/>
+<path d="M22 38 L29 45 L43 33"/></g></symbol>
+<symbol id="ln-achievements" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12 H42 V24 C42 32 38 38 32 40 C26 38 22 32 22 24 Z"/>
+<path d="M22 17 H12 V23 C12 29 17 33 24 33"/>
+<path d="M42 17 H52 V23 C52 29 47 33 40 33"/>
+<path d="M32 40 V49"/><path d="M22 54 H42"/><path d="M26 49 H38"/></g></symbol>
+<symbol id="ln-statistics" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 52 H54"/>
+<rect x="17" y="34" width="8" height="18" rx="3"/>
+<rect x="29" y="24" width="8" height="28" rx="3"/>
+<rect x="41" y="15" width="8" height="37" rx="3"/>
+<path d="M16 21 L27 26 L39 15 L51 20"/></g></symbol>
+<symbol id="ln-about" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="23"/>
+<path d="M32 29 V45"/>
+<path d="M32 19 H32.1"/></g></symbol>
+<symbol id="ln-exit" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M32 10 V30"/>
+<path d="M22 18 C15 22 11 29 12 37 C13 49 22 56 32 56 C42 56 51 49 52 37 C53 29 49 22 42 18"/></g></symbol>
+<symbol id="ln-premium" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 24 L23 35 L32 16 L41 35 L52 24 L47 50 H17 Z"/>
+<path d="M18 50 H46"/>
+<path d="M32 16 L34 22 L40 23 L35 27 L37 34 L32 30 L27 34 L29 27 L24 23 L30 22 Z"/></g></symbol>
+<symbol id="ln-tournaments" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14 H44 V26 C44 35 39 42 32 44 C25 42 20 35 20 26 Z"/>
+<path d="M20 18 H11 V25 C11 32 16 36 23 36"/>
+<path d="M44 18 H53 V25 C53 32 48 36 41 36"/>
+<path d="M32 44 V52"/><path d="M22 56 H42"/>
+<path d="M26 26 H38"/><path d="M32 20 V32"/></g></symbol>
+<symbol id="ln-challenges" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="23"/>
+<circle cx="32" cy="32" r="14"/>
+<circle cx="32" cy="32" r="5"/>
+<path d="M47 17 L54 10"/><path d="M46 10 H54 V18"/></g></symbol>
+<symbol id="ln-records" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M32 10 L38 23 L52 25 L42 35 L44 50 L32 43 L20 50 L22 35 L12 25 L26 23 Z"/>
+<path d="M26 58 H38"/></g></symbol>
+<symbol id="ln-logic" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M32 7 L36 24 L53 32 L36 40 L32 57 L28 40 L11 32 L28 24 Z"/>
+<path d="M32 20 L34 29 L43 32 L34 35 L32 44 L30 35 L21 32 L30 29 Z"/></g></symbol>
+<symbol id="ln-thinking" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 46 C16 45 11 39 11 31 C11 23 17 17 25 17 C28 12 37 12 40 18 C47 19 53 25 53 33 C53 42 46 48 37 48"/>
+<path d="M24 46 V56 H37 V48"/>
+<path d="M25 24 C19 25 18 34 25 36"/>
+<path d="M39 23 C45 25 46 35 39 38"/>
+<path d="M32 19 V43"/></g></symbol>
+<symbol id="ln-relaxing" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M32 10 L36 25 L51 20 L40 32 L51 44 L36 39 L32 54 L28 39 L13 44 L24 32 L13 20 L28 25 Z"/>
+<path d="M32 24 C36 28 36 36 32 40 C28 36 28 28 32 24 Z"/></g></symbol>
+<symbol id="ln-train-brain" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 39 C17 37 14 32 15 27 C16 20 22 16 29 18 C34 13 43 17 44 25 C50 28 50 37 44 41"/>
+<path d="M28 41 V50 H39 V41"/>
+<path d="M29 54 H39"/>
+<path d="M24 28 H31 L34 34 L39 24 L42 31 H48"/></g></symbol>
+<symbol id="ln-worlds" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="22"/>
+<path d="M10 32 H54"/>
+<path d="M32 10 C24 18 24 46 32 54 C40 46 40 18 32 10 Z"/>
+<path d="M16 19 C24 24 40 24 48 19"/>
+<path d="M16 45 C24 40 40 40 48 45"/>
+<path d="M49 9 L51 14 L56 16 L51 18 L49 23 L47 18 L42 16 L47 14 Z"/></g></symbol>
+<symbol id="ln-high-score" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12 H44 V22 C44 31 39 38 32 40 C25 38 20 31 20 22 Z"/>
+<path d="M32 40 V49"/><path d="M23 54 H41"/>
+<path d="M27 24 L31 28 L38 20"/>
+<path d="M14 18 H20"/><path d="M44 18 H50"/></g></symbol>
+<symbol id="ln-save" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 12 H43 L50 19 V52 H14 Z"/>
+<path d="M22 12 V27 H39 V12"/>
+<path d="M23 52 V38 H41 V52"/>
+<path d="M28 19 H35"/></g></symbol>
+<symbol id="ln-back" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M35 16 L19 32 L35 48"/>
+<path d="M20 32 H52"/></g></symbol>
+<symbol id="ln-sound" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 27 H25 L39 15 V49 L25 37 H14 Z"/>
+<path d="M45 24 C49 28 49 36 45 40"/>
+<path d="M50 18 C58 26 58 38 50 46"/></g></symbol>
+<symbol id="ln-music" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 44 A7 5 0 1 0 24 54 A7 5 0 1 0 24 44"/>
+<path d="M43 37 A7 5 0 1 0 43 47 A7 5 0 1 0 43 37"/>
+<path d="M31 49 V16 L50 12 V42"/>
+<path d="M31 23 L50 19"/></g></symbol>
+<symbol id="ln-volume" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 28 H24 L38 16 V48 L24 36 H13 Z"/>
+<path d="M45 22 C50 27 50 37 45 42"/>
+<path d="M51 16 C61 26 61 38 51 48"/></g></symbol>
+<symbol id="ln-track" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 48 C13 43 13 35 18 30 C24 24 34 30 30 36 C27 41 37 45 43 39 C48 34 48 25 43 20"/>
+<path d="M44 12 L49 20 L39 21"/>
+<circle cx="20" cy="48" r="3"/>
+<circle cx="43" cy="39" r="3"/></g></symbol>
+<symbol id="ln-theme" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M42 11 C32 13 25 22 25 32 C25 43 34 52 45 52 C48 52 51 51 54 50 C49 56 41 59 32 56 C21 53 13 43 14 31 C15 19 25 10 42 11 Z"/>
+<path d="M18 16 L20 21 L25 23 L20 25 L18 30 L16 25 L11 23 L16 21 Z"/></g></symbol>
+<symbol id="ln-language" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="22"/>
+<path d="M10 32 H54"/><path d="M32 10 C24 18 24 46 32 54 C40 46 40 18 32 10 Z"/>
+<path d="M17 20 H47"/><path d="M17 44 H47"/>
+<path d="M49 51 L56 58"/></g></symbol>
+<symbol id="ln-animations" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 32 C22 18 42 18 50 32"/>
+<path d="M14 32 C22 46 42 46 50 32"/>
+<circle cx="32" cy="32" r="6"/>
+<path d="M50 32 L45 27"/><path d="M50 32 L45 37"/>
+<path d="M14 32 L19 27"/><path d="M14 32 L19 37"/></g></symbol>
+<symbol id="ln-easy-mode" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 18 H44 C50 18 54 22 54 28 C54 34 50 38 44 38 H20 C14 38 10 34 10 28 C10 22 14 18 20 18 Z"/>
+<circle cx="24" cy="28" r="8"/>
+<path d="M31 49 C35 42 45 42 49 49"/>
+<path d="M17 49 C21 42 31 42 35 49"/></g></symbol>
+<symbol id="ln-reward-xp" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 44 L25 20 H39 L48 44"/>
+<path d="M21 34 H43"/>
+<path d="M25 20 L32 12 L39 20"/>
+<path d="M22 51 H42"/></g></symbol>
+<symbol id="ln-bonus" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><rect x="13" y="25" width="38" height="27" rx="4"/>
+<path d="M13 34 H51"/><path d="M32 25 V52"/>
+<path d="M32 25 C24 21 21 13 27 12 C33 11 32 25 32 25 Z"/>
+<path d="M32 25 C40 21 43 13 37 12 C31 11 32 25 32 25 Z"/></g></symbol>
+<symbol id="ln-wheel" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="34" r="21"/>
+<circle cx="32" cy="34" r="5"/>
+<path d="M32 13 V55"/><path d="M11 34 H53"/>
+<path d="M17 19 L47 49"/><path d="M47 19 L17 49"/>
+<path d="M32 6 L36 13 H28 Z"/></g></symbol>
+<symbol id="ln-lock" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="28" width="32" height="24" rx="5"/>
+<path d="M23 28 V21 C23 14 27 10 32 10 C37 10 41 14 41 21 V28"/>
+<path d="M32 38 V45"/></g></symbol>
+<symbol id="ln-unlock" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="28" width="32" height="24" rx="5"/>
+<path d="M23 28 V21 C23 14 27 10 32 10 C36 10 39 13 40 18"/>
+<path d="M32 38 V45"/></g></symbol>
+<symbol id="ln-level" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 40 L32 12 L50 40 Z"/>
+<path d="M22 40 H42"/>
+<path d="M32 22 V40"/>
+<path d="M18 50 H46"/></g></symbol>
+<symbol id="ln-chain" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M25 24 L20 29 C16 33 16 39 20 43 C24 47 30 47 34 43 L39 38"/>
+<path d="M39 26 L44 21 C48 17 54 17 58 21 C62 25 62 31 58 35 L53 40" transform="translate(-14 3)"/>
+<path d="M27 37 L37 27"/></g></symbol>
+<symbol id="ln-path" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 50 C18 38 28 41 31 31 C34 21 43 22 51 13"/>
+<circle cx="13" cy="50" r="4"/>
+<circle cx="31" cy="31" r="4"/>
+<circle cx="51" cy="13" r="4"/>
+<path d="M45 13 H51 V19"/></g></symbol>
+<symbol id="ln-hint" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 33 C18 23 25 15 32 15 C40 15 46 22 43 31 C42 36 37 39 37 44 H27 C27 39 24 37 22 33 Z"/>
+<path d="M27 50 H37"/><path d="M29 56 H35"/>
+<path d="M32 7 V11"/><path d="M49 14 L46 17"/><path d="M15 14 L18 17"/></g></symbol>
+<symbol id="ln-reset" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M48 23 C43 15 32 11 23 16 C14 21 11 33 16 42 C21 51 33 54 42 49 C47 46 50 41 51 35"/>
+<path d="M48 14 V23 H39"/>
+<path d="M27 26 L38 37"/><path d="M38 26 L27 37"/></g></symbol>
+<symbol id="ln-close" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 18 L46 46"/>
+<path d="M46 18 L18 46"/>
+<circle cx="32" cy="32" r="24"/></g></symbol>
+</svg>

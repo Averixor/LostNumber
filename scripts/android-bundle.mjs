@@ -25,7 +25,17 @@ function runNode(scriptRel, args = []) {
 
 function runGradle(task) {
   const gradlew = join(androidDir, process.platform === 'win32' ? 'gradlew.bat' : 'gradlew');
-  const result = spawnSync(gradlew, [task], {
+  const gradleCmd =
+    process.platform === 'win32'
+      ? gradlew
+      : process.platform === 'linux' || process.platform === 'darwin'
+        ? 'bash'
+        : gradlew;
+  const gradleArgs =
+    process.platform === 'win32' || (process.platform !== 'linux' && process.platform !== 'darwin')
+      ? [task]
+      : [gradlew, task];
+  const result = spawnSync(gradleCmd, gradleArgs, {
     cwd: androidDir,
     stdio: 'inherit',
     shell: false,

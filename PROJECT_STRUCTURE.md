@@ -4,24 +4,26 @@
 
 ## Корінь репозиторію
 
-| Шлях                                 | Призначення                                            |
-| ------------------------------------ | ------------------------------------------------------ |
-| `index.html`                         | Точка входу, послідовні `<script>` без `type="module"` |
-| `manifest.json`                      | PWA (`name`: Lost Number)                              |
-| `capacitor.config.json`              | Capacitor 7, `appName`: Lost Number, `webDir`: `_site` |
-| `assets/images/dark/menu-bg-*.png`   | 6 арт-фонів для dusk (тёмна тема)                      |
-| `assets/images/light/bg-light-*.png` | 6 арт-фонів для dawn (світла тема)                     |
-| `assets/icons/neon/icons/*.svg`      | Neon SVG для UI (`LostNumberIcons`)                    |
-| `css/lostnumber-icons.css`           | Стилі neon-іконок                                      |
-| `js/ui/icons.js`                     | `LostNumberIcons` — mount / `applyAll`                 |
-| `assets/icons/icon.png`              | Іконка 512×512 (PWA, favicon)                          |
-| `assets/icons/icon-1024.png`         | Мастер-іконка 1024×1024 (Android, maskable PWA)        |
-| `public/audio/`                      | Музика та SFX → `_site/audio/`                         |
-| `css/`                               | Стилі                                                  |
-| `js/`                                | Логіка гри                                             |
-| `android/`                           | Gradle-проєкт Android                                  |
-| `scripts/`                           | Збірка, перевірки, генерація іконок                    |
-| `docs/`                              | `ANDROID.md`, `AUDIO.md`, `PHASES.md`                  |
+| Шлях                                 | Призначення                                                    |
+| ------------------------------------ | -------------------------------------------------------------- |
+| `index.html`                         | Точка входу, послідовні `<script>` без `type="module"`         |
+| `privacy.html`                       | Privacy Policy (UK + EN); копіюється в `_site/` для Play Store |
+| `manifest.json`                      | PWA (`name`: Lost Number)                                      |
+| `capacitor.config.json`              | Capacitor 7, `appName`: Lost Number, `webDir`: `_site`         |
+| `assets/images/dark/menu-bg-*.png`   | 6 арт-фонів для dusk (тёмна тема)                              |
+| `assets/images/light/bg-light-*.png` | 6 арт-фонів для dawn (світла тема)                             |
+| `assets/icons/neon/icons/*.svg`      | Neon SVG для UI (`LostNumberIcons`)                            |
+| `css/lostnumber-icons.css`           | Стилі neon-іконок                                              |
+| `js/ui/icons.js`                     | `LostNumberIcons` — mount / `applyAll`                         |
+| `assets/icons/icon.png`              | Іконка 512×512 (PWA, favicon)                                  |
+| `assets/icons/icon-1024.png`         | Мастер-іконка 1024×1024 (Android, maskable PWA)                |
+| `public/audio/`                      | Музика та SFX → `_site/audio/`                                 |
+| `css/`                               | Стилі                                                          |
+| `js/`                                | Логіка гри                                                     |
+| `android/`                           | Gradle-проєкт Android                                          |
+| `scripts/`                           | Збірка, перевірки, генерація іконок                            |
+| `store/`                             | Графіка та тексти Google Play (`PLAY_CONSOLE_LISTING.md`)      |
+| `docs/`                              | Документація — індекс у **`docs/README.md`**                   |
 
 ## Фони (чергування)
 
@@ -30,7 +32,7 @@
 | `BackgroundRotator.init()`            | `js/system/platform/background.js` | inline-скрипт у `index.html` після `#appBackground`                 |
 | `BackgroundRotator.onMainMenuEnter()` | там же                             | `ScreenManager.showScreen('mainMenu')` у `js/ui/screens/screens.js` |
 
-Логіка: при кожному відкритті головного меню, якщо змінився календарний день — індекс скіна циклічно `0 → 1 → 2 → 3 → 4 → 5 → 0`. Стан у `localStorage` ключ **`lostNumberBackground`** (`{ index, lastDay: "YYYY-MM-DD", mode, manualSkin }`).
+Логіка: при кожному відкритті головного меню, якщо змінився календарний день — індекс скіна циклічно `0 → … → 5 → 0` (окремо для **dawn** і **dusk**). Стан у `localStorage` ключ **`lostNumberBackground`** — гілки `dawn` / `dusk`, ручний вибір фону (`selectedLightBackground` / `selectedDarkBackground`).
 
 CSS: `css/background.css` — `--app-bg-image` на `#appBackground`.
 
@@ -46,17 +48,17 @@ public/audio/
 
 ## `css/`
 
-| Файл                   | Призначення                                      |
-| ---------------------- | ------------------------------------------------ |
-| `variables.css`        | Токени теми, PWA-кольори                         |
-| `background.css`       | `#appBackground`, CSS-змінна фону                |
-| `base.css`             | Базова типографіка, `.screen`                    |
-| `ui.css`               | Меню (центроване), кнопки [іконка 32px \| текст] |
-| `grid.css`             | Поле, клітини, підсвітка ланцюга                 |
-| `overlays.css`         | Перемога, рівень, колесо, confirm                |
-| `critical.css`         | Splash, критична помилка                         |
-| `low-performance.css`  | Lite-режим (`html.low-performance`)              |
-| `lostnumber-icons.css` | Neon SVG іконки (`ln-icon`, слоти HUD/меню)      |
+| Файл                   | Призначення                                                     |
+| ---------------------- | --------------------------------------------------------------- |
+| `variables.css`        | Токени теми, PWA-кольори                                        |
+| `background.css`       | `#appBackground`, CSS-змінна фону                               |
+| `base.css`             | Базова типографіка, `.screen`                                   |
+| `ui.css`               | Меню (центроване), кнопки [іконка 32px \| текст]                |
+| `grid.css`             | Поле 5×8 (квадратні клітини, `aspect-ratio`), підсвітка ланцюга |
+| `overlays.css`         | Перемога, рівень, колесо, confirm                               |
+| `critical.css`         | Splash, критична помилка                                        |
+| `low-performance.css`  | Lite-режим (`html.low-performance`)                             |
+| `lostnumber-icons.css` | Neon SVG іконки (`ln-icon`, слоти HUD/меню)                     |
 
 ## Neon icons
 
@@ -155,20 +157,20 @@ Mount: елемент з `data-ln-icon="slug"`. Після `innerHTML` — `Lost
 
 ## `scripts/`
 
-| Скрипт                                       | Призначення                                      |
-| -------------------------------------------- | ------------------------------------------------ |
-| `build-pages.mjs`                            | `_site/`                                         |
-| `prepare-android.mjs`                        | `build:pages` + `cap sync android`               |
-| `generate-android-icons.py`                  | `icon-1024.png` → `mipmap-*`                     |
-| `release-check.mjs`                          | format, lint, typecheck, verify, smoke           |
-| `verify-static-assets.mjs`                   | посилання, розміри іконок, PWA-кольори           |
-| `test-min-tile.mjs`, `test-level-config.mjs` | рівні, min spawn                                 |
-| `test-storage-fallback.mjs`                  | `StorageManager` fallback                        |
-| `test-error-handler-fallback.mjs`            | `ErrorHandler` fallback                          |
-| `test-grid-dom-sync.mjs`                     | DOM ↔ модель сітки, gravity, save               |
-| `test-android-assets.mjs`                    | `_site` + Android public assets (окремий запуск) |
-| `smoke-tests.mjs`                            | запускає всі `test-*.mjs` крім android-assets    |
-| `install-android-studio.sh`                  | Linux: Studio + JDK                              |
+| Скрипт                                       | Призначення                                           |
+| -------------------------------------------- | ----------------------------------------------------- |
+| `build-pages.mjs`                            | `_site/`                                              |
+| `prepare-android.mjs`                        | `build:pages` + `cap sync android`                    |
+| `generate-android-icons.py`                  | `icon-1024.png` → `mipmap-*`                          |
+| `release-check.mjs`                          | format, lint, typecheck, verify, smoke                |
+| `verify-static-assets.mjs`                   | посилання, розміри іконок, PWA-кольори                |
+| `test-min-tile.mjs`, `test-level-config.mjs` | рівні, min spawn                                      |
+| `test-storage-fallback.mjs`                  | `StorageManager` fallback                             |
+| `test-error-handler-fallback.mjs`            | `ErrorHandler` fallback                               |
+| `test-grid-dom-sync.mjs`                     | DOM ↔ модель сітки, gravity, save                    |
+| `test-android-assets.mjs`                    | `_site` + Android public assets (окремий запуск)      |
+| `smoke-tests.mjs`                            | `npm run test` — усі `test-*.mjs` крім android-assets |
+| `install-android-studio.sh`                  | Linux: Studio + JDK                                   |
 
 ## localStorage
 
@@ -176,7 +178,7 @@ Mount: елемент з `data-ln-icon="slug"`. Після `innerHTML` — `Lost
 | ---------------------- | ------------------------------------------------------------------------------------------------------------- |
 | `lostNumberSave`       | Активна партія (grid v2, рівень, XP…)                                                                         |
 | `lostNumberSettings`   | `soundEnabled`, `musicEnabled`, гучності, `musicTrack`, `theme`, `lang`, `animationEnabled`, `liteVisualMode` |
-| `lostNumberBackground` | `{ index: 0\|1\|2, lastDay: "YYYY-MM-DD" }` — чергування фонів                                                |
+| `lostNumberBackground` | Чергування фонів меню (гілки `dawn` / `dusk`, індекс 0–5)                                                     |
 | `dailyQuests`          | Щоденні завдання                                                                                              |
 | `lostNumberFirstRun`   | Прапорець першого запуску                                                                                     |
 
@@ -191,6 +193,13 @@ bonuses destroy/explosion → runPostMergeEffects (той самий pipeline)
 
 ## `docs/`
 
+Повний навігатор: **`docs/README.md`**.
+
+- **`ANDROID.md`** — Capacitor, APK/AAB, іконки, «Назад»
+- **`ANDROID_QA.md`** — manual QA перед установкою на телефон
+- **`PLAY_STORE.md`** — Google Play Console, IARC, Data safety, closed testing
+- **`GITHUB_PAGES.md`** — деплой `_site/` і privacy URL
 - **`AUDIO.md`** — музика, SFX, `applySettings`
-- **`ANDROID.md`** — Capacitor, APK, іконки, «Назад»
+- **`DEBUG_CHEATS.md`** — debug APK з читами
 - **`PHASES.md`** — етапи розвитку, performance, lite
+- **`store-listing/`** — короткі/повні описи (uk, en, ru)

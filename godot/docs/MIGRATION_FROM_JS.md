@@ -24,9 +24,13 @@ Lost Number **2.0** — Godot 4 / GDScript. The HTML/Capacitor build remains a r
 - [x] Merge + gravity + spawn
 - [x] Level target / complete / carry
 - [x] XP base by chain length
-- [x] Save/load (`user://lost_number_save.json`)
-- [ ] Import SFX from `public/audio/sfx/`
-- [ ] Android export (portrait, touch, back button)
+- [x] Save/load with checksum envelope + `.bak` recovery (`SaveManager.gd`)
+- [x] Save chaos tests (`npm run godot:test:save`)
+- [x] Import SFX from `public/audio/sfx/` and music
+- [x] Drag chain with path interpolation (Android low-FPS fix)
+- [x] AudioManager (SFX pool + music)
+- [x] Android export preset + `scripts/godot-android-export.sh`
+- [ ] Full parity: bonuses, wheel, daily, achievements, i18n
 
 ## Intentionally deferred
 

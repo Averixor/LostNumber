@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Smoke tests: cancel chain when pointer leaves grid or releases outside.
+ * Smoke tests: keep chain stable when the finger crosses grid gaps/edges.
  */
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -177,29 +177,28 @@ dom.grid._selected = [dom.cell];
 
 game.handlePointerMove({ clientX: 200, clientY: 200, preventDefault() {} });
 game._flushPendingPointerMove();
-assertEq(game.isDragging, false, 'pointer move outside grid stops dragging');
-assertEq(game.selected.length, 0, 'pointer move outside grid clears selection');
-assertEq(Chain.numbers.length, 0, 'pointer move outside grid clears chain numbers');
-assert(
-  !dom.cell.classList.contains('selected'),
-  'pointer move outside grid removes selected class',
-);
+assertEq(game.isDragging, true, 'pointer move outside grid keeps dragging active');
+assertEq(game.selected.length, 1, 'pointer move outside grid keeps selection');
+assertEq(Chain.numbers.length, 1, 'pointer move outside grid keeps chain numbers');
+assert(dom.cell.classList.contains('selected'), 'pointer move outside grid keeps selected class');
 assertEq(game._mergeCalls, 0, 'pointer move outside grid does not merge');
 
 game.isDragging = true;
-game.selected = [{ x: 0, y: 0 }];
-Chain.numbers = [4];
+game.selected = [
+  { x: 0, y: 0 },
+  { x: 1, y: 0 },
+];
+Chain.numbers = [4, 4];
 dom.cell.classList.add('selected');
 game.handlePointerUp({ clientX: 200, clientY: 200, pointerId: 1 });
-assertEq(game.selected.length, 0, 'pointer up outside grid clears selection');
-assertEq(game._mergeCalls, 0, 'pointer up outside grid does not merge');
+assertEq(game._mergeCalls, 1, 'pointer up outside grid can finish a valid chain');
 
 game.isDragging = true;
 game.selected = [{ x: 0, y: 0 }];
 Chain.numbers = [4];
 game.handleGridPointerLeave({ pointerId: 2 });
-assertEq(game.isDragging, false, 'pointer leave grid stops dragging');
-assertEq(Chain.numbers.length, 0, 'pointer leave grid clears chain numbers');
+assertEq(game.isDragging, true, 'pointer leave grid keeps dragging active');
+assertEq(Chain.numbers.length, 1, 'pointer leave grid keeps chain numbers');
 
 const uiEventsJs = readFileSync(join(root, 'js/app/ui/ui-events.js'), 'utf8');
 assert(uiEventsJs.includes('pointerleave'), 'grid listens for pointerleave');

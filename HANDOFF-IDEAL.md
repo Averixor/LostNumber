@@ -1,0 +1,164 @@
+# Lost Number — Production Handoff (Ideal Build)
+
+**Package:** `com.averixor.lostnumber`  
+**Version:** `2.0.0` (versionCode `2`)  
+**Audience:** Casual 3+, offline puzzle  
+**Primary Android:** Godot 4.5 native (`build/godot/android/lost-number.aab`)  
+**Secondary:** Capacitor 7 WebView (legacy web parity, `npm run android:bundle`)
+
+---
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Google Play  ←  lost-number.aab (Godot, recommended)   │
+├─────────────────────────────────────────────────────────┤
+│  godot/          Core: Rules, Board, GameState, save    │
+│  js/ + _site/    Web reference + Capacitor assets       │
+│  android/        Capacitor shell (optional legacy APK)  │
+│  assets/         Neon UI, icons, backgrounds (UA/RU/EN) │
+│  store/          Play Console listing + graphics          │
+└─────────────────────────────────────────────────────────┘
+```
+
+| Layer           | Stack                                        | Notes                                    |
+| --------------- | -------------------------------------------- | ---------------------------------------- |
+| Gameplay (ship) | Godot 4.3+ GDScript                          | 5×8 grid, drag-chain, power-of-two rules |
+| Web prototype   | Vanilla JS + Capacitor 7                     | Reference implementation, full meta UI   |
+| Save            | `user://` JSON (Godot), `localStorage` (web) | Checksum + `.bak` rollback (Godot)       |
+| Network         | None                                         | GDPR-friendly: no tracking, no PII       |
+| Compliance      | `privacy.html`, Play Data Safety             | Offline-only data                        |
+
+---
+
+## Clarifications (STEP0 answers)
+
+| Question                    | Answer                                                              |
+| --------------------------- | ------------------------------------------------------------------- |
+| Save corruption / rollback? | Godot: SHA-256 envelope + `lost_number_save.bak.json` auto-recovery |
+| RTO / RPO                   | Instant local resume; backup on every save; no cloud PITR           |
+| SOC2 / HIPAA?               | N/A — consumer offline game; Play + privacy policy sufficient       |
+| Cloud budget                | $0 runtime                                                          |
+| Target package              | `com.averixor.lostnumber` (release), `.dev` suffix for debug        |
+
+---
+
+## Repository layout
+
+```
+LostNumber/                 ← canonical project (this repo)
+├── godot/                  # Ship target for Play
+├── android/                # Capacitor (legacy)
+├── js/, css/, index.html   # Web game
+├── assets/, public/audio/  # Shared media
+├── store/                  # Play listing assets
+├── build/godot/android/    # Prebuilt APK/AAB (local, gitignored)
+├── docs/                   # ANDROID.md, PLAY_STORE.md
+├── godot/docs/             # GAME_RULES.md, PLAY_STORE_GODOT.md
+├── scripts/                # Build, verify, export
+├── privacy.html
+├── HANDOFF.txt             # Quick start
+└── MERGE_NOTES.md          # Zip consolidation provenance
+```
+
+---
+
+## Build & release
+
+### Prerequisites
+
+- Node.js ≥ 20.19
+- Godot 4.3+ (4.5 tested)
+- JDK 17+ at `~/Android/jbr` (snap Godot cannot use `/opt/...`)
+- Android SDK at `~/Android/Sdk`
+
+### Verify (CI-local)
+
+```bash
+npm ci
+npm run release:ideal
+```
+
+Runs: format, lint, typecheck, static assets, smoke tests, Godot rules + save tests.
+
+### Godot → Play (primary)
+
+```bash
+npm run godot:import
+npm run godot:android:release
+# Upload: build/godot/android/lost-number.aab
+```
+
+### Capacitor (legacy web APK/AAB)
+
+```bash
+npm run android:bundle
+# android/app/build/outputs/bundle/release/app-release.aab
+```
+
+### Debug on device
+
+```bash
+npm run godot:android:debug
+adb uninstall com.averixor.lostnumber.dev 2>/dev/null || true
+adb install -r build/godot/android/lost-number-debug.apk
+```
+
+---
+
+## Save format (Godot)
+
+```json
+{
+  "envelope_version": 1,
+  "saved_at": "2026-07-01T11:00:00",
+  "checksum": "<sha256 of data JSON>",
+  "data": { "version": 2, "current_level": 0, "grid": [...], ... }
+}
+```
+
+- Corrupt primary → load `.bak` → promote backup to primary
+- Legacy flat `version: 2` saves still load (no envelope)
+- Tests: `npm run godot:test:save`
+
+---
+
+## Play Console checklist
+
+- [ ] Upload `lost-number.aab` (Godot 2.0)
+- [ ] Privacy URL: `https://averixor.github.io/LostNumber/privacy.html`
+- [ ] Data Safety: no collection, no sharing
+- [ ] IARC: puzzle, no violence/gambling/IAP/ads
+- [ ] Screenshots from real Godot build (replace menu drafts)
+- [ ] Internal → Closed → Production rollout
+
+---
+
+## Roadmap (condensed)
+
+| When    | What                                                          |
+| ------- | ------------------------------------------------------------- |
+| **Now** | Godot MVP ship: grid, levels, XP, save, audio, Android export |
+| Q2 2026 | Bonuses, wheel, daily, full i18n, themes (port from JS)       |
+| Y2      | Play Games integration, polish animations                     |
+| Y3+     | Optional opt-in cloud save                                    |
+
+---
+
+## Pack for distribution
+
+```bash
+npm run pack:unified
+# → dist/LostNumber-unified-YYYYMMDD.zip
+```
+
+Excludes: `node_modules`, keystores, `.godot`, generated `godot/android/`.
+
+---
+
+## Challenge / review notes
+
+- **Kyber / mTLS / zero-trust network:** Not applicable — fully offline; save integrity = SHA-256 + backup, not encryption at rest (no secrets in save).
+- **Dual stack risk:** Maintain Godot as ship target; JS is reference until feature parity.
+- **versionCode:** Increment on every Play upload (`godot/export_presets.cfg` preset `Android`).

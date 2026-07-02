@@ -73,9 +73,21 @@ LostNumberGame.prototype.setupUI = function () {
     const footerSoundBtn = document.getElementById('footerSoundBtn');
     bindClickOnce(footerSoundBtn, () => {
       this.audioManager.playTap();
-      this.soundEnabled = !this.soundEnabled;
-      this.audioManager.setSoundEnabled(this.soundEnabled);
+      const nextAudioEnabled = !(this.soundEnabled && this.musicEnabled);
+      this.soundEnabled = nextAudioEnabled;
+      this.musicEnabled = nextAudioEnabled;
+      this.audioManager.applySettings({
+        soundEnabled: this.soundEnabled,
+        musicEnabled: this.musicEnabled,
+        sfxVolume: this.sfxVolume,
+        musicVolume: this.musicVolume,
+        musicTrack: this.musicTrack,
+      });
       this.audioManager.updateSoundStateUI();
+      const soundSelect = document.getElementById('soundSelect');
+      const musicSelect = document.getElementById('musicSelect');
+      if (soundSelect) soundSelect.value = this.soundEnabled ? 'on' : 'off';
+      if (musicSelect) musicSelect.value = this.musicEnabled ? 'on' : 'off';
       this.saveSettings();
     });
 
@@ -133,9 +145,13 @@ LostNumberGame.prototype.handlePointerDown = function (e) {
       return;
     }
 
+    if (typeof e.preventDefault === 'function') e.preventDefault();
+
     this.isDragging = true;
     this._bubblePointerX = e.clientX;
     this._bubblePointerY = e.clientY;
+    this._lastPointerX = e.clientX;
+    this._lastPointerY = e.clientY;
     const grid = document.getElementById('grid');
     if (grid && typeof grid.setPointerCapture === 'function') {
       try {
@@ -210,8 +226,6 @@ LostNumberGame.prototype._processPointerMove = function (e) {
   try {
     const posCell = this.gridManager.getCellFromPoint(e.clientX, e.clientY);
     if (!posCell) {
-      this._releaseGridPointerCapture(e);
-      this.resetChain();
       return;
     }
 
@@ -283,8 +297,6 @@ LostNumberGame.prototype.handleGridPointerLeave = function (e) {
   try {
     if (!this.isDragging || this.activeBonus) return;
     this._cancelPendingPointerMove();
-    this._releaseGridPointerCapture(e);
-    this.resetChain();
   } catch (error) {
     ErrorHandler.handle(error, { type: 'pointer_leave' });
   }
@@ -310,7 +322,11 @@ LostNumberGame.prototype.handlePointerUp = function (e) {
 
     const posCell = this.gridManager.getCellFromPoint(e.clientX, e.clientY);
     if (!posCell) {
-      this.resetChain();
+      if (this.core.canFinishChain(Chain)) {
+        this.mergeChain();
+      } else {
+        this.resetChain('invalid');
+      }
       return;
     }
 
