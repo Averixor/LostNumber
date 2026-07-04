@@ -10,6 +10,8 @@
   position: relative;
   z-index: 5;
   container-type: size;
+  touch-action: none;
+  overscroll-behavior: contain;
 }
 
 .grid {
@@ -44,6 +46,8 @@
   overflow: hidden;
   border: 1px solid transparent;
   cursor: pointer;
+  touch-action: none;
+  -webkit-user-select: none;
   transition:
     transform 0.12s ease,
     opacity 0.12s ease;
