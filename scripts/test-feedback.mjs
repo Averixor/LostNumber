@@ -88,7 +88,10 @@ assert(version === '1.0.6', 'feedback reads Capacitor app version');
 FeedbackService.trackFeedbackClick();
 const stats = FeedbackService.getFeedbackClickStats();
 assert(stats.count >= 1, 'feedback click analytics increments count');
-assert(typeof stats.lastClick === 'string' && stats.lastClick.length > 0, 'feedback click stores timestamp');
+assert(
+  typeof stats.lastClick === 'string' && stats.lastClick.length > 0,
+  'feedback click stores timestamp',
+);
 
 const indexHtml = readFileSync(join(root, 'index.html'), 'utf8');
 assert(indexHtml.includes('feedbackBtn'), 'index.html has feedback button');
