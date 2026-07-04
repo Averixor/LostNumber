@@ -3,13 +3,25 @@
  * Release AAB for Google Play: sync release flags → bundleRelease.
  */
 import { spawnSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const androidDir = join(root, 'android');
 const aabPath = join(androidDir, 'app/build/outputs/bundle/release/app-release.aab');
+const releaseDir = join(root, 'build', 'releases');
+
+function makeStamp() {
+  const now = new Date();
+  const yyyy = String(now.getFullYear());
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mi = String(now.getMinutes()).padStart(2, '0');
+  const ss = String(now.getSeconds()).padStart(2, '0');
+  return `${yyyy}${mm}${dd}-${hh}${mi}${ss}`;
+}
 
 function runNode(scriptRel, args = []) {
   const script = join(root, scriptRel);
@@ -65,6 +77,13 @@ if (!existsSync(aabPath)) {
   process.exit(1);
 }
 
+mkdirSync(releaseDir, { recursive: true });
+const stampedAabPath = join(releaseDir, `lostnumber-release-${makeStamp()}.aab`);
+copyFileSync(aabPath, stampedAabPath);
+const stampedStats = statSync(stampedAabPath);
+
 console.log(`\nRelease AAB: ${aabPath}`);
+console.log(`Saved copy: ${stampedAabPath}`);
+console.log(`Size: ${(stampedStats.size / (1024 * 1024)).toFixed(1)} MB`);
 console.log('Package: com.averixor.lostnumber');
 console.log('Upload this file in Play Console → Testing → Closed testing → Create release.');
