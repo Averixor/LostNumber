@@ -69,11 +69,19 @@ jobs:
         uses: actions/deploy-pages@v5
         continue-on-error: true
 
+      - name: Wait before Pages deploy retry
+        if: steps.deploy.outcome != 'success'
+        run: sleep 20
+
       - name: Retry Pages deploy (2/3)
         if: steps.deploy.outcome != 'success'
         id: deploy2
         uses: actions/deploy-pages@v5
         continue-on-error: true
+
+      - name: Wait before final Pages deploy retry
+        if: steps.deploy.outcome != 'success' && steps.deploy2.outcome != 'success'
+        run: sleep 20
 
       - name: Retry Pages deploy (3/3)
         if: steps.deploy.outcome != 'success' && steps.deploy2.outcome != 'success'
