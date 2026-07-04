@@ -126,6 +126,17 @@ class SettingsManager {
         this.game.screenManager.showScreen('mainMenu');
       });
     }
+
+    const feedbackBtn = document.getElementById('feedbackBtn');
+    if (feedbackBtn && !feedbackBtn._lnBound) {
+      feedbackBtn.addEventListener('click', () => {
+        this.game.audioManager.playTap();
+        if (typeof FeedbackService !== 'undefined') {
+          FeedbackService.openFeedbackEmail((key) => this.game.t(key));
+        }
+      });
+      feedbackBtn._lnBound = true;
+    }
   }
 
   loadSettings() {

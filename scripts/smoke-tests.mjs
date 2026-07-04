@@ -18,6 +18,7 @@ const tests = [
   'scripts/test-build-flags.mjs',
   'scripts/test-audio-background.mjs',
   'scripts/test-grid-chain-cancel.mjs',
+  'scripts/test-feedback.mjs',
 ];
 
 for (const test of tests) {
