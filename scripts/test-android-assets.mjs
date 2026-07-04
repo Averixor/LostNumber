@@ -2,7 +2,7 @@
 /**
  * Verifies _site and synced Android public assets include CSS, JS, and audio.
  */
-import { existsSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
@@ -51,8 +51,8 @@ function checkBundle(baseLabel, basePath) {
   assert(countFiles(audioDir, '.mp3') > 0, `${baseLabel}: audio mp3 files present`);
 }
 
-console.log('→ build:pages');
-const build = spawnSync(process.execPath, [join(root, 'scripts/build-pages.mjs')], {
+console.log('→ android:sync (release flags)');
+const build = spawnSync(process.execPath, [join(root, 'scripts/prepare-android.mjs')], {
   cwd: root,
   stdio: 'inherit',
 });
@@ -61,16 +61,16 @@ if (build.status !== 0) process.exit(build.status ?? 1);
 const siteDir = join(root, '_site');
 checkBundle('_site', siteDir);
 
-console.log('→ cap sync android (assets only check follows)');
-const cap = spawnSync(
-  process.execPath,
-  [join(root, 'node_modules/@capacitor/cli/bin/capacitor'), 'sync', 'android'],
-  { cwd: root, stdio: 'inherit' },
-);
-if (cap.status !== 0) process.exit(cap.status ?? 1);
-
 const androidPublic = join(root, 'android/app/src/main/assets/public');
 checkBundle('android public', androidPublic);
+const androidFlags = readFileSync(
+  join(androidPublic, 'js/system/build-flags.generated.js'),
+  'utf8',
+);
+assert(
+  /cheatsEnabled\s*:\s*false/.test(androidFlags),
+  'android public build flags are synced in release mode',
+);
 
 console.log(`\n${passed} passed, ${failed} failed`);
 process.exit(failed > 0 ? 1 : 0);

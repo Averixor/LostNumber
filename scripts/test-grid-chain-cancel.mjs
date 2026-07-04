@@ -32,6 +32,9 @@ function assertEq(actual, expected, msg) {
 }
 
 const ErrorHandler = { info() {}, warn() {}, debug() {}, handle() {} };
+globalThis.updateChainSum = () => {};
+globalThis.requestAnimationFrame = () => 1;
+globalThis.cancelAnimationFrame = () => {};
 const Chain = {
   numbers: [],
   get sum() {
@@ -90,6 +93,7 @@ function createMockDOM() {
 
   const grid = createElement('div');
   grid.id = 'grid';
+  grid.getBoundingClientRect = () => ({ width: 250, height: 400 });
   const cell = createElement('div');
   cell.classList.add('cell');
   cell.dataset.x = '0';
@@ -126,6 +130,7 @@ function loadGameWithUiEvents(document) {
       playChainLink() {},
       playError() {},
     };
+    this.isCellFrozen = () => false;
     this.core = {
       isAdjacent: () => true,
       isValidNextNumber: () => true,
@@ -200,6 +205,56 @@ game.handleGridPointerLeave({ pointerId: 2 });
 assertEq(game.isDragging, true, 'pointer leave grid keeps dragging active');
 assertEq(Chain.numbers.length, 1, 'pointer leave grid keeps chain numbers');
 
+const sampleGame = loadGameWithUiEvents(dom);
+sampleGame.core = {
+  isAdjacent(a, b) {
+    return Math.abs(a.x - b.x) + Math.abs(a.y - b.y) === 1;
+  },
+  isValidNextNumber: () => true,
+  canFinishChain: () => true,
+};
+sampleGame.gridManager = {
+  getCellFromPoint(clientX, clientY) {
+    if (clientY < 0 || clientY > 100) return null;
+    if (clientX >= 0 && clientX < 80) return { x: 0, y: 0 };
+    if (clientX >= 80 && clientX < 160) return { x: 1, y: 0 };
+    if (clientX >= 160 && clientX <= 240) return { x: 2, y: 0 };
+    return null;
+  },
+};
+sampleGame.grid[0][0].number = 2;
+sampleGame.grid[1][0].number = 2;
+sampleGame.grid[2][0].number = 4;
+sampleGame.isDragging = true;
+sampleGame.selected = [{ x: 0, y: 0 }];
+sampleGame._lastPointerX = 10;
+sampleGame._lastPointerY = 10;
+Chain.numbers = [2];
+sampleGame._processPointerMove({ clientX: 210, clientY: 10 });
+assertEq(sampleGame.selected.length, 3, 'sampled pointer path keeps intermediate adjacent cells');
+assertEq(sampleGame.selected[1].x, 1, 'sampled pointer path adds adjacent middle cell first');
+assertEq(sampleGame.selected[2].x, 2, 'sampled pointer path reaches final cell after middle cell');
+
+const flushGame = loadGameWithUiEvents(dom);
+flushGame.core = sampleGame.core;
+flushGame.gridManager = sampleGame.gridManager;
+flushGame.grid[0][0].number = 2;
+flushGame.grid[1][0].number = 2;
+flushGame.isDragging = true;
+flushGame.selected = [{ x: 0, y: 0 }];
+flushGame._lastPointerX = 10;
+flushGame._lastPointerY = 10;
+flushGame._pendingPointerMoveEvent = { clientX: 110, clientY: 10 };
+flushGame._pointerMoveRaf = 1;
+Chain.numbers = [2];
+flushGame.handlePointerUp({ clientX: 110, clientY: 10, pointerId: 3 });
+assertEq(
+  flushGame.selected.length,
+  2,
+  'pointer up flushes last pending move before finishing chain',
+);
+assertEq(flushGame._mergeCalls, 1, 'pointer up still merges after flushing pending move');
+
 const uiEventsJs = readFileSync(join(root, 'js/app/ui/ui-events.js'), 'utf8');
 assert(uiEventsJs.includes('pointerleave'), 'grid listens for pointerleave');
 assert(uiEventsJs.includes('handlePointerCancel'), 'grid handles pointercancel separately');
@@ -211,6 +266,10 @@ assert(gridRenderJs.includes('tile-crown.svg'), 'grid render uses tile crown ass
 
 const gridCss = readFileSync(join(root, 'css/grid.css'), 'utf8');
 assert(gridCss.includes('.tile--largest'), 'grid css styles largest tile crown');
+
+delete globalThis.updateChainSum;
+delete globalThis.requestAnimationFrame;
+delete globalThis.cancelAnimationFrame;
 
 console.log(`\n${passed} passed, ${failed} failed`);
 process.exit(failed > 0 ? 1 : 0);

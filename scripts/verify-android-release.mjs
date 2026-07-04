@@ -136,6 +136,31 @@ function verifyBuildFlagsRelease() {
   }
 }
 
+function verifyBundledBuildFlagsRelease() {
+  const checks = [
+    ['_site/js/system/build-flags.generated.js', '_site release build flags'],
+    [
+      'android/app/src/main/assets/public/js/system/build-flags.generated.js',
+      'Android synced release build flags',
+    ],
+  ];
+
+  for (const [rel, label] of checks) {
+    const full = join(root, rel);
+    if (!existsSync(full)) {
+      console.log(`note: ${label} missing (${rel})`);
+      continue;
+    }
+
+    const content = readFileSync(full, 'utf8');
+    if (/cheatsEnabled\s*:\s*true/.test(content)) {
+      fail(`${label} must have cheatsEnabled:false (${rel}); run npm run android:sync`);
+    } else {
+      ok(`${label} cheatsEnabled=false`);
+    }
+  }
+}
+
 function verifyNoHardcodedCheats() {
   const indexPath = join(root, 'index.html');
   if (!existsSync(indexPath)) {
@@ -291,6 +316,21 @@ function verifySyncedAssetsOptional() {
       ok(`synced asset present: android/.../public/${rel}`);
     }
   }
+
+  const syncedFlagsPath = join(syncedRoot, 'js/system/build-flags.generated.js');
+  if (!existsSync(syncedFlagsPath)) {
+    fail('android synced build flags missing (run npm run android:sync before Android release)');
+    return;
+  }
+
+  const syncedFlags = readFileSync(syncedFlagsPath, 'utf8');
+  if (/cheatsEnabled\s*:\s*true/.test(syncedFlags)) {
+    fail(
+      'android synced assets have cheatsEnabled:true (run npm run android:sync before Android release)',
+    );
+  } else {
+    ok('android synced build flags cheatsEnabled=false');
+  }
 }
 
 verifyCapacitorSecurity();
@@ -300,6 +340,7 @@ verifyNoHardcodedCheats();
 verifyGradleReleasePackage();
 verifyNoSecretsInGit();
 ensureSiteBundle();
+verifyBundledBuildFlagsRelease();
 verifyAudioBundle();
 verifySyncedAssetsOptional();
 

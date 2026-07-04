@@ -192,6 +192,93 @@ LostNumberGame.prototype._flushPendingPointerMove = function () {
   this._processPointerMove(latestEvent);
 };
 
+LostNumberGame.prototype._getPointerSampleStep = function () {
+  try {
+    const grid = document.getElementById('grid');
+    const cell = grid?.querySelector?.('.cell');
+    const rect = cell?.getBoundingClientRect?.();
+    const side = Math.min(rect?.width || 0, rect?.height || 0);
+    if (Number.isFinite(side) && side > 0) {
+      return Math.max(10, side * 0.35);
+    }
+
+    if (grid && typeof grid.getBoundingClientRect === 'function' && this.GRID_W > 0) {
+      const gridRect = grid.getBoundingClientRect();
+      if (Number.isFinite(gridRect.width) && gridRect.width > 0) {
+        return Math.max(12, gridRect.width / (this.GRID_W * 2));
+      }
+    }
+  } catch (_) {}
+  return 24;
+};
+
+LostNumberGame.prototype._samplePointerCells = function (startX, startY, endX, endY) {
+  const dx = endX - startX;
+  const dy = endY - startY;
+  const distance = Math.hypot(dx, dy);
+  const steps = Math.max(1, Math.ceil(distance / this._getPointerSampleStep()));
+  const sampledCells = [];
+  const seen = new Set();
+
+  for (let i = 1; i <= steps; i++) {
+    const t = i / steps;
+    const sampleX = startX + dx * t;
+    const sampleY = startY + dy * t;
+    const posCell = this.gridManager.getCellFromPoint(sampleX, sampleY);
+    if (!posCell) continue;
+
+    const key = `${posCell.x},${posCell.y}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    sampledCells.push(posCell);
+  }
+
+  return sampledCells;
+};
+
+LostNumberGame.prototype._extendChainToCell = function (posCell) {
+  if (!posCell) return;
+
+  const idx = posCell.y * this.GRID_W + posCell.x;
+  if (this.isCellFrozen(idx)) return;
+
+  const len = this.selected.length;
+  if (len === 0) return;
+
+  if (len >= 2) {
+    const prev = this.selected[len - 2];
+    if (prev.x === posCell.x && prev.y === posCell.y) {
+      const removed = this.selected.pop();
+      Chain.numbers.pop();
+      updateChainSum();
+      this._schedulePreviewBubbleUpdate?.();
+      if (removed) this._applySelectionHighlight?.(removed, null);
+      return;
+    }
+  }
+
+  if (this.selected.some((s) => s.x === posCell.x && s.y === posCell.y)) {
+    return;
+  }
+
+  const last = this.selected[len - 1];
+  if (!this.core.isAdjacent(last, posCell)) return;
+
+  const newNum = this.grid?.[posCell.x]?.[posCell.y]?.number;
+  const prevNum = Chain.numbers[Chain.numbers.length - 1];
+  const currentSum = Chain.sum;
+
+  if (!this.core.isValidNextNumber(newNum, prevNum, currentSum)) return;
+
+  this.selected.push(posCell);
+  Chain.numbers.push(newNum);
+  updateChainSum();
+  this.audioManager?.playChainLink?.();
+
+  this._schedulePreviewBubbleUpdate?.();
+  this._applySelectionHighlight?.(null, posCell);
+};
+
 LostNumberGame.prototype.handlePointerMove = function (e) {
   try {
     if (!this.isDragging || this.activeBonus) return;
@@ -224,49 +311,16 @@ LostNumberGame.prototype.handlePointerMove = function (e) {
 
 LostNumberGame.prototype._processPointerMove = function (e) {
   try {
-    const posCell = this.gridManager.getCellFromPoint(e.clientX, e.clientY);
-    if (!posCell) {
-      return;
+    const startX = Number.isFinite(this._lastPointerX) ? this._lastPointerX : e.clientX;
+    const startY = Number.isFinite(this._lastPointerY) ? this._lastPointerY : e.clientY;
+    const sampledCells = this._samplePointerCells(startX, startY, e.clientX, e.clientY);
+
+    for (const posCell of sampledCells) {
+      this._extendChainToCell(posCell);
     }
 
-    const idx = posCell.y * this.GRID_W + posCell.x;
-    if (this.isCellFrozen(idx)) return;
-
-    const len = this.selected.length;
-    if (len === 0) return;
-
-    if (len >= 2) {
-      const prev = this.selected[len - 2];
-      if (prev.x === posCell.x && prev.y === posCell.y) {
-        const removed = this.selected.pop();
-        Chain.numbers.pop();
-        updateChainSum();
-        this._schedulePreviewBubbleUpdate?.();
-        if (removed) this._applySelectionHighlight?.(removed, null);
-        return;
-      }
-    }
-
-    if (this.selected.some((s) => s.x === posCell.x && s.y === posCell.y)) {
-      return;
-    }
-
-    const last = this.selected[len - 1];
-    if (!this.core.isAdjacent(last, posCell)) return;
-
-    const newNum = this.grid[posCell.x][posCell.y].number;
-    const prevNum = Chain.numbers[Chain.numbers.length - 1];
-    const currentSum = Chain.sum;
-
-    if (!this.core.isValidNextNumber(newNum, prevNum, currentSum)) return;
-
-    this.selected.push(posCell);
-    Chain.numbers.push(newNum);
-    updateChainSum();
-    this.audioManager?.playChainLink?.();
-
-    this._schedulePreviewBubbleUpdate?.();
-    this._applySelectionHighlight?.(null, posCell);
+    this._lastPointerX = e.clientX;
+    this._lastPointerY = e.clientY;
   } catch (error) {
     ErrorHandler.handle(error, { type: 'pointer_move', clientX: e.clientX, clientY: e.clientY });
   }
@@ -313,22 +367,15 @@ LostNumberGame.prototype.handlePointerUp = function (e) {
       return;
     }
 
-    this._cancelPendingPointerMove();
+    this._flushPendingPointerMove();
+    this._processPointerMove(e);
     this.isDragging = false;
     this._bubblePointerX = null;
     this._bubblePointerY = null;
+    this._lastPointerX = null;
+    this._lastPointerY = null;
     this.hidePreviewBubble();
     this._releaseGridPointerCapture(e);
-
-    const posCell = this.gridManager.getCellFromPoint(e.clientX, e.clientY);
-    if (!posCell) {
-      if (this.core.canFinishChain(Chain)) {
-        this.mergeChain();
-      } else {
-        this.resetChain('invalid');
-      }
-      return;
-    }
 
     if (this.core.canFinishChain(Chain)) {
       this.mergeChain();
@@ -362,6 +409,8 @@ LostNumberGame.prototype.resetChain = function (reason = null) {
     this.isDragging = false;
     this._bubblePointerX = null;
     this._bubblePointerY = null;
+    this._lastPointerX = null;
+    this._lastPointerY = null;
 
     document
       .querySelectorAll('.cell.selected, .cell.highlight')

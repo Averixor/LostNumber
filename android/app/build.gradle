@@ -65,6 +65,54 @@ dependencies {
     implementation project(':capacitor-cordova-android-plugins')
 }
 
+def androidReleaseFlagsFile = layout.projectDirectory.file(
+    "src/main/assets/public/js/system/build-flags.generated.js"
+)
+
+def verifyReleaseWebFlagsProvider = tasks.register("verifyReleaseWebFlags") {
+    group = "verification"
+    description = "Verify Android synced web assets are release-safe."
+
+    inputs.file(androidReleaseFlagsFile)
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+
+    doLast {
+        File flagsFile = androidReleaseFlagsFile.asFile
+
+        if (!flagsFile.isFile()) {
+            throw new RuntimeException(
+                "Release build blocked: missing Android synced build flags: " + flagsFile
+            )
+        }
+
+        String text = flagsFile.getText("UTF-8")
+
+        if (text.contains("cheatsEnabled: true") ||
+            text.contains("\"cheatsEnabled\":true") ||
+            text.contains("'cheatsEnabled':true")) {
+            throw new RuntimeException(
+                "Release build blocked: Android synced assets contain cheatsEnabled=true: " + flagsFile
+            )
+        }
+
+        if (!(text.contains("cheatsEnabled: false") ||
+              text.contains("\"cheatsEnabled\":false") ||
+              text.contains("'cheatsEnabled':false"))) {
+            throw new RuntimeException(
+                "Release build blocked: cannot confirm cheatsEnabled=false in: " + flagsFile
+            )
+        }
+    }
+}
+
+tasks.matching {
+    it.name == "preReleaseBuild" ||
+    it.name == "assembleRelease" ||
+    it.name == "bundleRelease"
+}.configureEach {
+    dependsOn(verifyReleaseWebFlagsProvider)
+}
+
 apply from: 'capacitor.build.gradle'
 
 try {
