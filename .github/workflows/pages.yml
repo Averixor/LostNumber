@@ -12,37 +12,11 @@ permissions:
 
 concurrency:
   group: 'pages'
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
-  pages-ready:
-    runs-on: ubuntu-latest
-    outputs:
-      enabled: ${{ steps.detect.outputs.enabled }}
-    steps:
-      - name: Detect GitHub Pages site
-        id: detect
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          if gh api "repos/${GITHUB_REPOSITORY}/pages" --silent >/dev/null 2>&1; then
-            echo "GitHub Pages site exists for ${GITHUB_REPOSITORY}"
-            echo "enabled=true" >> "$GITHUB_OUTPUT"
-          else
-            {
-              echo '::notice title=GitHub Pages не увімкнено::Деплой пропущено (private repo або Pages ще не налаштовано).'
-              echo 'CI працює через ci.yml (release:check).'
-              echo 'Увімкнення: Settings → Pages → Source: GitHub Actions (потрібен public repo або GitHub Pro).'
-              echo 'Документація: docs/GITHUB_PAGES.md'
-            } >> "$GITHUB_STEP_SUMMARY"
-            echo "enabled=false" >> "$GITHUB_OUTPUT"
-          fi
-
   build:
     runs-on: ubuntu-latest
-    needs: pages-ready
-    if: needs.pages-ready.outputs.enabled == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -61,21 +35,34 @@ jobs:
       - name: Build Pages artifact
         run: npm run build:pages
 
+      - name: Verify Pages output
+        run: |
+          test -f _site/index.html
+          test -f _site/.nojekyll
+          find _site -type l -print -quit | (! read)
+          du -sh _site
+          find _site -type f | wc -l
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: _site
 
   deploy:
+    permissions:
+      pages: write
+      id-token: write
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     runs-on: ubuntu-latest
     needs: build
-    if: needs.pages-ready.outputs.enabled == 'true'
+
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
