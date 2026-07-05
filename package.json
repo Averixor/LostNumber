@@ -36,6 +36,7 @@
     "verify:android": "node ./scripts/verify-android-release.mjs",
     "test": "node ./scripts/smoke-tests.mjs",
     "test:smoke": "node ./scripts/smoke-tests.mjs",
+    "test:android-assets": "node ./scripts/test-android-assets.mjs",
     "release:check": "node ./scripts/release-check.mjs",
     "release:ideal": "node ./scripts/release-ideal.mjs",
     "build": "npm run build:pages",

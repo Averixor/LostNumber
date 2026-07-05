@@ -77,6 +77,20 @@ if (!existsSync(aabPath)) {
   process.exit(1);
 }
 
+if (process.platform === 'linux' || process.platform === 'darwin') {
+  console.log('→ verify-aab-content');
+  const verify = spawnSync('bash', [join(root, 'scripts/verify-aab-content.sh'), aabPath], {
+    cwd: root,
+    stdio: 'inherit',
+    shell: false,
+  });
+  if (verify.status !== 0) {
+    process.exit(verify.status ?? 1);
+  }
+} else {
+  console.log('Skipping verify-aab-content.sh (requires bash).');
+}
+
 mkdirSync(releaseDir, { recursive: true });
 const stampedAabPath = join(releaseDir, `lostnumber-release-${makeStamp()}.aab`);
 copyFileSync(aabPath, stampedAabPath);

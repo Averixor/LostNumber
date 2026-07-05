@@ -56,8 +56,21 @@ public class FeedbackPlugin extends Plugin {
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
         emailIntent.putExtra(Intent.EXTRA_TEXT, body);
 
+        // Intent.createChooser never throws ActivityNotFoundException, so check
+        // for an email client explicitly (requires the mailto <queries> entry).
+        if (emailIntent.resolveActivity(getContext().getPackageManager()) == null) {
+            call.reject(errorMessage);
+            return;
+        }
+
+        Intent chooser = Intent.createChooser(emailIntent, chooserTitle);
         try {
-            getActivity().startActivity(Intent.createChooser(emailIntent, chooserTitle));
+            if (getActivity() != null) {
+                getActivity().startActivity(chooser);
+            } else {
+                chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getContext().startActivity(chooser);
+            }
             JSObject result = new JSObject();
             result.put("opened", true);
             call.resolve(result);

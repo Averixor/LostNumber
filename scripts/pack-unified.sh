@@ -10,7 +10,7 @@ ARCHIVE="$OUT_DIR/LostNumber-unified-${STAMP}.zip"
 mkdir -p "$OUT_DIR"
 
 SYNCED_FLAGS="$ROOT/android/app/src/main/assets/public/js/system/build-flags.generated.js"
-if [[ -f "$SYNCED_FLAGS" ]] && rg -q 'cheatsEnabled\s*:\s*true' "$SYNCED_FLAGS"; then
+if [[ -f "$SYNCED_FLAGS" ]] && grep -Eq 'cheatsEnabled[[:space:]]*:[[:space:]]*true' "$SYNCED_FLAGS"; then
   echo "Refusing to pack archive: android synced assets still have cheatsEnabled:true"
   echo "Run: npm run android:sync"
   exit 1
@@ -44,6 +44,14 @@ zip -r "$ARCHIVE" . \
   -x 'scripts/keystore-info.mjs' \
   -x '**/.DS_Store' \
   -x '**/*.import' \
+  -x '*.apk' \
+  -x '*.apks' \
+  -x '*.aab' \
+  -x '*.jar' \
+  -x '*.so' \
+  -x '*.zip' \
+  -x 'current_manifest.xml' \
+  -x 'old_manifest.xml' \
   -x 'js/app/ui/*.bak_*' \
   -x 'js/game/grid/*.bak_*' \
   -x 'js/system/platform/*.bak_*'

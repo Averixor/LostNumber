@@ -214,7 +214,10 @@ function verifyGradleReleasePackage() {
   }
 
   const gradle = readFileSync(gradlePath, 'utf8');
-  const releaseBlock = gradle.match(/release\s*\{[\s\S]*?\n\s*\}/);
+  const buildTypesBlock = gradle.match(/buildTypes\s*\{[\s\S]*?\n\s{4}\}/);
+  const releaseBlock = buildTypesBlock
+    ? buildTypesBlock[0].match(/release\s*\{[\s\S]*?\n\s{8}\}/)
+    : null;
   if (releaseBlock && /applicationIdSuffix\s*["']\.dev["']/.test(releaseBlock[0])) {
     fail('release buildType must not use applicationIdSuffix .dev');
   } else {

@@ -76,10 +76,8 @@ func _on_sound_toggled(enabled: bool) -> void:
 	var settings := _autoload("SettingsManager")
 	if settings != null:
 		settings.set("sound_enabled", enabled)
-		settings.set("music_enabled", enabled)
 		if settings.has_method("save_settings"):
 			settings.call("save_settings")
-	music_check.button_pressed = enabled
 	var audio := _autoload("AudioManager")
 	if audio != null and audio.has_method("apply_audio_settings"):
 		audio.call("apply_audio_settings")
@@ -89,10 +87,8 @@ func _on_music_toggled(enabled: bool) -> void:
 	var settings := _autoload("SettingsManager")
 	if settings != null:
 		settings.set("music_enabled", enabled)
-		settings.set("sound_enabled", enabled)
 		if settings.has_method("save_settings"):
 			settings.call("save_settings")
-	sound_check.button_pressed = enabled
 	var audio := _autoload("AudioManager")
 	if audio != null and audio.has_method("apply_audio_settings"):
 		audio.call("apply_audio_settings")

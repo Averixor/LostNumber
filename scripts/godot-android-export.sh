@@ -125,8 +125,21 @@ if [[ "$MODE" == "release" ]]; then
     exit 1
   fi
 
-  # shellcheck disable=SC1090
-  source "$KEYSTORE_PROPS"
+  # Parse key=value pairs instead of sourcing: passwords with $, spaces or &
+  # must not be interpreted by the shell.
+  _prop() {
+    local line
+    line="$(grep -E "^[[:space:]]*$1[[:space:]]*=" "$KEYSTORE_PROPS" | tail -1)" || true
+    printf '%s' "${line#*=}" | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//'
+  }
+  storeFile="$(_prop storeFile)"
+  storePassword="$(_prop storePassword)"
+  keyAlias="$(_prop keyAlias)"
+  keyPassword="$(_prop keyPassword)"
+  if [[ -z "$storeFile" || -z "$storePassword" || -z "$keyAlias" || -z "$keyPassword" ]]; then
+    echo "keystore.properties is missing storeFile/storePassword/keyAlias/keyPassword." >&2
+    exit 1
+  fi
   STORE_PATH="$ROOT/android/${storeFile}"
   if [[ ! -f "$STORE_PATH" ]]; then
     echo "Keystore not found: $STORE_PATH" >&2

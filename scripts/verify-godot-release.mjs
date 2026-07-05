@@ -71,6 +71,7 @@ function resolveBundletoolJar() {
   const candidates = [
     process.env.BUNDLETOOL_JAR,
     join(root, 'tools/bundletool-all.jar'),
+    join(root, 'bundletool.jar'),
     join(process.env.HOME || '', '.local/share/bundletool/bundletool-all.jar'),
   ].filter(Boolean);
   for (const jar of candidates) {
