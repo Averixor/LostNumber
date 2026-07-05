@@ -20,6 +20,8 @@
 
 ## Реліз Android → Play Console (порядок)
 
+> **Актуальний ship target — Godot** (`npm run godot:android:release`, див. `godot/docs/ANDROID_RELEASE_READINESS.md` та `HANDOFF-IDEAL.md`). Порядок нижче — для legacy Capacitor-збірки.
+
 1. `npm run release:check` — format, lint, typecheck, smoke-тести
 2. `npm run verify:android` — release security і bundle prerequisites
 3. `npm run android:bundle` → `android/app/build/outputs/bundle/release/app-release.aab`
@@ -34,9 +36,9 @@
 
 Окремі файли локалей: `docs/store-listing/` (uk, en, ru).
 
-## Godot (окрема гілка міграції)
+## Godot (основний ship target)
 
-Не входить у поточний Capacitor-реліз Android. Див. **`godot/README.md`**.
+Godot-версія — основна ціль релізу Android (Capacitor — legacy). Збірка: `npm run godot:android:release`. Див. **`godot/README.md`** і `godot/docs/ANDROID_RELEASE_READINESS.md`.
 
 ## CI
 

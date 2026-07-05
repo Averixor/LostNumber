@@ -1,3 +1,11 @@
+# Local AAB/APK inspection artifacts (bundletool dumps)
+current_manifest.xml
+old_manifest.xml
+bundletool.jar
+*.apks
+dummy.c
+libdummy.so
+
 # Android signing (never commit)
 android/keystore/
 android/keystore.properties
@@ -66,6 +74,7 @@ copilot-messages.log
 *.exe
 *.msi
 *.bat
+!android/gradlew.bat
 *.cmd
 *.com
 *.scr
@@ -89,3 +98,7 @@ copilot-messages.log
 public/images/
 
 .vscode/
+
+# IDE metadata (Android Studio / IntelliJ)
+.idea/
+android/.idea/

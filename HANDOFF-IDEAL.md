@@ -1,7 +1,7 @@
 # Lost Number — Production Handoff (Ideal Build)
 
 **Package:** `com.averixor.lostnumber`  
-**Version:** `2.0.0` (versionCode `2`)  
+**Version:** `2.0.1` (versionCode `10`)  
 **Audience:** Casual 3+, offline puzzle  
 **Primary Android:** Godot 4.5 native (`build/godot/android/lost-number.aab`)  
 **Secondary:** Capacitor 7 WebView (legacy web parity, `npm run android:bundle`)
@@ -113,8 +113,8 @@ adb install -r build/godot/android/lost-number-debug.apk
 {
   "envelope_version": 1,
   "saved_at": "2026-07-01T11:00:00",
-  "checksum": "<sha256 of data JSON>",
-  "data": { "version": 2, "current_level": 0, "grid": [...], ... }
+  "checksum": "<sha256 of data_json>",
+  "data_json": "{ \"version\": 2, \"current_level\": 0, \"grid\": [...], ... }"
 }
 ```
 

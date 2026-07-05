@@ -61,4 +61,4 @@ godot4 --path godot --headless --script res://scripts/tests/run_rules_tests.gd
 
 ## Save format
 
-Godot MVP uses a new JSON schema (`version: 1`), not compatible with `localStorage` `lostNumberSave` v2 from the web build. A one-time import script can be added later if needed.
+Godot MVP uses its own JSON schema (`version: 2` inside an `envelope_version: 1` wrapper with `data_json` + `checksum`), not compatible with `localStorage` `lostNumberSave` v2 from the web build. A one-time import script can be added later if needed.
