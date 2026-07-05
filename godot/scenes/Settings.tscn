@@ -25,19 +25,25 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 12.0
-offset_top = 12.0
-offset_right = -12.0
-offset_bottom = -12.0
+offset_left = 16.0
+offset_top = 8.0
+offset_right = -16.0
+offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 2
 horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+clip_contents = true
 
 [node name="VBox" type="VBoxContainer" parent="Scroll"]
 layout_mode = 2
 size_flags_horizontal = 3
-custom_minimum_size = Vector2(0, 0)
-theme_override_constants/separation = 10
+theme_override_constants/separation = 8
+
+[node name="BackButton" type="Button" parent="Scroll/VBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Back"
 
 [node name="Title" type="Label" parent="Scroll/VBox"]
 layout_mode = 2
@@ -71,6 +77,10 @@ layout_mode = 2
 text = "Background effects"
 button_pressed = true
 
+[node name="TileFontSizeOption" type="OptionButton" parent="Scroll/VBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
 [node name="LanguageOption" type="OptionButton" parent="Scroll/VBox"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -89,7 +99,7 @@ layout_mode = 2
 text = "Skin"
 
 [node name="SkinScroll" type="ScrollContainer" parent="Scroll/VBox"]
-custom_minimum_size = Vector2(0, 108)
+custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
 size_flags_horizontal = 3
 horizontal_scroll_mode = 2
@@ -97,7 +107,7 @@ vertical_scroll_mode = 0
 
 [node name="SkinPickerRow" type="HBoxContainer" parent="Scroll/VBox/SkinScroll"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
 
 [node name="SkinAutoCheck" type="CheckButton" parent="Scroll/VBox"]
 layout_mode = 2
@@ -110,10 +120,6 @@ text = "Import legacy save"
 
 [node name="ImportStatus" type="Label" parent="Scroll/VBox"]
 layout_mode = 2
+size_flags_horizontal = 3
 horizontal_alignment = 1
 autowrap_mode = 2
-
-[node name="BackButton" type="Button" parent="Scroll/VBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Back"

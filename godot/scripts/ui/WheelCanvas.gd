@@ -4,6 +4,7 @@ class_name WheelCanvas
 ## Gothic fortune wheel — dark sectors, purple rim, crystal hub, top pointer.
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
+const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 const WheelManagerLib := preload("res://scripts/meta/WheelManager.gd")
 
 signal spin_finished(sector: Dictionary, index: int)
@@ -32,10 +33,15 @@ func _refresh_theme_colors() -> void:
 	_wheel_colors.clear()
 	if theme != null and theme.has_method("get_wheel_colors"):
 		for c in theme.call("get_wheel_colors"):
-			_wheel_colors.append(Color(c).darkened(0.35))
+			var sector := Color(c)
+			sector = sector.darkened(0.48)
+			sector.s = sector.s * 0.72
+			_wheel_colors.append(sector)
 	if _wheel_colors.is_empty():
 		for c in ThemeTokensLib.WHEEL_SECTOR_COLORS:
-			_wheel_colors.append(Color(c).darkened(0.4))
+			var sector := Color(c).darkened(0.52)
+			sector.s = sector.s * 0.65
+			_wheel_colors.append(sector)
 
 
 func _draw() -> void:
@@ -50,14 +56,21 @@ func _draw() -> void:
 	var slice := TAU / float(count)
 	var pointer_index := _sector_under_pointer(count, slice)
 	var rim := _rim_color()
+	var neon := LnUiLib.ACCENT_2
+	var glass := LnUiLib.PANEL
 
 	# Drop shadow under wheel
-	draw_circle(center + Vector2(0, 6), radius + 8.0, Color(0, 0, 0, 0.45))
+	draw_circle(center + Vector2(0, 8), radius + 10.0, Color(0, 0, 0, 0.5))
 
-	# Outer purple/metallic rim
-	draw_arc(center, radius + 12.0, 0.0, TAU, 72, Color(rim.darkened(0.35), 0.95), 10.0, true)
-	draw_arc(center, radius + 6.0, 0.0, TAU, 64, Color(rim.lightened(0.08), 0.85), 3.0, true)
-	draw_arc(center, radius + 2.0, 0.0, TAU, 48, Color(0, 0, 0, 0.35), 2.0, true)
+	# Dark glass backing disc
+	draw_circle(center, radius + 6.0, Color(glass, 0.94))
+	draw_arc(center, radius + 6.0, 0.0, TAU, 64, Color(LnUiLib.BORDER, 0.55), 2.0, true)
+
+	# Neon outer rim
+	draw_arc(center, radius + 14.0, 0.0, TAU, 72, Color(neon, 0.22), 8.0, true)
+	draw_arc(center, radius + 11.0, 0.0, TAU, 64, Color(LnUiLib.ACCENT, 0.55), 2.5, true)
+	draw_arc(center, radius + 8.0, 0.0, TAU, 48, Color(rim.lightened(0.12), 0.75), 1.5, true)
+	draw_arc(center, radius + 2.0, 0.0, TAU, 48, Color(0, 0, 0, 0.45), 2.0, true)
 
 	for i in count:
 		var start := rotation_angle + slice * float(i) - PI * 0.5
@@ -68,8 +81,8 @@ func _draw() -> void:
 		_draw_sector_wedge(center, radius, start, end, base, i == pointer_index)
 
 		# Sector divider
-		var div_end := center + Vector2(cos(end), sin(end)) * (radius + 4.0)
-		draw_line(center, div_end, Color(0.05, 0.03, 0.1, 0.85), 2.0)
+		var div_end := center + Vector2(cos(end), sin(end)) * (radius + 2.0)
+		draw_line(center, div_end, Color(0.03, 0.02, 0.08, 0.9), 1.5)
 
 		var mid := (start + end) * 0.5
 		var label_pos := center + Vector2(cos(mid), sin(mid)) * radius * 0.68
@@ -78,16 +91,17 @@ func _draw() -> void:
 		_draw_sector_label(label_pos, label, mid, i == pointer_index)
 
 	# Inner vignette ring
-	draw_arc(center, radius * 0.92, 0.0, TAU, 48, Color(0, 0, 0, 0.22), radius * 0.08, true)
+	draw_arc(center, radius * 0.94, 0.0, TAU, 48, Color(0, 0, 0, 0.32), radius * 0.06, true)
 
 	# Crystal hub with soft pulse
 	var crystal := _crystal_color()
 	var pulse := 0.85 + sin(_hub_pulse) * 0.15
-	draw_circle(center, radius * 0.18, Color(0.04, 0.03, 0.08, 0.98))
-	draw_circle(center, radius * 0.14, Color(crystal.darkened(0.25), 0.95))
-	draw_circle(center, radius * 0.09 * pulse, crystal)
-	draw_circle(center, radius * 0.04, Color(crystal.lightened(0.5), 0.9))
-	draw_arc(center, radius * 0.11, 0.0, TAU, 32, Color(crystal.lightened(0.25), 0.25 + sin(_hub_pulse) * 0.12), 3.0, true)
+	draw_circle(center, radius * 0.2, Color(0.04, 0.03, 0.08, 0.98))
+	draw_circle(center, radius * 0.16, Color(LnUiLib.PANEL_PRESSED, 0.96))
+	draw_circle(center, radius * 0.11, Color(crystal.darkened(0.35), 0.92))
+	draw_circle(center, radius * 0.07 * pulse, Color(crystal.darkened(0.1), 0.95))
+	draw_circle(center, radius * 0.035, Color(crystal.lightened(0.25), 0.85))
+	draw_arc(center, radius * 0.1, 0.0, TAU, 32, Color(LnUiLib.ACCENT, 0.18 + sin(_hub_pulse) * 0.1), 2.0, true)
 
 	_draw_pointer(center, radius)
 
@@ -158,28 +172,26 @@ func _crystal_color() -> Color:
 
 func _draw_sector_wedge(center: Vector2, radius: float, start: float, end: float, color: Color, highlighted: bool) -> void:
 	var pts := _arc_points(center, radius, start, end, 24)
-	var fill := color.darkened(0.08 if highlighted else 0.18)
+	var fill := color.darkened(0.12 if highlighted else 0.22)
+	fill.a = 0.92
 	draw_colored_polygon(pts, fill)
-	# Radial darkening toward center
-	var inner_pts := _arc_points(center, radius * 0.35, start, end, 12)
-	var inner_poly := PackedVector2Array()
-	inner_poly.append_array(inner_pts)
-	draw_colored_polygon(inner_poly, Color(0, 0, 0, 0.18))
-	var edge := Color(color.lightened(0.06 if highlighted else 0.02), 0.55)
+	var inner_pts := _arc_points(center, radius * 0.38, start, end, 12)
+	draw_colored_polygon(inner_pts, Color(0, 0, 0, 0.24))
+	var edge := Color(color.lightened(0.04 if highlighted else 0.0), 0.42 if highlighted else 0.28)
 	draw_polyline(pts, edge, 1.0, true)
 
 
 func _draw_pointer(center: Vector2, radius: float) -> void:
 	var crystal := _crystal_color()
-	var tip := center + Vector2(0, -radius - 16)
+	var tip := center + Vector2(0, -radius - 14)
 	var pointer := PackedVector2Array([
 		tip,
-		center + Vector2(-12, -radius + 4),
-		center + Vector2(12, -radius + 4),
+		center + Vector2(-10, -radius + 6),
+		center + Vector2(10, -radius + 6),
 	])
-	draw_colored_polygon(pointer, Color(crystal.darkened(0.15), 0.98))
-	draw_polyline(pointer, Color(crystal.lightened(0.35), 0.9), 1.5, true)
-	draw_circle(tip + Vector2(0, 4), 4.0, Color(crystal.lightened(0.4), 0.85))
+	draw_colored_polygon(pointer, Color(crystal.darkened(0.25), 0.92))
+	draw_polyline(pointer, Color(LnUiLib.ACCENT, 0.85), 1.5, true)
+	draw_circle(tip + Vector2(0, 3), 3.5, Color(LnUiLib.ACCENT, 0.75))
 
 
 func _sector_under_pointer(count: int, slice: float) -> int:

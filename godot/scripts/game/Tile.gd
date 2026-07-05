@@ -53,12 +53,12 @@ func _ensure_crown_icon() -> void:
 	_crown_icon = TextureRect.new()
 	_crown_icon.name = "CrownIcon"
 	_crown_icon.texture = load(crown_path)
-	_crown_icon.custom_minimum_size = cell_size
-	_crown_icon.size = cell_size
 	_crown_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_crown_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_crown_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_crown_icon.visible = false
+	_crown_icon.modulate = Color(_get_rim_color(), 0.38)
+	_crown_icon.z_index = -1
 	_bg.add_child(_crown_icon)
 	_bg.move_child(_crown_icon, _label.get_index())
 	_layout_crown_and_label()
@@ -74,12 +74,14 @@ func setup(pos: Vector2i, number: int) -> void:
 func _layout_crown_and_label() -> void:
 	if _crown_icon == null:
 		return
-	_crown_icon.custom_minimum_size = cell_size
-	_crown_icon.size = cell_size
-	_crown_icon.position = Vector2.ZERO
+	var crown_size := cell_size * 0.62
+	_crown_icon.custom_minimum_size = crown_size
+	_crown_icon.size = crown_size
+	_crown_icon.position = (cell_size - crown_size) * 0.5 + Vector2(0, 1)
 	if _label != null:
-		_label.offset_top = 0.0
-		_label.offset_bottom = 0.0
+		_label.offset_top = -1.0
+		_label.offset_bottom = 1.0
+		_label.z_index = 1
 
 
 func set_value(number: int) -> void:
@@ -132,7 +134,7 @@ func set_bonus_mode(active: bool) -> void:
 
 func set_carry(active: bool) -> void:
 	_carry = active
-	_carry_badge.visible = active
+	_carry_badge.visible = false
 	_refresh_visual()
 
 
@@ -152,38 +154,72 @@ func _draw() -> void:
 	if value <= 0:
 		return
 	var rim := _get_rim_color()
+	if _target and not _frozen and not _bonus_mode:
+		rim = ThemeTokensLib.TILE_GOLD_RIM
 	var rect := Rect2(Vector2.ZERO, size - Vector2(0, 3))
-	draw_rect(rect, rim, false, 2.0)
+	if _target and not _frozen and not _bonus_mode:
+		draw_rect(rect.grow(1.5), Color(rim, 0.32), false, 3.0)
+		draw_rect(rect, Color(rim, 0.92), false, 2.5)
+	elif ThemeTokensLib.is_legendary_tile_value(value):
+		draw_rect(rect, Color(rim, 0.55), false, 2.0)
+	else:
+		draw_rect(rect, Color(rim, 0.42), false, 1.5)
 
 
 func _refresh_visual() -> void:
 	if not is_inside_tree():
 		return
 
+	if value <= 0:
+		_inner.color = Color.TRANSPARENT
+		_top_edge.color = Color.TRANSPARENT
+		_bottom_edge.color = Color.TRANSPARENT
+		_shadow.visible = false
+		_label.text = ""
+		if _crown_icon != null:
+			_crown_icon.visible = false
+		queue_redraw()
+		return
+
+	_shadow.visible = true
 	var face_color: Color
 	if _frozen:
 		face_color = ThemeTokensLib.TILE_FROZEN_BG
 	elif _bonus_mode:
 		face_color = ThemeTokensLib.COLOR_PREVIEW_INVALID.lightened(0.05)
-	elif value <= 0:
-		face_color = Color(ThemeTokensLib.COLOR_CELL, 0.35)
-	elif _target:
-		face_color = Color(0.55, 0.42, 0.12, 1.0)
 	else:
 		face_color = _color_for_value(value)
+		if _target:
+			face_color = face_color.lightened(0.06)
 
 	_inner.color = face_color
-	_top_edge.color = Color(face_color.lightened(0.22), 0.85)
-	_bottom_edge.color = Color(face_color.darkened(0.28), 0.9)
+	var top_lift := 0.28 if _target else 0.22
+	var bottom_shade := 0.18 if _target else 0.28
+	_top_edge.color = Color(face_color.lightened(top_lift), 0.9 if _target else 0.85)
+	_bottom_edge.color = Color(face_color.darkened(bottom_shade), 0.85 if _target else 0.9)
 
-	var text_color := ThemeTokensLib.COLOR_CELL_NUMBER
-	if value >= 8192:
-		text_color = Color.WHITE
+	var text_color := ThemeTokensLib.tile_text_color_for(face_color, value)
 	_label.add_theme_color_override("font_color", text_color)
-	_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_TILE)
+	_label.add_theme_font_size_override("font_size", _tile_font_size())
 	if _crown_icon != null:
-		_crown_icon.visible = _target and value > 0 and not _frozen and not _bonus_mode
+		_crown_icon.visible = _target and not _frozen and not _bonus_mode
+		var crown_alpha := 0.42 if _target else 0.0
+		_crown_icon.modulate = Color(ThemeTokensLib.TILE_GOLD_RIM, crown_alpha)
 	queue_redraw()
+
+
+func refresh_font_size() -> void:
+	_refresh_visual()
+
+
+func _tile_font_size() -> int:
+	var digits := 1
+	if value > 0:
+		digits = str(value).length()
+	var settings := get_node_or_null("/root/SettingsManager")
+	if settings != null and settings.has_method("get_tile_font_size"):
+		return int(settings.call("get_tile_font_size", cell_size, digits))
+	return ThemeTokensLib.tile_font_size_for_cell(cell_size, digits, 1.0)
 
 
 func _color_for_value(n: int) -> Color:
@@ -197,4 +233,4 @@ func _color_for_value(n: int) -> Color:
 	while t > 1:
 		t /= 2
 		log_val += 1
-	return Color.from_hsv(fmod(log_val * 0.11, 1.0), 0.45, 0.38)
+	return Color.from_hsv(fmod(log_val * 0.09 + 0.08, 1.0), 0.52, 0.78)

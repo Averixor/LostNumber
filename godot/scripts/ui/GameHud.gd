@@ -1,11 +1,10 @@
 extends Control
 class_name GameHud
 
-## In-game HUD: top bar, XP/goal/score bars, bonus row, bottom chain strip.
+## In-game HUD: top bar, goal/XP labels, bonus row, bottom chain strip.
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 const LnUiLib := preload("res://scripts/ui/LnUi.gd")
-const WheelManagerScript := preload("res://scripts/meta/WheelManager.gd")
 
 signal menu_pressed
 signal sound_pressed
@@ -19,11 +18,8 @@ signal bonus_pressed(type: String)
 @onready var save_button: Button = $TopBar/SaveButton
 @onready var theme_button: Button = $TopBar/ThemeButton
 @onready var sound_button: Button = $TopBar/SoundButton
-@onready var goal_bar: ProgressBar = $GoalRow/GoalPanel/GoalHBox/GoalBar
 @onready var goal_label: Label = $GoalRow/GoalPanel/GoalHBox/GoalLabel
-@onready var xp_bar: ProgressBar = $XpRow/XpPanel/XpHBox/XpBar
 @onready var xp_label: Label = $XpRow/XpPanel/XpHBox/XpLabel
-@onready var score_label: Label = $ScoreRow/ScoreLabel
 @onready var bottom_strip: PanelContainer = $BottomStrip
 @onready var chain_sum_label: Label = $BottomStrip/BottomHBox/ChainSumLabel
 @onready var message_label: Label = $BottomStrip/BottomHBox/MessageLabel
@@ -63,7 +59,7 @@ func _theme_color(method: String, fallback: Color) -> Color:
 
 
 func _apply_styles() -> void:
-	for label in [level_label, goal_label, xp_label, score_label, chain_sum_label, message_label]:
+	for label in [level_label, goal_label, xp_label, chain_sum_label, message_label]:
 		label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_SMALL)
 		label.add_theme_color_override("font_color", _theme_color("get_text_color", ThemeTokensLib.COLOR_TEXT))
 
@@ -71,14 +67,6 @@ func _apply_styles() -> void:
 	$GoalRow/GoalPanel.add_theme_stylebox_override("panel", panel_style)
 	$XpRow/XpPanel.add_theme_stylebox_override("panel", panel_style)
 	bottom_strip.add_theme_stylebox_override("panel", panel_style)
-
-	var goal_fill := _bar_fill_style(LnUiLib.GOAL)
-	var xp_fill := _bar_fill_style(LnUiLib.XP)
-	var bar_bg := _bar_bg_style()
-	goal_bar.add_theme_stylebox_override("fill", goal_fill)
-	goal_bar.add_theme_stylebox_override("background", bar_bg)
-	xp_bar.add_theme_stylebox_override("fill", xp_fill)
-	xp_bar.add_theme_stylebox_override("background", bar_bg)
 
 	_style_icon_buttons()
 	_style_badges()
@@ -101,20 +89,6 @@ func _panel_stylebox() -> StyleBoxFlat:
 	style.set_border_width_all(1)
 	style.border_color = ThemeTokensLib.COLOR_PANEL_BORDER
 	style.set_content_margin_all(6)
-	return style
-
-
-func _bar_bg_style() -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(ThemeTokensLib.COLOR_CELL, 0.55)
-	style.set_corner_radius_all(ThemeTokensLib.RADIUS_SMALL)
-	return style
-
-
-func _bar_fill_style(color: Color) -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = color
-	style.set_corner_radius_all(ThemeTokensLib.RADIUS_SMALL)
 	return style
 
 
@@ -185,16 +159,8 @@ func refresh(state: GameState, i18n_t: Callable) -> void:
 		state.format_value(board_max),
 		state.format_value(target),
 	]
-	goal_bar.max_value = maxf(float(target), 1.0)
-	goal_bar.value = mini(float(board_max), goal_bar.max_value)
 
-	var wheel := WheelManagerScript.new(state)
-	var wheel_cost: int = maxi(wheel.get_cost(), 1)
-	xp_label.text = "XP %s/%s" % [state.format_value(state.xp), state.format_value(wheel_cost)]
-	xp_bar.max_value = float(wheel_cost)
-	xp_bar.value = clampf(float(state.xp), 0.0, xp_bar.max_value)
-
-	score_label.text = str(i18n_t.call("score_label", [state.format_value(state.xp)]))
+	xp_label.text = str(i18n_t.call("xp_label", [state.format_value(state.xp)]))
 
 	shuffle_button.text = str(i18n_t.call("bonus_shuffle"))
 	destroy_button.text = str(i18n_t.call("bonus_destroy"))

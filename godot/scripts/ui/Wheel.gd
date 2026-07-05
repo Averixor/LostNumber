@@ -84,6 +84,8 @@ func _animate_entrance() -> void:
 
 
 func _refresh_ui() -> void:
+	cost_label.add_theme_color_override("font_color", LnUiLib.TEXT_MUTED)
+	cost_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_SMALL)
 	var cost := _wheel.get_cost()
 	var check := _wheel.can_spin()
 	spin_button.disabled = not check.ok or wheel_canvas.is_spinning()
@@ -134,15 +136,16 @@ func _on_spin_animation_done(sector: Dictionary, _index: int) -> void:
 
 func _style_result_modal() -> void:
 	if result_dim != null:
-		result_dim.color = Color(0, 0, 0, 0.55)
+		result_dim.color = LnUiLib.DIM_DARK
 	if result_card == null:
 		return
 	var style := LnUiLib.glass_box(ThemeTokensLib.RADIUS_PANEL, 2, LnUiLib.PANEL, LnUiLib.BORDER_ACTIVE)
-	style.shadow_color = Color(LnUiLib.ACCENT, 0.35)
-	style.shadow_size = 14
-	style.set_content_margin_all(16)
+	style.shadow_color = Color(LnUiLib.ACCENT_2, 0.42)
+	style.shadow_size = 18
+	style.set_content_margin_all(20)
 	result_card.add_theme_stylebox_override("panel", style)
 	result_label.add_theme_color_override("font_color", LnUiLib.TEXT)
+	result_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_BODY)
 	LnUiLib.apply_button(result_close)
 
 
@@ -150,7 +153,9 @@ func _show_result(text: String) -> void:
 	var prize := text.strip_edges()
 	if prize.begins_with("Бонус:"):
 		prize = prize.substr(7).strip_edges()
-	result_label.text = "Виграш: %s" % prize if not prize.is_empty() else text
+	var win_prefix := _i18n("wheel_win_prefix") if _i18n("wheel_win_prefix") != "wheel_win_prefix" else "Виграш:"
+	result_label.text = "%s %s" % [win_prefix, prize] if not prize.is_empty() else text
+	result_label.add_theme_color_override("font_color", LnUiLib.ACCENT if not prize.is_empty() else LnUiLib.TEXT)
 	result_panel.visible = true
 	if result_card == null:
 		return

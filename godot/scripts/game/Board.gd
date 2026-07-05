@@ -34,6 +34,9 @@ func _ready() -> void:
 	_build_grid()
 	_build_preview_bubble()
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	var settings := get_node_or_null("/root/SettingsManager")
+	if settings != null and settings.has_signal("tile_font_scale_changed"):
+		settings.tile_font_scale_changed.connect(_on_tile_font_scale_changed)
 
 
 func bind_state(game_state: GameState) -> void:
@@ -97,17 +100,55 @@ func _build_preview_bubble() -> void:
 	_preview_bubble.name = "PreviewBubble"
 	_preview_bubble.visible = false
 	_preview_bubble.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_preview_bubble.custom_minimum_size = Vector2(80, 56)
+	_sync_preview_bubble_metrics()
 
 	_preview_sum_label = Label.new()
 	_preview_sum_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_preview_sum_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	_preview_sum_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_preview_sum_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_preview_sum_label.add_theme_font_size_override("font_size", 32)
 
 	_preview_bubble.add_child(_preview_sum_label)
 	add_child(_preview_bubble)
+	_sync_preview_bubble_metrics()
+
+
+func _sync_preview_bubble_metrics() -> void:
+	if _preview_bubble == null:
+		return
+	var bubble_w := maxf(cell_size.x * 0.82, 52.0)
+	var bubble_h := maxf(cell_size.y * 0.52, 34.0)
+	_preview_bubble.custom_minimum_size = Vector2(bubble_w, bubble_h)
+	if _preview_sum_label != null:
+		var preview_text := _preview_sum_label.text if _preview_sum_label.text != "" else "0"
+		_preview_sum_label.add_theme_font_size_override(
+			"font_size",
+			_tile_font_size_for_text(preview_text)
+		)
+
+
+func _tile_font_scale() -> float:
+	var settings := _autoload("SettingsManager")
+	if settings != null:
+		return float(settings.get("tile_font_scale"))
+	return 1.0
+
+
+func _tile_font_size_for_text(text: String) -> int:
+	var digits := maxi(1, text.length())
+	var settings := _autoload("SettingsManager")
+	if settings != null and settings.has_method("get_tile_font_size"):
+		return int(settings.call("get_tile_font_size", cell_size, digits))
+	return ThemeTokensLib.tile_font_size_for_cell(cell_size, digits, _tile_font_scale())
+
+
+func _on_tile_font_scale_changed(_scale: float) -> void:
+	_sync_preview_bubble_metrics()
+	for x in GRID_W:
+		for y in GRID_H:
+			var tile: TileView = _tiles[x][y] as TileView
+			if tile != null:
+				tile.refresh_font_size()
 
 
 func refresh_all() -> void:
@@ -159,6 +200,10 @@ func update_preview_bubble(can_finish: bool, follow_local: Vector2 = Vector2.INF
 		numbers.append(state.board.grid[p.x][p.y])
 	var total: int = Rules.chain_sum(numbers)
 	_preview_sum_label.text = state.format_value(total)
+	_preview_sum_label.add_theme_font_size_override(
+		"font_size",
+		_tile_font_size_for_text(_preview_sum_label.text)
+	)
 
 	var digit_color: Color
 	var border_color: Color
@@ -175,7 +220,7 @@ func update_preview_bubble(can_finish: bool, follow_local: Vector2 = Vector2.INF
 	var style: StyleBoxFlat = StyleBoxFlat.new()
 	style.set_corner_radius_all(ThemeTokensLib.RADIUS_HUD)
 	style.set_border_width_all(2)
-	style.set_content_margin_all(8)
+	style.set_content_margin_all(4)
 	style.bg_color = Color(0.06, 0.04, 0.1, 0.82)
 	style.border_color = Color(border_color, 0.9)
 	style.shadow_color = Color(border_color, 0.25)
@@ -269,6 +314,7 @@ func animate_merge_settle(removed: Array, anchor: Vector2i) -> void:
 		if cell is Vector2i:
 			var tile: TileView = _tiles[cell.x][cell.y] as TileView
 			tile.set_value(0)
+			tile.modulate.a = 0.0
 			pop_tween.tween_property(tile, "scale", Vector2(0.2, 0.2), 0.12)
 	if anchor.x >= 0:
 		var anchor_tile: TileView = _tiles[anchor.x][anchor.y] as TileView
@@ -310,6 +356,7 @@ func animate_merge_settle(removed: Array, anchor: Vector2i) -> void:
 			var step := cell_size + Vector2(cell_gap, cell_gap)
 			tile.position = Vector2(x * step.x, y * step.y)
 			tile.scale = Vector2.ONE
+			tile.modulate = Color.WHITE
 
 	refresh_all()
 

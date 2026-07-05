@@ -11,6 +11,7 @@ const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 @onready var music_volume_option: OptionButton = $Scroll/VBox/MusicVolumeOption
 @onready var music_track_option: OptionButton = $Scroll/VBox/MusicTrackOption
 @onready var bg_effects_check: CheckButton = $Scroll/VBox/BgEffectsCheck
+@onready var tile_font_size_option: OptionButton = $Scroll/VBox/TileFontSizeOption
 @onready var language_option: OptionButton = $Scroll/VBox/LanguageOption
 @onready var leaderboard_check: CheckButton = $Scroll/VBox/LeaderboardCheck
 @onready var theme_button: Button = $Scroll/VBox/ThemeButton
@@ -27,6 +28,7 @@ var _skin_cards: Array[PanelContainer] = []
 
 const MUSIC_TRACKS := ["ambient", "crystal_flow", "digital_horizon", "neon_drift", "stellar_logic"]
 const VOLUME_LEVELS := [0.25, 0.5, 0.75, 1.0]
+const TILE_FONT_SCALES := [0.8, 1.0, 1.2, 1.4]
 
 
 func _autoload(name: String) -> Node:
@@ -75,6 +77,7 @@ func _ready() -> void:
 		bg_effects_check.button_pressed = bool(settings.get("bg_effects_enabled"))
 
 	_setup_audio_options(settings)
+	_setup_tile_font_size_option(settings)
 
 	_setup_language_option()
 	_build_skin_picker()
@@ -86,6 +89,7 @@ func _ready() -> void:
 	music_volume_option.item_selected.connect(_on_music_volume_selected)
 	music_track_option.item_selected.connect(_on_music_track_selected)
 	bg_effects_check.toggled.connect(_on_bg_effects_toggled)
+	tile_font_size_option.item_selected.connect(_on_tile_font_size_selected)
 	language_option.item_selected.connect(_on_language_selected)
 	leaderboard_check.toggled.connect(_on_leaderboard_toggled)
 	theme_button.pressed.connect(_on_theme_cycle)
@@ -97,11 +101,14 @@ func _ready() -> void:
 	if theme_mgr != null and theme_mgr.has_signal("theme_changed"):
 		theme_mgr.theme_changed.connect(_on_theme_changed)
 
+	_adapt_layout()
 	_animate_entrance()
+	call_deferred("_adapt_layout")
 
 
 func _animate_entrance() -> void:
 	var items: Array = [
+		back_button,
 		title_label,
 		sound_check,
 		music_check,
@@ -109,10 +116,13 @@ func _animate_entrance() -> void:
 		music_volume_option,
 		music_track_option,
 		bg_effects_check,
+		tile_font_size_option,
 		language_option,
+		leaderboard_check,
 		theme_button,
 		skin_label,
-		back_button,
+		skin_auto_check,
+		import_button,
 	]
 	await LnUiLib.animate_entrance(items)
 
@@ -125,16 +135,16 @@ func _on_theme_changed() -> void:
 
 
 func _style_controls() -> void:
+	var compact := _is_compact_layout()
 	LnUiLib.apply_title(title_label, ThemeTokensLib.FONT_SIZE_TITLE)
 	for btn in [back_button, theme_button, import_button]:
 		LnUiLib.apply_button(btn)
+		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	LnUiLib.apply_button_icon(back_button, "back.svg")
 	for check in [sound_check, music_check, bg_effects_check, leaderboard_check, skin_auto_check]:
-		LnUiLib.apply_toggle_switch(check)
-	for option in [sfx_volume_option, music_volume_option, music_track_option, language_option]:
-		option.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_BODY)
-		option.add_theme_color_override("font_color", LnUiLib.TEXT)
-		option.custom_minimum_size.y = 52.0
+		LnUiLib.apply_toggle_switch(check, compact)
+	for option in [sfx_volume_option, music_volume_option, music_track_option, tile_font_size_option, language_option]:
+		option.custom_minimum_size.y = 42.0 if compact else 44.0
 	LnUiLib.apply_check_icon(sound_check, "sound.svg")
 	LnUiLib.apply_check_icon(music_check, "music.svg")
 	LnUiLib.apply_check_icon(bg_effects_check, "animations.svg")
@@ -144,8 +154,7 @@ func _style_controls() -> void:
 	_style_audio_option_row(sfx_volume_option, _i18n("settings_sfx_volume_label"), "volume.svg")
 	_style_audio_option_row(music_volume_option, _i18n("settings_music_volume_label"), "music.svg")
 	_style_audio_option_row(music_track_option, _i18n("settings_music_track_label"), "track.svg")
-	language_option.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_BODY)
-	language_option.add_theme_color_override("font_color", LnUiLib.TEXT)
+	_style_audio_option_row(tile_font_size_option, _i18n("settings_tile_font_size_label"), "theme.svg")
 
 
 func _style_language_row() -> void:
@@ -154,13 +163,13 @@ func _style_language_row() -> void:
 		return
 	var wrap := HBoxContainer.new()
 	wrap.name = "LanguageRow"
-	wrap.add_theme_constant_override("separation", 10)
+	wrap.add_theme_constant_override("separation", 8)
 	row.add_child(wrap)
 	row.move_child(wrap, language_option.get_index())
 	wrap.add_child(language_option)
 	language_option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var icon := TextureRect.new()
-	icon.custom_minimum_size = Vector2(28, 28)
+	icon.custom_minimum_size = Vector2(24, 24)
 	icon.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -169,16 +178,7 @@ func _style_language_row() -> void:
 		icon.texture = tex
 	wrap.add_child(icon)
 	wrap.move_child(icon, 0)
-	var lang_style := LnUiLib.glass_box(14, 1, Color(0.157, 0.078, 0.216, 0.75), LnUiLib.BORDER)
-	lang_style.content_margin_left = 14
-	lang_style.content_margin_right = 14
-	lang_style.content_margin_top = 8
-	lang_style.content_margin_bottom = 8
-	language_option.add_theme_stylebox_override("normal", lang_style)
-	language_option.add_theme_stylebox_override("hover", lang_style.duplicate())
-	language_option.add_theme_stylebox_override("pressed", lang_style.duplicate())
-	language_option.add_theme_stylebox_override("focus", lang_style.duplicate())
-	language_option.custom_minimum_size.y = 62
+	LnUiLib.apply_option_row_style(language_option, _is_compact_layout())
 
 
 func _setup_audio_options(settings: Node) -> void:
@@ -205,6 +205,21 @@ func _setup_audio_options(settings: Node) -> void:
 	sfx_volume_option.select(_volume_to_option_index(sfx_volume))
 	music_volume_option.select(_volume_to_option_index(music_volume))
 	music_track_option.select(maxi(0, MUSIC_TRACKS.find(_normalize_music_track(music_track))))
+
+
+func _setup_tile_font_size_option(settings: Node) -> void:
+	tile_font_size_option.clear()
+	for scale in TILE_FONT_SCALES:
+		var pct := int(round(scale * 100.0))
+		tile_font_size_option.add_item(
+			_i18n("settings_tile_font_%d" % pct),
+			tile_font_size_option.item_count
+		)
+
+	var index := 1
+	if settings != null and settings.has_method("tile_font_scale_to_index"):
+		index = int(settings.call("tile_font_scale_to_index"))
+	tile_font_size_option.select(clampi(index, 0, TILE_FONT_SCALES.size() - 1))
 
 
 func _volume_to_option_index(volume: float) -> int:
@@ -241,22 +256,26 @@ func _style_audio_option_row(option: OptionButton, label_text: String, icon_name
 		return
 	var wrap := VBoxContainer.new()
 	wrap.name = "%sRow" % option.name
-	wrap.add_theme_constant_override("separation", 6)
+	wrap.add_theme_constant_override("separation", 4)
+	wrap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(wrap)
 	row.move_child(wrap, option.get_index())
 
 	var label := Label.new()
 	label.text = label_text
 	label.add_theme_color_override("font_color", LnUiLib.TEXT)
-	label.add_theme_font_size_override("font_size", 18)
+	label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_SMALL)
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	wrap.add_child(label)
 
 	var control_row := HBoxContainer.new()
-	control_row.add_theme_constant_override("separation", 10)
+	control_row.add_theme_constant_override("separation", 6)
+	control_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	wrap.add_child(control_row)
 
 	var icon := TextureRect.new()
-	icon.custom_minimum_size = Vector2(28, 28)
+	icon.custom_minimum_size = Vector2(24, 24)
 	icon.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -268,16 +287,7 @@ func _style_audio_option_row(option: OptionButton, label_text: String, icon_name
 	row.remove_child(option)
 	control_row.add_child(option)
 	option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-
-	var option_style := LnUiLib.glass_box(14, 1, Color(0.157, 0.078, 0.216, 0.75), LnUiLib.BORDER)
-	option_style.content_margin_left = 14
-	option_style.content_margin_right = 14
-	option_style.content_margin_top = 8
-	option_style.content_margin_bottom = 8
-	option.add_theme_stylebox_override("normal", option_style)
-	option.add_theme_stylebox_override("hover", option_style.duplicate())
-	option.add_theme_stylebox_override("pressed", option_style.duplicate())
-	option.add_theme_stylebox_override("focus", option_style.duplicate())
+	LnUiLib.apply_option_row_style(option, _is_compact_layout())
 
 
 func _style_skin_label_row() -> void:
@@ -286,11 +296,12 @@ func _style_skin_label_row() -> void:
 		return
 	var wrap := HBoxContainer.new()
 	wrap.name = "SkinLabelRow"
-	wrap.add_theme_constant_override("separation", 10)
+	wrap.add_theme_constant_override("separation", 8)
+	wrap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(wrap)
 	row.move_child(wrap, skin_label.get_index())
 	var icon := TextureRect.new()
-	icon.custom_minimum_size = Vector2(28, 28)
+	icon.custom_minimum_size = Vector2(24, 24)
 	icon.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -299,8 +310,10 @@ func _style_skin_label_row() -> void:
 		icon.texture = tex
 	wrap.add_child(icon)
 	wrap.add_child(skin_label)
+	skin_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	skin_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	skin_label.add_theme_color_override("font_color", LnUiLib.TEXT)
-	skin_label.add_theme_font_size_override("font_size", 20)
+	skin_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_BODY)
 
 
 func _theme_text_color() -> Color:
@@ -365,24 +378,127 @@ func _build_skin_picker() -> void:
 	_refresh_skin_picker_selection()
 
 
+func _is_compact_layout() -> bool:
+	return get_viewport_rect().size.y <= 920.0
+
+
+func _content_width() -> float:
+	var width := scroll.size.x
+	if width > 0.0:
+		return width
+	var vp := get_viewport_rect().size
+	return maxf(0.0, vp.x - 32.0)
+
+
 func _adapt_layout() -> void:
-	var viewport_h := get_viewport_rect().size.y
-	scroll.offset_left = 8.0
-	scroll.offset_right = -8.0
+	var vp := get_viewport_rect().size
+	var compact := _is_compact_layout()
+	var content_w := _content_width()
+
+	scroll.offset_left = 16.0
+	scroll.offset_right = -16.0
 	scroll.offset_top = 8.0
 	scroll.offset_bottom = -8.0
-	vbox.add_theme_constant_override("separation", 8)
-	title_label.add_theme_font_size_override("font_size", mini(ThemeTokensLib.FONT_SIZE_TITLE, 24))
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+
+	vbox.add_theme_constant_override("separation", 6 if compact else 8)
+	if content_w > 0.0:
+		vbox.custom_minimum_size.x = content_w
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	title_label.add_theme_font_size_override(
+		"font_size",
+		mini(20, ThemeTokensLib.FONT_SIZE_TITLE) if compact else mini(24, ThemeTokensLib.FONT_SIZE_TITLE)
+	)
+	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	var row_h := 38.0 if compact else 44.0
+	var option_h := 38.0 if compact else 42.0
+	var btn_font := 16 if compact else 18
+	var icon_sz := Vector2(22, 22) if compact else Vector2(24, 24)
+	var label_font := 12 if compact else ThemeTokensLib.FONT_SIZE_SMALL
+
 	for check in [sound_check, music_check, bg_effects_check, leaderboard_check, skin_auto_check]:
-		check.custom_minimum_size.y = 48.0
+		LnUiLib.apply_toggle_switch(check, compact)
+		check.custom_minimum_size = Vector2(0, row_h)
+		check.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
 	for btn in [back_button, theme_button, import_button]:
-		btn.custom_minimum_size.y = 48.0
-	for option in [sfx_volume_option, music_volume_option, music_track_option, language_option]:
-		option.custom_minimum_size.y = 52.0
+		btn.custom_minimum_size = Vector2(0, row_h)
+		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn.add_theme_font_size_override("font_size", btn_font)
+
+	for option in [sfx_volume_option, music_volume_option, music_track_option, tile_font_size_option, language_option]:
+		LnUiLib.apply_option_row_style(option, compact)
+		option.custom_minimum_size = Vector2(0, option_h)
+
+	_adapt_option_rows(compact, icon_sz, label_font)
+
 	var skin_scroll := vbox.get_node_or_null("SkinScroll") as ScrollContainer
 	if skin_scroll != null:
-		skin_scroll.custom_minimum_size = Vector2(0, clampi(int(viewport_h * 0.11), 72, 96))
+		skin_scroll.custom_minimum_size = Vector2(0, clampi(int(vp.y * 0.09), 64, 84))
+		skin_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		skin_scroll.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	for card in _skin_cards:
+		card.custom_minimum_size = Vector2(52, 68) if compact else Vector2(60, 76)
+
+	import_status.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	for child in vbox.get_children():
+		if child is Control:
+			(child as Control).size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+
+func _adapt_option_rows(compact: bool, icon_sz: Vector2, label_font: int) -> void:
+	for row_name in [
+		"SfxVolumeOptionRow",
+		"MusicVolumeOptionRow",
+		"MusicTrackOptionRow",
+		"TileFontSizeOptionRow",
+	]:
+		_adapt_option_row(vbox.get_node_or_null(row_name), compact, icon_sz, label_font)
+
+	var language_row := vbox.get_node_or_null("LanguageRow") as HBoxContainer
+	if language_row != null:
+		language_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		language_row.add_theme_constant_override("separation", 6 if compact else 8)
+		for child in language_row.get_children():
+			if child is TextureRect:
+				child.custom_minimum_size = icon_sz
+
+	var skin_label_row := vbox.get_node_or_null("SkinLabelRow") as HBoxContainer
+	if skin_label_row != null:
+		skin_label_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		skin_label_row.add_theme_constant_override("separation", 6 if compact else 8)
+		for child in skin_label_row.get_children():
+			if child is TextureRect:
+				child.custom_minimum_size = icon_sz
+
+
+func _adapt_option_row(wrap: Node, compact: bool, icon_sz: Vector2, label_font: int) -> void:
+	if wrap == null:
+		return
+	wrap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	for child in wrap.get_children():
+		if child is Label:
+			var label := child as Label
+			label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			label.add_theme_font_size_override("font_size", label_font)
+		elif child is HBoxContainer:
+			var hbox := child as HBoxContainer
+			hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			hbox.add_theme_constant_override("separation", 6 if compact else 8)
+			for row_child in hbox.get_children():
+				if row_child is TextureRect:
+					row_child.custom_minimum_size = icon_sz
+				elif row_child is OptionButton:
+					row_child.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_RESIZED:
+		_adapt_layout()
 
 
 func _make_skin_card(index: int) -> PanelContainer:
@@ -393,14 +509,14 @@ func _make_skin_card(index: int) -> PanelContainer:
 
 	var palette: Dictionary = ThemeTokensLib.get_skin_palette(index, dark)
 	var card := PanelContainer.new()
-	card.custom_minimum_size = Vector2(72, 84)
+	card.custom_minimum_size = Vector2(56, 72)
 	card.mouse_filter = Control.MOUSE_FILTER_STOP
 
 	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 4)
+	vbox.add_theme_constant_override("separation", 3)
 
 	var preview := ColorRect.new()
-	preview.custom_minimum_size = Vector2(64, 40)
+	preview.custom_minimum_size = Vector2(48, 30)
 	preview.color = palette.get("primary", ThemeTokensLib.COLOR_PRIMARY)
 
 	if theme_mgr != null and theme_mgr.has_method("get_background_texture_path_for"):
@@ -409,7 +525,7 @@ func _make_skin_card(index: int) -> PanelContainer:
 			var tex: Texture2D = load(path)
 			if tex != null:
 				var tex_rect := TextureRect.new()
-				tex_rect.custom_minimum_size = Vector2(64, 40)
+				tex_rect.custom_minimum_size = Vector2(48, 30)
 				tex_rect.texture = tex
 				tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 				tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
@@ -545,6 +661,19 @@ func _on_bg_effects_toggled(enabled: bool) -> void:
 		theme_mgr.call("notify_visual_settings_changed")
 
 
+func _on_tile_font_size_selected(index: int) -> void:
+	var settings := _autoload("SettingsManager")
+	if settings == null:
+		return
+	var scale: float = TILE_FONT_SCALES[mini(index, TILE_FONT_SCALES.size() - 1)]
+	if settings.has_method("set_tile_font_scale"):
+		settings.call("set_tile_font_scale", scale)
+	else:
+		settings.set("tile_font_scale", scale)
+	if settings.has_method("save_settings"):
+		settings.call("save_settings")
+
+
 func _on_language_selected(index: int) -> void:
 	var langs := ["uk", "ru", "en"]
 	var settings := _autoload("SettingsManager")
@@ -575,6 +704,7 @@ func _on_theme_cycle() -> void:
 	if theme_mgr != null and theme_mgr.has_method("cycle_theme"):
 		theme_mgr.call("cycle_theme")
 	_build_skin_picker()
+	_adapt_layout()
 
 
 func _on_skin_selected(index: int) -> void:
