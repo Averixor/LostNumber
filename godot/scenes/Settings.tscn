@@ -96,18 +96,12 @@ text = "Theme"
 
 [node name="SkinLabel" type="Label" parent="Scroll/VBox"]
 layout_mode = 2
-text = "Skin"
+text = "Скін"
 
-[node name="SkinScroll" type="ScrollContainer" parent="Scroll/VBox"]
-custom_minimum_size = Vector2(0, 72)
+[node name="SkinPickButton" type="Button" parent="Scroll/VBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-horizontal_scroll_mode = 2
-vertical_scroll_mode = 0
-
-[node name="SkinPickerRow" type="HBoxContainer" parent="Scroll/VBox/SkinScroll"]
-layout_mode = 2
-theme_override_constants/separation = 6
+text = "Обрати фон"
 
 [node name="SkinAutoCheck" type="CheckButton" parent="Scroll/VBox"]
 layout_mode = 2

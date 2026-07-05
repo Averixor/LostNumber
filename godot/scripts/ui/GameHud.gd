@@ -57,9 +57,15 @@ func _theme_color(method: String, fallback: Color) -> Color:
 	return fallback
 
 func _apply_styles() -> void:
-	for label in [level_label, goal_label, xp_label, chain_sum_label, message_label]:
-		label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_SMALL)
+	var hud_font := ThemeTokensLib.FONT_SIZE_HUD
+	for label in [goal_label, xp_label, chain_sum_label, message_label]:
+		label.add_theme_font_size_override("font_size", hud_font)
 		label.add_theme_color_override("font_color", _theme_color("get_text_color", ThemeTokensLib.COLOR_TEXT))
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+
+	level_label.add_theme_font_size_override("font_size", hud_font)
+	level_label.add_theme_color_override("font_color", _theme_color("get_text_color", ThemeTokensLib.COLOR_TEXT))
+	level_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
 	var panel_style := LnUiLib.hud_panel()
 	$GoalRow/GoalPanel.add_theme_stylebox_override("panel", panel_style)

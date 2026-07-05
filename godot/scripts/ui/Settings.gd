@@ -16,7 +16,7 @@ const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 @onready var leaderboard_check: CheckButton = $Scroll/VBox/LeaderboardCheck
 @onready var theme_button: Button = $Scroll/VBox/ThemeButton
 @onready var skin_label: Label = $Scroll/VBox/SkinLabel
-@onready var skin_picker_row: HBoxContainer = $Scroll/VBox/SkinScroll/SkinPickerRow
+@onready var skin_pick_button: Button = $Scroll/VBox/SkinPickButton
 @onready var skin_auto_check: CheckButton = $Scroll/VBox/SkinAutoCheck
 @onready var import_button: Button = $Scroll/VBox/ImportLegacyButton
 @onready var import_status: Label = $Scroll/VBox/ImportStatus
@@ -24,11 +24,9 @@ const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 @onready var title_label: Label = $Scroll/VBox/Title
 @onready var background: ColorRect = $Background
 
-var _skin_cards: Array[PanelContainer] = []
-
 const MUSIC_TRACKS := ["ambient", "crystal_flow", "digital_horizon", "neon_drift", "stellar_logic"]
 const VOLUME_LEVELS := [0.25, 0.5, 0.75, 1.0]
-const TILE_FONT_SCALES := [0.8, 1.0, 1.2, 1.4]
+const TILE_FONT_SCALES := [0.85, 1.0, 1.1, 1.2]
 
 
 func _autoload(name: String) -> Node:
@@ -62,6 +60,7 @@ func _ready() -> void:
 	back_button.text = _i18n("menu_back")
 	leaderboard_check.text = _i18n("leaderboard_opt_in")
 	skin_label.text = _i18n("settings_visual_skin_label")
+	skin_pick_button.text = _i18n("settings_pick_background")
 	skin_auto_check.text = _i18n("settings_visual_skin_auto")
 	import_button.text = _i18n("settings_import_legacy")
 	import_status.text = ""
@@ -76,9 +75,13 @@ func _ready() -> void:
 	_setup_audio_options(settings)
 	_setup_tile_font_size_option(settings)
 
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null:
+		skin_auto_check.button_pressed = bool(theme_mgr.get("skin_auto"))
+
 	_setup_language_option()
-	_build_skin_picker()
-	_load_leaderboard_opt_in()
+	_refresh_skin_summary()
+
 	sound_check.toggled.connect(_on_sound_toggled)
 	music_check.toggled.connect(_on_music_toggled)
 	sfx_volume_option.item_selected.connect(_on_sfx_volume_selected)
@@ -89,11 +92,13 @@ func _ready() -> void:
 	language_option.item_selected.connect(_on_language_selected)
 	leaderboard_check.toggled.connect(_on_leaderboard_toggled)
 	theme_button.pressed.connect(_on_theme_cycle)
+	skin_pick_button.pressed.connect(_on_skin_pick_pressed)
 	skin_auto_check.toggled.connect(_on_skin_auto_toggled)
 	import_button.pressed.connect(_on_import_legacy)
 	back_button.pressed.connect(_on_back)
 
-	var theme_mgr := _autoload("ThemeManager")
+	_load_leaderboard_opt_in()
+
 	if theme_mgr != null and theme_mgr.has_signal("theme_changed"):
 		theme_mgr.theme_changed.connect(_on_theme_changed)
 
@@ -117,6 +122,7 @@ func _animate_entrance() -> void:
 		leaderboard_check,
 		theme_button,
 		skin_label,
+		skin_pick_button,
 		skin_auto_check,
 		import_button,
 	]
@@ -127,13 +133,13 @@ func _on_theme_changed() -> void:
 	LnUiLib.set_background(self, LnUiLib.screen_bg("settings"))
 	_apply_background()
 	_refresh_theme_button()
-	_refresh_skin_picker_selection()
+	_refresh_skin_summary()
 
 
 func _style_controls() -> void:
 	var compact := _is_compact_layout()
 	LnUiLib.apply_title(title_label, ThemeTokensLib.FONT_SIZE_TITLE)
-	for btn in [back_button, theme_button, import_button]:
+	for btn in [back_button, theme_button, import_button, skin_pick_button]:
 		LnUiLib.apply_button(btn)
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	LnUiLib.apply_button_icon(back_button, "back.svg")
@@ -329,14 +335,34 @@ func _apply_background() -> void:
 	background.color = Color(color, 0.6)
 
 
+func _show_saved_toast() -> void:
+	LnUiLib.show_toast(self, _i18n("save_indicator"))
+
+
 func _refresh_theme_button() -> void:
 	var theme_mgr := _autoload("ThemeManager")
 	var theme_name := "dusk"
 	if theme_mgr != null:
 		theme_name = str(theme_mgr.get("theme_id"))
-	var theme_key := "settings_theme_dawn" if theme_name == "dawn" else "settings_theme_dusk"
+	var theme_key := "settings_theme_dusk"
+	match theme_name:
+		"dawn":
+			theme_key = "settings_theme_dawn"
+		"twilight":
+			theme_key = "settings_theme_twilight"
 	var label := _i18n("settings_theme_label")
 	theme_button.text = "%s %s" % [label, _i18n(theme_key)]
+
+
+func _refresh_skin_summary() -> void:
+	var theme_mgr := _autoload("ThemeManager")
+	var auto := false
+	if theme_mgr != null:
+		auto = bool(theme_mgr.get("skin_auto"))
+	if auto:
+		skin_pick_button.text = "%s (%s)" % [_i18n("settings_pick_background"), _i18n("settings_state_auto")]
+	else:
+		skin_pick_button.text = _i18n("settings_pick_background")
 
 
 func _setup_language_option() -> void:
@@ -365,27 +391,6 @@ func _theme_label() -> String:
 
 func _update_theme_button() -> void:
 	theme_button.text = "Тема: %s" % _theme_label()
-
-func _build_skin_picker() -> void:
-	for child in skin_picker_row.get_children():
-		child.queue_free()
-	_skin_cards.clear()
-
-	var theme_mgr := _autoload("ThemeManager")
-	var count := 6
-	if theme_mgr != null and theme_mgr.has_method("get_skin_count"):
-		count = int(theme_mgr.call("get_skin_count"))
-
-	if theme_mgr != null:
-		skin_auto_check.button_pressed = bool(theme_mgr.get("skin_auto"))
-
-	for i in count:
-		var card := _make_skin_card(i)
-		skin_picker_row.add_child(card)
-		_skin_cards.append(card)
-
-	_refresh_skin_picker_selection()
-
 
 func _is_compact_layout() -> bool:
 	return get_viewport_rect().size.y <= 920.0
@@ -432,7 +437,7 @@ func _adapt_layout() -> void:
 		check.custom_minimum_size = Vector2(0, row_h)
 		check.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
-	for btn in [back_button, theme_button, import_button]:
+	for btn in [back_button, theme_button, import_button, skin_pick_button]:
 		btn.custom_minimum_size = Vector2(0, row_h)
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.add_theme_font_size_override("font_size", btn_font)
@@ -443,13 +448,8 @@ func _adapt_layout() -> void:
 
 	_adapt_option_rows(compact, icon_sz, label_font)
 
-	var skin_scroll := vbox.get_node_or_null("SkinScroll") as ScrollContainer
-	if skin_scroll != null:
-		skin_scroll.custom_minimum_size = Vector2(0, clampi(int(vp.y * 0.09), 64, 84))
-		skin_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		skin_scroll.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-	for card in _skin_cards:
-		card.custom_minimum_size = Vector2(52, 68) if compact else Vector2(60, 76)
+	skin_pick_button.custom_minimum_size = Vector2(0, row_h)
+	skin_pick_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	import_status.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
@@ -510,91 +510,6 @@ func _notification(what: int) -> void:
 		_adapt_layout()
 
 
-func _make_skin_card(index: int) -> PanelContainer:
-	var theme_mgr := _autoload("ThemeManager")
-	var dark := true
-	if theme_mgr != null and theme_mgr.has_method("is_dark"):
-		dark = bool(theme_mgr.call("is_dark"))
-
-	var palette: Dictionary = ThemeTokensLib.get_skin_palette(index, dark)
-	var card := PanelContainer.new()
-	card.custom_minimum_size = Vector2(56, 72)
-	card.mouse_filter = Control.MOUSE_FILTER_STOP
-
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 3)
-
-	var preview := ColorRect.new()
-	preview.custom_minimum_size = Vector2(48, 30)
-	preview.color = palette.get("primary", ThemeTokensLib.COLOR_PRIMARY)
-
-	if theme_mgr != null and theme_mgr.has_method("get_background_texture_path_for"):
-		var path := str(theme_mgr.call("get_background_texture_path_for", index, dark))
-		if ResourceLoader.exists(path):
-			var tex: Texture2D = load(path)
-			if tex != null:
-				var tex_rect := TextureRect.new()
-				tex_rect.custom_minimum_size = Vector2(48, 30)
-				tex_rect.texture = tex
-				tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-				tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-				vbox.add_child(tex_rect)
-			else:
-				vbox.add_child(preview)
-		else:
-			vbox.add_child(preview)
-	else:
-		vbox.add_child(preview)
-
-	var label := Label.new()
-	label.text = _i18n("visual_skin_%d" % (index + 1))
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.add_theme_font_size_override("font_size", 11)
-	vbox.add_child(label)
-
-	var checkmark := Label.new()
-	checkmark.name = "Checkmark"
-	checkmark.text = _i18n("skin_selected_badge")
-	checkmark.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	checkmark.add_theme_font_size_override("font_size", 10)
-	checkmark.add_theme_color_override("font_color", LnUiLib.ACCENT)
-	checkmark.visible = false
-	vbox.add_child(checkmark)
-
-	card.add_child(vbox)
-	card.gui_input.connect(func(event: InputEvent): _on_skin_card_input(index, event))
-	return card
-
-
-func _on_skin_card_input(index: int, event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_on_skin_selected(index)
-	elif event is InputEventScreenTouch and event.pressed:
-		_on_skin_selected(index)
-
-
-func _refresh_skin_picker_selection() -> void:
-	var theme_mgr := _autoload("ThemeManager")
-	var active := 0
-	var auto := false
-	if theme_mgr != null:
-		active = int(theme_mgr.get("background_index"))
-		auto = bool(theme_mgr.get("skin_auto"))
-
-	for i in _skin_cards.size():
-		var card := _skin_cards[i]
-		var style := StyleBoxFlat.new()
-		style.bg_color = Color(0.08, 0.05, 0.12, 0.75)
-		style.set_corner_radius_all(8)
-		style.set_border_width_all(2 if (i == active and not auto) else 1)
-		style.border_color = LnUiLib.BORDER_ACTIVE if (i == active and not auto) else LnUiLib.BORDER
-		style.set_content_margin_all(6)
-		card.add_theme_stylebox_override("panel", style)
-		var checkmark := card.get_node_or_null("VBox/Checkmark") as Label
-		if checkmark != null:
-			checkmark.visible = i == active and not auto
-
-
 func _load_leaderboard_opt_in() -> void:
 	var save := _autoload("SaveManager")
 	if save == null or not save.has_method("has_save") or not bool(save.call("has_save")):
@@ -612,6 +527,7 @@ func _on_sound_toggled(enabled: bool) -> void:
 	var audio := _autoload("AudioManager")
 	if audio != null and audio.has_method("apply_audio_settings"):
 		audio.call("apply_audio_settings")
+	_show_saved_toast()
 
 func _on_music_toggled(enabled: bool) -> void:
 	var settings := _autoload("SettingsManager")
@@ -622,6 +538,7 @@ func _on_music_toggled(enabled: bool) -> void:
 	var audio := _autoload("AudioManager")
 	if audio != null and audio.has_method("apply_audio_settings"):
 		audio.call("apply_audio_settings")
+	_show_saved_toast()
 
 
 func _on_sfx_volume_selected(index: int) -> void:
@@ -631,6 +548,7 @@ func _on_sfx_volume_selected(index: int) -> void:
 	settings.set("sfx_volume", VOLUME_LEVELS[mini(index, VOLUME_LEVELS.size() - 1)])
 	if settings.has_method("save_settings"):
 		settings.call("save_settings")
+	_show_saved_toast()
 
 
 func _on_music_volume_selected(index: int) -> void:
@@ -643,6 +561,7 @@ func _on_music_volume_selected(index: int) -> void:
 	var audio := _autoload("AudioManager")
 	if audio != null and audio.has_method("apply_audio_settings"):
 		audio.call("apply_audio_settings")
+	_show_saved_toast()
 
 
 func _on_music_track_selected(index: int) -> void:
@@ -655,6 +574,7 @@ func _on_music_track_selected(index: int) -> void:
 	var audio := _autoload("AudioManager")
 	if audio != null and audio.has_method("apply_audio_settings"):
 		audio.call("apply_audio_settings")
+	_show_saved_toast()
 
 
 func _on_bg_effects_toggled(enabled: bool) -> void:
@@ -666,6 +586,7 @@ func _on_bg_effects_toggled(enabled: bool) -> void:
 	var theme_mgr := _autoload("ThemeManager")
 	if theme_mgr != null and theme_mgr.has_method("notify_visual_settings_changed"):
 		theme_mgr.call("notify_visual_settings_changed")
+	_show_saved_toast()
 
 
 func _on_tile_font_size_selected(index: int) -> void:
@@ -679,6 +600,7 @@ func _on_tile_font_size_selected(index: int) -> void:
 		settings.set("tile_font_scale", scale)
 	if settings.has_method("save_settings"):
 		settings.call("save_settings")
+	_show_saved_toast()
 
 
 func _on_language_selected(index: int) -> void:
@@ -703,31 +625,31 @@ func _on_leaderboard_toggled(enabled: bool) -> void:
 		state.progress.leaderboard["opt_in"] = enabled
 		if save.has_method("save_game"):
 			save.call("save_game", state)
+	_show_saved_toast()
 
 func _on_theme_cycle() -> void:
 	var theme_mgr := _autoload("ThemeManager")
 	if theme_mgr != null and theme_mgr.has_method("cycle_theme"):
 		theme_mgr.call("cycle_theme")
-	_build_skin_picker()
+	_refresh_skin_summary()
 	_adapt_layout()
+	_show_saved_toast()
 
 
-func _on_skin_selected(index: int) -> void:
-	skin_auto_check.button_pressed = false
-	var theme_mgr := _autoload("ThemeManager")
-	if theme_mgr != null:
-		if theme_mgr.has_method("set_skin_auto"):
-			theme_mgr.call("set_skin_auto", false)
-		if theme_mgr.has_method("set_skin_index"):
-			theme_mgr.call("set_skin_index", index)
-	_refresh_skin_picker_selection()
+func _on_skin_pick_pressed() -> void:
+	var router := _autoload("ScreenRouter")
+	if router != null and router.has_method("push"):
+		await router.call("push", "skin_preview")
+	else:
+		get_tree().change_scene_to_file("res://scenes/SkinPreview.tscn")
 
 
 func _on_skin_auto_toggled(enabled: bool) -> void:
 	var theme_mgr := _autoload("ThemeManager")
 	if theme_mgr != null and theme_mgr.has_method("set_skin_auto"):
 		theme_mgr.call("set_skin_auto", enabled)
-	_refresh_skin_picker_selection()
+	_refresh_skin_summary()
+	_show_saved_toast()
 
 
 func _on_import_legacy() -> void:
