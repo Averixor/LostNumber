@@ -110,7 +110,9 @@ function verifyNoDevFiles() {
   for (const { base, rel } of DEV_RELEASE_PATHS) {
     const full = join(root, base, rel);
     if (existsSync(full)) {
-      fail(`Dev/cheat file found in release artifact: ${base}/${rel} — run npm run android:sync (release) or npm run build:pages`);
+      fail(
+        `Dev/cheat file found in release artifact: ${base}/${rel} — run npm run android:sync (release) or npm run build:pages`,
+      );
     } else {
       ok(`dev path absent from release artifact: ${base}/${rel}`);
     }

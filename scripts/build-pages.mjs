@@ -9,11 +9,7 @@ const debugCheats = process.argv.includes('--debug-cheats');
 const releaseEntries = ['index.html', 'manifest.json', 'privacy.html', 'assets', 'css', 'js'];
 
 // Dev/cheat JS paths that must NOT ship in release artifacts.
-const DEV_PATHS_IN_SITE = [
-  'js/app/dev',
-  'js/system/dev',
-  'js/ui/overlays/DebugOverlay.js',
-];
+const DEV_PATHS_IN_SITE = ['js/app/dev', 'js/system/dev', 'js/ui/overlays/DebugOverlay.js'];
 
 rmSync(outDir, { recursive: true, force: true });
 mkdirSync(outDir, { recursive: true });
@@ -41,4 +37,6 @@ if (!debugCheats) {
   console.log('Removed dev/cheat JS from release artifact.');
 }
 
-console.log(`Prepared GitHub Pages artifact in ${outDir} (${debugCheats ? 'debug-cheats' : 'release'}).`);
+console.log(
+  `Prepared GitHub Pages artifact in ${outDir} (${debugCheats ? 'debug-cheats' : 'release'}).`,
+);
