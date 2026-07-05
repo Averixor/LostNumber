@@ -21,6 +21,7 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        assertEquals("com.getcapacitor.app", appContext.getPackageName());
+        // Debug builds append the .dev applicationIdSuffix.
+        assertTrue(appContext.getPackageName().startsWith("com.averixor.lostnumber"));
     }
 }

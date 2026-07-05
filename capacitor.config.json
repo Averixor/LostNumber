@@ -2,7 +2,6 @@
   "appId": "com.averixor.lostnumber",
   "appName": "Lost Number",
   "webDir": "_site",
-  "bundledWebRuntime": false,
   "android": {
     "allowMixedContent": false,
     "backgroundColor": "#1b1028",
