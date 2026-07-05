@@ -8,9 +8,9 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_menutitle"]
 shader = ExtResource("2_gradient")
-shader_parameter/color_top = Color(1, 0.85098, 0.984314, 1)
-shader_parameter/color_mid = Color(1, 0.501961, 0.933333, 1)
-shader_parameter/color_bottom = Color(0.721569, 0.4, 1, 1)
+shader_parameter/color_top = Color(1, 0.901961, 1, 1)
+shader_parameter/color_mid = Color(1, 0.372549, 0.701961, 1)
+shader_parameter/color_bottom = Color(0.705882, 0.360784, 1, 1)
 shader_parameter/gradient_height = 110.0
 shader_parameter/mid_point = 0.42
 
@@ -30,35 +30,43 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 28
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 12
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 26
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 14
 
 [node name="RootVBox" type="VBoxContainer" parent="Layout"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 12
+alignment = 1
 
 [node name="TopSpacer" type="Control" parent="Layout/RootVBox"]
+custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
 size_flags_vertical = 3
 
 [node name="Hero" type="VBoxContainer" parent="Layout/RootVBox"]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 8
+
+[node name="Logo" type="TextureRect" parent="Layout/RootVBox/Hero"]
+visible = false
+custom_minimum_size = Vector2(0, 116)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Title" type="Label" parent="Layout/RootVBox/Hero"]
 material = SubResource("ShaderMaterial_menutitle")
 layout_mode = 2
 theme_override_font_sizes/font_size = 52
-text = "LOST
-NUMBER"
+text = "LOST\nNUMBER"
 horizontal_alignment = 1
 
 [node name="Tagline" type="Label" parent="Layout/RootVBox/Hero"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "..."
+theme_override_font_sizes/font_size = 14
+text = "З'єднуй числа. Ставай сильнішим."
 horizontal_alignment = 1
 autowrap_mode = 2
 
@@ -68,21 +76,27 @@ size_flags_horizontal = 4
 theme_override_constants/separation = 10
 
 [node name="Buttons" type="VBoxContainer" parent="Layout/RootVBox/Actions"]
-custom_minimum_size = Vector2(268, 0)
+custom_minimum_size = Vector2(302, 0)
 layout_mode = 2
 theme_override_constants/separation = 10
 
 [node name="PlayButton" parent="Layout/RootVBox/Actions/Buttons" instance=ExtResource("3_neonbtn")]
-custom_minimum_size = Vector2(0, 54)
+custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 variant = 1
 
 [node name="ContinueButton" parent="Layout/RootVBox/Actions/Buttons" instance=ExtResource("3_neonbtn")]
+custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
+
+[node name="WheelButton" parent="Layout/RootVBox/Actions/Buttons" instance=ExtResource("3_neonbtn")]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+text = "Колесо фортуни"
 
 [node name="QuickRow" type="HBoxContainer" parent="Layout/RootVBox/Actions"]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 7
 
 [node name="SettingsChip" parent="Layout/RootVBox/Actions/QuickRow" instance=ExtResource("4_chip")]
 layout_mode = 2
