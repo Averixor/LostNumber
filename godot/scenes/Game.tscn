@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://game001"]
+[gd_scene load_steps=5 format=3 uid="uid://game001"]
 
 [ext_resource type="Script" path="res://scripts/game/Game.gd" id="1_game"]
 [ext_resource type="Script" path="res://scripts/game/Board.gd" id="2_board"]
 [ext_resource type="PackedScene" uid="uid://game_hud_component" path="res://scenes/components/GameHud.tscn" id="3_hud"]
+[ext_resource type="PackedScene" uid="uid://neonbutton001" path="res://scenes/components/NeonButton.tscn" id="4_neon"]
 
 [node name="Game" type="Control"]
 layout_mode = 3
@@ -27,6 +28,10 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 8
@@ -70,3 +75,37 @@ horizontal_alignment = 1
 [node name="ContinueButton" type="Button" parent="LevelCompleteOverlay/Center/VBox"]
 layout_mode = 2
 text = "Next Level"
+
+[node name="PauseOverlay" type="PanelContainer" parent="."]
+visible = false
+z_index = 90
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Center" type="CenterContainer" parent="PauseOverlay"]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="PauseOverlay/Center"]
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="PauseTitle" type="Label" parent="PauseOverlay/Center/VBox"]
+layout_mode = 2
+text = "Paused"
+horizontal_alignment = 1
+
+[node name="ResumeButton" parent="PauseOverlay/Center/VBox" instance=ExtResource("4_neon")]
+layout_mode = 2
+variant = 1
+text = "Resume"
+
+[node name="MainMenuButton" parent="PauseOverlay/Center/VBox" instance=ExtResource("4_neon")]
+layout_mode = 2
+text = "Main Menu"

@@ -1,5 +1,16 @@
 extends Control
 
+const LnUiLib := preload("res://scripts/ui/LnUi.gd")
+
+const STAT_ICONS := {
+	"stat_games_played": "statistics.svg",
+	"stat_levels_completed": "level.svg",
+	"stat_highest_level": "tile-crown.svg",
+	"stat_total_xp": "high-score.svg",
+	"stat_longest_chain": "chain.svg",
+	"stat_wheel_spins": "wheel.svg",
+}
+
 @onready var list: VBoxContainer = $Scroll/List
 @onready var back_button: Button = $BackButton
 @onready var title_label: Label = $Title
@@ -28,14 +39,27 @@ func _navigate_back() -> void:
 
 
 func _ready() -> void:
+	LnUiLib.set_background(self, LnUiLib.screen_bg("stats"))
 	var theme := _autoload("ThemeManager")
 	if background != null and theme != null and theme.has_method("get_background_color"):
 		background.color = Color(theme.call("get_background_color"), 0.6)
 
 	title_label.text = _i18n("btn_stats")
 	back_button.text = _i18n("menu_back")
+	LnUiLib.apply_title(title_label, 26)
+	LnUiLib.apply_button(back_button)
+	LnUiLib.apply_button_icon(back_button, "back.svg")
 	back_button.pressed.connect(_on_back)
 	_render()
+	_animate_entrance()
+
+
+func _animate_entrance() -> void:
+	var items: Array = [title_label]
+	for child in list.get_children():
+		items.append(child)
+	items.append(back_button)
+	await LnUiLib.animate_entrance(items)
 
 
 func _render() -> void:
@@ -53,11 +77,34 @@ func _render() -> void:
 		["stat_wheel_spins", int(stats.get("wheel_spins", 0))],
 	]
 	for row in rows:
-		var label := Label.new()
+		var panel := PanelContainer.new()
+		panel.add_theme_stylebox_override("panel", LnUiLib.hud_panel())
+		var hbox := HBoxContainer.new()
+		hbox.add_theme_constant_override("separation", 10)
 		var key: String = str(row[0])
 		var val: int = int(row[1])
-		label.text = "%s: %d" % [_i18n(key) if _has_i18n(key) else key, val]
-		list.add_child(label)
+		var icon_name: String = STAT_ICONS.get(key, "statistics.svg")
+		var icon_path := LnUiLib.icon_path(icon_name)
+		if ResourceLoader.exists(icon_path):
+			var icon := TextureRect.new()
+			icon.custom_minimum_size = Vector2(28, 28)
+			icon.texture = load(icon_path)
+			icon.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+			icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			hbox.add_child(icon)
+		var name_label := Label.new()
+		name_label.text = _i18n(key) if _has_i18n(key) else key
+		name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		name_label.add_theme_color_override("font_color", LnUiLib.TEXT_MUTED)
+		var val_label := Label.new()
+		val_label.text = str(val)
+		val_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		val_label.add_theme_color_override("font_color", LnUiLib.TEXT)
+		hbox.add_child(name_label)
+		hbox.add_child(val_label)
+		panel.add_child(hbox)
+		list.add_child(panel)
 
 
 func _has_i18n(key: String) -> bool:

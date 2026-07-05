@@ -3,11 +3,11 @@ extends Control
 const WheelCanvasScript := preload("res://scripts/ui/WheelCanvas.gd")
 const NeonButtonScene := preload("res://scenes/components/NeonButton.tscn")
 
-@onready var wheel_canvas: WheelCanvas = $VBox/WheelCanvas
-@onready var spin_button: NeonButton = $VBox/SpinButton
-@onready var cost_label: Label = $VBox/CostLabel
-@onready var back_button: NeonButton = $VBox/BackButton
-@onready var title_label: Label = $VBox/Title
+@onready var wheel_canvas: WheelCanvas = $Layout/VBox/WheelCanvas
+@onready var spin_button: NeonButton = $Layout/VBox/SpinButton
+@onready var cost_label: Label = $Layout/VBox/CostLabel
+@onready var back_button: NeonButton = $Layout/VBox/BackButton
+@onready var title_label: Label = $Layout/VBox/Title
 @onready var result_panel: PanelContainer = $ResultModal
 @onready var result_dim: ColorRect = $ResultModal/Dim
 @onready var result_card: PanelContainer = $ResultModal/Center/ResultCard
@@ -16,6 +16,7 @@ const NeonButtonScene := preload("res://scenes/components/NeonButton.tscn")
 @onready var background: ColorRect = $Background
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
+const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 
 var _state: GameState
 var _wheel: WheelManager
@@ -50,11 +51,13 @@ func _navigate_back() -> void:
 
 
 func _ready() -> void:
+	LnUiLib.set_background(self, LnUiLib.screen_bg("wheel"))
 	var theme := _autoload("ThemeManager")
 	if background != null and theme != null and theme.has_method("get_background_color"):
 		background.color = Color(theme.call("get_background_color"), 0.6)
 
 	title_label.text = _i18n("wheel_title")
+	LnUiLib.apply_title(title_label, ThemeTokensLib.FONT_SIZE_TITLE)
 	back_button.text = _i18n("menu_back")
 	result_close.text = _i18n("btn_close")
 	result_panel.visible = false
@@ -64,18 +67,34 @@ func _ready() -> void:
 	back_button.pressed.connect(_on_back)
 	result_close.pressed.connect(_hide_result)
 	wheel_canvas.spin_finished.connect(_on_spin_animation_done)
+	LnUiLib.apply_button(back_button)
+	LnUiLib.apply_button_icon(back_button, "back.svg")
+	LnUiLib.apply_button_icon(result_close, "close.svg")
 
 	_state = _load_state()
 	_wheel = WheelManager.new(_state)
 	_daily = DailyQuestManager.new(_state)
 	_daily.ensure_loaded()
 	_refresh_ui()
+	_animate_entrance()
+
+
+func _animate_entrance() -> void:
+	await LnUiLib.animate_entrance([title_label, wheel_canvas, spin_button, cost_label, back_button])
 
 
 func _refresh_ui() -> void:
 	var cost := _wheel.get_cost()
-	spin_button.text = _i18n("btn_spin_wheel", [cost])
-	spin_button.disabled = not _wheel.can_spin().ok or wheel_canvas.is_spinning()
+	var check := _wheel.can_spin()
+	spin_button.disabled = not check.ok or wheel_canvas.is_spinning()
+	if not check.ok and str(check.get("reason", "")) == "not_enough_xp":
+		spin_button.text = _i18n("dice_not_enough")
+	else:
+		spin_button.text = _i18n("btn_spin_wheel", [cost])
+	if ResourceLoader.exists(LnUiLib.icon_path("reward-xp.svg")):
+		spin_button.icon = load(LnUiLib.icon_path("reward-xp.svg"))
+		spin_button.expand_icon = true
+	LnUiLib.apply_button(spin_button, spin_button.disabled)
 	var remaining := WheelManager.MAX_DAILY_SPINS - _state.wheel_spins_today
 	cost_label.text = "%s: %d/%d" % [_i18n("wheel_title"), _state.wheel_spins_today, WheelManager.MAX_DAILY_SPINS]
 
@@ -118,17 +137,20 @@ func _style_result_modal() -> void:
 		result_dim.color = Color(0, 0, 0, 0.55)
 	if result_card == null:
 		return
-	var style := StyleBoxFlat.new()
-	style.bg_color = ThemeTokensLib.COLOR_PANEL
-	style.set_corner_radius_all(ThemeTokensLib.RADIUS_PANEL)
-	style.set_border_width_all(1)
-	style.border_color = ThemeTokensLib.COLOR_PANEL_BORDER
+	var style := LnUiLib.glass_box(ThemeTokensLib.RADIUS_PANEL, 2, LnUiLib.PANEL, LnUiLib.BORDER_ACTIVE)
+	style.shadow_color = Color(LnUiLib.ACCENT, 0.35)
+	style.shadow_size = 14
 	style.set_content_margin_all(16)
 	result_card.add_theme_stylebox_override("panel", style)
+	result_label.add_theme_color_override("font_color", LnUiLib.TEXT)
+	LnUiLib.apply_button(result_close)
 
 
 func _show_result(text: String) -> void:
-	result_label.text = text
+	var prize := text.strip_edges()
+	if prize.begins_with("Бонус:"):
+		prize = prize.substr(7).strip_edges()
+	result_label.text = "Виграш: %s" % prize if not prize.is_empty() else text
 	result_panel.visible = true
 	if result_card == null:
 		return

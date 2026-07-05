@@ -1,20 +1,31 @@
 extends Control
 class_name ChainLineLayer
 
-## Neon chain connector (3-pass glow draw, web chain-line parity).
+## Neon chain connector with validity coloring and pulsing glow.
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 
+const STROKE_CORE := 8.0
+const STROKE_GLOW := 14.0
+const STROKE_BRIGHT := 2.0
+
 var _points: PackedVector2Array = PackedVector2Array()
+var _valid: bool = true
+var _pulse: float = 0.0
+var _line_color: Color = ThemeTokensLib.COLOR_CHAIN_VALID
+var _glow_color: Color = ThemeTokensLib.COLOR_CHAIN_VALID
 
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	z_index = 10
+	set_process(true)
 
 
-func set_chain_points(points: PackedVector2Array) -> void:
+func set_chain_points(points: PackedVector2Array, valid: bool = true) -> void:
 	_points = points
+	_valid = valid
+	_refresh_colors()
 	queue_redraw()
 
 
@@ -23,15 +34,32 @@ func clear_chain() -> void:
 	queue_redraw()
 
 
+func _process(delta: float) -> void:
+	if _points.size() < 2:
+		return
+	_pulse += delta * 2.4
+	queue_redraw()
+
+
+func _refresh_colors() -> void:
+	var theme := get_node_or_null("/root/ThemeManager")
+	if theme != null:
+		if _valid and theme.has_method("get_chain_valid_color"):
+			_line_color = theme.call("get_chain_valid_color")
+		elif not _valid and theme.has_method("get_chain_invalid_color"):
+			_line_color = theme.call("get_chain_invalid_color")
+		else:
+			_line_color = ThemeTokensLib.COLOR_CHAIN_VALID if _valid else ThemeTokensLib.COLOR_CHAIN_INVALID
+	else:
+		_line_color = ThemeTokensLib.COLOR_CHAIN_VALID if _valid else ThemeTokensLib.COLOR_CHAIN_INVALID
+	var pulse_alpha := 0.12 + sin(_pulse) * 0.05
+	_glow_color = Color(_line_color, pulse_alpha)
+
+
 func _draw() -> void:
 	if _points.size() < 2:
 		return
 
-	# Pass 1: wide outer glow
-	draw_polyline(_points, Color(ThemeTokensLib.COLOR_CHAIN_GLOW, 0.25), 14.0, true)
-
-	# Pass 2: core neon line
-	draw_polyline(_points, ThemeTokensLib.COLOR_NEON_BLUE, 6.0, true)
-
-	# Pass 3: bright inner highlight
-	draw_polyline(_points, ThemeTokensLib.COLOR_CHAIN_BRIGHT, 2.0, true)
+	draw_polyline(_points, _glow_color, STROKE_GLOW, true)
+	draw_polyline(_points, Color(_line_color, 0.72 + sin(_pulse) * 0.1), STROKE_CORE, true)
+	draw_polyline(_points, Color(_line_color.lightened(0.25), 0.9), STROKE_BRIGHT, true)

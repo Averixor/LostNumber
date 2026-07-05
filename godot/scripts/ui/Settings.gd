@@ -1,18 +1,32 @@
 extends Control
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
+const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 
-@onready var sound_check: CheckButton = $VBox/SoundCheck
-@onready var music_check: CheckButton = $VBox/MusicCheck
-@onready var bg_effects_check: CheckButton = $VBox/BgEffectsCheck
-@onready var language_option: OptionButton = $VBox/LanguageOption
-@onready var leaderboard_check: CheckButton = $VBox/LeaderboardCheck
-@onready var theme_button: Button = $VBox/ThemeButton
-@onready var import_button: Button = $VBox/ImportLegacyButton
-@onready var import_status: Label = $VBox/ImportStatus
-@onready var back_button: Button = $VBox/BackButton
-@onready var title_label: Label = $VBox/Title
+@onready var scroll: ScrollContainer = $Scroll
+@onready var vbox: VBoxContainer = $Scroll/VBox
+@onready var sound_check: CheckButton = $Scroll/VBox/SoundCheck
+@onready var music_check: CheckButton = $Scroll/VBox/MusicCheck
+@onready var sfx_volume_option: OptionButton = $Scroll/VBox/SfxVolumeOption
+@onready var music_volume_option: OptionButton = $Scroll/VBox/MusicVolumeOption
+@onready var music_track_option: OptionButton = $Scroll/VBox/MusicTrackOption
+@onready var bg_effects_check: CheckButton = $Scroll/VBox/BgEffectsCheck
+@onready var language_option: OptionButton = $Scroll/VBox/LanguageOption
+@onready var leaderboard_check: CheckButton = $Scroll/VBox/LeaderboardCheck
+@onready var theme_button: Button = $Scroll/VBox/ThemeButton
+@onready var skin_label: Label = $Scroll/VBox/SkinLabel
+@onready var skin_picker_row: HBoxContainer = $Scroll/VBox/SkinScroll/SkinPickerRow
+@onready var skin_auto_check: CheckButton = $Scroll/VBox/SkinAutoCheck
+@onready var import_button: Button = $Scroll/VBox/ImportLegacyButton
+@onready var import_status: Label = $Scroll/VBox/ImportStatus
+@onready var back_button: Button = $Scroll/VBox/BackButton
+@onready var title_label: Label = $Scroll/VBox/Title
 @onready var background: ColorRect = $Background
+
+var _skin_cards: Array[PanelContainer] = []
+
+const MUSIC_TRACKS := ["ambient", "crystal_flow", "digital_horizon", "neon_drift", "stellar_logic"]
+const VOLUME_LEVELS := [0.25, 0.5, 0.75, 1.0]
 
 
 func _autoload(name: String) -> Node:
@@ -37,7 +51,10 @@ func _navigate_back() -> void:
 
 
 func _ready() -> void:
+	LnUiLib.set_background(self, LnUiLib.screen_bg("settings"))
 	_apply_background()
+	_style_controls()
+	_adapt_layout()
 
 	title_label.text = _i18n("settings_title")
 	sound_check.text = _i18n("settings_sound")
@@ -45,9 +62,11 @@ func _ready() -> void:
 	bg_effects_check.text = _i18n("settings_bg_effects")
 	back_button.text = _i18n("menu_back")
 	leaderboard_check.text = _i18n("leaderboard_opt_in")
-	theme_button.text = _i18n("settings_theme")
+	skin_label.text = _i18n("settings_visual_skin_label")
+	skin_auto_check.text = _i18n("settings_visual_skin_auto")
 	import_button.text = _i18n("settings_import_legacy")
 	import_status.text = ""
+	_refresh_theme_button()
 
 	var settings := _autoload("SettingsManager")
 	if settings != null:
@@ -55,17 +74,240 @@ func _ready() -> void:
 		music_check.button_pressed = bool(settings.get("music_enabled"))
 		bg_effects_check.button_pressed = bool(settings.get("bg_effects_enabled"))
 
+	_setup_audio_options(settings)
+
 	_setup_language_option()
+	_build_skin_picker()
 	_load_leaderboard_opt_in()
 
 	sound_check.toggled.connect(_on_sound_toggled)
 	music_check.toggled.connect(_on_music_toggled)
+	sfx_volume_option.item_selected.connect(_on_sfx_volume_selected)
+	music_volume_option.item_selected.connect(_on_music_volume_selected)
+	music_track_option.item_selected.connect(_on_music_track_selected)
 	bg_effects_check.toggled.connect(_on_bg_effects_toggled)
 	language_option.item_selected.connect(_on_language_selected)
 	leaderboard_check.toggled.connect(_on_leaderboard_toggled)
 	theme_button.pressed.connect(_on_theme_cycle)
+	skin_auto_check.toggled.connect(_on_skin_auto_toggled)
 	import_button.pressed.connect(_on_import_legacy)
 	back_button.pressed.connect(_on_back)
+
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_signal("theme_changed"):
+		theme_mgr.theme_changed.connect(_on_theme_changed)
+
+	_animate_entrance()
+
+
+func _animate_entrance() -> void:
+	var items: Array = [
+		title_label,
+		sound_check,
+		music_check,
+		sfx_volume_option,
+		music_volume_option,
+		music_track_option,
+		bg_effects_check,
+		language_option,
+		theme_button,
+		skin_label,
+		back_button,
+	]
+	await LnUiLib.animate_entrance(items)
+
+
+func _on_theme_changed() -> void:
+	LnUiLib.set_background(self, LnUiLib.screen_bg("settings"))
+	_apply_background()
+	_refresh_theme_button()
+	_refresh_skin_picker_selection()
+
+
+func _style_controls() -> void:
+	LnUiLib.apply_title(title_label, ThemeTokensLib.FONT_SIZE_TITLE)
+	for btn in [back_button, theme_button, import_button]:
+		LnUiLib.apply_button(btn)
+	LnUiLib.apply_button_icon(back_button, "back.svg")
+	for check in [sound_check, music_check, bg_effects_check, leaderboard_check, skin_auto_check]:
+		LnUiLib.apply_toggle_switch(check)
+	for option in [sfx_volume_option, music_volume_option, music_track_option, language_option]:
+		option.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_BODY)
+		option.add_theme_color_override("font_color", LnUiLib.TEXT)
+		option.custom_minimum_size.y = 52.0
+	LnUiLib.apply_check_icon(sound_check, "sound.svg")
+	LnUiLib.apply_check_icon(music_check, "music.svg")
+	LnUiLib.apply_check_icon(bg_effects_check, "animations.svg")
+	LnUiLib.apply_button_icon(theme_button, "theme.svg")
+	_style_language_row()
+	_style_skin_label_row()
+	_style_audio_option_row(sfx_volume_option, _i18n("settings_sfx_volume_label"), "volume.svg")
+	_style_audio_option_row(music_volume_option, _i18n("settings_music_volume_label"), "music.svg")
+	_style_audio_option_row(music_track_option, _i18n("settings_music_track_label"), "track.svg")
+	language_option.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_BODY)
+	language_option.add_theme_color_override("font_color", LnUiLib.TEXT)
+
+
+func _style_language_row() -> void:
+	var row := language_option.get_parent() as VBoxContainer
+	if row == null:
+		return
+	var wrap := HBoxContainer.new()
+	wrap.name = "LanguageRow"
+	wrap.add_theme_constant_override("separation", 10)
+	row.add_child(wrap)
+	row.move_child(wrap, language_option.get_index())
+	wrap.add_child(language_option)
+	language_option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var icon := TextureRect.new()
+	icon.custom_minimum_size = Vector2(28, 28)
+	icon.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var tex := LnUiLib.load_icon("language.svg")
+	if tex != null:
+		icon.texture = tex
+	wrap.add_child(icon)
+	wrap.move_child(icon, 0)
+	var lang_style := LnUiLib.glass_box(14, 1, Color(0.157, 0.078, 0.216, 0.75), LnUiLib.BORDER)
+	lang_style.content_margin_left = 14
+	lang_style.content_margin_right = 14
+	lang_style.content_margin_top = 8
+	lang_style.content_margin_bottom = 8
+	language_option.add_theme_stylebox_override("normal", lang_style)
+	language_option.add_theme_stylebox_override("hover", lang_style.duplicate())
+	language_option.add_theme_stylebox_override("pressed", lang_style.duplicate())
+	language_option.add_theme_stylebox_override("focus", lang_style.duplicate())
+	language_option.custom_minimum_size.y = 62
+
+
+func _setup_audio_options(settings: Node) -> void:
+	sfx_volume_option.clear()
+	music_volume_option.clear()
+	music_track_option.clear()
+
+	for level in VOLUME_LEVELS:
+		var pct := int(round(level * 100.0))
+		sfx_volume_option.add_item(_i18n("settings_volume_%d" % pct), sfx_volume_option.item_count)
+		music_volume_option.add_item(_i18n("settings_volume_%d" % pct), music_volume_option.item_count)
+
+	for track in MUSIC_TRACKS:
+		music_track_option.add_item(_i18n("settings_music_track_%s" % track), music_track_option.item_count)
+
+	var sfx_volume := 0.5
+	var music_volume := 0.3
+	var music_track := "ambient"
+	if settings != null:
+		sfx_volume = float(settings.get("sfx_volume"))
+		music_volume = float(settings.get("music_volume"))
+		music_track = str(settings.get("music_track"))
+
+	sfx_volume_option.select(_volume_to_option_index(sfx_volume))
+	music_volume_option.select(_volume_to_option_index(music_volume))
+	music_track_option.select(maxi(0, MUSIC_TRACKS.find(_normalize_music_track(music_track))))
+
+
+func _volume_to_option_index(volume: float) -> int:
+	var pct := int(round(clampf(volume, 0.0, 1.0) * 100.0))
+	if pct <= 25:
+		return 0
+	if pct <= 50:
+		return 1
+	if pct <= 75:
+		return 2
+	return 3
+
+
+func _normalize_music_track(track: String) -> String:
+	var key := str(track)
+	if key in MUSIC_TRACKS:
+		return key
+	match key:
+		"crystalFlow":
+			return "crystal_flow"
+		"digitalHorizon":
+			return "digital_horizon"
+		"neonDrift":
+			return "neon_drift"
+		"stellarLogic":
+			return "stellar_logic"
+		_:
+			return "ambient"
+
+
+func _style_audio_option_row(option: OptionButton, label_text: String, icon_name: String) -> void:
+	var row := option.get_parent() as VBoxContainer
+	if row == null:
+		return
+	var wrap := VBoxContainer.new()
+	wrap.name = "%sRow" % option.name
+	wrap.add_theme_constant_override("separation", 6)
+	row.add_child(wrap)
+	row.move_child(wrap, option.get_index())
+
+	var label := Label.new()
+	label.text = label_text
+	label.add_theme_color_override("font_color", LnUiLib.TEXT)
+	label.add_theme_font_size_override("font_size", 18)
+	wrap.add_child(label)
+
+	var control_row := HBoxContainer.new()
+	control_row.add_theme_constant_override("separation", 10)
+	wrap.add_child(control_row)
+
+	var icon := TextureRect.new()
+	icon.custom_minimum_size = Vector2(28, 28)
+	icon.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var tex := LnUiLib.load_icon(icon_name)
+	if tex != null:
+		icon.texture = tex
+	control_row.add_child(icon)
+
+	row.remove_child(option)
+	control_row.add_child(option)
+	option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	var option_style := LnUiLib.glass_box(14, 1, Color(0.157, 0.078, 0.216, 0.75), LnUiLib.BORDER)
+	option_style.content_margin_left = 14
+	option_style.content_margin_right = 14
+	option_style.content_margin_top = 8
+	option_style.content_margin_bottom = 8
+	option.add_theme_stylebox_override("normal", option_style)
+	option.add_theme_stylebox_override("hover", option_style.duplicate())
+	option.add_theme_stylebox_override("pressed", option_style.duplicate())
+	option.add_theme_stylebox_override("focus", option_style.duplicate())
+
+
+func _style_skin_label_row() -> void:
+	var row := skin_label.get_parent() as VBoxContainer
+	if row == null:
+		return
+	var wrap := HBoxContainer.new()
+	wrap.name = "SkinLabelRow"
+	wrap.add_theme_constant_override("separation", 10)
+	row.add_child(wrap)
+	row.move_child(wrap, skin_label.get_index())
+	var icon := TextureRect.new()
+	icon.custom_minimum_size = Vector2(28, 28)
+	icon.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var tex := LnUiLib.load_icon("theme.svg")
+	if tex != null:
+		icon.texture = tex
+	wrap.add_child(icon)
+	wrap.add_child(skin_label)
+	skin_label.add_theme_color_override("font_color", LnUiLib.TEXT)
+	skin_label.add_theme_font_size_override("font_size", 20)
+
+
+func _theme_text_color() -> Color:
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("get_text_color"):
+		return theme_mgr.call("get_text_color")
+	return ThemeTokensLib.COLOR_TEXT
 
 
 func _apply_background() -> void:
@@ -75,8 +317,17 @@ func _apply_background() -> void:
 	var color := ThemeTokensLib.COLOR_BG
 	if theme_mgr != null and theme_mgr.has_method("get_background_color"):
 		color = theme_mgr.call("get_background_color")
-	# Semi-transparent scrim: keeps the App BackgroundLayer art visible.
 	background.color = Color(color, 0.6)
+
+
+func _refresh_theme_button() -> void:
+	var theme_mgr := _autoload("ThemeManager")
+	var theme_name := "dusk"
+	if theme_mgr != null:
+		theme_name = str(theme_mgr.get("theme_id"))
+	var theme_key := "settings_theme_dawn" if theme_name == "dawn" else "settings_theme_dusk"
+	var label := _i18n("settings_theme_label")
+	theme_button.text = "%s %s" % [label, _i18n(theme_key)]
 
 
 func _setup_language_option() -> void:
@@ -91,6 +342,132 @@ func _setup_language_option() -> void:
 		language = str(settings.get("language"))
 	var idx: int = int({"uk": 0, "ru": 1, "en": 2}.get(language, 0))
 	language_option.select(idx)
+
+
+func _build_skin_picker() -> void:
+	for child in skin_picker_row.get_children():
+		child.queue_free()
+	_skin_cards.clear()
+
+	var theme_mgr := _autoload("ThemeManager")
+	var count := 6
+	if theme_mgr != null and theme_mgr.has_method("get_skin_count"):
+		count = int(theme_mgr.call("get_skin_count"))
+
+	if theme_mgr != null:
+		skin_auto_check.button_pressed = bool(theme_mgr.get("skin_auto"))
+
+	for i in count:
+		var card := _make_skin_card(i)
+		skin_picker_row.add_child(card)
+		_skin_cards.append(card)
+
+	_refresh_skin_picker_selection()
+
+
+func _adapt_layout() -> void:
+	var viewport_h := get_viewport_rect().size.y
+	scroll.offset_left = 8.0
+	scroll.offset_right = -8.0
+	scroll.offset_top = 8.0
+	scroll.offset_bottom = -8.0
+	vbox.add_theme_constant_override("separation", 8)
+	title_label.add_theme_font_size_override("font_size", mini(ThemeTokensLib.FONT_SIZE_TITLE, 24))
+	for check in [sound_check, music_check, bg_effects_check, leaderboard_check, skin_auto_check]:
+		check.custom_minimum_size.y = 48.0
+	for btn in [back_button, theme_button, import_button]:
+		btn.custom_minimum_size.y = 48.0
+	for option in [sfx_volume_option, music_volume_option, music_track_option, language_option]:
+		option.custom_minimum_size.y = 52.0
+	var skin_scroll := vbox.get_node_or_null("SkinScroll") as ScrollContainer
+	if skin_scroll != null:
+		skin_scroll.custom_minimum_size = Vector2(0, clampi(int(viewport_h * 0.11), 72, 96))
+		skin_scroll.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+
+
+func _make_skin_card(index: int) -> PanelContainer:
+	var theme_mgr := _autoload("ThemeManager")
+	var dark := true
+	if theme_mgr != null and theme_mgr.has_method("is_dark"):
+		dark = bool(theme_mgr.call("is_dark"))
+
+	var palette: Dictionary = ThemeTokensLib.get_skin_palette(index, dark)
+	var card := PanelContainer.new()
+	card.custom_minimum_size = Vector2(72, 84)
+	card.mouse_filter = Control.MOUSE_FILTER_STOP
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 4)
+
+	var preview := ColorRect.new()
+	preview.custom_minimum_size = Vector2(64, 40)
+	preview.color = palette.get("primary", ThemeTokensLib.COLOR_PRIMARY)
+
+	if theme_mgr != null and theme_mgr.has_method("get_background_texture_path_for"):
+		var path := str(theme_mgr.call("get_background_texture_path_for", index, dark))
+		if ResourceLoader.exists(path):
+			var tex: Texture2D = load(path)
+			if tex != null:
+				var tex_rect := TextureRect.new()
+				tex_rect.custom_minimum_size = Vector2(64, 40)
+				tex_rect.texture = tex
+				tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+				tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+				vbox.add_child(tex_rect)
+			else:
+				vbox.add_child(preview)
+		else:
+			vbox.add_child(preview)
+	else:
+		vbox.add_child(preview)
+
+	var label := Label.new()
+	label.text = _i18n("visual_skin_%d" % (index + 1))
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 11)
+	vbox.add_child(label)
+
+	var checkmark := Label.new()
+	checkmark.name = "Checkmark"
+	checkmark.text = _i18n("skin_selected_badge")
+	checkmark.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	checkmark.add_theme_font_size_override("font_size", 10)
+	checkmark.add_theme_color_override("font_color", LnUiLib.ACCENT)
+	checkmark.visible = false
+	vbox.add_child(checkmark)
+
+	card.add_child(vbox)
+	card.gui_input.connect(func(event: InputEvent): _on_skin_card_input(index, event))
+	return card
+
+
+func _on_skin_card_input(index: int, event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_on_skin_selected(index)
+	elif event is InputEventScreenTouch and event.pressed:
+		_on_skin_selected(index)
+
+
+func _refresh_skin_picker_selection() -> void:
+	var theme_mgr := _autoload("ThemeManager")
+	var active := 0
+	var auto := false
+	if theme_mgr != null:
+		active = int(theme_mgr.get("background_index"))
+		auto = bool(theme_mgr.get("skin_auto"))
+
+	for i in _skin_cards.size():
+		var card := _skin_cards[i]
+		var style := StyleBoxFlat.new()
+		style.bg_color = Color(0.08, 0.05, 0.12, 0.75)
+		style.set_corner_radius_all(8)
+		style.set_border_width_all(2 if (i == active and not auto) else 1)
+		style.border_color = LnUiLib.BORDER_ACTIVE if (i == active and not auto) else LnUiLib.BORDER
+		style.set_content_margin_all(6)
+		card.add_theme_stylebox_override("panel", style)
+		var checkmark := card.get_node_or_null("VBox/Checkmark") as Label
+		if checkmark != null:
+			checkmark.visible = i == active and not auto
 
 
 func _load_leaderboard_opt_in() -> void:
@@ -119,6 +496,39 @@ func _on_music_toggled(enabled: bool) -> void:
 		settings.set("music_enabled", enabled)
 		if settings.has_method("save_settings"):
 			settings.call("save_settings")
+	var audio := _autoload("AudioManager")
+	if audio != null and audio.has_method("apply_audio_settings"):
+		audio.call("apply_audio_settings")
+
+
+func _on_sfx_volume_selected(index: int) -> void:
+	var settings := _autoload("SettingsManager")
+	if settings == null:
+		return
+	settings.set("sfx_volume", VOLUME_LEVELS[mini(index, VOLUME_LEVELS.size() - 1)])
+	if settings.has_method("save_settings"):
+		settings.call("save_settings")
+
+
+func _on_music_volume_selected(index: int) -> void:
+	var settings := _autoload("SettingsManager")
+	if settings == null:
+		return
+	settings.set("music_volume", VOLUME_LEVELS[mini(index, VOLUME_LEVELS.size() - 1)])
+	if settings.has_method("save_settings"):
+		settings.call("save_settings")
+	var audio := _autoload("AudioManager")
+	if audio != null and audio.has_method("apply_audio_settings"):
+		audio.call("apply_audio_settings")
+
+
+func _on_music_track_selected(index: int) -> void:
+	var settings := _autoload("SettingsManager")
+	if settings == null:
+		return
+	settings.set("music_track", MUSIC_TRACKS[mini(index, MUSIC_TRACKS.size() - 1)])
+	if settings.has_method("save_settings"):
+		settings.call("save_settings")
 	var audio := _autoload("AudioManager")
 	if audio != null and audio.has_method("apply_audio_settings"):
 		audio.call("apply_audio_settings")
@@ -164,7 +574,25 @@ func _on_theme_cycle() -> void:
 	var theme_mgr := _autoload("ThemeManager")
 	if theme_mgr != null and theme_mgr.has_method("cycle_theme"):
 		theme_mgr.call("cycle_theme")
-	_apply_background()
+	_build_skin_picker()
+
+
+func _on_skin_selected(index: int) -> void:
+	skin_auto_check.button_pressed = false
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null:
+		if theme_mgr.has_method("set_skin_auto"):
+			theme_mgr.call("set_skin_auto", false)
+		if theme_mgr.has_method("set_skin_index"):
+			theme_mgr.call("set_skin_index", index)
+	_refresh_skin_picker_selection()
+
+
+func _on_skin_auto_toggled(enabled: bool) -> void:
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("set_skin_auto"):
+		theme_mgr.call("set_skin_auto", enabled)
+	_refresh_skin_picker_selection()
 
 
 func _on_import_legacy() -> void:

@@ -21,6 +21,7 @@ const KEY_ALIASES := {
 	"menu_settings": "btn_settings",
 	"menu_achievements": "btn_achievements",
 	"menu_daily": "btn_daily_quests",
+	"menu_daily_short": "menu_daily_short",
 	"menu_wheel": "bonus_wheel_title",
 	"menu_back": "btn_back",
 	"hud_menu": "btn_home",
@@ -88,6 +89,31 @@ const KEY_ALIASES := {
 	"feature_3": "feature_3",
 	"feature_4": "feature_4",
 	"game_logo": "game_logo",
+	"settings_visual_skin_label": "settings_visual_skin_label",
+	"settings_visual_skin_auto": "settings_visual_skin_auto",
+	"settings_skin_selected": "settings_skin_selected",
+	"skin_selected_badge": "skin_selected_badge",
+	"visual_skin_1": "visual_skin_1",
+	"visual_skin_2": "visual_skin_2",
+	"visual_skin_3": "visual_skin_3",
+	"visual_skin_4": "visual_skin_4",
+	"visual_skin_5": "visual_skin_5",
+	"visual_skin_6": "visual_skin_6",
+	"goal_full": "goal_full",
+	"btn_exit": "btn_exit",
+	"pause_title": "pause_title",
+	"btn_resume": "btn_resume",
+	"save_indicator": "save_indicator",
+	"chain_status_valid": "chain_status_valid",
+	"chain_status_invalid": "chain_status_invalid",
+	"chain_status_continue": "chain_status_continue",
+	"score_label": "score_label",
+	"chain_sum_hud": "chain_sum_hud",
+	"chain_can_merge": "chain_can_merge",
+	"wheel_xp_25": "wheel_xp_25",
+	"wheel_xp_50": "wheel_xp_50",
+	"wheel_xp_75": "wheel_xp_75",
+	"wheel_xp_100": "wheel_xp_100",
 }
 
 const STATIC_FALLBACKS := {
@@ -125,6 +151,81 @@ const STATIC_FALLBACKS := {
 		"uk": "Файл збереження не знайдено",
 		"ru": "Файл сохранения не найден",
 		"en": "No legacy save file found",
+	},
+	"pause_title": {
+		"uk": "Пауза",
+		"ru": "Пауза",
+		"en": "Paused",
+	},
+	"btn_resume": {
+		"uk": "Продовжити",
+		"ru": "Продолжить",
+		"en": "Resume",
+	},
+	"save_indicator": {
+		"uk": "Збережено",
+		"ru": "Сохранено",
+		"en": "Saved",
+	},
+	"chain_status_valid": {
+		"uk": "Валідно!",
+		"ru": "Валидно!",
+		"en": "Valid!",
+	},
+	"chain_sum_hud": {
+		"uk": "Сума ланцюжка: {sum}",
+		"ru": "Сумма цепочки: {sum}",
+		"en": "Chain sum: {sum}",
+	},
+	"chain_can_merge": {
+		"uk": "Можна об'єднати!",
+		"ru": "Можно объединить!",
+		"en": "Can merge!",
+	},
+	"chain_status_invalid": {
+		"uk": "Не можна",
+		"ru": "Нельзя",
+		"en": "Invalid",
+	},
+	"chain_status_continue": {
+		"uk": "Продовжуй",
+		"ru": "Продолжай",
+		"en": "Continue",
+	},
+	"score_label": {
+		"uk": "Очки: {xp}",
+		"ru": "Очки: {xp}",
+		"en": "Score: {xp}",
+	},
+	"wheel_xp_25": {
+		"uk": "+25 XP",
+		"ru": "+25 XP",
+		"en": "+25 XP",
+	},
+	"wheel_xp_50": {
+		"uk": "+50 XP",
+		"ru": "+50 XP",
+		"en": "+50 XP",
+	},
+	"wheel_xp_75": {
+		"uk": "+75 XP",
+		"ru": "+75 XP",
+		"en": "+75 XP",
+	},
+	"wheel_xp_100": {
+		"uk": "+100 XP",
+		"ru": "+100 XP",
+		"en": "+100 XP",
+	},
+	"exit_confirm_title": {
+		"uk": "Вийти з гри?",
+		"ru": "Выйти из игры?",
+		"en": "Exit the game?",
+	},
+	"exit_confirm_text": {
+		"uk": "Ви впевнені, що хочете вийти?",
+		"ru": "Вы уверены, что хотите выйти?",
+		"en": "Are you sure you want to exit?",
 	},
 }
 
@@ -230,18 +331,23 @@ func _lookup(key: String) -> String:
 
 
 func _format(text: String, args: Array) -> String:
-	var out := text
 	# Godot printf-style (%d, %s)
-	if "%" in out:
-		return out % args
-	# JS-style {placeholders}
-	var names := ["level", "xp", "target", "cost", "turns", "used", "total", "value"]
-	for i in args.size():
-		var placeholder := "{%s}" % names[mini(i, names.size() - 1)]
-		if placeholder in out:
-			out = out.replace(placeholder, str(args[i]))
-		elif "{cost}" in out and i == 0:
-			out = out.replace("{cost}", str(args[i]))
+	if "%" in text:
+		return text % args
+	# JS-style {placeholders} — match names present in the string, not positional index.
+	var names := [
+		"level", "xp", "target", "cost", "turns", "used", "total", "value", "multiplier", "sum",
+	]
+	var placeholders: Array[String] = []
+	for name in names:
+		var token := "{%s}" % name
+		if token in text:
+			placeholders.append(name)
+	if placeholders.is_empty():
+		return text
+	var out := text
+	for i in mini(args.size(), placeholders.size()):
+		out = out.replace("{%s}" % placeholders[i], str(args[i]))
 	return out
 
 

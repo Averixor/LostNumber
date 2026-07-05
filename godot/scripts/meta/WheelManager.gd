@@ -10,14 +10,14 @@ const MAX_DAILY_SPINS := 20
 const SPIN_DURATION_SEC := 3.1
 
 const SECTORS := [
-	{"id": 0, "type": "xp_plus", "label": "XP+", "effect": "xp", "value": 15, "message_key": "wheel_xp_plus"},
-	{"id": 1, "type": "xp_minus", "label": "XP−", "effect": "xp", "value": -10, "message_key": "wheel_xp_minus"},
-	{"id": 2, "type": "shuffle", "label": "SHUF", "effect": "bonus", "value": "shuffle", "message_key": "wheel_bonus_shuffle_added"},
-	{"id": 3, "type": "destroy", "label": "BRK", "effect": "bonus", "value": "destroy", "message_key": "wheel_bonus_destroy_added"},
-	{"id": 4, "type": "explosion", "label": "BLST", "effect": "bonus", "value": "explosion", "message_key": "wheel_bonus_explosion_added"},
-	{"id": 5, "type": "xp_multiplier", "label": "×2 XP", "effect": "multiplier", "value": 5, "message_key": "wheel_xp_multiplier", "multiplier": 2, "turns": 3},
-	{"id": 6, "type": "gift", "label": "GIFT", "effect": "gift", "value": null, "message_key": "wheel_gift"},
-	{"id": 7, "type": "freeze", "label": "ICE", "effect": "freeze", "value": 5, "message_key": "wheel_freeze_message", "fallback_xp": 50},
+	{"id": 0, "type": "xp_plus", "label": "25 XP", "effect": "xp", "value": 25, "message_key": "wheel_xp_25"},
+	{"id": 1, "type": "xp_plus", "label": "50 XP", "effect": "xp", "value": 50, "message_key": "wheel_xp_50"},
+	{"id": 2, "type": "xp_plus", "label": "100 XP", "effect": "xp", "value": 100, "message_key": "wheel_xp_100"},
+	{"id": 3, "type": "xp_multiplier", "label": "×2 XP", "effect": "multiplier", "value": 5, "message_key": "wheel_xp_multiplier", "multiplier": 2, "turns": 3},
+	{"id": 4, "type": "explosion", "label": "3×3", "effect": "bonus", "value": "explosion", "message_key": "wheel_bonus_explosion_added"},
+	{"id": 5, "type": "destroy", "label": "Розбити", "effect": "bonus", "value": "destroy", "message_key": "wheel_bonus_destroy_added"},
+	{"id": 6, "type": "shuffle", "label": "Мікс", "effect": "bonus", "value": "shuffle", "message_key": "wheel_bonus_shuffle_added"},
+	{"id": 7, "type": "xp_plus", "label": "75 XP", "effect": "xp", "value": 75, "message_key": "wheel_xp_75"},
 ]
 
 var state: GameState

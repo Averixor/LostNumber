@@ -36,6 +36,9 @@ func refresh() -> void:
 		dark = bool(theme_mgr.call("is_dark"))
 
 	base_color.color = ThemeTokensLib.COLOR_BG if dark else ThemeTokensLib.DAWN_COLOR_BG
+	if theme_mgr != null and theme_mgr.has_method("get_palette"):
+		var palette: Dictionary = theme_mgr.call("get_palette")
+		base_color.color = palette.get("bg", base_color.color)
 
 	art.texture = null
 	if theme_mgr != null and theme_mgr.has_method("get_background_texture_path"):
@@ -46,7 +49,7 @@ func refresh() -> void:
 	# Web parity: dusk uses a dark overlay over the art, dawn a light veil.
 	dim_overlay.color = Color(0.03, 0.01, 0.07, 0.4) if dark else Color(Color("#ffe8f8"), 0.35)
 
-	_setup_glow(dark)
+	_setup_glow(dark, theme_mgr)
 	_setup_effects()
 
 
@@ -55,7 +58,7 @@ func _effects_enabled() -> bool:
 	return bool(enabled)
 
 
-func _setup_glow(dark: bool) -> void:
+func _setup_glow(dark: bool, theme_mgr: Node) -> void:
 	if glow.texture == null:
 		var gradient := Gradient.new()
 		gradient.colors = PackedColorArray([Color(1, 1, 1, 1), Color(1, 1, 1, 0)])
@@ -69,7 +72,10 @@ func _setup_glow(dark: bool) -> void:
 		tex.height = 256
 		glow.texture = tex
 	var tint := ThemeTokensLib.MENU_TITLE_GLOW if dark else ThemeTokensLib.DAWN_COLOR_ACCENT
-	var alpha := 0.16 if _effects_enabled() else 0.08
+	if theme_mgr != null and theme_mgr.has_method("get_palette"):
+		var palette: Dictionary = theme_mgr.call("get_palette")
+		tint = palette.get("accent", tint)
+	var alpha := 0.16 * float(theme_mgr.call("get_glow_intensity") if theme_mgr != null and theme_mgr.has_method("get_glow_intensity") else 1.0) if _effects_enabled() else 0.08
 	glow.modulate = Color(tint.r, tint.g, tint.b, alpha)
 
 

@@ -1,5 +1,7 @@
 extends Control
 
+const LnUiLib := preload("res://scripts/ui/LnUi.gd")
+
 @onready var body: RichTextLabel = $Scroll/Body
 @onready var back_button: Button = $BackButton
 @onready var title_label: Label = $Title
@@ -28,12 +30,16 @@ func _navigate_back() -> void:
 
 
 func _ready() -> void:
+	LnUiLib.set_background(self, LnUiLib.screen_bg("about"))
 	var theme := _autoload("ThemeManager")
 	if background != null and theme != null and theme.has_method("get_background_color"):
 		background.color = Color(theme.call("get_background_color"), 0.6)
 
 	title_label.text = _i18n("btn_about")
 	back_button.text = _i18n("menu_back")
+	LnUiLib.apply_title(title_label, 26)
+	LnUiLib.apply_button(back_button)
+	LnUiLib.apply_button_icon(back_button, "back.svg")
 	back_button.pressed.connect(_on_back)
 
 	var version := str(ProjectSettings.get_setting("application/config/version", ""))
@@ -46,6 +52,11 @@ func _ready() -> void:
 		_i18n("feature_4"),
 		_i18n("version_label") % version,
 	]
+	_animate_entrance()
+
+
+func _animate_entrance() -> void:
+	await LnUiLib.animate_entrance([title_label, body, back_button])
 
 
 func _on_back() -> void:

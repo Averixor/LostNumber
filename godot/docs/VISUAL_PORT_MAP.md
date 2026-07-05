@@ -28,13 +28,13 @@ Web-версія — джерело правди для UI/UX, кольорів,
 Примітки:
 
 - MainMenu: web parity — gradient title, primary Play/Continue, quick-row chips (Settings,
-  Stats, About), bottom dock (Premium/Tournaments/Achievements/Daily/Bonuses), SVG icons,
-  FeatureStubOverlay for premium/tournaments/bonuses, tagline double-tap → `ThemeManager.cycle_background()`,
-  staggered fade+slide entrance.
+  Stats, About) **DONE**, bottom dock (Premium/Tournaments/Achievements/Daily/Bonuses) **DONE**,
+  SVG icons **DONE**, FeatureStubOverlay for premium/tournaments/bonuses **DONE**,
+  tagline double-tap → `ThemeManager.cycle_background()`, staggered fade+slide entrance.
 - Game/Settings/Achievements/DailyQuests — MVP; chain-sum HUD і preview bubble ще TODO.
 - Stats/About — мінімальні екрани з back-stack навігацією.
-- Boot: фон з токенів, градієнтний логотип, ProgressBar, неонова пульсація
-  (AnimationPlayer), реальний прогрів (SaveManager + preload App), fade у App.
+- Boot: фон з токенів, glow-шар під логотипом (`LnUi.wire_logo_glow`), ProgressBar,
+  неонова пульсація (AnimationPlayer), реальний прогрів (SaveManager + preload App), fade у App.
 - Навігація: `ScreenRouter` (autoload) з back-stack (push/pop/go_back),
   fade-переходи через `components/ScreenTransition.tscn`; Android back
   обробляє `App.gd` (NOTIFICATION_WM_GO_BACK_REQUEST → go_back()).
@@ -107,21 +107,21 @@ Web-версія — джерело правди для UI/UX, кольорів,
 
 | Web source                                      | Godot target                          | Scene        | Status  |
 | ----------------------------------------------- | ------------------------------------- | ------------ | ------- |
-| `assets/icons/neon/icons/*.svg` (41 шт.)        | `godot/assets/ui/icons/`              | UI           | DONE    |
+| `assets/icons/neon/icons/*.svg` (41 шт.)        | `godot/assets/ui/icons/neon/`         | UI           | DONE    |
 | `assets/icons/neon/sprite/lostnumber-icons.svg` | — (у Godot окремі SVG)                | UI           | —       |
-| `js/ui/icons.js` (мапінг icon → slot)           | MenuDock/QuickChip, GameHud, MainMenu | UI           | PARTIAL |
+| `js/ui/icons.js` (мапінг icon → slot)           | MenuDock, GameHud, MainMenu, back btns | UI           | DONE    |
 | `public/audio/music/*.mp3` (5 треків)           | `godot/assets/audio/music/`           | AudioManager | DONE    |
 | `public/audio/sfx/*.mp3` (8 звуків)             | `godot/assets/audio/sfx/`             | AudioManager | DONE    |
 | `js/system/platform/audio.js`                   | `scripts/managers/AudioManager.gd`    | AudioManager | DONE    |
-| `assets/icons/icon.png`, `icon-1024.png`        | `godot/assets/icons/` (launcher)      | Export       | DONE    |
+| `assets/icons/icon.png`, `icon-1024.png`        | `godot/icon.png`, `godot/icon-1024.png` | Export       | DONE    |
 
 Примітки:
 
 - Аудіо вже розкладено по `music/` та `sfx/` — шляхи в `AudioManager.gd` актуальні.
-- Копія neon-іконок у `godot/assets/icons/neon/` виключена з AAB
-  (`exclude_filter="assets/store/*,assets/icons/neon/*"` в `export_presets.cfg`);
-  робоча копія для UI — `godot/assets/ui/icons/`.
-- Store-графіка (`assets/store/*`) лишається виключеною з експорту.
+- Канонічне дерево neon-іконок: `godot/assets/ui/icons/neon/`; legacy fallback для crown —
+  `godot/assets/ui/icons/tile-crown.svg`.
+- Копія `godot/assets/icons/neon/` видалена; AAB exclude_filter лишається для `assets/store/*`.
+- Store-графіка (`assets/store/*`) лишається виключеною з експорту; не дублювати в `assets/ui/store/`.
 
 ## Оверлеї, модалки, тости
 

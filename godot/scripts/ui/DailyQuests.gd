@@ -1,8 +1,9 @@
 extends Control
 
 const DailyQuestCardScene := preload("res://scenes/components/DailyQuestCard.tscn")
+const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 
-@onready var list: VBoxContainer = $Scroll/List
+@onready var list: VBoxContainer = $Scroll/ListMargin/List
 @onready var back_button: NeonButton = $BackButton
 @onready var title_label: Label = $Title
 @onready var background: ColorRect = $Background
@@ -32,15 +33,28 @@ func _navigate_back() -> void:
 
 
 func _ready() -> void:
+	LnUiLib.set_background(self, LnUiLib.screen_bg("daily"))
 	var theme := _autoload("ThemeManager")
 	if background != null and theme != null and theme.has_method("get_background_color"):
 		background.color = Color(theme.call("get_background_color"), 0.6)
 
-	title_label.text = _i18n("daily_title")
+	title_label.text = _i18n("daily_quests_title")
 	back_button.text = _i18n("menu_back")
+	LnUiLib.apply_title(title_label, 26)
+	LnUiLib.apply_button(back_button)
+	LnUiLib.apply_button_icon(back_button, "back.svg")
 	back_button.pressed.connect(_on_back)
 	_state = _load_state()
 	_render()
+	_animate_entrance()
+
+
+func _animate_entrance() -> void:
+	var items: Array = [title_label]
+	for child in list.get_children():
+		items.append(child)
+	items.append(back_button)
+	await LnUiLib.animate_entrance(items)
 
 
 func _render() -> void:
@@ -49,13 +63,37 @@ func _render() -> void:
 
 	var daily := DailyQuestManager.new(_state)
 	daily.ensure_loaded()
-	var done_label := _i18n("daily_completed")
+	var progress_prefix := "Прогрес:"
 
 	for quest in daily.get_quests():
 		var card: DailyQuestCard = DailyQuestCardScene.instantiate()
-		var done := daily.is_done(str(quest.get("id", "")))
-		card.setup(done, _i18n(str(quest.get("text_key", ""))), done_label if done else "")
+		var qid := str(quest.get("id", ""))
+		var done := daily.is_done(qid)
+		var text_key := str(quest.get("text_key", ""))
+		var quest_text := _i18n(text_key) if not text_key.is_empty() else ""
+		if quest_text.is_empty() or quest_text == text_key:
+			quest_text = _fallback_quest_text(qid)
+		var prog: Dictionary = daily.get_progress(qid)
+		var progress_text := "%s %d/%d" % [progress_prefix, int(prog.get("current", 0)), int(prog.get("max", 1))]
+		var reward_text := daily.get_reward_label(qid)
+		card.setup(done, quest_text, progress_text, reward_text, "Отримано" if done else "")
 		list.add_child(card)
+
+
+func _fallback_quest_text(id: String) -> String:
+	match id:
+		"completeLevel":
+			return "Пройти 1 рівень"
+		"chain5":
+			return "З'єднай 10 плиток"
+		"xp100":
+			return "Набери 100 XP"
+		"useBonus":
+			return "Використай бонус"
+		"spinWheel":
+			return "Прокрути колесо фортуни"
+		_:
+			return "Щоденне завдання"
 
 
 func _load_state() -> GameState:

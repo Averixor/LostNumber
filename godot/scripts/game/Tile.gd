@@ -1,38 +1,85 @@
 extends Control
 class_name TileView
 
-## Themed grid cell (web css/grid.css .cell parity).
+## Themed grid cell with 2.5D bevel, shadow, chain glow, and press lift.
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
+const PRESS_LIFT := 4.0
 
 @export var cell_size: Vector2 = Vector2(72, 72)
 
-@onready var _bg: PanelContainer = $Bg
+@onready var _shadow: ColorRect = $Shadow
+@onready var _bg: Control = $Bg
 @onready var _inner: ColorRect = $Bg/Inner
-@onready var _label: Label = $Bg/Inner/Label
-@onready var _chain_highlight: ColorRect = $ChainHighlight
+@onready var _top_edge: ColorRect = $Bg/TopEdge
+@onready var _bottom_edge: ColorRect = $Bg/BottomEdge
+@onready var _label: Label = $Bg/Label
+@onready var _chain_highlight: PanelContainer = $ChainHighlight
+@onready var _chain_fill: ColorRect = $ChainHighlight/Fill
 @onready var _carry_badge: Label = $CarryBadge
+
+var _crown_icon: TextureRect
 
 var grid_pos: Vector2i = Vector2i.ZERO
 var value: int = 0
+var _base_position: Vector2 = Vector2.ZERO
 
 var _selected: bool = false
 var _frozen: bool = false
 var _bonus_mode: bool = false
 var _carry: bool = false
 var _target: bool = false
+var _pressed: bool = false
+var _lift_tween: Tween = null
 
 
 func _ready() -> void:
 	custom_minimum_size = cell_size
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_base_position = position
+	_ensure_crown_icon()
 	_apply_panel_style()
 	_refresh_visual()
 
 
+func _ensure_crown_icon() -> void:
+	if _crown_icon != null:
+		return
+	var crown_path := "res://assets/ui/icons/neon/tile-crown.svg"
+	if not ResourceLoader.exists(crown_path):
+		crown_path = "res://assets/ui/icons/tile-crown.svg"
+	if not ResourceLoader.exists(crown_path):
+		return
+	_crown_icon = TextureRect.new()
+	_crown_icon.name = "CrownIcon"
+	_crown_icon.texture = load(crown_path)
+	_crown_icon.custom_minimum_size = cell_size
+	_crown_icon.size = cell_size
+	_crown_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_crown_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_crown_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_crown_icon.visible = false
+	_bg.add_child(_crown_icon)
+	_bg.move_child(_crown_icon, _label.get_index())
+	_layout_crown_and_label()
+
+
 func setup(pos: Vector2i, number: int) -> void:
 	grid_pos = pos
+	if _crown_icon != null:
+		_layout_crown_and_label()
 	set_value(number)
+
+
+func _layout_crown_and_label() -> void:
+	if _crown_icon == null:
+		return
+	_crown_icon.custom_minimum_size = cell_size
+	_crown_icon.size = cell_size
+	_crown_icon.position = Vector2.ZERO
+	if _label != null:
+		_label.offset_top = 0.0
+		_label.offset_bottom = 0.0
 
 
 func set_value(number: int) -> void:
@@ -50,13 +97,22 @@ func set_value(number: int) -> void:
 		tween.tween_property(self, "scale", Vector2.ONE, 0.1)
 
 
-func set_chain_selected(selected: bool, valid_finish: bool = true) -> void:
+func set_chain_selected(selected: bool, _valid_finish: bool = true) -> void:
 	_selected = selected
-	_chain_highlight.visible = selected
-	if selected:
-		var c := ThemeTokensLib.COLOR_PREVIEW_VALID if valid_finish else ThemeTokensLib.COLOR_PREVIEW_INVALID
-		_chain_highlight.color = Color(c, 0.45)
+	_chain_highlight.visible = false
 	_refresh_visual()
+
+
+func set_pressed_visual(pressed: bool) -> void:
+	if _pressed == pressed:
+		return
+	_pressed = pressed
+	var target_y := _base_position.y - PRESS_LIFT if pressed else _base_position.y
+	if _lift_tween != null and _lift_tween.is_valid():
+		_lift_tween.kill()
+	_lift_tween = create_tween()
+	_lift_tween.tween_property(self, "position:y", target_y, 0.08) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
 
 func set_target_highlight(active: bool) -> void:
@@ -81,35 +137,53 @@ func set_carry(active: bool) -> void:
 
 
 func _apply_panel_style() -> void:
-	var style := StyleBoxFlat.new()
-	style.set_corner_radius_all(ThemeTokensLib.TILE_RADIUS)
-	style.bg_color = Color(0, 0, 0, 0)
-	style.set_content_margin_all(0)
-	_bg.add_theme_stylebox_override("panel", style)
+	_shadow.color = Color(0, 0, 0, 0.35)
+
+
+func _get_rim_color() -> Color:
+	var theme := get_node_or_null("/root/ThemeManager")
+	if theme != null and theme.has_method("get_palette"):
+		var palette: Dictionary = theme.call("get_palette")
+		return Color(palette.get("rim", Color("#D4AF37")), 0.65)
+	return Color("#D4AF37", 0.55)
+
+
+func _draw() -> void:
+	if value <= 0:
+		return
+	var rim := _get_rim_color()
+	var rect := Rect2(Vector2.ZERO, size - Vector2(0, 3))
+	draw_rect(rect, rim, false, 2.0)
 
 
 func _refresh_visual() -> void:
 	if not is_inside_tree():
 		return
 
-	if _selected:
-		_inner.color = ThemeTokensLib.TILE_SELECTED_BG
-	elif _frozen:
-		_inner.color = ThemeTokensLib.TILE_FROZEN_BG
+	var face_color: Color
+	if _frozen:
+		face_color = ThemeTokensLib.TILE_FROZEN_BG
 	elif _bonus_mode:
-		_inner.color = ThemeTokensLib.COLOR_PRIMARY.darkened(0.1)
+		face_color = ThemeTokensLib.COLOR_PREVIEW_INVALID.lightened(0.05)
 	elif value <= 0:
-		_inner.color = Color(ThemeTokensLib.COLOR_CELL, 0.35)
+		face_color = Color(ThemeTokensLib.COLOR_CELL, 0.35)
 	elif _target:
-		_inner.color = Color(0.55, 0.42, 0.12, 1.0)
+		face_color = Color(0.55, 0.42, 0.12, 1.0)
 	else:
-		_inner.color = _color_for_value(value)
+		face_color = _color_for_value(value)
+
+	_inner.color = face_color
+	_top_edge.color = Color(face_color.lightened(0.22), 0.85)
+	_bottom_edge.color = Color(face_color.darkened(0.28), 0.9)
 
 	var text_color := ThemeTokensLib.COLOR_CELL_NUMBER
 	if value >= 8192:
 		text_color = Color.WHITE
 	_label.add_theme_color_override("font_color", text_color)
 	_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_TILE)
+	if _crown_icon != null:
+		_crown_icon.visible = _target and value > 0 and not _frozen and not _bonus_mode
+	queue_redraw()
 
 
 func _color_for_value(n: int) -> Color:

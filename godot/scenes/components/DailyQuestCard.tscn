@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scripts/ui/DailyQuestCard.gd" id="1_card"]
 
 [node name="DailyQuestCard" type="Control"]
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 72)
 layout_mode = 3
 anchors_preset = 10
 anchor_right = 1.0
@@ -22,12 +22,30 @@ grow_vertical = 2
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Status" type="Label" parent="Panel/HBox"]
-custom_minimum_size = Vector2(24, 0)
+[node name="Content" type="VBoxContainer" parent="Panel/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Header" type="HBoxContainer" parent="Panel/HBox/Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Status" type="Label" parent="Panel/HBox/Content/Header"]
+custom_minimum_size = Vector2(20, 0)
 layout_mode = 2
 text = "○"
 
-[node name="Text" type="Label" parent="Panel/HBox"]
+[node name="Title" type="Label" parent="Panel/HBox/Content/Header"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Quest"
+text = "Щоденне завдання"
+
+[node name="Progress" type="Label" parent="Panel/HBox/Content"]
+layout_mode = 2
+text = "Прогрес: 0/1"
+
+[node name="Reward" type="Label" parent="Panel/HBox"]
+layout_mode = 2
+text = "+25 XP"
+vertical_alignment = 1

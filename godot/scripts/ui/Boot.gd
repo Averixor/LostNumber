@@ -1,16 +1,17 @@
 extends Control
 
-## Boot/splash screen (web parity: .app-splash + .loading-spinner).
-## Preloads the App shell + warms managers, then fades into App.
+## Boot/splash screen with fullscreen gothic art and logo pulse.
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
+const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 
 const APP_SCENE := "res://scenes/App.tscn"
 
-@onready var title_label: Label = $Center/VBox/Title
+@onready var logo_image: TextureRect = $Center/VBox/LogoStack/LogoImage
 @onready var subtitle_label: Label = $Center/VBox/Subtitle
 @onready var progress_bar: ProgressBar = $Center/VBox/Progress
 @onready var background: ColorRect = $Background
+@onready var background_art: TextureRect = $BackgroundArt
 
 
 func _autoload(name: String) -> Node:
@@ -25,33 +26,54 @@ func _i18n(key: String, args: Array = []) -> String:
 
 
 func _ready() -> void:
-	background.color = ThemeTokensLib.COLOR_BG
-	title_label.text = _i18n("app_title").to_upper()
+	LnUiLib.set_background(self, LnUiLib.screen_bg("boot"), 0.55)
+	var main_logo := LnUiLib.BOOT_LOGO_PATH if ResourceLoader.exists(LnUiLib.BOOT_LOGO_PATH) else LnUiLib.LOGO_PATH
+	LnUiLib.wire_logo_glow(logo_image, main_logo)
+	_apply_theme()
 	subtitle_label.text = _i18n("boot_loading")
-	subtitle_label.add_theme_color_override("font_color", ThemeTokensLib.LOADING_TEXT_COLOR)
 	_style_progress_bar()
-	_apply_title_gradient_height()
 	_boot()
 
 
+func _apply_theme() -> void:
+	var theme_mgr := _autoload("ThemeManager")
+	var bg := ThemeTokensLib.COLOR_BG
+	if theme_mgr != null and theme_mgr.has_method("get_background_color"):
+		bg = theme_mgr.call("get_background_color")
+	background.color = Color(bg, 0.42)
+	subtitle_label.add_theme_color_override("font_color", ThemeTokensLib.LOADING_TEXT_COLOR)
+
+	if background_art != null:
+		background_art.visible = true
+		var tex_path := ""
+		if theme_mgr != null and theme_mgr.has_method("get_background_texture_path"):
+			tex_path = str(theme_mgr.call("get_background_texture_path"))
+		if tex_path.is_empty() or not ResourceLoader.exists(tex_path):
+			tex_path = "res://icon.png"
+		if ResourceLoader.exists(tex_path):
+			background_art.texture = load(tex_path)
+		background_art.modulate = Color(1.0, 1.0, 1.0, 0.92)
+
+
 func _style_progress_bar() -> void:
+	var theme_mgr := _autoload("ThemeManager")
+	var panel := LnUiLib.PANEL
+	var primary := LnUiLib.ACCENT
+	if theme_mgr != null:
+		if theme_mgr.has_method("get_panel_color"):
+			panel = theme_mgr.call("get_panel_color")
+		if theme_mgr.has_method("get_primary_color"):
+			primary = theme_mgr.call("get_primary_color")
 	var bg := StyleBoxFlat.new()
-	bg.bg_color = ThemeTokensLib.COLOR_PANEL
+	bg.bg_color = panel
 	bg.set_corner_radius_all(ThemeTokensLib.RADIUS_SMALL)
 	bg.set_border_width_all(1)
-	bg.border_color = ThemeTokensLib.COLOR_PANEL_BORDER
+	bg.border_color = LnUiLib.BORDER
 	var fill := StyleBoxFlat.new()
-	fill.bg_color = ThemeTokensLib.SPINNER_COLOR
+	fill.bg_color = primary
 	fill.set_corner_radius_all(ThemeTokensLib.RADIUS_SMALL)
 	progress_bar.add_theme_stylebox_override("background", bg)
 	progress_bar.add_theme_stylebox_override("fill", fill)
-
-
-func _apply_title_gradient_height() -> void:
-	var material := title_label.material
-	if material is ShaderMaterial:
-		var height: float = maxf(title_label.get_minimum_size().y, 1.0)
-		(material as ShaderMaterial).set_shader_parameter("gradient_height", height)
 
 
 func _boot() -> void:
@@ -62,7 +84,6 @@ func _boot() -> void:
 	tween.tween_property(progress_bar, "value", 55.0, 0.55) \
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
-	# Real preload: warm save check, optional legacy import, preload App scene.
 	var save := _autoload("SaveManager")
 	if save != null and save.has_method("has_save"):
 		save.call("has_save")

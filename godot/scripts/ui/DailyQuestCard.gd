@@ -1,26 +1,33 @@
 extends Control
 class_name DailyQuestCard
 
-## Styled daily quest row card.
+## Gothic daily quest card with progress and reward.
 
-const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
+const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 
-@onready var status_icon: Label = $Panel/HBox/Status
-@onready var text_label: Label = $Panel/HBox/Text
+@onready var status_icon: Label = $Panel/HBox/Content/Header/Status
+@onready var text_label: Label = $Panel/HBox/Content/Header/Title
+@onready var progress_label: Label = $Panel/HBox/Content/Progress
+@onready var reward_label: Label = $Panel/HBox/Reward
 @onready var panel: PanelContainer = $Panel
 
 
-func setup(done: bool, text: String, completed_label: String = "") -> void:
+func setup(done: bool, text: String, progress_text: String, reward_text: String, status_text: String = "") -> void:
 	text_label.text = text
+	progress_label.text = progress_text
+	reward_label.text = reward_text
 	status_icon.text = "✓" if done else "○"
-	status_icon.modulate = Color(0.4, 0.9, 0.5) if done else Color(ThemeTokensLib.COLOR_MUTED)
-	if done and not completed_label.is_empty():
-		text_label.text = "%s — %s" % [text, completed_label]
+	status_icon.add_theme_color_override("font_color", LnUiLib.VALID if done else LnUiLib.TEXT_DISABLED)
+	if done and not status_text.is_empty():
+		reward_label.text = status_text
+		reward_label.add_theme_color_override("font_color", LnUiLib.TEXT_DISABLED)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = ThemeTokensLib.COLOR_PANEL
-	style.set_corner_radius_all(ThemeTokensLib.RADIUS_HUD)
-	style.set_border_width_all(1)
-	style.border_color = ThemeTokensLib.COLOR_PANEL_BORDER if not done else Color(ThemeTokensLib.COLOR_PRIMARY, 0.4)
-	style.set_content_margin_all(10)
-	panel.add_theme_stylebox_override("panel", style)
+	panel.add_theme_stylebox_override("panel", LnUiLib.glass_box(14, 1,
+		Color(0.157, 0.078, 0.216, 0.78 if not done else 0.62),
+		LnUiLib.BORDER_ACTIVE if done else LnUiLib.BORDER))
+	text_label.add_theme_color_override("font_color", LnUiLib.TEXT)
+	progress_label.add_theme_color_override("font_color", LnUiLib.TEXT_MUTED)
+	reward_label.add_theme_color_override("font_color", LnUiLib.ACCENT if not done else LnUiLib.TEXT_DISABLED)
+	text_label.add_theme_font_size_override("font_size", 18)
+	progress_label.add_theme_font_size_override("font_size", 14)
+	reward_label.add_theme_font_size_override("font_size", 14)
