@@ -83,20 +83,25 @@ const SPINNER_COLOR := Color("#ff6b9d")  # .loading-spinner border-top-color
 const LOADING_TEXT_COLOR := Color("#f6e8de")  # .loading-text
 
 # --- Tile palette by value — css/grid.css .cell[data-number] ---
+# Progression: small pastel → mid green/teal → high orange/pink → legendary gold/neon.
 const TILE_COLORS := {
-	2: Color("#9BE7A3"),
-	4: Color("#F0A7B3"),
-	8: Color("#EED063"),
-	16: Color("#83BCE9"),
-	32: Color("#B093EA"),
-	64: Color("#FFB347"),
-	128: Color("#FF6EA8"),
-	256: Color("#C77DFF"),
-	512: Color("#72E5FF"),
-	1024: Color("#FFE66D"),
-	2048: Color("#FFFFFF"),
+	2: Color("#9ee6a8"),
+	4: Color("#f3b1b8"),
+	8: Color("#f1d16a"),
+	16: Color("#8fc4f5"),
+	32: Color("#b9a0f2"),
+	64: Color("#ffb347"),
+	128: Color("#7ed957"),
+	256: Color("#ff70a6"),
+	512: Color("#70d6ff"),
+	1024: Color("#ff9770"),
+	2048: Color("#e9ff70"),
 	4096: Color("#ff70e9"),
 }
+
+const TILE_LEGENDARY_MIN := 128
+const TILE_GOLD_RIM := Color("#FFD700")
+const TILE_TEXT_LIGHT := Color("#f6e8de")
 
 ## 8192+ in web are gradients; [start, end] pairs (145deg linear-gradient).
 const TILE_GRADIENTS := {
@@ -236,6 +241,40 @@ const SKIN_PALETTES := [
 		},
 	},
 ]
+
+
+## Auto-fit tile number font: scales with cell size and digit count, then user scale.
+static func tile_font_size_for_cell(cell_size: Vector2, digit_count: int, user_scale: float = 1.0) -> int:
+	var min_dim := minf(cell_size.x, cell_size.y)
+	if min_dim < 1.0:
+		min_dim = 72.0
+
+	var digits := maxi(1, digit_count)
+	var height_ratio: float
+	if digits <= 2:
+		height_ratio = 0.78
+	elif digits == 3:
+		height_ratio = 0.64
+	else:
+		height_ratio = 0.52
+
+	var by_height := min_dim * height_ratio
+	var by_width := min_dim / (float(digits) * 0.58)
+	var base := minf(by_height, by_width)
+	base = clampf(base, 8.0, min_dim * 0.85)
+	return maxi(8, int(round(base * user_scale)))
+
+
+static func is_legendary_tile_value(n: int) -> bool:
+	return n >= TILE_LEGENDARY_MIN
+
+
+static func tile_text_color_for(face: Color, value: int) -> Color:
+	if value >= 8192:
+		return Color.WHITE
+	if face.get_luminance() < 0.42:
+		return TILE_TEXT_LIGHT
+	return COLOR_CELL_NUMBER
 
 
 static func get_skin_palette(index: int, dark: bool) -> Dictionary:

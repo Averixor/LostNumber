@@ -203,14 +203,66 @@ static func apply_button_icon(btn: Button, icon_name: String) -> void:
 	btn.add_theme_constant_override("icon_max_width", 28)
 
 
-static func apply_toggle_switch(check: CheckButton) -> void:
-	apply_settings_row(check)
+static func settings_glass_row(compact: bool = false) -> StyleBoxFlat:
+	var sb := glass_box(12 if compact else 14, 1, Color(0.157, 0.078, 0.216, 0.75), BORDER)
+	var margin := 8 if compact else 10
+	sb.content_margin_left = margin
+	sb.content_margin_right = margin
+	sb.content_margin_top = 6 if compact else 8
+	sb.content_margin_bottom = 6 if compact else 8
+	if compact:
+		sb.shadow_size = 4
+		sb.shadow_offset = Vector2(0, 2)
+	return sb
+
+
+static func option_glass_row(compact: bool = false) -> StyleBoxFlat:
+	var sb := settings_glass_row(compact)
+	sb.content_margin_left = 8 if compact else 10
+	sb.content_margin_right = 8 if compact else 10
+	return sb
+
+
+static func apply_settings_row(check: CheckButton, compact: bool = false) -> void:
+	var row := settings_glass_row(compact)
+	check.custom_minimum_size = Vector2(0, 44.0 if compact else 52.0)
+	check.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	check.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	check.add_theme_stylebox_override("normal", row)
+	check.add_theme_stylebox_override("hover", row.duplicate())
+	check.add_theme_stylebox_override("pressed", row.duplicate())
+	check.add_theme_stylebox_override("hover_pressed", row.duplicate())
+	check.add_theme_stylebox_override("disabled", row.duplicate())
+	check.add_theme_font_size_override("font_size", 15 if compact else 18)
+	check.add_theme_color_override("font_color", TEXT)
+	check.add_theme_color_override("font_pressed_color", TEXT)
+	check.add_theme_color_override("font_hover_color", TEXT)
+
+
+static func apply_option_row_style(option: OptionButton, compact: bool = false) -> void:
+	var option_style := option_glass_row(compact)
+	option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	option.add_theme_font_size_override("font_size", 14 if compact else 15)
+	option.add_theme_color_override("font_color", TEXT)
+	option.add_theme_stylebox_override("normal", option_style)
+	option.add_theme_stylebox_override("hover", option_style.duplicate())
+	option.add_theme_stylebox_override("pressed", option_style.duplicate())
+	option.add_theme_stylebox_override("focus", option_style.duplicate())
+
+
+static func apply_settings_row_density(check: CheckButton, compact: bool) -> void:
+	apply_settings_row(check, compact)
+	check.add_theme_constant_override("h_separation", 8 if compact else 12)
+	check.add_theme_constant_override("icon_max_width", 22 if compact else 26)
+
+
+static func apply_toggle_switch(check: CheckButton, compact: bool = false) -> void:
+	apply_settings_row_density(check, compact)
 	check.add_theme_color_override("icon_normal_color", Color(0.45, 0.38, 0.52))
 	check.add_theme_color_override("icon_hover_color", ACCENT_2)
 	check.add_theme_color_override("icon_pressed_color", ACCENT)
 	check.add_theme_color_override("icon_hover_pressed_color", ACCENT)
 	check.add_theme_color_override("icon_disabled_color", TEXT_DISABLED)
-	check.add_theme_constant_override("h_separation", 16)
 
 
 static func try_add_logo(parent: Control, path: String = LOGO_PATH, min_size: Vector2 = Vector2(300, 110)) -> TextureRect:
@@ -277,24 +329,6 @@ static func _center_texture_rect(rect: TextureRect, size: Vector2) -> void:
 	rect.offset_right = size.x * 0.5
 	rect.offset_bottom = size.y * 0.5
 	rect.custom_minimum_size = size
-
-
-static func apply_settings_row(check: CheckButton) -> void:
-	var row := glass_box(14, 1, Color(0.157, 0.078, 0.216, 0.75), BORDER)
-	row.content_margin_left = 14
-	row.content_margin_right = 14
-	row.content_margin_top = 10
-	row.content_margin_bottom = 10
-	check.custom_minimum_size = Vector2(0, 62)
-	check.add_theme_stylebox_override("normal", row)
-	check.add_theme_stylebox_override("hover", row.duplicate())
-	check.add_theme_stylebox_override("pressed", row.duplicate())
-	check.add_theme_stylebox_override("hover_pressed", row.duplicate())
-	check.add_theme_stylebox_override("disabled", row.duplicate())
-	check.add_theme_font_size_override("font_size", 20)
-	check.add_theme_color_override("font_color", TEXT)
-	check.add_theme_color_override("font_pressed_color", TEXT)
-	check.add_theme_color_override("font_hover_color", TEXT)
 
 
 static func set_background(root: Control, bg_path: String, dim_alpha: float = 0.62) -> void:
