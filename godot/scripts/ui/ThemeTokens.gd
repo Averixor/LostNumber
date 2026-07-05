@@ -138,6 +138,7 @@ const FONT_SIZE_TITLE := 26  # .settings-title 1.6rem
 const FONT_SIZE_MENU_TITLE := 49  # .main-menu__title 3.05rem
 const FONT_SIZE_BODY := 15  # .menu-btn ~0.95rem
 const FONT_SIZE_SMALL := 13  # .goal-box / .system-toast 0.85rem
+const FONT_SIZE_HUD := 12  # in-game goal/xp/level rows on narrow mobile
 const FONT_SIZE_TILE := 16  # .cell-inner clamp max 1rem
 const FONT_SIZE_CHAIN_BUBBLE := 24
 const FONT_SIZE_CHIP := 15
@@ -243,7 +244,7 @@ const SKIN_PALETTES := [
 ]
 
 
-## Auto-fit tile number font: scales with cell size and digit count, then user scale.
+## Auto-fit tile number font: mirrors css/grid.css .cell-inner clamp ratios.
 static func tile_font_size_for_cell(cell_size: Vector2, digit_count: int, user_scale: float = 1.0) -> int:
 	var min_dim := minf(cell_size.x, cell_size.y)
 	if min_dim < 1.0:
@@ -252,16 +253,17 @@ static func tile_font_size_for_cell(cell_size: Vector2, digit_count: int, user_s
 	var digits := maxi(1, digit_count)
 	var height_ratio: float
 	if digits <= 2:
-		height_ratio = 0.78
+		height_ratio = 0.24  # clamp(0.8rem, 2.4vw, 1rem) on ~72px cells
 	elif digits == 3:
-		height_ratio = 0.64
+		height_ratio = 0.20  # .cell-value-compact upper range
 	else:
-		height_ratio = 0.52
+		height_ratio = 0.17
 
 	var by_height := min_dim * height_ratio
-	var by_width := min_dim / (float(digits) * 0.58)
+	var by_width := min_dim / (float(digits) * 0.56)
 	var base := minf(by_height, by_width)
-	base = clampf(base, 8.0, min_dim * 0.85)
+	var rem_cap := FONT_SIZE_TILE * (min_dim / 72.0)
+	base = clampf(base, 8.0, minf(min_dim * 0.28, rem_cap))
 	return maxi(8, int(round(base * user_scale)))
 
 

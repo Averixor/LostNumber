@@ -127,6 +127,22 @@ static func apply_button(btn: Button, disabled: bool = false) -> void:
 		hook_press_scale(btn as BaseButton)
 
 
+static func apply_compact_button(btn: Button, font_size: int = 15, min_height: float = 42.0, disabled: bool = false) -> void:
+	apply_button(btn, disabled)
+	btn.add_theme_font_size_override("font_size", font_size)
+	btn.custom_minimum_size.y = min_height
+	for state in ["normal", "hover", "pressed", "disabled"]:
+		var sb := btn.get_theme_stylebox(state)
+		if sb is StyleBoxFlat:
+			var compact := (sb as StyleBoxFlat).duplicate()
+			compact.content_margin_top = 6
+			compact.content_margin_bottom = 6
+			compact.content_margin_left = 10
+			compact.content_margin_right = 10
+			compact.set_corner_radius_all(14)
+			btn.add_theme_stylebox_override(state, compact)
+
+
 static func apply_icon_button(btn: Button) -> void:
 	apply_button(btn)
 	btn.custom_minimum_size = Vector2(56, 56)
@@ -182,7 +198,12 @@ static func load_icon(name: String) -> Texture2D:
 
 
 static func hud_panel() -> StyleBoxFlat:
-	return glass_box(12, 1, PANEL, BORDER)
+	var sb := glass_box(12, 1, PANEL, BORDER)
+	sb.content_margin_left = 8
+	sb.content_margin_right = 8
+	sb.content_margin_top = 6
+	sb.content_margin_bottom = 6
+	return sb
 
 
 static func apply_check_icon(check: CheckButton, icon_name: String) -> void:
@@ -412,6 +433,38 @@ static func _tween_button_scale(button: BaseButton, target: float) -> void:
 	var tween := button.create_tween()
 	tween.tween_property(button, "scale", Vector2.ONE * target, 0.1) \
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+
+
+static func show_toast(host: Control, text: String, duration: float = 1.6) -> void:
+	if host == null or text.is_empty():
+		return
+	var layer: Control = null
+	var tree := host.get_tree()
+	if tree != null:
+		var app := tree.root.get_node_or_null("App")
+		if app != null:
+			layer = app.get_node_or_null("OverlayRoot/ToastLayer") as Control
+	if layer == null:
+		layer = host
+	var toast := PanelContainer.new()
+	toast.name = "LnToast"
+	toast.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	toast.add_theme_stylebox_override("panel", small_pill(Color(0.12, 0.06, 0.16, 0.92), BORDER_ACTIVE))
+	var label := Label.new()
+	label.text = text
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_color_override("font_color", TEXT)
+	label.add_theme_font_size_override("font_size", 14)
+	toast.add_child(label)
+	layer.add_child(toast)
+	toast.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	toast.offset_top = 72.0
+	toast.modulate.a = 0.0
+	var tween := toast.create_tween()
+	tween.tween_property(toast, "modulate:a", 1.0, 0.12).set_trans(Tween.TRANS_SINE)
+	tween.tween_interval(maxf(0.4, duration - 0.52))
+	tween.tween_property(toast, "modulate:a", 0.0, 0.2)
+	tween.tween_callback(toast.queue_free)
 
 
 static func show_floating_text(parent: Control, text: String, local_pos: Vector2, color: Color = XP) -> void:
