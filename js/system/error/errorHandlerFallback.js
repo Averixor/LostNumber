@@ -33,7 +33,8 @@
   };
 
   window.ErrorHandler = {
-    _installed: true,
+    _installed: false,
+    _isFallback: true,
     _game: null,
 
     handle: function (error, context) {
@@ -84,6 +85,9 @@
 
     install: function (config) {
       try {
+        if (this._installed) return;
+        this._installed = true;
+
         if (window.AppEnv?.isDev) {
           console.log('Fallback ErrorHandler installed with config:', config);
         }
@@ -163,7 +167,8 @@
 
   setTimeout(() => {
     try {
-      if (typeof window.ErrorHandler !== 'undefined' && window.ErrorHandler._installed) {
+      // If the main ErrorHandler replaced the fallback by now, do nothing.
+      if (typeof window.ErrorHandler !== 'undefined' && !window.ErrorHandler._isFallback) {
         if (window.AppEnv?.isDev) {
           console.log('Main ErrorHandler installed during timeout, using main');
         }
@@ -171,8 +176,6 @@
       }
 
       window.ErrorHandler.install();
-
-      window.ErrorHandler._isFallback = true;
     } catch (e) {
       safeLog('Auto-install failed:', e);
     }

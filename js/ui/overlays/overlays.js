@@ -281,14 +281,13 @@ class OverlayManager {
   }
 
   showMessage(text) {
-    const container = document.querySelector('#gameScreen .grid-container');
-    if (!container) return;
-
-    let toast = container.querySelector('.system-toast');
+    // Toast lives on document.body so it stays visible from any screen
+    // (main menu, settings), not only the game screen.
+    let toast = document.body.querySelector(':scope > .system-toast');
     if (!toast) {
       toast = document.createElement('div');
       toast.className = 'system-toast';
-      container.appendChild(toast);
+      document.body.appendChild(toast);
     }
 
     toast.textContent = String(text ?? '');

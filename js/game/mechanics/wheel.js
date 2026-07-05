@@ -2,6 +2,7 @@ class WheelManager {
   constructor(game) {
     this.game = game;
     this.isSpinning = false;
+    this.spinTimeoutId = null;
     this.currentRotation = 0;
     this.highlightedSectorIndex = null;
 
@@ -114,6 +115,11 @@ class WheelManager {
 
   handleWheel() {
     try {
+      if (this.isSpinning) {
+        ErrorHandler.debug('Wheel already spinning');
+        return;
+      }
+
       this.game.checkWheelDailyReset();
 
       if (this.game.wheelSpinsToday >= this.game.MAX_DAILY_SPINS) {
@@ -360,7 +366,8 @@ class WheelManager {
 
       const spinDuration = this.game.animationEnabled !== false ? 3100 : 0;
 
-      setTimeout(() => {
+      this.spinTimeoutId = setTimeout(() => {
+        this.spinTimeoutId = null;
         try {
           const resultEl = document.getElementById('wheelResult');
           if (resultEl) {
@@ -613,7 +620,11 @@ class WheelManager {
 
       this.clearWheelHighlight();
 
-      this.isSpinning = false;
+      // If a spin is still resolving, its setTimeout will reset isSpinning
+      // itself; clearing the flag here would allow a parallel second spin.
+      if (this.spinTimeoutId === null) {
+        this.isSpinning = false;
+      }
       this.updateWheelUI();
     } catch (error) {
       ErrorHandler.handle(error, { type: 'wheel_close' });

@@ -119,7 +119,8 @@ LostNumberGame.prototype.renderDynamicUI = function () {
 LostNumberGame.prototype.t = function (key) {
   try {
     const pack = I18N[this.lang] || I18N['ua'];
-    return pack[key] || key;
+    // Intentionally empty translations ('') are valid values, not misses.
+    return pack[key] !== undefined ? pack[key] : key;
   } catch (error) {
     ErrorHandler.warn('Translation failed', { key, lang: this.lang, error });
     return key;

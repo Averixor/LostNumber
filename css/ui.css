@@ -1142,9 +1142,9 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
 }
 
 .system-toast {
-  position: absolute;
+  position: fixed;
   left: 50%;
-  top: 10px;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
   transform: translateX(-50%);
   max-width: 92%;
   padding: 8px 12px;
@@ -1158,7 +1158,7 @@ html[data-theme='dusk'] .xp-multiplier-indicator {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.18s ease;
-  z-index: 60;
+  z-index: 1000;
   color: var(--text-color);
 }
 .system-toast.show {

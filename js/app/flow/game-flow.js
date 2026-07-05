@@ -11,8 +11,7 @@ LostNumberGame.prototype.startNewGame = function () {
     if (this.freezeSystem && typeof this.freezeSystem.clearAll === 'function') {
       this.freezeSystem.clearAll();
     }
-    this.stats = this.defaultStats();
-    this.achievements = this.defaultAchievements();
+    // Stats and achievements are meta-progress and survive new games.
     this.pendingTransition = null;
 
     this.maxReachedNumber = 8;

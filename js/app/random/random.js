@@ -13,8 +13,8 @@ LostNumberGame.prototype.initSeededRandom = function (forceNew = false) {
     if (!seed) {
       try {
         seed =
-          typeof SeededRandom !== 'undefined' && SeededRandom.makeSessionSeed
-            ? SeededRandom.makeSessionSeed()
+          typeof SeededRandom !== 'undefined' && SeededRandom.generateSeed
+            ? SeededRandom.generateSeed()
             : (Date.now() & 0xffffffff) >>> 0;
       } catch (_) {
         seed = (Date.now() & 0xffffffff) >>> 0;
