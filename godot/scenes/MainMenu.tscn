@@ -1,10 +1,10 @@
 [gd_scene load_steps=6 format=3 uid="uid://mainmenu001"]
 
 [ext_resource type="Script" path="res://scripts/ui/MainMenu.gd" id="1_menu"]
-[ext_resource type="Shader" path="res://themes/title_gradient.gdshader" id="2_gradient"]
 [ext_resource type="PackedScene" uid="uid://neonbutton001" path="res://scenes/components/NeonButton.tscn" id="3_neonbtn"]
-[ext_resource type="PackedScene" uid="uid://menu_quick_chip" path="res://scenes/components/MenuQuickChip.tscn" id="4_chip"]
+[ext_resource type="PackedScene" uid="uid://menu_dock_btn" path="res://scenes/components/MenuDockButton.tscn" id="4_dock"]
 [ext_resource type="PackedScene" uid="uid://feature_stub_overlay" path="res://scenes/components/FeatureStubOverlay.tscn" id="5_stub"]
+[ext_resource type="Texture2D" path="res://assets/ui/logo/lost-number-logo.png" id="6_logo"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_menutitle"]
 shader = ExtResource("2_gradient")
@@ -47,7 +47,9 @@ size_flags_vertical = 3
 
 [node name="Hero" type="VBoxContainer" parent="Layout/RootVBox"]
 layout_mode = 2
+size_flags_vertical = 3
 theme_override_constants/separation = 8
+alignment = 1
 
 [node name="Logo" type="TextureRect" parent="Layout/RootVBox/Hero"]
 visible = false
@@ -56,12 +58,12 @@ layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Title" type="Label" parent="Layout/RootVBox/Hero"]
-material = SubResource("ShaderMaterial_menutitle")
+[node name="LogoImage" type="TextureRect" parent="Layout/RootVBox/Hero"]
+custom_minimum_size = Vector2(300, 110)
 layout_mode = 2
-theme_override_font_sizes/font_size = 52
-text = "LOST\nNUMBER"
-horizontal_alignment = 1
+texture = ExtResource("6_logo")
+expand_mode = 3
+stretch_mode = 5
 
 [node name="Tagline" type="Label" parent="Layout/RootVBox/Hero"]
 layout_mode = 2
@@ -72,16 +74,18 @@ autowrap_mode = 2
 
 [node name="Actions" type="VBoxContainer" parent="Layout/RootVBox"]
 layout_mode = 2
-size_flags_horizontal = 4
+size_flags_vertical = 3
 theme_override_constants/separation = 10
+alignment = 1
 
 [node name="Buttons" type="VBoxContainer" parent="Layout/RootVBox/Actions"]
 custom_minimum_size = Vector2(302, 0)
 layout_mode = 2
+size_flags_horizontal = 4
 theme_override_constants/separation = 10
 
 [node name="PlayButton" parent="Layout/RootVBox/Actions/Buttons" instance=ExtResource("3_neonbtn")]
-custom_minimum_size = Vector2(0, 64)
+custom_minimum_size = Vector2(0, 68)
 layout_mode = 2
 variant = 1
 
@@ -90,37 +94,51 @@ custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 
 [node name="WheelButton" parent="Layout/RootVBox/Actions/Buttons" instance=ExtResource("3_neonbtn")]
-custom_minimum_size = Vector2(0, 64)
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 text = "Колесо фортуни"
 
-[node name="QuickRow" type="HBoxContainer" parent="Layout/RootVBox/Actions"]
+[node name="QuickRow" type="HBoxContainer" parent="Layout/RootVBox"]
 layout_mode = 2
 theme_override_constants/separation = 7
-
-[node name="SettingsChip" parent="Layout/RootVBox/Actions/QuickRow" instance=ExtResource("4_chip")]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="StatsChip" parent="Layout/RootVBox/Actions/QuickRow" instance=ExtResource("4_chip")]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="AboutChip" parent="Layout/RootVBox/Actions/QuickRow" instance=ExtResource("4_chip")]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="DockPanel" type="PanelContainer" parent="Layout/RootVBox"]
-layout_mode = 2
-
-[node name="DockRow" type="HBoxContainer" parent="Layout/RootVBox/DockPanel"]
-layout_mode = 2
-theme_override_constants/separation = 2
 alignment = 1
 
-[node name="BottomSpacer" type="Control" parent="Layout/RootVBox"]
-custom_minimum_size = Vector2(0, 4)
+[node name="QuickSettings" parent="Layout/RootVBox/QuickRow" instance=ExtResource("4_dock")]
 layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="QuickStats" parent="Layout/RootVBox/QuickRow" instance=ExtResource("4_dock")]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="QuickAbout" parent="Layout/RootVBox/QuickRow" instance=ExtResource("4_dock")]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DockRow" type="HBoxContainer" parent="Layout/RootVBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="DockPremium" parent="Layout/RootVBox/DockRow" instance=ExtResource("4_dock")]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DockTournaments" parent="Layout/RootVBox/DockRow" instance=ExtResource("4_dock")]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DockAchievements" parent="Layout/RootVBox/DockRow" instance=ExtResource("4_dock")]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DockDaily" parent="Layout/RootVBox/DockRow" instance=ExtResource("4_dock")]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DockBonuses" parent="Layout/RootVBox/DockRow" instance=ExtResource("4_dock")]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="VersionLabel" type="Label" parent="Layout/RootVBox"]
 layout_mode = 2

@@ -48,6 +48,12 @@ func is_registered() -> bool:
 	return _screen_root != null and is_instance_valid(_screen_root)
 
 
+func get_current_screen() -> Node:
+	if not is_registered() or _screen_root.get_child_count() == 0:
+		return null
+	return _screen_root.get_child(0)
+
+
 func push(screen_id: String) -> void:
 	if not SCREENS.has(screen_id) or _busy:
 		return
@@ -76,6 +82,10 @@ func reload_current() -> void:
 
 ## Pops the back-stack. Returns false when there is nothing to go back to
 ## (caller decides what to do, e.g. quit on Android back from main menu).
+func can_go_back() -> bool:
+	return not _back_stack.is_empty()
+
+
 func go_back() -> bool:
 	if _busy:
 		return true

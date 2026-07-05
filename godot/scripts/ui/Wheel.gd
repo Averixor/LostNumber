@@ -3,11 +3,11 @@ extends Control
 const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 
-@onready var wheel_canvas: WheelCanvas = $VBox/WheelCanvas
-@onready var spin_button: NeonButton = $VBox/SpinButton
-@onready var cost_label: Label = $VBox/CostLabel
-@onready var back_button: NeonButton = $VBox/BackButton
-@onready var title_label: Label = $VBox/Title
+@onready var wheel_canvas: WheelCanvas = $Layout/VBox/WheelCanvas
+@onready var spin_button: NeonButton = $Layout/VBox/SpinButton
+@onready var cost_label: Label = $Layout/VBox/CostLabel
+@onready var back_button: NeonButton = $Layout/VBox/BackButton
+@onready var title_label: Label = $Layout/VBox/Title
 @onready var result_panel: PanelContainer = $ResultModal
 @onready var result_dim: ColorRect = $ResultModal/Dim
 @onready var result_card: PanelContainer = $ResultModal/Center/ResultCard
@@ -43,36 +43,54 @@ func _navigate_back() -> void:
 		router.call("replace", "main_menu")
 
 func _ready() -> void:
-	LnUiLib.set_background(self, "res://assets/ui/backgrounds/dark/menu-bg-4.png", 0.66)
-	if background != null:
-		background.color = Color(0, 0, 0, 0)
-	LnUiLib.apply_title(title_label, 34)
-	LnUiLib.apply_body(cost_label, 16)
-	LnUiLib.apply_button(spin_button)
-	LnUiLib.apply_button(back_button)
-	LnUiLib.apply_button(result_close, false)
-	title_label.text = "Колесо фортуни"
-	back_button.text = "Назад"
-	result_close.text = "Закрити"
+	LnUiLib.set_background(self, LnUiLib.screen_bg("wheel"))
+	var theme := _autoload("ThemeManager")
+	if background != null and theme != null and theme.has_method("get_background_color"):
+		background.color = Color(theme.call("get_background_color"), 0.6)
+
+	title_label.text = _i18n("wheel_title")
+	LnUiLib.apply_title(title_label, ThemeTokensLib.FONT_SIZE_TITLE)
+	back_button.text = _i18n("menu_back")
+	result_close.text = _i18n("btn_close")
 	result_panel.visible = false
 	_style_result_modal()
 	spin_button.pressed.connect(_on_spin)
 	back_button.pressed.connect(_on_back)
 	result_close.pressed.connect(_hide_result)
 	wheel_canvas.spin_finished.connect(_on_spin_animation_done)
+	LnUiLib.apply_button(back_button)
+	LnUiLib.apply_button_icon(back_button, "back.svg")
+	LnUiLib.apply_button_icon(result_close, "close.svg")
+
 	_state = _load_state()
 	_wheel = WheelManager.new(_state)
 	_daily = DailyQuestManager.new(_state)
 	_daily.ensure_loaded()
 	_refresh_ui()
-	LnUiLib.fade_in($VBox)
+	_animate_entrance()
+
+
+func _animate_entrance() -> void:
+	await LnUiLib.animate_entrance([title_label, wheel_canvas, spin_button, cost_label, back_button])
+
 
 func _refresh_ui() -> void:
+	cost_label.add_theme_color_override("font_color", LnUiLib.TEXT_MUTED)
+	cost_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_SMALL)
 	var cost := _wheel.get_cost()
-	var can := _wheel.can_spin()
-	spin_button.text = "Обернути %d XP" % cost if can.ok else "Недостатньо XP"
-	spin_button.disabled = not can.ok or wheel_canvas.is_spinning()
-	cost_label.text = "Спроб сьогодні: %d/%d" % [_state.wheel_spins_today, WheelManager.MAX_DAILY_SPINS]
+	var check := _wheel.can_spin()
+	spin_button.disabled = not check.ok or wheel_canvas.is_spinning()
+	if not check.ok and str(check.get("reason", "")) == "not_enough_xp":
+		spin_button.text = _i18n("dice_not_enough")
+	else:
+		spin_button.text = _i18n("btn_spin_wheel", [cost])
+	if ResourceLoader.exists(LnUiLib.icon_path("reward-xp.svg")):
+		spin_button.icon = load(LnUiLib.icon_path("reward-xp.svg"))
+		spin_button.expand_icon = true
+	LnUiLib.apply_button(spin_button, spin_button.disabled)
+	var remaining := WheelManager.MAX_DAILY_SPINS - _state.wheel_spins_today
+	cost_label.text = "%s: %d/%d" % [_i18n("wheel_title"), _state.wheel_spins_today, WheelManager.MAX_DAILY_SPINS]
+
 
 func _on_spin() -> void:
 	_play_sfx("button_click")
@@ -97,12 +115,26 @@ func _on_spin_animation_done(sector: Dictionary, _index: int) -> void:
 
 func _style_result_modal() -> void:
 	if result_dim != null:
-		result_dim.color = Color(0, 0, 0, 0.58)
-	LnUiLib.apply_panel(result_card, true)
-	LnUiLib.apply_body(result_label, 20)
+		result_dim.color = LnUiLib.DIM_DARK
+	if result_card == null:
+		return
+	var style := LnUiLib.glass_box(ThemeTokensLib.RADIUS_PANEL, 2, LnUiLib.PANEL, LnUiLib.BORDER_ACTIVE)
+	style.shadow_color = Color(LnUiLib.ACCENT_2, 0.42)
+	style.shadow_size = 18
+	style.set_content_margin_all(20)
+	result_card.add_theme_stylebox_override("panel", style)
+	result_label.add_theme_color_override("font_color", LnUiLib.TEXT)
+	result_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_BODY)
+	LnUiLib.apply_button(result_close)
+
 
 func _show_result(text: String) -> void:
-	result_label.text = text
+	var prize := text.strip_edges()
+	if prize.begins_with("Бонус:"):
+		prize = prize.substr(7).strip_edges()
+	var win_prefix := _i18n("wheel_win_prefix") if _i18n("wheel_win_prefix") != "wheel_win_prefix" else "Виграш:"
+	result_label.text = "%s %s" % [win_prefix, prize] if not prize.is_empty() else text
+	result_label.add_theme_color_override("font_color", LnUiLib.ACCENT if not prize.is_empty() else LnUiLib.TEXT)
 	result_panel.visible = true
 	result_card.scale = Vector2(0.92, 0.92)
 	result_card.modulate.a = 0.0

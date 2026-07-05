@@ -10,17 +10,32 @@ const MODAL_SCALE_TIME := 0.18
 @onready var modal_layer: Control = $OverlayRoot/ModalLayer
 @onready var transition: Control = $OverlayRoot/TransitionLayer/ScreenTransition
 
+var _exit_dialog: ConfirmationDialog = null
+var _back_busy := false
+
 
 func _autoload(name: String) -> Node:
 	return get_node_or_null("/root/" + name)
 
 
+func _i18n(key: String, args: Array = []) -> String:
+	var i18n := _autoload("I18nManager")
+	if i18n != null and i18n.has_method("t"):
+		return str(i18n.call("t", key, args))
+	return key
+
+
 func _ready() -> void:
-	get_tree().set_auto_accept_quit(true)
+	get_tree().set_auto_accept_quit(false)
+	_apply_fullscreen()
 	var router := _autoload("ScreenRouter")
 	if router != null and router.has_method("register"):
 		router.call("register", screen_root, transition)
 		router.call("replace", "main_menu")
+
+
+func _apply_fullscreen() -> void:
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 
 
 func _exit_tree() -> void:
@@ -31,17 +46,62 @@ func _exit_tree() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
-		_handle_android_back()
+		call_deferred("_handle_android_back_async")
+
+
+func _handle_android_back_async() -> void:
+	if _back_busy:
+		return
+	_back_busy = true
+	await _handle_android_back()
+	_back_busy = false
 
 
 func _handle_android_back() -> void:
+	if _exit_dialog != null and is_instance_valid(_exit_dialog) and _exit_dialog.visible:
+		_exit_dialog.hide()
+		get_viewport().set_input_as_handled()
+		return
+
 	var router := _autoload("ScreenRouter")
 	if router == null:
-		get_tree().quit()
+		_show_exit_confirm()
+		get_viewport().set_input_as_handled()
 		return
+
+	var screen_id: String = str(router.get("current_screen_id"))
+
+	if screen_id == "main_menu":
+		_show_exit_confirm()
+		get_viewport().set_input_as_handled()
+		return
+
+	if screen_id == "game":
+		var screen: Node = router.get_current_screen()
+		if screen != null and screen.has_method("handle_back"):
+			screen.call("handle_back")
+		get_viewport().set_input_as_handled()
+		return
+
 	var handled: bool = await router.go_back()
 	if not handled:
-		get_tree().quit()
+		await router.replace("main_menu")
+	get_viewport().set_input_as_handled()
+
+
+func _show_exit_confirm() -> void:
+	if _exit_dialog != null and is_instance_valid(_exit_dialog):
+		_exit_dialog.popup_centered()
+		return
+
+	_exit_dialog = ConfirmationDialog.new()
+	_exit_dialog.title = _i18n("exit_confirm_title")
+	_exit_dialog.dialog_text = _i18n("exit_confirm_text")
+	_exit_dialog.ok_button_text = _i18n("btn_exit")
+	_exit_dialog.cancel_button_text = _i18n("menu_back")
+	_exit_dialog.confirmed.connect(func(): get_tree().quit())
+	add_child(_exit_dialog)
+	_exit_dialog.popup_centered()
 
 
 ## Presents a modal control in ModalLayer with a scale-in (web parity: overlays).

@@ -46,7 +46,8 @@ func start_new_game(seed_value: int = -1) -> void:
 	phase = Phase.PLAYING
 	bonus_inventory = {"destroy": 0, "shuffle": 0, "explosion": 0}
 	active_bonus = ""
-	daily_quests = {}
+	var preserved_daily := daily_quests.duplicate(true)
+	daily_quests = preserved_daily
 	progress.record_new_game()
 
 	board.grid = board._create_empty_grid()
@@ -112,7 +113,7 @@ func can_finish_current_chain() -> bool:
 	return Rules.can_finish_chain(numbers)
 
 
-func merge_current_chain() -> Dictionary:
+func merge_current_chain(defer_settle: bool = false) -> Dictionary:
 	var validation: Dictionary = Rules.validate_chain(selected_path, board.grid, board.grid_w, board.grid_h)
 	if not validation.valid:
 		return {"ok": false, "reason": validation.get("reason", "invalid")}
@@ -133,8 +134,9 @@ func merge_current_chain() -> Dictionary:
 		removed.append(selected_path[i])
 
 	board.apply_merge(anchor, removed, result_number)
-	board.apply_gravity()
-	board.spawn_new_cells(current_level, carry_number, max_reached_number)
+	if not defer_settle:
+		board.apply_gravity()
+		board.spawn_new_cells(current_level, carry_number, max_reached_number)
 
 	var chain_len: int = selected_path.size()
 	var xp_earned := _calculate_xp(chain_len)
@@ -158,6 +160,8 @@ func merge_current_chain() -> Dictionary:
 		"surplus": surplus,
 		"level_complete": won,
 		"result": result_number,
+		"anchor": anchor,
+		"removed": removed,
 	}
 
 

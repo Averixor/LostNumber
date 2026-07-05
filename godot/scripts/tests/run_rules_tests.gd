@@ -1,6 +1,7 @@
 extends SceneTree
 
 const Rules := preload("res://scripts/core/Rules.gd")
+const GameState := preload("res://scripts/core/GameState.gd")
 
 var failed := 0
 
@@ -31,6 +32,29 @@ func _init() -> void:
 	_assert_false(Rules.is_adjacent(Vector2i(0, 0), Vector2i(0, 0)), "same cell is not adjacent")
 	_assert_false(Rules.is_adjacent(Vector2i(0, 0), Vector2i(2, 0)), "two steps away is not adjacent")
 
+	var state := GameState.new()
+	state.start_new_game(42)
+	state.board.grid[0][0] = 2
+	state.board.grid[1][1] = 2
+	state.begin_chain(Vector2i(0, 0))
+	_assert_true(state.extend_chain(Vector2i(1, 1)), "diagonal extend chain")
+	_assert_eq(state.selected_path.size(), 2, "diagonal path length")
+
+	state.clear_chain()
+	state.board.grid[0][0] = 2
+	state.board.grid[1][1] = 2
+	state.board.grid[2][2] = 2
+	state.begin_chain(Vector2i(0, 0))
+	_assert_true(state.extend_chain(Vector2i(1, 1)), "first diagonal step")
+	_assert_true(state.extend_chain(Vector2i(2, 2)), "second diagonal step")
+	_assert_eq(state.selected_path.size(), 3, "double diagonal path length")
+
+	state.clear_chain()
+	state.begin_chain(Vector2i(1, 1))
+	_assert_true(state.extend_chain(Vector2i(0, 0)), "reverse diagonal extend")
+	_assert_true(state.extend_chain(Vector2i(0, 1)), "diagonal then orthogonal")
+	_assert_eq(state.selected_path.size(), 3, "mixed diagonal path length")
+
 	var path: Array[Vector2i] = [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1)]
 	var grid := [
 		[2, 2, 0, 0, 0, 0, 0, 0],
@@ -60,3 +84,11 @@ func _assert_true(value: bool, message: String) -> void:
 
 func _assert_false(value: bool, message: String) -> void:
 	_assert_true(not value, message)
+
+
+func _assert_eq(actual: int, expected: int, message: String) -> void:
+	if actual != expected:
+		failed += 1
+		push_error("FAIL: %s (got %s expected %s)" % [message, actual, expected])
+	else:
+		print("OK: " + message)
