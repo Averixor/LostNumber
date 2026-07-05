@@ -7,6 +7,7 @@ extends Control
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 const AutoloadAccessLib := preload("res://scripts/managers/AutoloadAccess.gd")
+const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 
 const PARTICLE_AMOUNT_FULL := 14
 const PARTICLE_AMOUNT_LOW := 5
@@ -43,8 +44,7 @@ func refresh() -> void:
 	art.texture = null
 	if theme_mgr != null and theme_mgr.has_method("get_background_texture_path"):
 		var path := str(theme_mgr.call("get_background_texture_path"))
-		if ResourceLoader.exists(path):
-			art.texture = load(path)
+		art.texture = LnUiLib.load_background_texture(path)
 
 	# Web parity: dusk uses a dark overlay over the art, dawn a light veil.
 	dim_overlay.color = Color(0.03, 0.01, 0.07, 0.4) if dark else Color(Color("#ffe8f8"), 0.35)

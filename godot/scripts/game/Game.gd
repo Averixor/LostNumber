@@ -120,10 +120,18 @@ func _exit_tree() -> void:
 
 
 func _refresh_hud() -> void:
+	var was_bonus_pick := board_view.bonus_pick_mode
 	game_hud.refresh(state, Callable(self, "_i18n"))
 	overlay_title.text = _i18n("level_complete")
 	continue_button.text = _i18n("next_level")
-	board_view.bonus_pick_mode = not state.active_bonus.is_empty()
+	var bonus_pick := not state.active_bonus.is_empty()
+	board_view.bonus_pick_mode = bonus_pick
+	if was_bonus_pick != bonus_pick:
+		if bonus_pick:
+			board_view.refresh_all()
+		else:
+			board_view.reset_all_highlights()
+			board_view.refresh_all()
 	_update_sound_button()
 
 
@@ -209,6 +217,7 @@ func _on_bonus_pressed(type: String) -> void:
 	if type == "shuffle":
 		_daily.on_bonus_used()
 		_play_sfx("button_click")
+		board_view.reset_all_highlights()
 		board_view.refresh_all()
 		_save_game()
 	_refresh_hud()
@@ -222,10 +231,14 @@ func _on_cell_picked(cell: Vector2i) -> void:
 	_daily.on_bonus_used()
 	_play_sfx("button_click")
 	_show_message(str(result.get("message_key", "")))
+	_exit_bonus_pick_mode()
+	_save_game()
+
+
+func _exit_bonus_pick_mode() -> void:
 	board_view.reset_all_highlights()
 	board_view.refresh_all()
 	_refresh_hud()
-	_save_game()
 
 
 func _on_chain_updated(can_finish: bool) -> void:

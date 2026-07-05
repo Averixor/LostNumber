@@ -4,6 +4,7 @@ extends Control
 ## overlay layers. Registers ScreenRouter and handles the Android back button.
 
 const MODAL_SCALE_TIME := 0.18
+const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 
 @onready var screen_root: Control = $ScreenRoot
 @onready var toast_layer: Control = $OverlayRoot/ToastLayer
@@ -28,6 +29,9 @@ func _i18n(key: String, args: Array = []) -> String:
 func _ready() -> void:
 	get_tree().set_auto_accept_quit(false)
 	_apply_fullscreen()
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_signal("theme_changed"):
+		theme_mgr.theme_changed.connect(_on_theme_changed)
 	var router := _autoload("ScreenRouter")
 	if router != null and router.has_method("register"):
 		router.call("register", screen_root, transition)
@@ -36,6 +40,27 @@ func _ready() -> void:
 
 func _apply_fullscreen() -> void:
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+
+
+func _on_theme_changed() -> void:
+	_refresh_current_screen_background()
+
+
+func _refresh_current_screen_background() -> void:
+	var router := _autoload("ScreenRouter")
+	if router == null or not router.has_method("is_registered") or not bool(router.call("is_registered")):
+		return
+	var screen_id: String = str(router.get("current_screen_id"))
+	if screen_id.is_empty() or screen_id == "skin_preview":
+		return
+	var screen: Node = router.get_current_screen()
+	if screen == null or not (screen is Control):
+		return
+	LnUiLib.set_background(screen as Control, LnUiLib.screen_bg(screen_id))
+	if screen.has_method("_apply_theme"):
+		screen.call("_apply_theme")
+	elif screen.has_method("_apply_background"):
+		screen.call("_apply_background")
 
 
 func _exit_tree() -> void:

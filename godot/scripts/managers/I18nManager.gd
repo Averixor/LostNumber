@@ -52,6 +52,8 @@ const KEY_ALIASES := {
 	"daily_use_bonus": "daily_use_bonus",
 	"daily_spin_wheel": "daily_spin_wheel",
 	"daily_completed": "daily_completed",
+	"daily_progress": "daily_progress",
+	"daily_received": "daily_received",
 	"wheel_title": "wheel_title",
 	"wheel_spin": "btn_spin_wheel",
 	"achievements_title": "achievements_title",

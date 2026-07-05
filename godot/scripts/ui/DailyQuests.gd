@@ -3,7 +3,8 @@ extends Control
 const DailyQuestCardScene := preload("res://scenes/components/DailyQuestCard.tscn")
 const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 
-@onready var list: VBoxContainer = $Scroll/ListMargin/List
+@onready var scroll: ScrollContainer = $Scroll
+@onready var list: VBoxContainer = $Scroll/List
 @onready var back_button: NeonButton = $BackButton
 @onready var title_label: Label = $Title
 @onready var background: ColorRect = $Background
@@ -46,7 +47,43 @@ func _ready() -> void:
 	back_button.pressed.connect(_on_back)
 	_state = _load_state()
 	_render()
+	_adapt_layout()
+	call_deferred("_adapt_layout")
 	_animate_entrance()
+
+
+func _is_compact_layout() -> bool:
+	return get_viewport_rect().size.y <= 920.0
+
+
+func _adapt_layout() -> void:
+	var compact := _is_compact_layout()
+	var title_bottom := 52.0 if compact else 56.0
+	var back_top := -56.0 if compact else -56.0
+	var back_bottom := -12.0 if compact else -16.0
+
+	title_label.offset_top = 12.0 if compact else 16.0
+	title_label.offset_bottom = title_bottom
+
+	scroll.offset_left = 16.0
+	scroll.offset_right = -16.0
+	scroll.offset_top = title_bottom + 8.0
+	scroll.offset_bottom = back_top - 8.0
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+
+	back_button.offset_top = back_top
+	back_button.offset_bottom = back_bottom
+
+	list.add_theme_constant_override("separation", 4 if compact else 6)
+	for child in list.get_children():
+		if child is DailyQuestCard:
+			child.call("apply_layout", compact)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_RESIZED:
+		_adapt_layout()
 
 
 func _animate_entrance() -> void:
@@ -63,21 +100,21 @@ func _render() -> void:
 
 	var daily := DailyQuestManager.new(_state)
 	daily.ensure_loaded()
-	var progress_prefix := "Прогрес:"
+	var progress_prefix := _i18n("daily_progress")
 
 	for quest in daily.get_quests():
 		var card: DailyQuestCard = DailyQuestCardScene.instantiate()
+		list.add_child(card)
 		var qid := str(quest.get("id", ""))
 		var done := daily.is_done(qid)
-		var text_key := str(quest.get("text_key", ""))
+		var text_key := str(quest.get("text_key", quest.get("textKey", "")))
 		var quest_text := _i18n(text_key) if not text_key.is_empty() else ""
 		if quest_text.is_empty() or quest_text == text_key:
 			quest_text = _fallback_quest_text(qid)
 		var prog: Dictionary = daily.get_progress(qid)
 		var progress_text := "%s %d/%d" % [progress_prefix, int(prog.get("current", 0)), int(prog.get("max", 1))]
 		var reward_text := daily.get_reward_label(qid)
-		card.setup(done, quest_text, progress_text, reward_text, "Отримано" if done else "")
-		list.add_child(card)
+		card.setup(done, quest_text, progress_text, reward_text, _i18n("daily_received") if done else "")
 
 
 func _fallback_quest_text(id: String) -> String:
@@ -85,7 +122,7 @@ func _fallback_quest_text(id: String) -> String:
 		"completeLevel":
 			return "Пройти 1 рівень"
 		"chain5":
-			return "З'єднай 10 плиток"
+			return "Зібрати ланцюжок з 5 чисел"
 		"xp100":
 			return "Набери 100 XP"
 		"useBonus":

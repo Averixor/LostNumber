@@ -257,8 +257,7 @@ func apply_background_path(path: String) -> void:
 	var settings := get_node_or_null("/root/SettingsManager")
 	if settings != null and settings.has_method("apply_background_for_active_theme"):
 		settings.call("apply_background_for_active_theme", path)
-	else:
-		_save()
+	_save()
 	theme_changed.emit()
 
 

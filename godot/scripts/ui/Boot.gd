@@ -48,10 +48,11 @@ func _apply_theme() -> void:
 		var tex_path := ""
 		if theme_mgr != null and theme_mgr.has_method("get_background_texture_path"):
 			tex_path = str(theme_mgr.call("get_background_texture_path"))
-		if tex_path.is_empty() or not ResourceLoader.exists(tex_path):
-			tex_path = "res://icon.png"
-		if ResourceLoader.exists(tex_path):
-			background_art.texture = load(tex_path)
+		var tex := LnUiLib.load_background_texture(tex_path)
+		if tex == null:
+			tex = LnUiLib.load_background_texture("res://icon.png")
+		if tex != null:
+			background_art.texture = tex
 		background_art.modulate = Color(1.0, 1.0, 1.0, 0.92)
 
 
