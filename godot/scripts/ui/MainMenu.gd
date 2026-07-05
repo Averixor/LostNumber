@@ -1,15 +1,15 @@
 extends Control
 
-## Main menu (web parity: primary actions, quick-row chips, bottom dock).
-
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
+const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 const MenuDockScene := preload("res://scenes/components/MenuDockButton.tscn")
-const MenuQuickChipScene := preload("res://scenes/components/MenuQuickChip.tscn")
 
+@onready var logo_rect: TextureRect = $Layout/RootVBox/Hero/Logo
 @onready var title_label: Label = $Layout/RootVBox/Hero/Title
 @onready var tagline_label: Label = $Layout/RootVBox/Hero/Tagline
 @onready var play_button: NeonButton = $Layout/RootVBox/Actions/Buttons/PlayButton
 @onready var continue_button: NeonButton = $Layout/RootVBox/Actions/Buttons/ContinueButton
+@onready var wheel_button: NeonButton = $Layout/RootVBox/Actions/Buttons/WheelButton
 @onready var quick_settings: Button = $Layout/RootVBox/Actions/QuickRow/SettingsChip
 @onready var quick_stats: Button = $Layout/RootVBox/Actions/QuickRow/StatsChip
 @onready var quick_about: Button = $Layout/RootVBox/Actions/QuickRow/AboutChip
@@ -19,19 +19,9 @@ const MenuQuickChipScene := preload("res://scenes/components/MenuQuickChip.tscn"
 @onready var feature_dim: ColorRect = $FeatureDim
 @onready var feature_stub: Control = $FeatureStub
 
-var _tagline_taps := 0
-var _tagline_tap_time := 0
-
 
 func _autoload(name: String) -> Node:
 	return get_node_or_null("/root/" + name)
-
-
-func _i18n(key: String, args: Array = []) -> String:
-	var i18n := _autoload("I18nManager")
-	if i18n != null and i18n.has_method("t"):
-		return str(i18n.call("t", key, args))
-	return key
 
 
 func _navigate(screen_id: String) -> void:
@@ -41,139 +31,108 @@ func _navigate(screen_id: String) -> void:
 
 
 func _ready() -> void:
-	title_label.text = _i18n("app_title").to_upper().replace(" ", "\n")
-	_apply_title_gradient_height()
-	tagline_label.text = _i18n("main_subtitle")
-	tagline_label.add_theme_color_override("font_color", Color(ThemeTokensLib.COLOR_TEXT, 0.9))
-	tagline_label.gui_input.connect(_on_tagline_input)
-
-	play_button.text = _i18n("menu_play")
-	continue_button.text = _i18n("menu_continue")
-	version_label.text = _i18n("version_label", [str(ProjectSettings.get_setting("application/config/version", ""))])
-	version_label.add_theme_color_override("font_color", Color(ThemeTokensLib.COLOR_MUTED, 0.8))
-
-	_set_button_icon(play_button, "res://assets/ui/icons/new-game.svg")
-	_set_button_icon(continue_button, "res://assets/ui/icons/continue.svg")
-
-	quick_settings.call("setup", _i18n("menu_settings"), "res://assets/ui/icons/settings.svg")
-	quick_stats.call("setup", _i18n("btn_stats"), "res://assets/ui/icons/statistics.svg")
-	quick_about.call("setup", _i18n("btn_about"), "res://assets/ui/icons/about.svg")
-
+	LnUiLib.set_background(self, "res://assets/ui/backgrounds/dark/menu-bg-1.png", 0.60)
+	_setup_brand()
+	_setup_buttons()
 	_build_dock()
-	_style_dock_panel()
-
-	var save := _autoload("SaveManager")
-	var has_save: bool = save != null and save.has_method("has_save") and bool(save.call("has_save"))
-	continue_button.visible = has_save
-	play_button.text = _i18n("menu_new_game") if has_save else _i18n("menu_play")
-
+	LnUiLib.apply_panel(dock_panel)
+	_refresh_save_state()
 	play_button.pressed.connect(_on_play)
 	continue_button.pressed.connect(_on_continue)
+	wheel_button.pressed.connect(_on_wheel)
 	quick_settings.pressed.connect(_on_settings)
 	quick_stats.pressed.connect(_on_stats)
 	quick_about.pressed.connect(_on_about)
-	feature_stub.connect("closed", func(): feature_dim.visible = false)
-
 	feature_dim.visible = false
 	feature_stub.visible = false
-
+	feature_stub.connect("closed", func(): feature_dim.visible = false)
 	var audio := _autoload("AudioManager")
 	if audio != null and audio.has_method("play_music"):
 		audio.call("play_music", "ambient")
-
 	_animate_entrance()
+
+
+func _setup_brand() -> void:
+	title_label.text = "LOST\nNUMBER"
+	LnUiLib.apply_title(title_label, 52)
+	tagline_label.text = "З'єднуй числа. Ставай сильнішим."
+	tagline_label.add_theme_color_override("font_color", Color(ThemeTokensLib.COLOR_TEXT, 0.90))
+	var logo_path := "res://assets/ui/logo/lost-number-logo.png"
+	if ResourceLoader.exists(logo_path):
+		logo_rect.texture = load(logo_path)
+		logo_rect.visible = true
+		title_label.visible = false
+	else:
+		logo_rect.visible = false
+		title_label.visible = true
+	version_label.text = "v%s" % str(ProjectSettings.get_setting("application/config/version", ""))
+	version_label.add_theme_color_override("font_color", Color(ThemeTokensLib.COLOR_MUTED, 0.82))
+
+
+func _setup_buttons() -> void:
+	play_button.text = "Нова гра"
+	continue_button.text = "Продовжити"
+	wheel_button.text = "Колесо фортуни"
+	for btn in [play_button, continue_button, wheel_button]:
+		LnUiLib.apply_button(btn, true)
+	LnUiLib.set_icon(play_button, "res://assets/ui/icons/new-game.svg")
+	LnUiLib.set_icon(continue_button, "res://assets/ui/icons/continue.svg")
+	LnUiLib.set_icon(wheel_button, "res://assets/ui/icons/wheel.svg")
+	quick_settings.call("setup", "Налаштування", "res://assets/ui/icons/settings.svg")
+	quick_stats.call("setup", "Статистика", "res://assets/ui/icons/statistics.svg")
+	quick_about.call("setup", "Про гру", "res://assets/ui/icons/about.svg")
+
+
+func _refresh_save_state() -> void:
+	var save := _autoload("SaveManager")
+	var has_save: bool = save != null and save.has_method("has_save") and bool(save.call("has_save"))
+	continue_button.visible = true
+	continue_button.disabled = not has_save
+	play_button.text = "Нова гра" if has_save else "Грати"
 
 
 func _build_dock() -> void:
 	for child in dock_row.get_children():
 		child.queue_free()
-
 	var items := [
-		["dock_premium", "res://assets/ui/icons/premium.svg", _on_dock_premium],
-		["dock_tournaments", "res://assets/ui/icons/tournaments.svg", _on_dock_tournaments],
-		["dock_achievements", "res://assets/ui/icons/achievements.svg", _on_dock_achievements],
-		["dock_daily", "res://assets/ui/icons/daily-tasks.svg", _on_dock_daily],
-		["dock_bonuses", "res://assets/ui/icons/bonus.svg", _on_dock_bonuses],
+		["Щоденні", "res://assets/ui/icons/daily-tasks.svg", _on_dock_daily],
+		["Досягнення", "res://assets/ui/icons/achievements.svg", _on_dock_achievements],
+		["Бонуси", "res://assets/ui/icons/bonus.svg", _on_dock_bonuses],
 	]
 	for item in items:
 		var btn: Button = MenuDockScene.instantiate()
-		btn.call("setup", _i18n(str(item[0])), str(item[1]))
+		btn.call("setup", str(item[0]), str(item[1]))
 		btn.pressed.connect(item[2])
 		dock_row.add_child(btn)
 
 
-func _style_dock_panel() -> void:
-	var style := StyleBoxFlat.new()
-	style.bg_color = ThemeTokensLib.MENU_DOCK_BG
-	style.set_corner_radius_all(ThemeTokensLib.RADIUS_PANEL)
-	style.set_border_width_all(1)
-	style.border_color = ThemeTokensLib.COLOR_PANEL_BORDER
-	style.set_content_margin_all(8)
-	dock_panel.add_theme_stylebox_override("panel", style)
-
-
-func _set_button_icon(button: Button, path: String) -> void:
-	if not ResourceLoader.exists(path):
-		return
-	var tex: Texture2D = load(path)
-	if tex != null:
-		button.icon = tex
-		button.expand_icon = true
-
-
-func _apply_title_gradient_height() -> void:
-	var material := title_label.material
-	if material is ShaderMaterial:
-		var height: float = maxf(title_label.get_minimum_size().y, 1.0)
-		(material as ShaderMaterial).set_shader_parameter("gradient_height", height)
-
-
 func _animate_entrance() -> void:
-	var items: Array[Control] = [title_label, tagline_label, play_button]
-	if continue_button.visible:
-		items.append(continue_button)
-	for chip in [quick_settings, quick_stats, quick_about]:
-		items.append(chip)
-	for child in dock_row.get_children():
-		if child is Control:
-			items.append(child)
+	var items: Array[Control] = []
+	if logo_rect.visible:
+		items.append(logo_rect)
+	if title_label.visible:
+		items.append(title_label)
+	items.append(tagline_label)
+	items.append(play_button)
+	items.append(continue_button)
+	items.append(wheel_button)
+	items.append(quick_settings)
+	items.append(quick_stats)
+	items.append(quick_about)
 	items.append(version_label)
-
 	for item in items:
 		item.modulate.a = 0.0
-
 	await get_tree().process_frame
 	if not is_inside_tree():
 		return
-
 	for i in items.size():
 		var item := items[i]
-		var target_y := item.position.y
-		item.position.y = target_y + 16.0
+		var y := item.position.y
+		item.position.y = y + 14.0
 		var tween := create_tween().set_parallel(true)
-		var delay := 0.05 * i
-		tween.tween_property(item, "modulate:a", 1.0, 0.28) \
-			.set_delay(delay).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		tween.tween_property(item, "position:y", target_y, 0.28) \
-			.set_delay(delay).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-
-
-func _on_tagline_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.double_click:
-		var theme_mgr := _autoload("ThemeManager")
-		if theme_mgr != null and theme_mgr.has_method("cycle_background"):
-			theme_mgr.call("cycle_background")
-	elif event is InputEventMouseButton and event.pressed:
-		var now := Time.get_ticks_msec()
-		if now - _tagline_tap_time > 400:
-			_tagline_taps = 0
-		_tagline_tap_time = now
-		_tagline_taps += 1
-		if _tagline_taps >= 2:
-			_tagline_taps = 0
-			var theme_mgr := _autoload("ThemeManager")
-			if theme_mgr != null and theme_mgr.has_method("cycle_background"):
-				theme_mgr.call("cycle_background")
+		var delay := 0.035 * i
+		tween.tween_property(item, "modulate:a", 1.0, 0.24).set_delay(delay)
+		tween.tween_property(item, "position:y", y, 0.24).set_delay(delay)
 
 
 func _play_button_sfx() -> void:
@@ -182,12 +141,9 @@ func _play_button_sfx() -> void:
 		audio.call("play_sfx", "button_click")
 
 
-func _show_feature_stub(title_key: String, body_key: String, extra_bullets: Array = []) -> void:
-	var body := _i18n(body_key)
-	for bullet_key in extra_bullets:
-		body += "\n• " + _i18n(str(bullet_key))
+func _show_stub(title: String, body: String) -> void:
 	feature_dim.visible = true
-	feature_stub.call("show_stub", _i18n(title_key), body, _i18n("feature_stub_ok"))
+	feature_stub.call("show_stub", title, body, "Добре")
 
 
 func _on_play() -> void:
@@ -201,6 +157,11 @@ func _on_play() -> void:
 func _on_continue() -> void:
 	_play_button_sfx()
 	_navigate("game")
+
+
+func _on_wheel() -> void:
+	_play_button_sfx()
+	_navigate("wheel")
 
 
 func _on_settings() -> void:
@@ -218,24 +179,6 @@ func _on_about() -> void:
 	_navigate("about")
 
 
-func _on_dock_premium() -> void:
-	_play_button_sfx()
-	_show_feature_stub("feature_premium_title", "feature_premium_intro", [
-		"feature_premium_bullet_ad",
-		"feature_premium_bullet_themes",
-		"feature_premium_bullet_tournaments",
-		"feature_premium_note",
-	])
-
-
-func _on_dock_tournaments() -> void:
-	_play_button_sfx()
-	_show_feature_stub("feature_tournaments_title", "feature_tournaments_intro", [
-		"feature_tournaments_bullet_weekly",
-		"feature_tournaments_note",
-	])
-
-
 func _on_dock_achievements() -> void:
 	_play_button_sfx()
 	_navigate("achievements")
@@ -248,4 +191,4 @@ func _on_dock_daily() -> void:
 
 func _on_dock_bonuses() -> void:
 	_play_button_sfx()
-	_show_feature_stub("feature_bonuses_title", "feature_bonuses_text")
+	_show_stub("Бонуси", "Додаткові можливості будуть відкриватися поступово.")
