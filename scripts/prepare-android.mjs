@@ -39,7 +39,7 @@ console.log(`→ build:flags:${flagsMode}`);
 runNode('scripts/build-flags.mjs', [flagsMode]);
 
 console.log('→ build:pages');
-runNode('scripts/build-pages.mjs');
+runNode('scripts/build-pages.mjs', debugCheats ? ['--debug-cheats'] : []);
 
 console.log('→ cap sync android');
 runCap(['sync', 'android']);

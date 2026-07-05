@@ -96,6 +96,27 @@ function verifyAndroidManifest() {
   }
 }
 
+// Dev/cheat JS paths that must NOT exist in release artifacts.
+const DEV_RELEASE_PATHS = [
+  { base: '_site', rel: 'js/app/dev' },
+  { base: '_site', rel: 'js/system/dev' },
+  { base: '_site', rel: 'js/ui/overlays/DebugOverlay.js' },
+  { base: 'android/app/src/main/assets/public', rel: 'js/app/dev' },
+  { base: 'android/app/src/main/assets/public', rel: 'js/system/dev' },
+  { base: 'android/app/src/main/assets/public', rel: 'js/ui/overlays/DebugOverlay.js' },
+];
+
+function verifyNoDevFiles() {
+  for (const { base, rel } of DEV_RELEASE_PATHS) {
+    const full = join(root, base, rel);
+    if (existsSync(full)) {
+      fail(`Dev/cheat file found in release artifact: ${base}/${rel} — run npm run android:sync (release) or npm run build:pages`);
+    } else {
+      ok(`dev path absent from release artifact: ${base}/${rel}`);
+    }
+  }
+}
+
 function verifyAudioBundle() {
   const forbidden = join(root, '_site/audio/music_original');
   if (existsSync(forbidden)) {
@@ -340,6 +361,7 @@ verifyNoHardcodedCheats();
 verifyGradleReleasePackage();
 verifyNoSecretsInGit();
 ensureSiteBundle();
+verifyNoDevFiles();
 verifyBundledBuildFlagsRelease();
 verifyAudioBundle();
 verifySyncedAssetsOptional();
