@@ -5,6 +5,9 @@ signal chain_finished(path: Array[Vector2i])
 signal chain_cancelled()
 signal cell_picked(cell: Vector2i)
 
+const TILE_SCENE := preload("res://scenes/components/Tile.tscn")
+const CHAIN_SCENE := preload("res://scenes/components/ChainLineLayer.tscn")
+
 const GRID_W := 5
 const GRID_H := 8
 
@@ -14,6 +17,7 @@ const GRID_H := 8
 
 var state: GameState
 var _tiles: Array = []
+var _chain_layer: ChainLineLayer
 var _dragging: bool = false
 var _last_pointer_local: Vector2 = Vector2.INF
 var _highlighted_cells: Dictionary = {}
@@ -47,7 +51,7 @@ func _build_grid() -> void:
 		var col: Array = []
 
 		for y in GRID_H:
-			var tile := TileView.new()
+			var tile: TileView = TILE_SCENE.instantiate()
 			tile.cell_size = cell_size
 			tile.position = Vector2(
 				x * (cell_size.x + cell_gap),
@@ -59,6 +63,11 @@ func _build_grid() -> void:
 			col.append(tile)
 
 		_tiles.append(col)
+
+	_chain_layer = CHAIN_SCENE.instantiate()
+	_chain_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_chain_layer.size = custom_minimum_size
+	add_child(_chain_layer)
 
 
 func refresh_all() -> void:
@@ -76,6 +85,8 @@ func refresh_all() -> void:
 			tile.set_value(value)
 			tile.set_target_highlight(value == target)
 			tile.set_chain_selected(false)
+			tile.set_bonus_mode(bonus_pick_mode)
+			tile.set_carry(state.carry_number > 0 and value == state.carry_number)
 
 	_update_chain_visual()
 
@@ -87,7 +98,7 @@ func _autoload(name: String) -> Node:
 func _play_connect_sfx() -> void:
 	var audio := _autoload("AudioManager")
 	if audio != null and audio.has_method("play_sfx"):
-		audio.call("play_sfx", "connect")
+		audio.call("play_sfx", "chain_connect")
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -155,7 +166,14 @@ func _start_drag_at_local(local_pos: Vector2) -> void:
 	_dragging = true
 	_last_pointer_local = local_pos
 	state.begin_chain(cell)
+	_play_tile_select_sfx()
 	_update_chain_visual()
+
+
+func _play_tile_select_sfx() -> void:
+	var audio := _autoload("AudioManager")
+	if audio != null and audio.has_method("play_sfx"):
+		audio.call("play_sfx", "tile_select")
 
 
 func _extend_drag_at_local(local_pos: Vector2) -> void:
@@ -244,8 +262,6 @@ func _finish_drag(play_cancel_signal: bool = true) -> void:
 
 
 func _pointer_local_from_gui_event(event: InputEvent) -> Vector2:
-	# _gui_input delivers event.position in this control's local space already.
-	# make_input_local() expects viewport coords and double-transforms here (~HUD offset).
 	return event.position
 
 
@@ -281,6 +297,13 @@ func _clear_chain_highlights() -> void:
 	for cell in _highlighted_cells:
 		_tiles[cell.x][cell.y].set_chain_selected(false)
 	_highlighted_cells.clear()
+	if _chain_layer != null:
+		_chain_layer.clear_chain()
+
+
+func _cell_center(cell: Vector2i) -> Vector2:
+	var step := cell_size + Vector2(cell_gap, cell_gap)
+	return Vector2(cell) * step + cell_size * 0.5
 
 
 func _update_chain_visual() -> void:
@@ -301,3 +324,15 @@ func _update_chain_visual() -> void:
 		_tiles[p.x][p.y].set_chain_selected(true, can_finish)
 
 	_highlighted_cells = next
+
+	if _chain_layer == null:
+		return
+
+	if state.selected_path.size() < 2:
+		_chain_layer.clear_chain()
+		return
+
+	var pts := PackedVector2Array()
+	for p in state.selected_path:
+		pts.append(_cell_center(p))
+	_chain_layer.set_chain_points(pts)

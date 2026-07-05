@@ -1,18 +1,12 @@
 extends Control
 
+const GameHudScene := preload("res://scenes/components/GameHud.tscn")
+
+@onready var game_hud: GameHud = $VBox/GameHud
 @onready var board_view: BoardView = $VBox/BoardView
-@onready var level_label: Label = $VBox/HUD/LevelLabel
-@onready var target_label: Label = $VBox/HUD/TargetLabel
-@onready var xp_label: Label = $VBox/HUD/XPLabel
 @onready var level_complete_panel: PanelContainer = $LevelCompleteOverlay
 @onready var continue_button: Button = $LevelCompleteOverlay/Center/VBox/ContinueButton
-@onready var menu_button: Button = $VBox/HUD/MenuButton
-@onready var sound_button: Button = $VBox/HUD/SoundButton
 @onready var overlay_title: Label = $LevelCompleteOverlay/Center/VBox/Title
-@onready var shuffle_button: Button = $VBox/BonusRow/ShuffleButton
-@onready var destroy_button: Button = $VBox/BonusRow/DestroyButton
-@onready var explosion_button: Button = $VBox/BonusRow/ExplosionButton
-@onready var message_label: Label = $VBox/MessageLabel
 @onready var background: ColorRect = $Background
 
 var state: GameState = GameState.new()
@@ -27,13 +21,11 @@ func _autoload(name: String) -> Node:
 func _ready() -> void:
 	_apply_theme()
 	level_complete_panel.visible = false
-	message_label.text = ""
 	continue_button.pressed.connect(_on_continue_level)
-	menu_button.pressed.connect(_on_back_to_menu)
-	sound_button.pressed.connect(_on_sound_toggle)
-	shuffle_button.pressed.connect(func(): _on_bonus_pressed("shuffle"))
-	destroy_button.pressed.connect(func(): _on_bonus_pressed("destroy"))
-	explosion_button.pressed.connect(func(): _on_bonus_pressed("explosion"))
+
+	game_hud.menu_pressed.connect(_on_back_to_menu)
+	game_hud.sound_pressed.connect(_on_sound_toggle)
+	game_hud.bonus_pressed.connect(_on_bonus_pressed)
 
 	board_view.chain_finished.connect(_on_chain_finished)
 	board_view.chain_cancelled.connect(_on_chain_cancelled)
@@ -56,7 +48,6 @@ func _ready() -> void:
 
 	board_view.bind_state(state)
 	_refresh_hud()
-	_update_sound_button()
 	level_complete_panel.visible = state.should_show_level_complete()
 
 	var audio := _autoload("AudioManager")
@@ -69,7 +60,7 @@ func _apply_theme() -> void:
 		return
 	var theme := _autoload("ThemeManager")
 	if theme != null and theme.has_method("get_background_color"):
-		background.color = theme.call("get_background_color")
+		background.color = Color(theme.call("get_background_color"), 0.6)
 
 
 func _i18n(key: String, args: Array = []) -> String:
@@ -79,36 +70,28 @@ func _i18n(key: String, args: Array = []) -> String:
 	return key
 
 
-func _notification(what: int) -> void:
-	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
-		_on_back_to_menu()
+func _exit_tree() -> void:
+	_save_game()
 
 
 func _refresh_hud() -> void:
-	level_label.text = _i18n("level_label", [state.current_level + 1])
-	target_label.text = _i18n("target_label", [state.format_value(state.get_target())])
-	xp_label.text = _i18n("xp_label", [state.format_value(state.xp)])
+	game_hud.refresh(state, Callable(self, "_i18n"))
 	overlay_title.text = _i18n("level_complete")
 	continue_button.text = _i18n("next_level")
-	menu_button.text = _i18n("hud_menu")
-	shuffle_button.text = "%s (%d)" % [_i18n("bonus_shuffle"), state.get_bonus_count("shuffle")]
-	destroy_button.text = "%s (%d)" % [_i18n("bonus_destroy"), state.get_bonus_count("destroy")]
-	explosion_button.text = "%s (%d)" % [_i18n("bonus_explosion"), state.get_bonus_count("explosion")]
 	board_view.bonus_pick_mode = not state.active_bonus.is_empty()
 	_update_sound_button()
 
 
 func _update_sound_button() -> void:
 	var audio := _autoload("AudioManager")
-	var enabled: bool = audio != null and audio.has_method("is_audio_enabled") and bool(audio.call("is_audio_enabled"))
-	sound_button.text = "🔊" if enabled else "🔇"
+	var settings := _autoload("SettingsManager")
+	var sound_on := settings == null or bool(settings.get("sound_enabled"))
+	var music_on := settings == null or bool(settings.get("music_enabled"))
+	game_hud.set_sound_icon(sound_on or music_on)
 
 
 func _show_message(key: String) -> void:
-	if key.is_empty():
-		message_label.text = ""
-		return
-	message_label.text = _i18n(key)
+	game_hud.set_message("" if key.is_empty() else _i18n(key))
 
 
 func _play_sfx(name: String) -> void:
@@ -124,7 +107,7 @@ func _save_game() -> void:
 
 
 func _on_sound_toggle() -> void:
-	_play_sfx("button")
+	_play_sfx("button_click")
 	var audio := _autoload("AudioManager")
 	if audio != null and audio.has_method("toggle_all_audio"):
 		audio.call("toggle_all_audio")
@@ -132,17 +115,17 @@ func _on_sound_toggle() -> void:
 
 
 func _on_bonus_pressed(type: String) -> void:
-	_play_sfx("button")
+	_play_sfx("button_click")
 	var result := _bonus.activate(type)
 	if not result.ok:
 		if result.get("reason", "") == "empty":
 			_show_message("no_bonus")
-			_play_sfx("error")
+			_play_sfx("invalid")
 		return
 	_show_message(str(result.get("message_key", "")))
 	if type == "shuffle":
 		_daily.on_bonus_used()
-		_play_sfx("bonus")
+		_play_sfx("button_click")
 		board_view.refresh_all()
 		_save_game()
 	_refresh_hud()
@@ -151,10 +134,10 @@ func _on_bonus_pressed(type: String) -> void:
 func _on_cell_picked(cell: Vector2i) -> void:
 	var result := _bonus.apply_at_cell(cell)
 	if not result.ok:
-		_play_sfx("error")
+		_play_sfx("invalid")
 		return
 	_daily.on_bonus_used()
-	_play_sfx("bonus")
+	_play_sfx("button_click")
 	_show_message(str(result.get("message_key", "")))
 	board_view.refresh_all()
 	_refresh_hud()
@@ -165,11 +148,12 @@ func _on_chain_finished(_path: Array[Vector2i]) -> void:
 	var chain_len := state.selected_path.size()
 	var result := state.merge_current_chain()
 	if not result.ok:
-		_play_sfx("error")
+		_play_sfx("invalid")
 		board_view.refresh_all()
 		return
 
 	_play_sfx("merge")
+	_play_sfx("chain_complete")
 	_daily.on_chain_merged(chain_len)
 	_daily.on_session_xp_changed()
 	_refresh_hud()
@@ -182,16 +166,17 @@ func _on_chain_finished(_path: Array[Vector2i]) -> void:
 
 	if result.get("level_complete", false):
 		_daily.on_level_complete()
-		_play_sfx("level_complete")
+		_play_sfx("level_up")
+		_play_sfx("victory")
 		level_complete_panel.visible = state.should_show_level_complete()
 
 
 func _on_chain_cancelled() -> void:
-	_play_sfx("error")
+	_play_sfx("invalid")
 
 
 func _on_continue_level() -> void:
-	_play_sfx("button")
+	_play_sfx("button_click")
 	if state.should_show_level_complete():
 		state.complete_level_transition()
 	else:
@@ -204,6 +189,12 @@ func _on_continue_level() -> void:
 
 
 func _on_back_to_menu() -> void:
-	_play_sfx("button")
+	_play_sfx("button_click")
 	_save_game()
-	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+	var router := _autoload("ScreenRouter")
+	if router == null:
+		get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+		return
+	var handled: bool = await router.go_back()
+	if not handled:
+		router.call("replace", "main_menu")

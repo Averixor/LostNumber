@@ -7,8 +7,8 @@ config_version=5
 
 config/name="Lost Number"
 config/description="Offline number-chain puzzle. Godot 2.0."
-config/version="2.0.0"
-run/main_scene="res://scenes/MainMenu.tscn"
+config/version="2.1.4"
+run/main_scene="res://scenes/Boot.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -20,6 +20,12 @@ AudioManager="*res://scripts/managers/AudioManager.gd"
 I18nManager="*res://scripts/managers/I18nManager.gd"
 ThemeManager="*res://scripts/managers/ThemeManager.gd"
 LeaderboardService="*res://scripts/managers/LeaderboardService.gd"
+ScreenRouter="*res://scripts/ui/ScreenRouter.gd"
+LegacySaveMigration="*res://scripts/managers/LegacySaveMigration.gd"
+
+[gui]
+
+theme/custom="res://themes/lost_number_theme.tres"
 
 [display]
 

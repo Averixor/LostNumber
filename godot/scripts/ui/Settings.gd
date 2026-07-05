@@ -1,10 +1,15 @@
 extends Control
 
+const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
+
 @onready var sound_check: CheckButton = $VBox/SoundCheck
 @onready var music_check: CheckButton = $VBox/MusicCheck
+@onready var bg_effects_check: CheckButton = $VBox/BgEffectsCheck
 @onready var language_option: OptionButton = $VBox/LanguageOption
 @onready var leaderboard_check: CheckButton = $VBox/LeaderboardCheck
 @onready var theme_button: Button = $VBox/ThemeButton
+@onready var import_button: Button = $VBox/ImportLegacyButton
+@onready var import_status: Label = $VBox/ImportStatus
 @onready var back_button: Button = $VBox/BackButton
 @onready var title_label: Label = $VBox/Title
 @onready var background: ColorRect = $Background
@@ -21,32 +26,57 @@ func _i18n(key: String, args: Array = []) -> String:
 	return key
 
 
+func _navigate_back() -> void:
+	var router := _autoload("ScreenRouter")
+	if router == null:
+		get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+		return
+	var handled: bool = await router.go_back()
+	if not handled:
+		router.call("replace", "main_menu")
+
+
 func _ready() -> void:
-	var theme := _autoload("ThemeManager")
-	if background != null and theme != null and theme.has_method("get_background_color"):
-		background.color = theme.call("get_background_color")
+	_apply_background()
 
 	title_label.text = _i18n("settings_title")
 	sound_check.text = _i18n("settings_sound")
 	music_check.text = _i18n("settings_music")
+	bg_effects_check.text = _i18n("settings_bg_effects")
 	back_button.text = _i18n("menu_back")
 	leaderboard_check.text = _i18n("leaderboard_opt_in")
-	theme_button.text = _i18n("menu_settings") + " / Theme"
+	theme_button.text = _i18n("settings_theme")
+	import_button.text = _i18n("settings_import_legacy")
+	import_status.text = ""
 
 	var settings := _autoload("SettingsManager")
 	if settings != null:
 		sound_check.button_pressed = bool(settings.get("sound_enabled"))
 		music_check.button_pressed = bool(settings.get("music_enabled"))
+		bg_effects_check.button_pressed = bool(settings.get("bg_effects_enabled"))
 
 	_setup_language_option()
 	_load_leaderboard_opt_in()
 
 	sound_check.toggled.connect(_on_sound_toggled)
 	music_check.toggled.connect(_on_music_toggled)
+	bg_effects_check.toggled.connect(_on_bg_effects_toggled)
 	language_option.item_selected.connect(_on_language_selected)
 	leaderboard_check.toggled.connect(_on_leaderboard_toggled)
 	theme_button.pressed.connect(_on_theme_cycle)
+	import_button.pressed.connect(_on_import_legacy)
 	back_button.pressed.connect(_on_back)
+
+
+func _apply_background() -> void:
+	if background == null:
+		return
+	var theme_mgr := _autoload("ThemeManager")
+	var color := ThemeTokensLib.COLOR_BG
+	if theme_mgr != null and theme_mgr.has_method("get_background_color"):
+		color = theme_mgr.call("get_background_color")
+	# Semi-transparent scrim: keeps the App BackgroundLayer art visible.
+	background.color = Color(color, 0.6)
 
 
 func _setup_language_option() -> void:
@@ -94,6 +124,17 @@ func _on_music_toggled(enabled: bool) -> void:
 		audio.call("apply_audio_settings")
 
 
+func _on_bg_effects_toggled(enabled: bool) -> void:
+	var settings := _autoload("SettingsManager")
+	if settings != null:
+		settings.set("bg_effects_enabled", enabled)
+		if settings.has_method("save_settings"):
+			settings.call("save_settings")
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("notify_visual_settings_changed"):
+		theme_mgr.call("notify_visual_settings_changed")
+
+
 func _on_language_selected(index: int) -> void:
 	var langs := ["uk", "ru", "en"]
 	var settings := _autoload("SettingsManager")
@@ -101,7 +142,11 @@ func _on_language_selected(index: int) -> void:
 		settings.set("language", langs[mini(index, langs.size() - 1)])
 		if settings.has_method("save_settings"):
 			settings.call("save_settings")
-	get_tree().change_scene_to_file("res://scenes/Settings.tscn")
+	var router := _autoload("ScreenRouter")
+	if router != null and router.has_method("reload_current"):
+		router.call("reload_current")
+	else:
+		get_tree().change_scene_to_file("res://scenes/Settings.tscn")
 
 
 func _on_leaderboard_toggled(enabled: bool) -> void:
@@ -116,12 +161,41 @@ func _on_leaderboard_toggled(enabled: bool) -> void:
 
 
 func _on_theme_cycle() -> void:
-	var theme := _autoload("ThemeManager")
-	if theme != null and theme.has_method("cycle_theme"):
-		theme.call("cycle_theme")
-	if background != null and theme != null and theme.has_method("get_background_color"):
-		background.color = theme.call("get_background_color")
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("cycle_theme"):
+		theme_mgr.call("cycle_theme")
+	_apply_background()
+
+
+func _on_import_legacy() -> void:
+	var migration := _autoload("LegacySaveMigration")
+	if migration == null:
+		import_status.text = _i18n("settings_import_legacy_failed")
+		return
+
+	var ok := false
+	if OS.has_feature("android") and migration.has_method("try_manual_import"):
+		ok = bool(migration.call("try_manual_import"))
+	elif OS.has_feature("pc") or OS.has_feature("macos") or OS.has_feature("linux") or OS.has_feature("windows"):
+		var dialog := FileDialog.new()
+		dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+		dialog.access = FileDialog.ACCESS_FILESYSTEM
+		dialog.filters = PackedStringArray(["*.json ; JSON saves"])
+		dialog.title = _i18n("settings_import_legacy")
+		dialog.size = Vector2i(640, 420)
+		add_child(dialog)
+		dialog.popup_centered_ratio(0.6)
+		var path: String = await dialog.file_selected
+		dialog.queue_free()
+		if path.is_empty():
+			return
+		ok = bool(migration.call("import_from_file", path))
+	else:
+		import_status.text = _i18n("settings_import_legacy_none")
+		return
+
+	import_status.text = _i18n("settings_import_legacy_success") if ok else _i18n("settings_import_legacy_failed")
 
 
 func _on_back() -> void:
-	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+	_navigate_back()

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="home">
+  <defs>
+    <linearGradient id="ln_home_stroke" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE6FF"/>
+      <stop offset="0.38" stop-color="#FF7AE6"/>
+      <stop offset="1" stop-color="#8D6BFF"/>
+    </linearGradient>
+    <filter id="ln_home_glow" x="-45%" y="-45%" width="190%" height="190%">
+      <feGaussianBlur stdDeviation="1.6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <g fill="none" stroke="url(#ln_home_stroke)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" filter="url(#ln_home_glow)">
+<path d="M12 31 L32 14 L52 31"/>
+<path d="M18 29 V52 H46 V29"/>
+<path d="M27 52 V39 H37 V52"/>
+<path d="M32 8 L35 14 L42 15 L36 19 L38 26 L32 22 L26 26 L28 19 L22 15 L29 14 Z"/>
+  </g>
+</svg>

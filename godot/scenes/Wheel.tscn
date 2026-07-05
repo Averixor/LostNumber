@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://wheel001"]
+[gd_scene load_steps=4 format=3 uid="uid://wheel001"]
 
 [ext_resource type="Script" path="res://scripts/ui/Wheel.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/ui/WheelCanvas.gd" id="2_canvas"]
+[ext_resource type="PackedScene" uid="uid://neonbutton001" path="res://scenes/components/NeonButton.tscn" id="3_neon"]
 
 [node name="Wheel" type="Control"]
 layout_mode = 3
@@ -27,13 +29,13 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -140.0
-offset_top = -120.0
-offset_right = 140.0
-offset_bottom = 120.0
+offset_left = -160.0
+offset_top = -220.0
+offset_right = 160.0
+offset_bottom = 220.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 12
 alignment = 1
 
 [node name="Title" type="Label" parent="VBox"]
@@ -41,14 +43,56 @@ layout_mode = 2
 text = "Wheel"
 horizontal_alignment = 1
 
-[node name="SpinButton" type="Button" parent="VBox"]
+[node name="WheelCanvas" type="Control" parent="VBox"]
+custom_minimum_size = Vector2(280, 280)
 layout_mode = 2
-text = "Spin"
+size_flags_horizontal = 4
+script = ExtResource("2_canvas")
 
-[node name="ResultLabel" type="Label" parent="VBox"]
+[node name="CostLabel" type="Label" parent="VBox"]
 layout_mode = 2
 horizontal_alignment = 1
 
-[node name="BackButton" type="Button" parent="VBox"]
+[node name="SpinButton" parent="VBox" instance=ExtResource("3_neon")]
+layout_mode = 2
+variant = 1
+text = "Spin"
+
+[node name="BackButton" parent="VBox" instance=ExtResource("3_neon")]
 layout_mode = 2
 text = "Back"
+
+[node name="ResultModal" type="PanelContainer" parent="."]
+visible = false
+z_index = 50
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Dim" type="ColorRect" parent="ResultModal"]
+layout_mode = 2
+mouse_filter = 0
+
+[node name="Center" type="CenterContainer" parent="ResultModal"]
+layout_mode = 2
+
+[node name="ResultCard" type="PanelContainer" parent="ResultModal/Center"]
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="ResultModal/Center/ResultCard"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ResultLabel" type="Label" parent="ResultModal/Center/ResultCard/VBox"]
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="CloseButton" parent="ResultModal/Center/ResultCard/VBox" instance=ExtResource("3_neon")]
+layout_mode = 2
+text = "Close"

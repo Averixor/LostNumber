@@ -1,18 +1,28 @@
 extends Node
 
-## Autoload: SFX pool + looping music from res://assets/audio/
+## Autoload: SFX pool + looping music. Semantic play_sfx events map to asset files.
 
-const SFX_PATHS := {
+const SFX_EVENTS := {
+	"button_click": "res://assets/audio/sfx/button.mp3",
+	"tile_select": "res://assets/audio/sfx/connect.mp3",
+	"chain_connect": "res://assets/audio/sfx/connect.mp3",
+	"chain_complete": "res://assets/audio/sfx/chain-complete.mp3",
+	"merge": "res://assets/audio/sfx/chain-complete.mp3",
+	"invalid": "res://assets/audio/sfx/error.mp3",
+	"wheel_spin": "res://assets/audio/sfx/bonus.mp3",
+	"wheel_reward": "res://assets/audio/sfx/xp.mp3",
+	"achievement_unlock": "res://assets/audio/sfx/victory.mp3",
+	"quest_complete": "res://assets/audio/sfx/quest-complete.mp3",
+	"level_up": "res://assets/audio/sfx/xp.mp3",
+	"victory": "res://assets/audio/sfx/victory.mp3",
+	# Legacy aliases (smoke / older call sites)
 	"connect": "res://assets/audio/sfx/connect.mp3",
 	"error": "res://assets/audio/sfx/error.mp3",
-	"merge": "res://assets/audio/sfx/chain-complete.mp3",
-	"chain-complete": "res://assets/audio/sfx/chain-complete.mp3",
-	"level_complete": "res://assets/audio/sfx/victory.mp3",
-	"victory": "res://assets/audio/sfx/victory.mp3",
 	"button": "res://assets/audio/sfx/button.mp3",
 	"bonus": "res://assets/audio/sfx/bonus.mp3",
 	"xp": "res://assets/audio/sfx/xp.mp3",
 	"quest-complete": "res://assets/audio/sfx/quest-complete.mp3",
+	"level_complete": "res://assets/audio/sfx/victory.mp3",
 }
 
 const MUSIC_PATHS := {
@@ -32,11 +42,17 @@ var _streams: Dictionary = {}
 var _sfx_last_play_ms: Dictionary = {}
 
 const SFX_COOLDOWN_MS := {
+	"chain_connect": 90,
 	"connect": 90,
+	"button_click": 40,
 	"button": 40,
+	"invalid": 120,
 	"error": 120,
 	"merge": 120,
+	"chain_complete": 120,
+	"level_up": 250,
 	"level_complete": 250,
+	"victory": 250,
 }
 
 
@@ -59,8 +75,8 @@ func _ready() -> void:
 
 
 func _preload_streams() -> void:
-	for key in SFX_PATHS:
-		_streams[key] = _load_stream(SFX_PATHS[key])
+	for key in SFX_EVENTS:
+		_streams[key] = _load_stream(SFX_EVENTS[key])
 	for key in MUSIC_PATHS:
 		_streams["music:" + key] = _load_stream(MUSIC_PATHS[key])
 
@@ -73,6 +89,12 @@ func _load_stream(path: String) -> AudioStream:
 	if stream is AudioStreamMP3:
 		stream.loop = path.begins_with("res://assets/audio/music/")
 	return stream
+
+
+func _resolve_sfx_path(name: String) -> String:
+	if SFX_EVENTS.has(name):
+		return SFX_EVENTS[name]
+	return ""
 
 
 func _sound_enabled() -> bool:
@@ -102,8 +124,11 @@ func play_sfx(name: String) -> void:
 		_sfx_last_play_ms[name] = now_ms
 
 	var stream: AudioStream = _streams.get(name)
-	if stream == null and SFX_PATHS.has(name):
-		stream = _load_stream(SFX_PATHS[name])
+	if stream == null:
+		var path := _resolve_sfx_path(name)
+		if path.is_empty():
+			return
+		stream = _load_stream(path)
 		_streams[name] = stream
 	if stream == null:
 		return

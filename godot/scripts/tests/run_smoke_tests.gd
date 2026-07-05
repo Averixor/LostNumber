@@ -15,19 +15,43 @@ const AUTOLOAD_PATHS := {
 	"I18nManager": "res://scripts/managers/I18nManager.gd",
 	"ThemeManager": "res://scripts/managers/ThemeManager.gd",
 	"LeaderboardService": "res://scripts/managers/LeaderboardService.gd",
+	"ScreenRouter": "res://scripts/ui/ScreenRouter.gd",
+	"LegacySaveMigration": "res://scripts/managers/LegacySaveMigration.gd",
 }
 
 const SCENES := [
+	"res://scenes/Boot.tscn",
+	"res://scenes/App.tscn",
 	"res://scenes/MainMenu.tscn",
 	"res://scenes/Game.tscn",
 	"res://scenes/Settings.tscn",
 	"res://scenes/Achievements.tscn",
 	"res://scenes/DailyQuests.tscn",
 	"res://scenes/Wheel.tscn",
+	"res://scenes/Stats.tscn",
+	"res://scenes/About.tscn",
+	"res://scenes/components/BackgroundLayer.tscn",
+	"res://scenes/components/NeonButton.tscn",
+	"res://scenes/components/MenuDockButton.tscn",
+	"res://scenes/components/MenuQuickChip.tscn",
+	"res://scenes/components/FeatureStubOverlay.tscn",
+	"res://scenes/components/ScreenTransition.tscn",
+	"res://scenes/components/Tile.tscn",
+	"res://scenes/components/ChainLineLayer.tscn",
+	"res://scenes/components/GameHud.tscn",
+	"res://scenes/components/AchievementCard.tscn",
+	"res://scenes/components/DailyQuestCard.tscn",
 ]
 
 const SCENE_SCRIPTS := [
 	"res://scripts/managers/AutoloadAccess.gd",
+	"res://scripts/App.gd",
+	"res://scripts/ui/Boot.gd",
+	"res://scripts/ui/ScreenRouter.gd",
+	"res://scripts/ui/ScreenTransition.gd",
+	"res://scripts/ui/BackgroundLayer.gd",
+	"res://scripts/ui/NeonButton.gd",
+	"res://scripts/ui/ThemeTokens.gd",
 	"res://scripts/ui/MainMenu.gd",
 	"res://scripts/game/Game.gd",
 	"res://scripts/game/Board.gd",
@@ -35,10 +59,22 @@ const SCENE_SCRIPTS := [
 	"res://scripts/ui/Achievements.gd",
 	"res://scripts/ui/DailyQuests.gd",
 	"res://scripts/ui/Wheel.gd",
+	"res://scripts/ui/WheelCanvas.gd",
+	"res://scripts/ui/GameHud.gd",
+	"res://scripts/ui/Stats.gd",
+	"res://scripts/ui/About.gd",
+	"res://scripts/ui/MenuDockButton.gd",
+	"res://scripts/ui/MenuQuickChip.gd",
+	"res://scripts/ui/FeatureStubOverlay.gd",
+	"res://scripts/ui/AchievementCard.gd",
+	"res://scripts/ui/DailyQuestCard.gd",
+	"res://scripts/game/Tile.gd",
+	"res://scripts/game/ChainLineLayer.gd",
 	"res://scripts/managers/I18nManager.gd",
 	"res://scripts/managers/AudioManager.gd",
 	"res://scripts/managers/ThemeManager.gd",
 	"res://scripts/managers/LeaderboardService.gd",
+	"res://scripts/managers/LegacySaveMigration.gd",
 ]
 
 const KEY_RESOURCES := [
@@ -194,6 +230,7 @@ func _test_meta_managers() -> void:
 	_assert_true(daily.get_quests().size() > 0, "daily quests generated")
 
 	var wheel := WheelManagerScript.new(state)
+	state.xp = 100
 	var spin := wheel.spin()
 	_assert_true(spin.ok, "wheel spin ok")
 

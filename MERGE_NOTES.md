@@ -18,7 +18,8 @@
 
 - Повна web-гра (`js/`, `css/`, `index.html`) з фіксами chain/touch
 - Capacitor Android (`android/`, `npm run android:*`)
-- Godot 4 MVP + **Android export** (`godot/export_presets.cfg`, `scripts/godot-android-export.sh`)
+- Godot 4 + **Android export** (`godot/export_presets.cfg`, `scripts/godot-android-export.sh`)
+- Godot UI shell Sprint 1: Boot/App, ScreenRouter, BackgroundLayer, NeonButton, ThemeTokens (`godot/docs/VISUAL_PORT_MAP.md`)
 - Аудіо в Godot (`godot/assets/audio/`, `AudioManager.gd`)
 - Path interpolation у `godot/scripts/game/Board.gd`
 - Store listing (`store/`, `godot/docs/store-listing/`)
@@ -27,7 +28,7 @@
 
 - Скидання chain при pointer leave
 - Немає `store/google-play-games/`
-- Тонший Godot без NumberFormatter/PlayerProgress
+- Тонший Godot без NumberFormatter/PlayerProgress (застаріло — у поточному godot/ ці модулі є)
 
 ### Нова тека — лише графіка (вже інтегрована)
 
@@ -49,7 +50,7 @@
 npm ci
 npm run release:check
 npm run test:smoke
-npm run godot:test
+npm run godot:test:all
 ```
 
 Godot Android (один раз): JDK у `~/Android/jbr`, SDK у `~/Android/Sdk` — див. `godot/docs/PLAY_STORE_GODOT.md`.

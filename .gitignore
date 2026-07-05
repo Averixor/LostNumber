@@ -102,3 +102,7 @@ public/images/
 # IDE metadata (Android Studio / IntelliJ)
 .idea/
 android/.idea/
+
+# JVM / Java crash dumps
+*.hprof
+java_pid*.hprof

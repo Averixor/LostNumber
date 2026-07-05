@@ -1,0 +1,85 @@
+[gd_scene load_steps=3 format=3 uid="uid://game_hud_component"]
+
+[ext_resource type="Script" path="res://scripts/ui/GameHud.gd" id="1_hud"]
+[ext_resource type="PackedScene" uid="uid://neonbutton001" path="res://scenes/components/NeonButton.tscn" id="2_neon"]
+
+[node name="GameHud" type="VBoxContainer"]
+theme_override_constants/separation = 8
+alignment = 1
+script = ExtResource("1_hud")
+
+[node name="TopBar" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="MenuButton" type="Button" parent="TopBar"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+
+[node name="LevelBox" type="HBoxContainer" parent="TopBar"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="LevelLabel" type="Label" parent="TopBar/LevelBox"]
+layout_mode = 2
+text = "Level 1"
+
+[node name="ScoreLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 1
+text = "XP: 0"
+
+[node name="SoundButton" type="Button" parent="TopBar"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+
+[node name="SettingsButton" type="Button" parent="TopBar"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+
+[node name="XpRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="XpBar" type="ProgressBar" parent="XpRow"]
+custom_minimum_size = Vector2(200, 16)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 100.0
+show_percentage = false
+
+[node name="XpLabel" type="Label" parent="XpRow"]
+layout_mode = 2
+text = "XP: 0"
+
+[node name="TargetPanel" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="TargetLabel" type="Label" parent="TargetPanel"]
+layout_mode = 2
+horizontal_alignment = 1
+text = "Target: 64"
+
+[node name="BonusBar" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="ShuffleButton" parent="BonusBar" instance=ExtResource("2_neon")]
+layout_mode = 2
+text = "Shuffle (0)"
+
+[node name="DestroyButton" parent="BonusBar" instance=ExtResource("2_neon")]
+layout_mode = 2
+text = "Destroy (0)"
+
+[node name="ExplosionButton" parent="BonusBar" instance=ExtResource("2_neon")]
+layout_mode = 2
+text = "Blast (0)"
+
+[node name="MessageLabel" type="Label" parent="."]
+layout_mode = 2
+horizontal_alignment = 1

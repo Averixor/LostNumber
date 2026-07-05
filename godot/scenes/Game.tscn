@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://game001"]
+[gd_scene load_steps=4 format=3 uid="uid://game001"]
 
 [ext_resource type="Script" path="res://scripts/game/Game.gd" id="1_game"]
 [ext_resource type="Script" path="res://scripts/game/Board.gd" id="2_board"]
+[ext_resource type="PackedScene" uid="uid://game_hud_component" path="res://scenes/components/GameHud.tscn" id="3_hud"]
 
 [node name="Game" type="Control"]
 layout_mode = 3
@@ -31,51 +32,8 @@ grow_vertical = 2
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="HUD" type="HBoxContainer" parent="VBox"]
+[node name="GameHud" parent="VBox" instance=ExtResource("3_hud")]
 layout_mode = 2
-theme_override_constants/separation = 8
-alignment = 1
-
-[node name="LevelLabel" type="Label" parent="VBox/HUD"]
-layout_mode = 2
-text = "Level 1"
-
-[node name="TargetLabel" type="Label" parent="VBox/HUD"]
-layout_mode = 2
-text = "Target: 64"
-
-[node name="XPLabel" type="Label" parent="VBox/HUD"]
-layout_mode = 2
-text = "XP: 0"
-
-[node name="MenuButton" type="Button" parent="VBox/HUD"]
-layout_mode = 2
-text = "Menu"
-
-[node name="SoundButton" type="Button" parent="VBox/HUD"]
-layout_mode = 2
-text = "🔊"
-
-[node name="BonusRow" type="HBoxContainer" parent="VBox"]
-layout_mode = 2
-theme_override_constants/separation = 6
-alignment = 1
-
-[node name="ShuffleButton" type="Button" parent="VBox/BonusRow"]
-layout_mode = 2
-text = "Shuffle (0)"
-
-[node name="DestroyButton" type="Button" parent="VBox/BonusRow"]
-layout_mode = 2
-text = "Destroy (0)"
-
-[node name="ExplosionButton" type="Button" parent="VBox/BonusRow"]
-layout_mode = 2
-text = "Blast (0)"
-
-[node name="MessageLabel" type="Label" parent="VBox"]
-layout_mode = 2
-horizontal_alignment = 1
 
 [node name="BoardView" type="Control" parent="VBox"]
 custom_minimum_size = Vector2(396, 630)
@@ -84,6 +42,7 @@ size_flags_horizontal = 4
 script = ExtResource("2_board")
 
 [node name="LevelCompleteOverlay" type="PanelContainer" parent="."]
+visible = false
 z_index = 100
 layout_mode = 1
 anchors_preset = 15

@@ -23,6 +23,8 @@ var xp_multiplier_turns: int = 0
 var bonus_inventory := {"destroy": 0, "shuffle": 0, "explosion": 0}
 var active_bonus: String = ""
 var daily_quests: Dictionary = {}
+var wheel_spins_today: int = 0
+var last_wheel_day: String = ""
 
 
 func _init() -> void:
@@ -236,6 +238,8 @@ func to_save_dict() -> Dictionary:
 		"bonus_inventory": bonus_inventory.duplicate(true),
 		"active_bonus": active_bonus,
 		"daily_quests": daily_quests.duplicate(true),
+		"wheel_spins_today": wheel_spins_today,
+		"last_wheel_day": last_wheel_day,
 		"progress": progress.to_dict(),
 	}
 
@@ -256,6 +260,8 @@ func load_from_save_dict(data: Dictionary) -> bool:
 	daily_quests = data.get("daily_quests", {})
 	if typeof(daily_quests) != TYPE_DICTIONARY:
 		daily_quests = {}
+	wheel_spins_today = maxi(0, int(data.get("wheel_spins_today", 0)))
+	last_wheel_day = str(data.get("last_wheel_day", ""))
 	if data.has("progress") and typeof(data.progress) == TYPE_DICTIONARY:
 		progress.load_from_dict(data.progress)
 	else:

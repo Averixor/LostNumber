@@ -164,12 +164,19 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 
 ## 9. Версіонування
 
-Поточна версія в `android/app/build.gradle`:
+- `versionName` — читабельна мітка у форматі `major.minor.patch` (вільна).
+- `versionCode` — ціле число, яке порівнює Play; збільшується на 1 при кожному завантаженні.
 
-- `versionCode 1`
-- `versionName "1.0"`
+Поточні значення:
 
-Кожен новий upload у Play Console потребує **versionCode + 1**.
+| Артефакт                           | versionName | versionCode |
+| ---------------------------------- | ----------- | ----------- |
+| Godot (основний, у Play)           | `2.1.4`     | `14`        |
+| Capacitor (legacy, `build.gradle`) | `2.1.4`     | `14`        |
+
+Оскільки обидва мають один package id і однаковий code `14`, у Play може існувати лише **один** бандл з цим кодом (зараз — Godot). Кожен новий upload потребує **versionCode більший за будь-який раніше завантажений** (наступний реліз — code `15`).
+
+ABI: постачаються лише `arm64-v8a` + `x86_64`. Без `armeabi-v7a` 32-бітні пристрої (~8 тис. у каталозі) не підтримуються — свідоме рішення.
 
 ## 10. Корисні команди
 

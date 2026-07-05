@@ -1,7 +1,10 @@
 extends Control
 
+const AchievementCardScene := preload("res://scenes/components/AchievementCard.tscn")
+const NeonButtonScene := preload("res://scenes/components/NeonButton.tscn")
+
 @onready var list: VBoxContainer = $Scroll/List
-@onready var back_button: Button = $BackButton
+@onready var back_button: NeonButton = $BackButton
 @onready var title_label: Label = $Title
 @onready var background: ColorRect = $Background
 
@@ -24,10 +27,20 @@ func _achievement_name(key: String) -> String:
 	return key
 
 
+func _navigate_back() -> void:
+	var router := _autoload("ScreenRouter")
+	if router == null:
+		get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+		return
+	var handled: bool = await router.go_back()
+	if not handled:
+		router.call("replace", "main_menu")
+
+
 func _ready() -> void:
 	var theme := _autoload("ThemeManager")
 	if background != null and theme != null and theme.has_method("get_background_color"):
-		background.color = theme.call("get_background_color")
+		background.color = Color(theme.call("get_background_color"), 0.6)
 
 	title_label.text = _i18n("achievements_title")
 	back_button.text = _i18n("menu_back")
@@ -40,19 +53,21 @@ func _render() -> void:
 		child.queue_free()
 
 	var progress := _load_progress()
+	var unlocked_text := _i18n("achievement_unlocked")
+	var locked_text := _i18n("achievement_locked")
+
 	for key in progress.achievements.keys():
 		var item: Dictionary = progress.achievements[key]
-		var row := HBoxContainer.new()
-		var status := Label.new()
-		status.text = _i18n("achievement_unlocked") if bool(item.get("unlocked", false)) else _i18n("achievement_locked")
-		var name := Label.new()
-		name.text = _achievement_name(key)
-		var prog := Label.new()
-		prog.text = "%d / %d" % [int(item.get("progress", 0)), int(item.get("max", 1))]
-		row.add_child(status)
-		row.add_child(name)
-		row.add_child(prog)
-		list.add_child(row)
+		var card: AchievementCard = AchievementCardScene.instantiate()
+		card.setup(
+			bool(item.get("unlocked", false)),
+			_achievement_name(key),
+			int(item.get("progress", 0)),
+			int(item.get("max", 1)),
+			unlocked_text,
+			locked_text
+		)
+		list.add_child(card)
 
 
 func _load_progress() -> PlayerProgress:
@@ -66,4 +81,7 @@ func _load_progress() -> PlayerProgress:
 
 
 func _on_back() -> void:
-	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+	var audio := _autoload("AudioManager")
+	if audio != null:
+		audio.call("play_sfx", "button_click")
+	_navigate_back()

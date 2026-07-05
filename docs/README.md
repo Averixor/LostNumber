@@ -2,13 +2,17 @@
 
 Короткий навігатор по репозиторію. Точка входу для розробника — **[README.md](../README.md)**.
 
+**Primary ship target:** Godot 4 Android (`godot/`, `npm run godot:android:release`). Capacitor/Web (`js/`, `android/`) — візуальний еталон і legacy-збірка, не основний шлях у Play.
+
 ## Швидкі посилання
 
 | Задача                                 | Документ                                                          |
 | -------------------------------------- | ----------------------------------------------------------------- |
 | Запуск у браузері, npm-скрипти         | [README.md](../README.md)                                         |
+| Godot (primary Android), Boot→App      | [godot/README.md](../godot/README.md)                             |
+| Візуальний перенос web → Godot         | [godot/docs/VISUAL_PORT_MAP.md](../godot/docs/VISUAL_PORT_MAP.md) |
 | Структура папок і потоки коду          | [PROJECT_STRUCTURE.md](../PROJECT_STRUCTURE.md)                   |
-| Android APK / AAB, Capacitor           | [ANDROID.md](./ANDROID.md)                                        |
+| Android APK / AAB, Capacitor (legacy)  | [ANDROID.md](./ANDROID.md)                                        |
 | QA перед релізом на телефон            | [ANDROID_QA.md](./ANDROID_QA.md)                                  |
 | Google Play Console, IARC, Data safety | [PLAY_STORE.md](./PLAY_STORE.md)                                  |
 | Тексти та графіка для листингу         | [store/PLAY_CONSOLE_LISTING.md](../store/PLAY_CONSOLE_LISTING.md) |
@@ -36,9 +40,13 @@
 
 Окремі файли локалей: `docs/store-listing/` (uk, en, ru).
 
-## Godot (основний ship target)
+## Godot (primary ship target)
 
-Godot-версія — основна ціль релізу Android (Capacitor — legacy). Збірка: `npm run godot:android:release`. Див. **`godot/README.md`** і `godot/docs/ANDROID_RELEASE_READINESS.md`.
+Godot — **основна** ціль релізу Android. Capacitor/Web — legacy і джерело візуального паритету.
+
+- Запуск: `Boot.tscn` → `App.tscn` → екрани через `ScreenRouter` (autoload)
+- Збірка: `npm run godot:android:release` → `build/godot/android/lost-number.aab`
+- Документація: **`godot/README.md`**, `godot/docs/ANDROID_RELEASE_READINESS.md`, `godot/docs/VISUAL_PORT_MAP.md`
 
 ## CI
 

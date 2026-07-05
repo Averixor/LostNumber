@@ -2,15 +2,19 @@ extends SceneTree
 
 const GameStateScript := preload("res://scripts/core/GameState.gd")
 const SaveManagerScript := preload("res://scripts/managers/SaveManager.gd")
+const LegacySaveMigrationScript := preload("res://scripts/managers/LegacySaveMigration.gd")
 
 var failed := 0
 var _test_dir := ""
 var _save: SaveManagerScript
+var _migration: LegacySaveMigrationScript
 
 
 func _init() -> void:
 	print("Lost Number Save tests...")
 	_save = SaveManagerScript.new()
+	_migration = LegacySaveMigrationScript.new()
+	_migration.set_save_manager_for_test(_save)
 	_test_dir = ProjectSettings.globalize_path("user://save_tests_%d" % Time.get_ticks_msec())
 	DirAccess.make_dir_recursive_absolute(_test_dir)
 	_save.enable_test_root(_test_dir)
@@ -21,6 +25,7 @@ func _init() -> void:
 	_test_stale_pending_transition_resets_to_playing()
 	_test_both_corrupt_returns_null()
 	_test_meta_roundtrip()
+	_test_legacy_capacitor_import()
 
 	_save.disable_test_root()
 	_cleanup_test_dir()
@@ -159,7 +164,56 @@ func _cleanup_test_dir() -> void:
 		DirAccess.remove_absolute(_test_dir)
 
 
+func _test_legacy_capacitor_import() -> void:
+	_save.delete_save()
+	var legacy := {
+		"version": 2,
+		"gridSchemaVersion": 2,
+		"currentLevel": 3,
+		"xp": 120,
+		"xpMultiplier": 2,
+		"xpMultiplierTurns": 1,
+		"maxReachedNumber": 32,
+		"carryNumber": 4,
+		"wheelSpinsToday": 2,
+		"lastWheelDay": "2026-07-01",
+		"bonusInventory": {"destroy": 1, "shuffle": 0, "explosion": 2},
+		"pendingTransition": {},
+		"stats": {"games_played": 5, "total_xp": 500, "wheel_spins": 2},
+		"achievements": {
+			"firstGame": {"unlocked": true, "progress": 1, "max": 1},
+			"level10": {"unlocked": false, "progress": 3, "max": 10},
+		},
+		"grid": [
+			[
+				{"value": 2, "merged": false, "frozen": false},
+				{"value": 4, "merged": false, "frozen": false},
+			],
+			[
+				{"value": 8, "merged": false, "frozen": false},
+				null,
+			],
+		],
+	}
+	var legacy_path := "%s/legacy_capacitor_save.json" % _test_dir
+	_write_file(legacy_path, JSON.stringify(legacy))
+
+	_assert_true(_migration.import_from_file(legacy_path), "capacitor legacy import")
+	_assert_true(_save.has_save(), "godot save created after import")
+
+	var loaded = _save.load_game()
+	_assert_true(loaded != null, "imported save loads")
+	_assert_eq(int(loaded.current_level), 3, "imported current_level")
+	_assert_eq(int(loaded.xp), 120, "imported xp")
+	_assert_eq(int(loaded.get_bonus_count("destroy")), 1, "imported bonus destroy")
+	_assert_true(bool(loaded.progress.achievements["first_game"]["unlocked"]), "achievement mapped")
+	_assert_false(FileAccess.file_exists(legacy_path), "legacy file archived")
+
+
 func _cleanup() -> void:
+	if _migration != null:
+		_migration.free()
+		_migration = null
 	if _save != null:
 		_save.free()
 		_save = null
@@ -175,3 +229,7 @@ func _assert_true(value: bool, message: String) -> void:
 
 func _assert_eq(a: int, b: int, message: String) -> void:
 	_assert_true(a == b, "%s (got %s expected %s)" % [message, a, b])
+
+
+func _assert_false(value: bool, message: String) -> void:
+	_assert_true(not value, message)

@@ -1,7 +1,7 @@
 # Lost Number — Production Handoff (Ideal Build)
 
 **Package:** `com.averixor.lostnumber`  
-**Version:** `2.0.1` (versionCode `10`)  
+**Version:** `2.1.4` (versionCode `14`)  
 **Audience:** Casual 3+, offline puzzle  
 **Primary Android:** Godot 4.5 native (`build/godot/android/lost-number.aab`)  
 **Secondary:** Capacitor 7 WebView (legacy web parity, `npm run android:bundle`)
@@ -14,21 +14,21 @@
 ┌─────────────────────────────────────────────────────────┐
 │  Google Play  ←  lost-number.aab (Godot, recommended)   │
 ├─────────────────────────────────────────────────────────┤
-│  godot/          Core: Rules, Board, GameState, save    │
-│  js/ + _site/    Web reference + Capacitor assets       │
-│  android/        Capacitor shell (optional legacy APK)  │
+│  godot/          Boot→App shell, ScreenRouter, gameplay │
+│  js/ + _site/    Web reference (visual parity source)   │
+│  android/        Capacitor shell (legacy WebView)       │
 │  assets/         Neon UI, icons, backgrounds (UA/RU/EN) │
 │  store/          Play Console listing + graphics          │
 └─────────────────────────────────────────────────────────┘
 ```
 
-| Layer           | Stack                                        | Notes                                    |
-| --------------- | -------------------------------------------- | ---------------------------------------- |
-| Gameplay (ship) | Godot 4.3+ GDScript                          | 5×8 grid, drag-chain, power-of-two rules |
-| Web prototype   | Vanilla JS + Capacitor 7                     | Reference implementation, full meta UI   |
-| Save            | `user://` JSON (Godot), `localStorage` (web) | Checksum + `.bak` rollback (Godot)       |
-| Network         | None                                         | GDPR-friendly: no tracking, no PII       |
-| Compliance      | `privacy.html`, Play Data Safety             | Offline-only data                        |
+| Layer           | Stack                                        | Notes                                   |
+| --------------- | -------------------------------------------- | --------------------------------------- |
+| Gameplay (ship) | Godot 4.5 GDScript                           | Boot→App→screens; back-stack navigation |
+| Web reference   | Vanilla JS + Capacitor 7                     | Visual/UI/i18n source; legacy Android   |
+| Save            | `user://` JSON (Godot), `localStorage` (web) | Checksum + `.bak` rollback (Godot)      |
+| Network         | None                                         | GDPR-friendly: no tracking, no PII      |
+| Compliance      | `privacy.html`, Play Data Safety             | Offline-only data                       |
 
 ---
 
@@ -80,7 +80,13 @@ npm ci
 npm run release:ideal
 ```
 
-Runs: format, lint, typecheck, static assets, smoke tests, Godot rules + save tests.
+Runs: format, lint, typecheck, static assets, smoke tests, Godot rules + save + smoke tests.
+
+### Godot runtime (primary)
+
+Entry: **`Boot.tscn`** → **`App.tscn`** → screens via **`ScreenRouter`** autoload (back-stack, fade transitions, Android back in `App.gd`).
+
+Sprint 1–2 visual parity (branch `godot-visual-parity`): ThemeTokens, global theme, `assets/ui/`, BackgroundLayer, NeonButton, MainMenu (dock + quick-row + icons), Stats/About screens, FeatureStubOverlay, legacy save plugin AAR, `bg_effects_enabled` in Settings. Tracker: `godot/docs/VISUAL_PORT_MAP.md`.
 
 ### Godot → Play (primary)
 
@@ -126,7 +132,7 @@ adb install -r build/godot/android/lost-number-debug.apk
 
 ## Play Console checklist
 
-- [ ] Upload `lost-number.aab` (Godot 2.0)
+- [ ] Upload `lost-number.aab` (Godot 2.1.4)
 - [ ] Privacy URL: `https://averixor.github.io/LostNumber/privacy.html`
 - [ ] Data Safety: no collection, no sharing
 - [ ] IARC: puzzle, no violence/gambling/IAP/ads
@@ -137,12 +143,12 @@ adb install -r build/godot/android/lost-number-debug.apk
 
 ## Roadmap (condensed)
 
-| When    | What                                                          |
-| ------- | ------------------------------------------------------------- |
-| **Now** | Godot MVP ship: grid, levels, XP, save, audio, Android export |
-| Q2 2026 | Bonuses, wheel, daily, full i18n, themes (port from JS)       |
-| Y2      | Play Games integration, polish animations                     |
-| Y3+     | Optional opt-in cloud save                                    |
+| When    | What                                                                                              |
+| ------- | ------------------------------------------------------------------------------------------------- |
+| **Now** | Godot ship: gameplay + save + Android export; UI shell + MainMenu web parity (dock, chips, icons) |
+| Next    | chain-sum HUD, toasts, menu skin variants, achievements/daily visual polish                       |
+| Q2 2026 | Play Games integration, wheel animation, full i18n dictionary                                     |
+| Y3+     | Optional opt-in cloud save                                                                        |
 
 ---
 
@@ -160,5 +166,5 @@ Excludes: `node_modules`, keystores, `.godot`, generated `godot/android/`.
 ## Challenge / review notes
 
 - **Kyber / mTLS / zero-trust network:** Not applicable — fully offline; save integrity = SHA-256 + backup, not encryption at rest (no secrets in save).
-- **Dual stack risk:** Maintain Godot as ship target; JS is reference until feature parity.
+- **Dual stack risk:** Godot is ship target; Capacitor/Web is visual reference only — do not treat WebView AAB as primary.
 - **versionCode:** Increment on every Play upload (`godot/export_presets.cfg` preset `Android`).

@@ -37,7 +37,7 @@ function loadFeedbackService() {
     Capacitor: {
       Plugins: {
         App: {
-          getInfo: async () => ({ version: '1.0.6', build: '6' }),
+          getInfo: async () => ({ version: '2.1.4', build: '14' }),
         },
       },
     },
@@ -76,14 +76,14 @@ const t = (key) => key;
 
 assert(FeedbackService.FEEDBACK_EMAIL === 'rsabergman@gmail.com', 'feedback email configured');
 
-const body = FeedbackService.buildBody(t, '1.0.6', FeedbackService.getDeviceInfo());
+const body = FeedbackService.buildBody(t, '2.1.4', FeedbackService.getDeviceInfo());
 assert(body.includes('feedback_body_intro'), 'feedback body includes intro key');
-assert(body.includes('1.0.6'), 'feedback body includes app version');
+assert(body.includes('2.1.4'), 'feedback body includes app version');
 assert(body.includes('1080x2400'), 'feedback body includes screen size');
 assert(body.includes('Android'), 'feedback body includes user agent');
 
 const version = await FeedbackService.getAppVersion();
-assert(version === '1.0.6', 'feedback reads Capacitor app version');
+assert(version === '2.1.4', 'feedback reads Capacitor app version');
 
 FeedbackService.trackFeedbackClick();
 const stats = FeedbackService.getFeedbackClickStats();

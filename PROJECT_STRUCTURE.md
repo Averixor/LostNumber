@@ -203,3 +203,26 @@ bonuses destroy/explosion → runPostMergeEffects (той самий pipeline)
 - **`DEBUG_CHEATS.md`** — debug APK з читами
 - **`PHASES.md`** — етапи розвитку, performance, lite
 - **`store-listing/`** — короткі/повні описи (uk, en, ru)
+
+## `godot/` (primary Android ship target)
+
+Capacitor/Web — візуальний еталон і legacy; **Godot** — фінальна реалізація для Play.
+
+| Шлях                                                    | Призначення                                                                                                                                                                        |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `project.godot`                                         | `main_scene` → `scenes/Boot.tscn`; autoloads: SaveManager, SettingsManager, AudioManager, I18nManager, ThemeManager, LeaderboardService, **ScreenRouter**, **LegacySaveMigration** |
+| `scenes/Boot.tscn`                                      | Splash: preload App, fade                                                                                                                                                          |
+| `scenes/App.tscn`                                       | Shell: BackgroundLayer, ScreenRoot, OverlayRoot (Toast/Modal/Transition), AudioRoot                                                                                                |
+| `scenes/MainMenu.tscn`, `Game.tscn`, `Settings.tscn`, … | Екрани; монтуються в ScreenRoot через ScreenRouter                                                                                                                                 |
+| `scenes/components/`                                    | BackgroundLayer, NeonButton, ScreenTransition                                                                                                                                      |
+| `scripts/ui/ScreenRouter.gd`                            | Autoload: push/replace/go_back, back-stack, fade                                                                                                                                   |
+| `scripts/ui/ThemeTokens.gd`                             | CSS-токени (dawn/dusk, menu, tiles)                                                                                                                                                |
+| `themes/lost_number_theme.tres`                         | Global GUI theme                                                                                                                                                                   |
+| `themes/title_gradient.gdshader`                        | Градієнт заголовка меню/boot                                                                                                                                                       |
+| `assets/ui/backgrounds/{dark,light}/`                   | 6+6 фонів меню (копія з `assets/images/`)                                                                                                                                          |
+| `assets/ui/icons/`                                      | Neon SVG для UI (експорт: `assets/icons/neon/*` виключено з AAB)                                                                                                                   |
+| `assets/audio/{music,sfx}/`                             | mp3 (git LFS)                                                                                                                                                                      |
+| `export_presets.cfg`                                    | Android AAB/APK, version 2.1.4 / code 14                                                                                                                                           |
+| `docs/VISUAL_PORT_MAP.md`                               | Карта переносу web → Godot UI                                                                                                                                                      |
+
+Потік запуску: **Boot → App → MainMenu** (`ScreenRouter.replace("main_menu")`). Навігація між екранами — `push` / `go_back`; Android back — `App.gd`. Збірка: `npm run godot:android:release` → `build/godot/android/lost-number.aab`.

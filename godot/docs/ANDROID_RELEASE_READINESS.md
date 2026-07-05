@@ -1,21 +1,36 @@
-# Android release readiness (Godot MVP)
+# Android release readiness (Godot)
 
 Checklist before `npm run godot:android:release`.
+
+## Runtime entry (`project.godot`)
+
+| Setting      | Value                                                                            |
+| ------------ | -------------------------------------------------------------------------------- |
+| `main_scene` | `res://scenes/Boot.tscn`                                                         |
+| Flow         | Boot (splash/preload) → `App.tscn` (shell) → screens via `ScreenRouter` autoload |
+
+App shell persists `BackgroundLayer` and overlay layers; individual screens mount under `ScreenRoot`. See `godot/README.md`.
 
 ## Export preset (`export_presets.cfg`)
 
 | Field       | Release (`preset.0`)                  | Debug (`preset.1`)                          |
 | ----------- | ------------------------------------- | ------------------------------------------- |
 | Package     | `com.averixor.lostnumber`             | `com.averixor.lostnumber.dev`               |
-| versionCode | `10`                                  | `10`                                        |
-| versionName | `2.0.1`                               | `2.0.0-dev`                                 |
+| versionCode | `14`                                  | `14`                                        |
+| versionName | `2.1.4`                               | `2.1.4-dev`                                 |
 | Format      | AAB (`export_format=1`)               | APK                                         |
 | minSdk      | 24                                    | 24                                          |
 | targetSdk   | 35                                    | 35                                          |
-| ABI         | arm64-v8a                             | arm64-v8a                                   |
+| ABI         | arm64-v8a, x86_64                     | arm64-v8a, x86_64                           |
 | Output      | `build/godot/android/lost-number.aab` | `build/godot/android/lost-number-debug.apk` |
 
-Increment **versionCode** on every Play upload. The Capacitor app (`android/app/build.gradle`) shares the same package id — the Godot versionCode must always be **greater than the last versionCode ever uploaded to Play** (Capacitor or Godot), otherwise Play rejects the AAB.
+### Versioning
+
+Current: `versionName 2.1.4` / `versionCode 14`. The Capacitor app (`android/app/build.gradle`) shares the same package id and the same values, so only one bundle with a given versionCode can live in Play (currently Godot). **Every new upload needs a versionCode greater than any previously uploaded** — next release: code `15`.
+
+> `versionName` is a human-readable label (free-form). `versionCode` is the integer Play compares — just increment it by 1 each upload.
+
+ABI note: only `arm64-v8a` + `x86_64` are shipped. Dropping `armeabi-v7a` excludes 32-bit-only devices (~8k in the device catalog) — intentional.
 
 ## Icons
 
@@ -69,7 +84,13 @@ npm run godot:import
 npm run godot:test:all
 npm run godot:android:debug    # test APK
 npm run godot:android:release  # Play AAB
+npm run godot:verify:aab       # full pre-upload gate (tests + release:check + AAB checks)
 ```
+
+## Export filters
+
+- `exclude_filter=assets/store/*,assets/icons/neon/*` — Play listing art and unused neon icon set stay out of the AAB.
+- In-game graphics live under `godot/assets/ui/` only.
 
 ## If release fails
 

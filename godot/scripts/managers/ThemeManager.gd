@@ -1,36 +1,90 @@
 extends Node
 
-## Dawn/dusk theme tokens. Background art can be wired later from assets/images/.
+## Autoload: dawn/dusk theme state. Colors come from ThemeTokens (web CSS parity),
+## background art from res://assets/ui/backgrounds/{dark,light}/.
+
+signal theme_changed
+
+const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
+
+const THEMES := ["dawn", "dusk"]
+const BACKGROUND_COUNT := 6
+
+const DARK_BACKGROUNDS := [
+	"res://assets/ui/backgrounds/dark/menu-bg-1.png",
+	"res://assets/ui/backgrounds/dark/menu-bg-2.png",
+	"res://assets/ui/backgrounds/dark/menu-bg-3.png",
+	"res://assets/ui/backgrounds/dark/menu-bg-4.png",
+	"res://assets/ui/backgrounds/dark/menu-bg-5.png",
+	"res://assets/ui/backgrounds/dark/menu-bg-6.png",
+]
+
+const LIGHT_BACKGROUNDS := [
+	"res://assets/ui/backgrounds/light/bg-light-01.png",
+	"res://assets/ui/backgrounds/light/bg-light-02.png",
+	"res://assets/ui/backgrounds/light/bg-light-03.png",
+	"res://assets/ui/backgrounds/light/bg-light-04.png",
+	"res://assets/ui/backgrounds/light/bg-light-05.png",
+	"res://assets/ui/backgrounds/light/bg-light-06.png",
+]
 
 var theme_id: String = "dusk"
 var background_index: int = 0
 
-const THEMES := ["dawn", "dusk"]
+
+func is_dark() -> bool:
+	return theme_id != "dawn"
 
 
 func get_background_color() -> Color:
-	if theme_id == "dawn":
-		return Color(0.94, 0.91, 0.86, 1.0)
-	return Color(0.11, 0.06, 0.16, 1.0)
+	if is_dark():
+		return ThemeTokensLib.COLOR_BG
+	return ThemeTokensLib.DAWN_COLOR_BG
 
 
 func get_panel_color() -> Color:
-	if theme_id == "dusk":
-		return Color(0.18, 0.12, 0.24, 0.92)
-	return Color(1.0, 1.0, 1.0, 0.88)
+	if is_dark():
+		return ThemeTokensLib.COLOR_PANEL
+	return ThemeTokensLib.DAWN_COLOR_PANEL
 
 
 func get_accent_color() -> Color:
-	if theme_id == "dusk":
-		return Color(1.0, 0.42, 0.62, 1.0)
-	return Color(0.85, 0.35, 0.55, 1.0)
+	if is_dark():
+		return ThemeTokensLib.COLOR_ACCENT
+	return ThemeTokensLib.DAWN_COLOR_ACCENT
+
+
+func get_text_color() -> Color:
+	if is_dark():
+		return ThemeTokensLib.COLOR_TEXT
+	return ThemeTokensLib.DAWN_COLOR_TEXT
+
+
+func get_background_texture_path() -> String:
+	var pool: Array = DARK_BACKGROUNDS if is_dark() else LIGHT_BACKGROUNDS
+	var idx := background_index % pool.size()
+	if idx < 0:
+		idx += pool.size()
+	return str(pool[idx])
 
 
 func cycle_theme() -> void:
 	var idx := THEMES.find(theme_id)
 	theme_id = THEMES[(idx + 1) % THEMES.size()]
-	background_index = (background_index + 1) % 6
 	_save()
+	theme_changed.emit()
+
+
+## Re-emits theme_changed so listeners (e.g. BackgroundLayer) rebuild effects
+## after visual settings like bg_effects_enabled change.
+func notify_visual_settings_changed() -> void:
+	theme_changed.emit()
+
+
+func cycle_background() -> void:
+	background_index = (background_index + 1) % BACKGROUND_COUNT
+	_save()
+	theme_changed.emit()
 
 
 func load_settings() -> void:

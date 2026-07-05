@@ -1,6 +1,18 @@
-[gd_scene load_steps=2 format=3 uid="uid://mainmenu001"]
+[gd_scene load_steps=6 format=3 uid="uid://mainmenu001"]
 
 [ext_resource type="Script" path="res://scripts/ui/MainMenu.gd" id="1_menu"]
+[ext_resource type="Shader" path="res://themes/title_gradient.gdshader" id="2_gradient"]
+[ext_resource type="PackedScene" uid="uid://neonbutton001" path="res://scenes/components/NeonButton.tscn" id="3_neonbtn"]
+[ext_resource type="PackedScene" uid="uid://menu_quick_chip" path="res://scenes/components/MenuQuickChip.tscn" id="4_chip"]
+[ext_resource type="PackedScene" uid="uid://feature_stub_overlay" path="res://scenes/components/FeatureStubOverlay.tscn" id="5_stub"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_menutitle"]
+shader = ExtResource("2_gradient")
+shader_parameter/color_top = Color(1, 0.85098, 0.984314, 1)
+shader_parameter/color_mid = Color(1, 0.501961, 0.933333, 1)
+shader_parameter/color_bottom = Color(0.721569, 0.4, 1, 1)
+shader_parameter/gradient_height = 110.0
+shader_parameter/mid_point = 0.42
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -11,56 +23,118 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_menu")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Layout" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 12
 
-[node name="VBox" type="VBoxContainer" parent="."]
+[node name="RootVBox" type="VBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TopSpacer" type="Control" parent="Layout/RootVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Hero" type="VBoxContainer" parent="Layout/RootVBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Layout/RootVBox/Hero"]
+material = SubResource("ShaderMaterial_menutitle")
+layout_mode = 2
+theme_override_font_sizes/font_size = 52
+text = "LOST
+NUMBER"
+horizontal_alignment = 1
+
+[node name="Tagline" type="Label" parent="Layout/RootVBox/Hero"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "..."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Actions" type="VBoxContainer" parent="Layout/RootVBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 10
+
+[node name="Buttons" type="VBoxContainer" parent="Layout/RootVBox/Actions"]
+custom_minimum_size = Vector2(268, 0)
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PlayButton" parent="Layout/RootVBox/Actions/Buttons" instance=ExtResource("3_neonbtn")]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+variant = 1
+
+[node name="ContinueButton" parent="Layout/RootVBox/Actions/Buttons" instance=ExtResource("3_neonbtn")]
+layout_mode = 2
+
+[node name="QuickRow" type="HBoxContainer" parent="Layout/RootVBox/Actions"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="SettingsChip" parent="Layout/RootVBox/Actions/QuickRow" instance=ExtResource("4_chip")]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StatsChip" parent="Layout/RootVBox/Actions/QuickRow" instance=ExtResource("4_chip")]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AboutChip" parent="Layout/RootVBox/Actions/QuickRow" instance=ExtResource("4_chip")]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DockPanel" type="PanelContainer" parent="Layout/RootVBox"]
+layout_mode = 2
+
+[node name="DockRow" type="HBoxContainer" parent="Layout/RootVBox/DockPanel"]
+layout_mode = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="BottomSpacer" type="Control" parent="Layout/RootVBox"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="VersionLabel" type="Label" parent="Layout/RootVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "v0.0.0"
+horizontal_alignment = 1
+
+[node name="FeatureDim" type="ColorRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0, 0, 0, 0.55)
+
+[node name="FeatureStub" parent="." instance=ExtResource("5_stub")]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -140.0
-offset_top = -180.0
-offset_right = 140.0
-offset_bottom = 180.0
+offset_left = -170.0
+offset_top = -130.0
+offset_right = 170.0
+offset_bottom = 130.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 10
-alignment = 1
-
-[node name="Title" type="Label" parent="VBox"]
-layout_mode = 2
-text = "Lost Number"
-horizontal_alignment = 1
-
-[node name="ContinueButton" type="Button" parent="VBox"]
-layout_mode = 2
-text = "Continue"
-
-[node name="NewGameButton" type="Button" parent="VBox"]
-layout_mode = 2
-text = "New Game"
-
-[node name="AchievementsButton" type="Button" parent="VBox"]
-layout_mode = 2
-text = "Achievements"
-
-[node name="DailyButton" type="Button" parent="VBox"]
-layout_mode = 2
-text = "Daily"
-
-[node name="WheelButton" type="Button" parent="VBox"]
-layout_mode = 2
-text = "Wheel"
-
-[node name="SettingsButton" type="Button" parent="VBox"]
-layout_mode = 2
-text = "Settings"

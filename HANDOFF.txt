@@ -6,13 +6,14 @@ Lost Number — єдиний проєкт (консолідація 2026-07-01)
 
 Структура
 ---------
-  js/, css/, index.html     — браузерна гра (PWA)
   godot/                   — Godot 4 → Android для Play Market (ОСНОВНИЙ)
-  android/                 — Capacitor/WebView (legacy, для web-прототипу)
-  assets/, public/audio/    — графіка, звук
+    Boot.tscn → App.tscn → екрани (ScreenRouter autoload, back-stack)
+  js/, css/, index.html     — web-еталон UI/логіки (PWA, Capacitor legacy)
+  android/                 — Capacitor/WebView (legacy, не primary ship)
+  assets/, public/audio/    — графіка, звук (джерело для godot/assets/ui/)
   store/                   — Play Console: іконки, описи, скріншоти
   build/godot/android/     — готові APK/AAB (якщо зібрані)
-  docs/, godot/docs/       — документація
+  docs/, godot/docs/       — документація (VISUAL_PORT_MAP.md — parity tracker)
 
 Швидкий старт (браузер)
 -----------------------
@@ -27,11 +28,15 @@ Godot на телефон (рекомендовано)
   adb uninstall com.averixor.lostnumber.dev 2>/dev/null || true
   adb install -r build/godot/android/lost-number-debug.apk
 
+  Запуск у редакторі: godot4 --path godot
+  main_scene: Boot.tscn → App.tscn → MainMenu (ScreenRouter)
+  Тести: npm run godot:test:all
+
 Play Market (AAB)
 -----------------
   npm run godot:android:release
   # завантажити build/godot/android/lost-number.aab у Play Console
-  # package: com.averixor.lostnumber, version 2.0.0
+  # package: com.averixor.lostnumber, version 2.1.4
 
 Legacy Capacitor Android
 ------------------------

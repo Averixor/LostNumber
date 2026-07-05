@@ -6,6 +6,7 @@ extends Node
 var sound_enabled: bool = true
 var music_enabled: bool = true
 var language: String = "uk"
+var bg_effects_enabled: bool = true
 
 const SETTINGS_PATH := "user://lost_number_settings.json"
 
@@ -26,6 +27,7 @@ func load_settings() -> void:
 	sound_enabled = bool(data.get("sound_enabled", true))
 	music_enabled = bool(data.get("music_enabled", true))
 	language = str(data.get("language", "uk"))
+	bg_effects_enabled = bool(data.get("bg_effects_enabled", true))
 
 
 func save_settings() -> void:
@@ -33,6 +35,7 @@ func save_settings() -> void:
 		"sound_enabled": sound_enabled,
 		"music_enabled": music_enabled,
 		"language": language,
+		"bg_effects_enabled": bg_effects_enabled,
 	}
 	var file := FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
 	if file:

@@ -1,139 +1,130 @@
 extends Node
 
-## Lightweight i18n for Godot UI (UA / RU / EN). Uses SettingsManager.language.
+## i18n from res://assets/i18n/{uk,ru,en}.json with fallback uk → ru → en.
+## Empty string values are valid translations.
 
-const STRINGS := {
-	"uk": {
-		"app_title": "Lost Number",
-		"menu_continue": "Продовжити",
-		"menu_new_game": "Нова гра",
-		"menu_settings": "Налаштування",
-		"menu_achievements": "Досягнення",
-		"menu_daily": "Щоденні завдання",
-		"menu_wheel": "Колесо",
-		"menu_back": "Назад",
-		"hud_menu": "Меню",
-		"settings_title": "Налаштування",
-		"settings_sound": "Звук",
-		"settings_music": "Музика",
-		"settings_language": "Мова",
-		"lang_uk": "Українська",
-		"lang_ru": "Русский",
-		"lang_en": "English",
-		"level_label": "Рівень %d",
-		"target_label": "Ціль: %s",
-		"xp_label": "XP: %s",
-		"level_complete": "Рівень пройдено!",
-		"next_level": "Наступний рівень",
-		"bonus_shuffle": "Перемішати",
-		"bonus_destroy": "Знищити",
-		"bonus_explosion": "Вибух",
-		"no_bonus": "Немає бонусів",
-		"choose_cell_bonus": "Оберіть клітинку",
-		"shuffle_done": "Поле перемішано",
-		"destroy_done": "Клітинку знищено",
-		"explosion_done": "Група клітинок очищена",
-		"daily_title": "Щоденні завдання",
-		"daily_complete_level": "Пройти рівень",
-		"daily_chain_5": "Ланцюг з 5 клітинок",
-		"daily_xp_100": "Заробити 100 XP за день",
-		"daily_use_bonus": "Використати бонус",
-		"daily_spin_wheel": "Крутити колесо",
-		"daily_completed": "Завдання виконано!",
-		"wheel_title": "Колесо фортуни",
-		"wheel_spin": "Крутити",
-		"achievements_title": "Досягнення",
-		"achievement_locked": "Заблоковано",
-		"achievement_unlocked": "Отримано",
-		"leaderboard_opt_in": "Надсилати рекорди в таблицю лідерів (скоро)",
+const LANG_FILES := {
+	"uk": "res://assets/i18n/uk.json",
+	"ru": "res://assets/i18n/ru.json",
+	"en": "res://assets/i18n/en.json",
+}
+
+const FALLBACK_ORDER := ["uk", "ru", "en"]
+
+## Godot UI keys → JSON keys from js/system/i18n/i18n.js
+const KEY_ALIASES := {
+	"app_title": "game_logo",
+	"boot_loading": "loading",
+	"menu_play": "btn_play",
+	"menu_continue": "btn_continue",
+	"menu_new_game": "btn_new_game",
+	"menu_settings": "btn_settings",
+	"menu_achievements": "btn_achievements",
+	"menu_daily": "btn_daily_quests",
+	"menu_wheel": "bonus_wheel_title",
+	"menu_back": "btn_back",
+	"hud_menu": "btn_home",
+	"settings_sound": "settings_sound_label",
+	"settings_music": "settings_music_label",
+	"settings_theme": "settings_theme_label",
+	"settings_bg_effects": "settings_bg_effects_label",
+	"lang_uk": "settings_language_ua",
+	"lang_ru": "settings_language_ru",
+	"lang_en": "settings_language_en",
+	"level_label": "level_label",
+	"goal_label": "goal_label",
+	"xp_label": "xp_label",
+	"level_complete": "level_completed_title",
+	"next_level": "btn_next_level",
+	"bonus_shuffle": "bonus_shuffle_title",
+	"bonus_destroy": "bonus_destroy_title",
+	"bonus_explosion": "bonus_explosion_title",
+	"no_bonus": "no_bonus",
+	"choose_cell_bonus": "choose_cell_bonus",
+	"shuffle_done": "shuffle_done",
+	"destroy_done": "destroy_done",
+	"explosion_done": "explosion_done",
+	"daily_title": "daily_quests_title",
+	"daily_complete_level": "daily_complete_level",
+	"daily_chain_5": "daily_chain_5",
+	"daily_xp_100": "daily_xp_100",
+	"daily_use_bonus": "daily_use_bonus",
+	"daily_spin_wheel": "daily_spin_wheel",
+	"daily_completed": "daily_completed",
+	"wheel_title": "wheel_title",
+	"wheel_spin": "btn_spin_wheel",
+	"achievements_title": "achievements_title",
+	"achievement_locked": "achievement_locked",
+	"achievement_unlocked": "achievement_unlocked",
+	"leaderboard_opt_in": "leaderboard_opt_in",
+	"version_label": "version_label",
+	"main_subtitle": "main_subtitle",
+	"settings_import_legacy": "settings_import_legacy",
+	"settings_import_legacy_success": "settings_import_legacy_success",
+	"settings_import_legacy_failed": "settings_import_legacy_failed",
+	"settings_import_legacy_none": "settings_import_legacy_none",
+	"btn_stats": "btn_stats",
+	"btn_about": "btn_about",
+	"dock_premium": "dock_premium",
+	"dock_tournaments": "dock_tournaments",
+	"dock_achievements": "dock_achievements",
+	"dock_daily": "dock_daily",
+	"dock_bonuses": "dock_bonuses",
+	"feature_stub_ok": "feature_stub_ok",
+	"feature_premium_title": "feature_premium_title",
+	"feature_premium_intro": "feature_premium_intro",
+	"feature_premium_bullet_ad": "feature_premium_bullet_ad",
+	"feature_premium_bullet_themes": "feature_premium_bullet_themes",
+	"feature_premium_bullet_tournaments": "feature_premium_bullet_tournaments",
+	"feature_premium_note": "feature_premium_note",
+	"feature_tournaments_title": "feature_tournaments_title",
+	"feature_tournaments_intro": "feature_tournaments_intro",
+	"feature_tournaments_bullet_weekly": "feature_tournaments_bullet_weekly",
+	"feature_tournaments_note": "feature_tournaments_note",
+	"feature_bonuses_title": "feature_bonuses_title",
+	"feature_bonuses_text": "feature_bonuses_text",
+	"feature_1": "feature_1",
+	"feature_2": "feature_2",
+	"feature_3": "feature_3",
+	"feature_4": "feature_4",
+	"game_logo": "game_logo",
+}
+
+const STATIC_FALLBACKS := {
+	"achievement_locked": {
+		"uk": "Заблоковано",
+		"ru": "Заблокировано",
+		"en": "Locked",
 	},
-	"ru": {
-		"app_title": "Lost Number",
-		"menu_continue": "Продолжить",
-		"menu_new_game": "Новая игра",
-		"menu_settings": "Настройки",
-		"menu_achievements": "Достижения",
-		"menu_daily": "Ежедневные задания",
-		"menu_wheel": "Колесо",
-		"menu_back": "Назад",
-		"hud_menu": "Меню",
-		"settings_title": "Настройки",
-		"settings_sound": "Звук",
-		"settings_music": "Музыка",
-		"settings_language": "Язык",
-		"lang_uk": "Українська",
-		"lang_ru": "Русский",
-		"lang_en": "English",
-		"level_label": "Уровень %d",
-		"target_label": "Цель: %s",
-		"xp_label": "XP: %s",
-		"level_complete": "Уровень пройден!",
-		"next_level": "Следующий уровень",
-		"bonus_shuffle": "Перемешать",
-		"bonus_destroy": "Уничтожить",
-		"bonus_explosion": "Взрыв",
-		"no_bonus": "Нет бонусов",
-		"choose_cell_bonus": "Выберите клетку",
-		"shuffle_done": "Поле перемешано",
-		"destroy_done": "Клетка уничтожена",
-		"explosion_done": "Группа клеток очищена",
-		"daily_title": "Ежедневные задания",
-		"daily_complete_level": "Пройти уровень",
-		"daily_chain_5": "Цепь из 5 клеток",
-		"daily_xp_100": "Заработать 100 XP за день",
-		"daily_use_bonus": "Использовать бонус",
-		"daily_spin_wheel": "Крутить колесо",
-		"daily_completed": "Задание выполнено!",
-		"wheel_title": "Колесо фортуны",
-		"wheel_spin": "Крутить",
-		"achievements_title": "Достижения",
-		"achievement_locked": "Заблокировано",
-		"achievement_unlocked": "Получено",
-		"leaderboard_opt_in": "Отправлять рекорды в таблицу лидеров (скоро)",
+	"leaderboard_opt_in": {
+		"uk": "Надсилати рекорди в таблицю лідерів (скоро)",
+		"ru": "Отправлять рекорды в таблицу лидеров (скоро)",
+		"en": "Submit scores to leaderboard (coming soon)",
 	},
-	"en": {
-		"app_title": "Lost Number",
-		"menu_continue": "Continue",
-		"menu_new_game": "New Game",
-		"menu_settings": "Settings",
-		"menu_achievements": "Achievements",
-		"menu_daily": "Daily Tasks",
-		"menu_wheel": "Wheel",
-		"menu_back": "Back",
-		"hud_menu": "Menu",
-		"settings_title": "Settings",
-		"settings_sound": "Sound",
-		"settings_music": "Music",
-		"settings_language": "Language",
-		"lang_uk": "Українська",
-		"lang_ru": "Русский",
-		"lang_en": "English",
-		"level_label": "Level %d",
-		"target_label": "Target: %s",
-		"xp_label": "XP: %s",
-		"level_complete": "Level complete!",
-		"next_level": "Next level",
-		"bonus_shuffle": "Shuffle",
-		"bonus_destroy": "Destroy",
-		"bonus_explosion": "Blast",
-		"no_bonus": "No bonuses left",
-		"choose_cell_bonus": "Pick a cell",
-		"shuffle_done": "Grid shuffled",
-		"destroy_done": "Cell destroyed",
-		"explosion_done": "Area cleared",
-		"daily_title": "Daily Tasks",
-		"daily_complete_level": "Complete a level",
-		"daily_chain_5": "Chain of 5 cells",
-		"daily_xp_100": "Earn 100 XP today",
-		"daily_use_bonus": "Use a bonus",
-		"daily_spin_wheel": "Spin the wheel",
-		"daily_completed": "Task completed!",
-		"wheel_title": "Wheel of Fortune",
-		"wheel_spin": "Spin",
-		"achievements_title": "Achievements",
-		"achievement_locked": "Locked",
-		"achievement_unlocked": "Unlocked",
-		"leaderboard_opt_in": "Submit scores to leaderboard (coming soon)",
+	"version_label": {
+		"uk": "v%s",
+		"ru": "v%s",
+		"en": "v%s",
+	},
+	"settings_import_legacy": {
+		"uk": "Імпортувати старе збереження",
+		"ru": "Импортировать старое сохранение",
+		"en": "Import legacy save",
+	},
+	"settings_import_legacy_success": {
+		"uk": "Збереження імпортовано",
+		"ru": "Сохранение импортировано",
+		"en": "Save imported successfully",
+	},
+	"settings_import_legacy_failed": {
+		"uk": "Не вдалося імпортувати збереження",
+		"ru": "Не удалось импортировать сохранение",
+		"en": "Could not import save",
+	},
+	"settings_import_legacy_none": {
+		"uk": "Файл збереження не знайдено",
+		"ru": "Файл сохранения не найден",
+		"en": "No legacy save file found",
 	},
 }
 
@@ -167,20 +158,91 @@ const ACHIEVEMENT_NAMES := {
 	},
 }
 
+var _strings: Dictionary = {}
+
+
+func _ready() -> void:
+	_load_all()
+
+
+func _load_all() -> void:
+	_strings.clear()
+	for lang in FALLBACK_ORDER:
+		var path: String = LANG_FILES[lang]
+		if not ResourceLoader.exists(path):
+			push_warning("I18nManager: missing %s" % path)
+			_strings[lang] = {}
+			continue
+		var file := FileAccess.open(path, FileAccess.READ)
+		if file == null:
+			_strings[lang] = {}
+			continue
+		var parsed = JSON.parse_string(file.get_as_text())
+		_strings[lang] = parsed if typeof(parsed) == TYPE_DICTIONARY else {}
+
 
 func t(key: String, args: Array = []) -> String:
-	var lang := _current_lang()
-	var bucket: Dictionary = STRINGS.get(lang, STRINGS["uk"])
-	var text := str(bucket.get(key, STRINGS["uk"].get(key, key)))
+	var resolved := _resolve_key(key)
+	var text := _lookup(resolved)
 	if args.is_empty():
 		return text
-	return text % args
+	return _format(text, args)
 
 
 func achievement_name(key: String) -> String:
 	var lang := _current_lang()
 	var bucket: Dictionary = ACHIEVEMENT_NAMES.get(lang, ACHIEVEMENT_NAMES["uk"])
-	return str(bucket.get(key, key))
+	if bucket.has(key):
+		return str(bucket[key])
+	for fb in FALLBACK_ORDER:
+		var b: Dictionary = ACHIEVEMENT_NAMES.get(fb, {})
+		if b.has(key):
+			return str(b[key])
+	return key
+
+
+func _resolve_key(key: String) -> String:
+	return str(KEY_ALIASES.get(key, key))
+
+
+func _lookup(key: String) -> String:
+	var lang := _current_lang()
+	var order: Array[String] = []
+	order.append(lang)
+	for fb in FALLBACK_ORDER:
+		if fb != lang:
+			order.append(fb)
+
+	for l in order:
+		var bucket: Dictionary = _strings.get(l, {})
+		if bucket.has(key):
+			return str(bucket[key])
+
+	if STATIC_FALLBACKS.has(key):
+		var fb_map: Dictionary = STATIC_FALLBACKS[key]
+		if fb_map.has(lang):
+			return str(fb_map[lang])
+		for l in FALLBACK_ORDER:
+			if fb_map.has(l):
+				return str(fb_map[l])
+
+	return key
+
+
+func _format(text: String, args: Array) -> String:
+	var out := text
+	# Godot printf-style (%d, %s)
+	if "%" in out:
+		return out % args
+	# JS-style {placeholders}
+	var names := ["level", "xp", "target", "cost", "turns", "used", "total", "value"]
+	for i in args.size():
+		var placeholder := "{%s}" % names[mini(i, names.size() - 1)]
+		if placeholder in out:
+			out = out.replace(placeholder, str(args[i]))
+		elif "{cost}" in out and i == 0:
+			out = out.replace("{cost}", str(args[i]))
+	return out
 
 
 func _autoload(name: String) -> Node:
@@ -188,9 +250,11 @@ func _autoload(name: String) -> Node:
 
 
 func _current_lang() -> String:
+	if not is_inside_tree():
+		return "uk"
 	var settings := _autoload("SettingsManager")
 	if settings != null:
 		var language := str(settings.get("language"))
-		if STRINGS.has(language):
+		if LANG_FILES.has(language):
 			return language
 	return "uk"

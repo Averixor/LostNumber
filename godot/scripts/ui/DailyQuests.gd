@@ -1,7 +1,9 @@
 extends Control
 
+const DailyQuestCardScene := preload("res://scenes/components/DailyQuestCard.tscn")
+
 @onready var list: VBoxContainer = $Scroll/List
-@onready var back_button: Button = $BackButton
+@onready var back_button: NeonButton = $BackButton
 @onready var title_label: Label = $Title
 @onready var background: ColorRect = $Background
 
@@ -19,10 +21,20 @@ func _i18n(key: String, args: Array = []) -> String:
 	return key
 
 
+func _navigate_back() -> void:
+	var router := _autoload("ScreenRouter")
+	if router == null:
+		get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+		return
+	var handled: bool = await router.go_back()
+	if not handled:
+		router.call("replace", "main_menu")
+
+
 func _ready() -> void:
 	var theme := _autoload("ThemeManager")
 	if background != null and theme != null and theme.has_method("get_background_color"):
-		background.color = theme.call("get_background_color")
+		background.color = Color(theme.call("get_background_color"), 0.6)
 
 	title_label.text = _i18n("daily_title")
 	back_button.text = _i18n("menu_back")
@@ -37,16 +49,13 @@ func _render() -> void:
 
 	var daily := DailyQuestManager.new(_state)
 	daily.ensure_loaded()
+	var done_label := _i18n("daily_completed")
+
 	for quest in daily.get_quests():
-		var row := HBoxContainer.new()
+		var card: DailyQuestCard = DailyQuestCardScene.instantiate()
 		var done := daily.is_done(str(quest.get("id", "")))
-		var status := Label.new()
-		status.text = "✓" if done else "○"
-		var text := Label.new()
-		text.text = _i18n(str(quest.get("text_key", "")))
-		row.add_child(status)
-		row.add_child(text)
-		list.add_child(row)
+		card.setup(done, _i18n(str(quest.get("text_key", ""))), done_label if done else "")
+		list.add_child(card)
 
 
 func _load_state() -> GameState:
@@ -61,4 +70,7 @@ func _load_state() -> GameState:
 
 
 func _on_back() -> void:
-	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+	var audio := _autoload("AudioManager")
+	if audio != null:
+		audio.call("play_sfx", "button_click")
+	_navigate_back()

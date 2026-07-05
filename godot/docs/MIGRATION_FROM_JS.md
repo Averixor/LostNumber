@@ -1,6 +1,6 @@
 # Migration from JS to Godot
 
-Lost Number **2.0** — Godot 4 / GDScript. The HTML/Capacitor build remains a reference prototype.
+Lost Number **2.1.4** — Godot 4 / GDScript. The HTML/Capacitor build remains a reference prototype.
 
 ## Architecture map
 
