@@ -105,15 +105,15 @@ Web-версія — джерело правди для UI/UX, кольорів,
 
 ## Іконки та аудіо
 
-| Web source                                      | Godot target                          | Scene        | Status  |
-| ----------------------------------------------- | ------------------------------------- | ------------ | ------- |
-| `assets/icons/neon/icons/*.svg` (41 шт.)        | `godot/assets/ui/icons/neon/`         | UI           | DONE    |
-| `assets/icons/neon/sprite/lostnumber-icons.svg` | — (у Godot окремі SVG)                | UI           | —       |
-| `js/ui/icons.js` (мапінг icon → slot)           | MenuDock, GameHud, MainMenu, back btns | UI           | DONE    |
-| `public/audio/music/*.mp3` (5 треків)           | `godot/assets/audio/music/`           | AudioManager | DONE    |
-| `public/audio/sfx/*.mp3` (8 звуків)             | `godot/assets/audio/sfx/`             | AudioManager | DONE    |
-| `js/system/platform/audio.js`                   | `scripts/managers/AudioManager.gd`    | AudioManager | DONE    |
-| `assets/icons/icon.png`, `icon-1024.png`        | `godot/icon.png`, `godot/icon-1024.png` | Export       | DONE    |
+| Web source                                      | Godot target                            | Scene        | Status |
+| ----------------------------------------------- | --------------------------------------- | ------------ | ------ |
+| `assets/icons/neon/icons/*.svg` (41 шт.)        | `godot/assets/ui/icons/neon/`           | UI           | DONE   |
+| `assets/icons/neon/sprite/lostnumber-icons.svg` | — (у Godot окремі SVG)                  | UI           | —      |
+| `js/ui/icons.js` (мапінг icon → slot)           | MenuDock, GameHud, MainMenu, back btns  | UI           | DONE   |
+| `public/audio/music/*.mp3` (5 треків)           | `godot/assets/audio/music/`             | AudioManager | DONE   |
+| `public/audio/sfx/*.mp3` (8 звуків)             | `godot/assets/audio/sfx/`               | AudioManager | DONE   |
+| `js/system/platform/audio.js`                   | `scripts/managers/AudioManager.gd`      | AudioManager | DONE   |
+| `assets/icons/icon.png`, `icon-1024.png`        | `godot/icon.png`, `godot/icon-1024.png` | Export       | DONE   |
 
 Примітки:
 
