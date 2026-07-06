@@ -177,6 +177,7 @@ func refresh(state: GameState, i18n_t: Callable) -> void:
 	_style_bonus_button(shuffle_button, "shuffle", state.get_bonus_count("shuffle"), state.active_bonus)
 	_style_bonus_button(destroy_button, "destroy", state.get_bonus_count("destroy"), state.active_bonus)
 	_style_bonus_button(explosion_button, "explosion", state.get_bonus_count("explosion"), state.active_bonus)
+	_clear_bonus_button_focus(state.active_bonus)
 
 	save_indicator.text = ""
 
@@ -213,25 +214,47 @@ func _style_bonus_button(button: Button, kind: String, count: int, active_bonus:
 	var available := count > 0
 	button.disabled = not available and not is_active
 
-	var normal := LnUiLib.glass_box(14, 2,
-		LnUiLib.PANEL if available or is_active else Color(0.10, 0.07, 0.13, 0.58),
-		LnUiLib.BORDER_ACTIVE if is_active else (LnUiLib.BORDER_ACTIVE if available else LnUiLib.BORDER))
+	var bg: Color
+	var border: Color
+	if is_active:
+		bg = LnUiLib.ACCENT.lerp(Color.BLACK, 0.12)
+		border = LnUiLib.BORDER_ACTIVE
+	elif available:
+		bg = LnUiLib.PANEL
+		border = LnUiLib.BORDER
+	else:
+		bg = Color(0.10, 0.07, 0.13, 0.58)
+		border = Color(0.35, 0.23, 0.39, 0.38)
+
+	var normal := LnUiLib.glass_box(14, 2, bg, border)
 	normal.content_margin_left = 8
 	normal.content_margin_right = 8
 	normal.content_margin_top = 6
 	normal.content_margin_bottom = 6
+	if is_active:
+		normal.shadow_color = Color(LnUiLib.ACCENT, 0.45)
+		normal.shadow_size = 12
 	var hover := normal.duplicate()
-	hover.bg_color = LnUiLib.PANEL_HOVER if available else normal.bg_color
+	if is_active:
+		hover.bg_color = normal.bg_color.lightened(0.08)
+	elif available:
+		hover.bg_color = LnUiLib.PANEL_HOVER
+		hover.border_color = LnUiLib.BORDER_ACTIVE
 	var pressed := normal.duplicate()
-	pressed.bg_color = LnUiLib.PANEL_PRESSED if available else normal.bg_color
+	if is_active:
+		pressed.bg_color = normal.bg_color.darkened(0.08)
+	elif available:
+		pressed.bg_color = LnUiLib.PANEL_PRESSED
 	var disabled := normal.duplicate()
 	disabled.bg_color = Color(0.10, 0.07, 0.13, 0.58)
 	disabled.border_color = Color(0.35, 0.23, 0.39, 0.38)
+	disabled.shadow_size = 0
 	button.add_theme_stylebox_override("normal", normal)
 	button.add_theme_stylebox_override("hover", hover)
 	button.add_theme_stylebox_override("pressed", pressed)
 	button.add_theme_stylebox_override("disabled", disabled)
-	button.add_theme_color_override("font_color", LnUiLib.TEXT if available else LnUiLib.TEXT_DISABLED)
+	button.add_theme_stylebox_override("focus", normal.duplicate() if is_active else StyleBoxEmpty.new())
+	button.add_theme_color_override("font_color", Color.WHITE if is_active else (LnUiLib.TEXT if available else LnUiLib.TEXT_DISABLED))
 	button.add_theme_color_override("font_disabled_color", LnUiLib.TEXT_DISABLED)
 	button.modulate = Color.WHITE
 
@@ -243,6 +266,24 @@ func _style_bonus_button(button: Button, kind: String, count: int, active_bonus:
 		_set_button_icon(button, LnUiLib.icon_path("path.svg"), false)
 	elif kind == "explosion":
 		_set_button_icon(button, LnUiLib.icon_path("bonus.svg"), false)
+
+
+func _clear_bonus_button_focus(active_bonus: String) -> void:
+	for btn in [shuffle_button, destroy_button, explosion_button]:
+		if btn.has_focus() and (active_bonus.is_empty() or btn != _bonus_button_for_type(active_bonus)):
+			btn.release_focus()
+
+
+func _bonus_button_for_type(type: String) -> Button:
+	match type:
+		"shuffle":
+			return shuffle_button
+		"destroy":
+			return destroy_button
+		"explosion":
+			return explosion_button
+		_:
+			return null
 
 
 func set_message(text: String) -> void:

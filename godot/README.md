@@ -64,14 +64,14 @@ project.godot          main_scene → Boot.tscn; autoloads incl. ScreenRouter
 scenes/
   Boot.tscn            splash / preload → App
   App.tscn             shell (BackgroundLayer, ScreenRoot, OverlayRoot)
-  MainMenu.tscn        … Game, Settings, Stats, About, Achievements, DailyQuests, Wheel
+  MainMenu.tscn        … Game, Settings, SkinPreview, Stats, About, Achievements, DailyQuests, Wheel
   components/          BackgroundLayer, NeonButton, MenuDockButton, MenuQuickChip, FeatureStubOverlay, ScreenTransition
 scripts/
   App.gd               registers ScreenRouter, Android back
   core/                Rules, BoardLogic, GameState, …
   game/                Game, Board, Tile, ChainLineLayer, BonusManager
-  ui/                  GameHud, WheelCanvas, AchievementCard, DailyQuestCard, …
-  assets/i18n/         uk.json, ru.json, en.json (from js/system/i18n/i18n.js)
+  ui/                  GameHud, SkinPreview, ImagePickerHelper, WheelCanvas, AchievementCard, DailyQuestCard, …
+  assets/i18n/         uk.json, ru.json, en.json — 285 keys each (from js/system/i18n/i18n.js)
   managers/            SaveManager, SettingsManager, AudioManager, ThemeManager, I18nManager, …
   ui/                  ScreenRouter, Boot, MainMenu, ThemeTokens, …
   meta/                WheelManager, DailyQuestManager
@@ -93,7 +93,8 @@ docs/
 - `ThemeTokens.gd` + `lost_number_theme.tscn` — colors/radii from web CSS
 - `BackgroundLayer` — theme art, dim overlay, optional particles (`SettingsManager.bg_effects_enabled`)
 - `NeonButton` — primary / secondary / ghost (no default grey Godot buttons on MainMenu)
-- MainMenu: gradient title, primary actions, quick-row chips, bottom dock, SVG icons, feature stubs, bg cycle (tagline double-tap)
+- MainMenu: gradient title, primary actions, quick-row chips, bottom dock, SVG icons, feature stubs, bg cycle (tagline double-tap; theme toggle dawn/dusk only — twilight hidden in UI)
+- Settings → SkinPreview: custom background via `ImagePickerHelper.gd`; Back button pinned at bottom
 - Stats / About screens; legacy save plugin (`android/plugins/LostNumberMigrationPlugin/`)
 
 Next visual work: `godot/docs/VISUAL_PORT_MAP.md` (chain-sum HUD, toasts, menu skin variants).

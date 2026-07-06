@@ -47,7 +47,7 @@ Android mipmap: `python3 scripts/generate-android-icons.py` (джерело — 
 
 Живий демо / privacy на GitHub Pages: <https://averixor.github.io/LostNumber/> — **працює лише після public repo + увімкнення Pages** (зараз private → 404). Обхід: `npm run privacy:package` → Netlify Drop — див. [docs/GITHUB_PAGES.md](docs/GITHUB_PAGES.md).
 
-Деплой: **`ci.yml`** — `release:check` на кожному push; **`pages.yml`** — деплой `_site/` лише коли Pages увімкнено (на private repo без Pages run завершується без деплою — див. [docs/GITHUB_PAGES.md](docs/GITHUB_PAGES.md)).
+Деплой: **`ci.yml`** — `release:check` на кожному push (**Godot-тести `godot:test:all` — лише локально**, CI їх не запускає); **`pages.yml`** — деплой `_site/` лише коли Pages увімкнено (на private repo без Pages run завершується без деплою — див. [docs/GITHUB_PAGES.md](docs/GITHUB_PAGES.md)).
 
 ## Android (APK / Google Play)
 
@@ -97,6 +97,18 @@ npm run android:open      # Android Studio
 | `npm run android:run`         | prepare + `cap run android` (потрібен SDK + пристрій/емулятор)                                                                                       |
 | `npm run cursor:audit`        | Допоміжний скрипт для локального аудиту з Cursor SDK                                                                                                 |
 | `npm run cursor:audit:stream` | Те саме з потоковим виводом (`cursor-audit-local.mjs --stream`)                                                                                      |
+
+**Godot (primary Android ship target):**
+
+| Команда                         | Опис                                                                    |
+| ------------------------------- | ----------------------------------------------------------------------- |
+| `npm run godot:import`          | Headless import Godot-проєкту (`godot4 --path godot --import`)          |
+| `npm run godot:test:all`        | Rules + save + smoke + i18n тести (285 ключів uk/ru/en)                 |
+| `npm run godot:android:debug`   | Debug APK → `build/godot/android/lost-number-debug.apk`                 |
+| `npm run godot:android:release` | Release AAB → `build/godot/android/lost-number.aab` (потрібен keystore) |
+| `npm run godot:verify:aab`      | Pre-upload gate: тести + release:check + перевірка AAB                  |
+
+Детально: **[godot/README.md](godot/README.md)**, `godot/docs/ANDROID_RELEASE_READINESS.md`.
 
 Додаткові Node-перевірки gameplay/reliability (без test framework, лише stdlib):
 

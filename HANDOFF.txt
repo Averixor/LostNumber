@@ -30,13 +30,16 @@ Godot на телефон (рекомендовано)
 
   Запуск у редакторі: godot4 --path godot
   main_scene: Boot.tscn → App.tscn → MainMenu (ScreenRouter)
-  Тести: npm run godot:test:all
+  Екрани: Settings (Back внизу), SkinPreview + ImagePickerHelper (custom bg), DailyQuests
+  Тести: npm run godot:test:all  (локально перед релізом; CI їх не запускає)
 
 Play Market (AAB)
 -----------------
   npm run godot:android:release
   # завантажити build/godot/android/lost-number.aab у Play Console
-  # package: com.averixor.lostnumber, version 2.1.4
+  # package: com.averixor.lostnumber, versionName 2.1.4 / versionCode 14
+  # наступний upload у Play — versionCode 15+ (обов'язково інкремент)
+  # останній UI-коміт: 61441a4 (backgrounds, bonuses, crown, daily quests, settings)
 
 Legacy Capacitor Android
 ------------------------

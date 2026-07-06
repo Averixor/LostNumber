@@ -178,7 +178,36 @@ static func is_dark_theme() -> bool:
 	return true
 
 
+static func load_background_texture(path: String) -> Texture2D:
+	if path.is_empty():
+		return null
+	if path.begins_with("user://"):
+		if FileAccess.file_exists(path):
+			var img := Image.load_from_file(path)
+			if img != null:
+				return ImageTexture.create_from_image(img)
+		return null
+	if ResourceLoader.exists(path):
+		return load(path) as Texture2D
+	return null
+
+
+static func current_background_path(screen: String = "") -> String:
+	if screen == "boot" and ResourceLoader.exists(BG_BOOT):
+		return BG_BOOT
+	var theme_mgr := _theme_manager()
+	if theme_mgr != null and theme_mgr.has_method("get_background_texture_path"):
+		var selected := str(theme_mgr.call("get_background_texture_path"))
+		if not selected.is_empty():
+			return selected
+	return _legacy_screen_bg(screen)
+
+
 static func screen_bg(screen: String) -> String:
+	return current_background_path(screen)
+
+
+static func _legacy_screen_bg(screen: String) -> String:
 	var dark_path: String = str(_SCREEN_DARK_BG.get(screen, BG_MAIN_MENU))
 	if is_dark_theme():
 		return dark_path
@@ -353,7 +382,8 @@ static func _center_texture_rect(rect: TextureRect, size: Vector2) -> void:
 
 
 static func set_background(root: Control, bg_path: String, dim_alpha: float = 0.62) -> void:
-	if not ResourceLoader.exists(bg_path):
+	var texture := load_background_texture(bg_path)
+	if texture == null:
 		return
 
 	var bg := root.get_node_or_null("LN_Background") as TextureRect
@@ -370,7 +400,7 @@ static func set_background(root: Control, bg_path: String, dim_alpha: float = 0.
 	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bg.texture = load(bg_path)
+	bg.texture = texture
 
 	var dim := root.get_node_or_null("LN_BackdropDim") as ColorRect
 	if dim == null:

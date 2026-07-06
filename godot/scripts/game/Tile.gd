@@ -57,8 +57,8 @@ func _ensure_crown_icon() -> void:
 	_crown_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_crown_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_crown_icon.visible = false
-	_crown_icon.modulate = Color(_get_rim_color(), 0.38)
-	_crown_icon.z_index = -1
+	_crown_icon.modulate = Color(ThemeTokensLib.TILE_GOLD_RIM, 0.88)
+	_crown_icon.z_index = 2
 	_bg.add_child(_crown_icon)
 	_bg.move_child(_crown_icon, _label.get_index())
 	_layout_crown_and_label()
@@ -74,14 +74,17 @@ func setup(pos: Vector2i, number: int) -> void:
 func _layout_crown_and_label() -> void:
 	if _crown_icon == null:
 		return
-	var crown_size := cell_size * 0.62
+	var crown_side := minf(cell_size.x, cell_size.y) * 0.28
+	var crown_size := Vector2(crown_side, crown_side)
 	_crown_icon.custom_minimum_size = crown_size
 	_crown_icon.size = crown_size
-	_crown_icon.position = (cell_size - crown_size) * 0.5 + Vector2(0, 1)
+	var top_pad := maxf(2.0, cell_size.y * 0.08)
+	_crown_icon.position = Vector2(
+		(cell_size.x - crown_side) * 0.5,
+		top_pad
+	)
 	if _label != null:
-		_label.offset_top = -1.0
-		_label.offset_bottom = 1.0
-		_label.z_index = 1
+		_label.z_index = 3
 
 
 func set_value(number: int) -> void:
@@ -199,8 +202,16 @@ func _refresh_visual() -> void:
 	_label.add_theme_font_size_override("font_size", _tile_font_size())
 	if _crown_icon != null:
 		_crown_icon.visible = _target and not _frozen and not _bonus_mode
-		var crown_alpha := 0.42 if _target else 0.0
+		var crown_alpha := 0.88 if _target else 0.0
 		_crown_icon.modulate = Color(ThemeTokensLib.TILE_GOLD_RIM, crown_alpha)
+	if _label != null:
+		if _target and not _frozen and not _bonus_mode:
+			var crown_side := minf(cell_size.x, cell_size.y) * 0.28
+			_label.offset_top = crown_side * 0.55
+			_label.offset_bottom = 0.0
+		else:
+			_label.offset_top = 0.0
+			_label.offset_bottom = 0.0
 	queue_redraw()
 
 

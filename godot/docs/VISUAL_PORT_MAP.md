@@ -17,6 +17,7 @@ Web-версія — джерело правди для UI/UX, кольорів,
 | `index.html` `#mainMenuScreen` + `css/ui.css`      | `godot/scenes/MainMenu.tscn`                | MainMenu    | DONE    |
 | `index.html` `#gameScreen` (HUD, goal-box, xp)     | `godot/scenes/Game.tscn` + `GameHud.tscn`   | Game        | PARTIAL |
 | `index.html` `#settingsScreen`                     | `godot/scenes/Settings.tscn`                | Settings    | PARTIAL |
+| Settings → custom background preview               | `godot/scenes/SkinPreview.tscn`             | SkinPreview | PARTIAL |
 | `index.html` `#aboutScreen`                        | `godot/scenes/About.tscn`                   | About       | DONE    |
 | `index.html` `#achievementsScreen`                 | `godot/scenes/Achievements.tscn`            | Achievement | PARTIAL |
 | `index.html` `#statsScreen`                        | `godot/scenes/Stats.tscn`                   | Stats       | DONE    |
@@ -31,7 +32,10 @@ Web-версія — джерело правди для UI/UX, кольорів,
   Stats, About) **DONE**, bottom dock (Premium/Tournaments/Achievements/Daily/Bonuses) **DONE**,
   SVG icons **DONE**, FeatureStubOverlay for premium/tournaments/bonuses **DONE**,
   tagline double-tap → `ThemeManager.cycle_background()`, staggered fade+slide entrance.
-- Game/Settings/Achievements/DailyQuests — MVP; chain-sum HUD і preview bubble ще TODO.
+- Settings: scroll + **Back** pinned at bottom (offset −72 px on Scroll); theme toggle cycles **dawn/dusk only** (`ThemeManager.UI_CYCLE_THEMES`; twilight in code but hidden from UI); skin picker → `SkinPreview` via `ImagePickerHelper.gd` (not MobileImagePicker).
+- SkinPreview: full-screen preview of custom/user background; pick/apply/cancel; reached from Settings.
+- DailyQuests: scroll list + **Back** at bottom (same layout as Settings); card layout in `DailyQuestCard.tscn`.
+- Game/Achievements — MVP; chain-sum HUD і preview bubble ще TODO.
 - Stats/About — мінімальні екрани з back-stack навігацією.
 - Boot: фон з токенів, glow-шар під логотипом (`LnUi.wire_logo_glow`), ProgressBar,
   неонова пульсація (AnimationPlayer), реальний прогрів (SaveManager + preload App), fade у App.
@@ -78,9 +82,9 @@ Web-версія — джерело правди для UI/UX, кольорів,
 
 Примітки:
 
-- `ThemeManager.gd`: dawn/dusk + `background_index` (6 dark/light PNG), `cycle_background()`
-  (MainMenu tagline double-tap). Menu skin tokens (titleFrame arc/diamond, chip shapes) — TODO.
-- `BackgroundLayer`: арт з `assets/ui/backgrounds/{dark,light}/`, dim-overlay,
+- `ThemeManager.gd`: `THEMES` = dawn/dusk/twilight; user-facing toggle uses **`UI_CYCLE_THEMES` = dawn/dusk only** (twilight hidden until art ships). `background_index` (6 PNG per bucket), `cycle_background()` (MainMenu tagline double-tap). Menu skin tokens (titleFrame arc/diamond, chip shapes) — TODO.
+- Global background path: `ThemeManager.get_background_texture_path()` → `LnUi.current_background_path()`; `BackgroundLayer` (App shell) and per-screen fallbacks read from there.
+- `BackgroundLayer`: арт з `assets/ui/backgrounds/{dark,light,twilight}/`, dim-overlay,
   неонове свічення, повільні частинки. Частинки будуються тільки якщо
   `bg_effects_enabled` (перемикач у Settings, low effects mode).
 - `css/critical.css`: спінер/лоадер закрито Boot-екраном; error screen — TODO.
@@ -154,5 +158,4 @@ Web-версія — джерело правди для UI/UX, кольорів,
 
 Примітки:
 
-- I18nManager покриває UA/RU/EN, але словник значно менший за `js/system/i18n/i18n.js` —
-  ключі меню/налаштувань є, тексти досягнень/квестів/тостів треба доносити.
+- I18nManager: UA/RU/EN JSON по **285 ключів** (`godot/assets/i18n/{uk,ru,en}.json`); тести `npm run godot:test:i18n`. Деякі web-only рядки (тости, confirm) ще TODO.

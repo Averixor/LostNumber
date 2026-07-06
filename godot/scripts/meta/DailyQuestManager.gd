@@ -25,6 +25,7 @@ func ensure_loaded() -> void:
 	state.progress.reset_daily_session_if_needed(today)
 	if state.daily_quests.get("date", "") == today:
 		_ensure_progress_dict()
+		_ensure_quest_list()
 		return
 	state.daily_quests = {
 		"date": today,
@@ -115,6 +116,24 @@ func get_reward_label(id: String) -> String:
 func _ensure_progress_dict() -> void:
 	if typeof(state.daily_quests.get("progress")) != TYPE_DICTIONARY:
 		state.daily_quests["progress"] = {}
+
+
+func _ensure_quest_list() -> void:
+	var list: Array = state.daily_quests.get("list", [])
+	if list.is_empty() or not _quest_list_has_defs(list):
+		state.daily_quests["list"] = QUEST_DEFS.duplicate(true)
+
+
+func _quest_list_has_defs(list: Array) -> bool:
+	var expected := {}
+	for quest in QUEST_DEFS:
+		expected[str(quest.get("id", ""))] = true
+	var found := 0
+	for quest in list:
+		var qid := str(quest.get("id", ""))
+		if expected.has(qid):
+			found += 1
+	return found >= expected.size()
 
 
 func _progress_max(id: String) -> int:

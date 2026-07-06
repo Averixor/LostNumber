@@ -20,8 +20,8 @@ const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 @onready var skin_auto_check: CheckButton = $Scroll/VBox/SkinAutoCheck
 @onready var import_button: Button = $Scroll/VBox/ImportLegacyButton
 @onready var import_status: Label = $Scroll/VBox/ImportStatus
-@onready var back_button: Button = $Scroll/VBox/BackButton
-@onready var title_label: Label = $Scroll/VBox/Title
+@onready var back_button: Button = $BackButton
+@onready var title_label: Label = $Title
 @onready var background: ColorRect = $Background
 
 const MUSIC_TRACKS := ["ambient", "crystal_flow", "digital_horizon", "neon_drift", "stellar_logic"]
@@ -109,7 +109,6 @@ func _ready() -> void:
 
 func _animate_entrance() -> void:
 	var items: Array = [
-		back_button,
 		title_label,
 		sound_check,
 		music_check,
@@ -125,6 +124,7 @@ func _animate_entrance() -> void:
 		skin_pick_button,
 		skin_auto_check,
 		import_button,
+		back_button,
 	]
 	await LnUiLib.animate_entrance(items)
 
@@ -411,9 +411,12 @@ func _adapt_layout() -> void:
 
 	scroll.offset_left = 16.0
 	scroll.offset_right = -16.0
-	scroll.offset_top = 8.0
-	scroll.offset_bottom = -8.0
+	scroll.offset_top = 56.0 if compact else 64.0
+	scroll.offset_bottom = -64.0 if compact else -72.0
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+
+	back_button.offset_top = -52.0 if compact else -56.0
+	back_button.offset_bottom = -12.0 if compact else -16.0
 
 	vbox.add_theme_constant_override("separation", 6 if compact else 8)
 	if content_w > 0.0:
