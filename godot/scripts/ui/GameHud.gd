@@ -30,6 +30,10 @@ signal bonus_pressed(type: String)
 @onready var shuffle_badge: Label = $BonusBar/ShuffleButton/ShuffleBadge
 @onready var destroy_badge: Label = $BonusBar/DestroyButton/DestroyBadge
 
+var _goal_track: ColorRect
+var _goal_fill: ColorRect
+var _xp_track: ColorRect
+var _xp_fill: ColorRect
 var _save_flash_tween: Tween = null
 var _i18n_t: Callable
 
@@ -37,6 +41,7 @@ var _i18n_t: Callable
 func _ready() -> void:
 	bottom_strip.visible = false
 	message_label.visible = false
+	_ensure_progress_bars()
 	menu_button.pressed.connect(func(): menu_pressed.emit())
 	sound_button.pressed.connect(func(): sound_pressed.emit())
 	save_button.pressed.connect(func(): save_pressed.emit())
@@ -56,6 +61,57 @@ func _theme_color(method: String, fallback: Color) -> Color:
 	if theme != null and theme.has_method(method):
 		return theme.call(method)
 	return fallback
+
+
+func _ensure_progress_bars() -> void:
+	if _goal_track != null:
+		return
+
+	_goal_track = _make_bar_track($GoalRow/GoalPanel/GoalHBox)
+	_goal_fill = _make_bar_fill(_goal_track, LnUiLib.GOAL)
+	$GoalRow/GoalPanel/GoalHBox.move_child(_goal_track, 0)
+
+	_xp_track = _make_bar_track($XpRow/XpPanel/XpHBox)
+	_xp_fill = _make_bar_fill(_xp_track, ThemeTokensLib.COLOR_PRIMARY)
+	$XpRow/XpPanel/XpHBox.move_child(_xp_track, 0)
+
+
+func _make_bar_track(parent: Control) -> ColorRect:
+	var track := ColorRect.new()
+	track.name = "ProgressTrack"
+	track.color = Color(0.05, 0.03, 0.08, 0.72)
+	track.custom_minimum_size = Vector2(0, 14)
+	track.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	track.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(track)
+	return track
+
+
+func _make_bar_fill(track: ColorRect, fill_color: Color) -> ColorRect:
+	var fill := ColorRect.new()
+	fill.name = "ProgressFill"
+	fill.color = Color(fill_color, 0.78)
+	fill.custom_minimum_size = Vector2(0, 14)
+	fill.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	track.add_child(fill)
+	fill.set_anchors_preset(Control.PRESET_LEFT_WIDE)
+	fill.offset_right = track.size.x
+	return fill
+
+
+func _set_bar_fill(fill: ColorRect, track: ColorRect, ratio: float) -> void:
+	var clamped := clampf(ratio, 0.0, 1.0)
+	fill.anchor_left = 0.0
+	fill.anchor_top = 0.0
+	fill.anchor_bottom = 1.0
+	fill.anchor_right = clamped
+	fill.offset_left = 0.0
+	fill.offset_top = 0.0
+	fill.offset_bottom = 0.0
+	fill.offset_right = 0.0
+	if track != null:
+		track.custom_minimum_size.y = 14
 
 
 func _apply_styles() -> void:
@@ -165,8 +221,13 @@ func refresh(state: GameState, i18n_t: Callable) -> void:
 		state.format_value(board_max),
 		state.format_value(target),
 	]
+	if _goal_fill != null and _goal_track != null:
+		var goal_ratio := float(board_max) / float(maxi(1, target))
+		_set_bar_fill(_goal_fill, _goal_track, goal_ratio)
 
 	xp_label.text = str(i18n_t.call("xp_label", [state.format_value(state.xp)]))
+	if _xp_fill != null and _xp_track != null:
+		_set_bar_fill(_xp_fill, _xp_track, 1.0)
 
 	shuffle_button.text = str(i18n_t.call("bonus_shuffle"))
 	destroy_button.text = str(i18n_t.call("bonus_destroy"))

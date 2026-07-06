@@ -1,6 +1,6 @@
 {
   "name": "lostnumber",
-  "version": "2.1.4",
+  "version": "2.1.6",
   "private": true,
   "devDependencies": {
     "@capacitor/android": "^7.6.7",

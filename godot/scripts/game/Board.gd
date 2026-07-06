@@ -21,7 +21,9 @@ var state: GameState
 var _tiles: Array[Array] = []
 var _chain_layer: ChainLineLayer
 var _preview_bubble: PanelContainer
+var _preview_vbox: VBoxContainer
 var _preview_sum_label: Label
+var _preview_status_label: Label
 var _dragging: bool = false
 var _last_pointer_local: Vector2 = Vector2.INF
 var _highlighted_cells: Dictionary = {}
@@ -102,13 +104,21 @@ func _build_preview_bubble() -> void:
 	_preview_bubble.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_sync_preview_bubble_metrics()
 
+	_preview_vbox = VBoxContainer.new()
+	_preview_vbox.add_theme_constant_override("separation", 0)
+	_preview_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+
 	_preview_sum_label = Label.new()
 	_preview_sum_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_preview_sum_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	_preview_sum_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_preview_sum_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
 
-	_preview_bubble.add_child(_preview_sum_label)
+	_preview_status_label = Label.new()
+	_preview_status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_preview_status_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+
+	_preview_vbox.add_child(_preview_sum_label)
+	_preview_vbox.add_child(_preview_status_label)
+	_preview_bubble.add_child(_preview_vbox)
 	add_child(_preview_bubble)
 	_sync_preview_bubble_metrics()
 
@@ -116,15 +126,17 @@ func _build_preview_bubble() -> void:
 func _sync_preview_bubble_metrics() -> void:
 	if _preview_bubble == null:
 		return
-	var bubble_w := maxf(cell_size.x * 0.82, 52.0)
-	var bubble_h := maxf(cell_size.y * 0.52, 34.0)
+	var bubble_w := maxf(cell_size.x * 0.92, 58.0)
+	var bubble_h := maxf(cell_size.y * 0.72, 42.0)
 	_preview_bubble.custom_minimum_size = Vector2(bubble_w, bubble_h)
 	if _preview_sum_label != null:
 		var preview_text := _preview_sum_label.text if _preview_sum_label.text != "" else "0"
 		_preview_sum_label.add_theme_font_size_override(
 			"font_size",
-			_tile_font_size_for_text(preview_text)
+			_tile_font_size_for_text(preview_text) + 2
 		)
+	if _preview_status_label != null:
+		_preview_status_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_SMALL)
 
 
 func _tile_font_scale() -> float:
@@ -202,31 +214,44 @@ func update_preview_bubble(can_finish: bool, follow_local: Vector2 = Vector2.INF
 	_preview_sum_label.text = state.format_value(total)
 	_preview_sum_label.add_theme_font_size_override(
 		"font_size",
-		_tile_font_size_for_text(_preview_sum_label.text)
+		_tile_font_size_for_text(_preview_sum_label.text) + 2
 	)
 
-	var digit_color: Color
+	var path_len := state.selected_path.size()
+	var status_key := ""
+	var status_color: Color
+	var bg_color: Color
 	var border_color: Color
-	if state.selected_path.size() < 2:
-		digit_color = Color(0.94, 0.94, 0.98, 1.0)
-		border_color = Color(0.55, 0.55, 0.65, 0.75)
+
+	if path_len < 2:
+		status_key = "chain_status_continue"
+		status_color = Color(0.94, 0.94, 0.98, 1.0)
+		bg_color = Color(0.06, 0.04, 0.1, 0.82)
+		border_color = Color(_theme_chain_continue_color(), 0.85)
 	elif can_finish:
-		digit_color = _theme_chain_valid_color()
-		border_color = digit_color
+		status_key = "chain_status_valid"
+		status_color = Color.WHITE
+		bg_color = Color(_theme_chain_valid_color(), 0.92)
+		border_color = _theme_chain_valid_color()
 	else:
-		digit_color = _theme_chain_invalid_color()
-		border_color = digit_color
+		status_key = "chain_status_invalid"
+		status_color = Color.WHITE
+		bg_color = Color(_theme_chain_invalid_color(), 0.88)
+		border_color = _theme_chain_invalid_color()
+
+	_preview_status_label.text = _i18n(status_key)
+	_preview_status_label.add_theme_color_override("font_color", status_color)
+	_preview_sum_label.add_theme_color_override("font_color", status_color if path_len >= 2 else Color.WHITE)
 
 	var style: StyleBoxFlat = StyleBoxFlat.new()
-	style.set_corner_radius_all(ThemeTokensLib.RADIUS_HUD)
+	style.set_corner_radius_all(ThemeTokensLib.RADIUS_PILL)
 	style.set_border_width_all(2)
-	style.set_content_margin_all(4)
-	style.bg_color = Color(0.06, 0.04, 0.1, 0.82)
-	style.border_color = Color(border_color, 0.9)
-	style.shadow_color = Color(border_color, 0.25)
-	style.shadow_size = 6
+	style.set_content_margin_all(6)
+	style.bg_color = bg_color
+	style.border_color = border_color
+	style.shadow_color = Color(border_color, 0.35)
+	style.shadow_size = 8
 	_preview_bubble.add_theme_stylebox_override("panel", style)
-	_preview_sum_label.add_theme_color_override("font_color", digit_color)
 
 	_position_preview_bubble(follow_local)
 	_preview_bubble.visible = true
@@ -246,7 +271,7 @@ func _position_preview_bubble(follow_local: Vector2) -> void:
 	else:
 		anchor = _cell_center(state.selected_path.back())
 
-	var pos := anchor - Vector2(bubble_size.x * 0.5, bubble_size.y + cell_size.y + 16.0)
+	var pos := anchor - Vector2(bubble_size.x * 0.5, bubble_size.y + cell_size.y * 0.55)
 	pos.x = clampf(pos.x, 0.0, maxf(0.0, size.x - bubble_size.x))
 	pos.y = clampf(pos.y, 0.0, maxf(0.0, size.y - bubble_size.y))
 	_preview_bubble.position = pos
@@ -687,9 +712,15 @@ func _update_chain_visual() -> void:
 			tile.set_chain_selected(false)
 			tile.set_pressed_visual(false)
 
+	var path_len := state.selected_path.size()
 	for p in state.selected_path:
 		var tile: TileView = _tiles[p.x][p.y] as TileView
-		tile.set_chain_selected(true, can_finish)
+		var preview := ""
+		if path_len >= 2:
+			preview = "valid" if can_finish else "invalid"
+		elif path_len == 1:
+			preview = "continue"
+		tile.set_chain_selected(true, preview)
 		tile.set_pressed_visual(true)
 
 	_highlighted_cells = next

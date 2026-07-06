@@ -5,8 +5,8 @@ class_name ChainLineLayer
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 
-const STROKE_CORE := 8.0
-const STROKE_GLOW := 14.0
+const STROKE_CORE := 6.0
+const STROKE_GLOW := 11.0
 const STROKE_BRIGHT := 2.0
 
 var _points: PackedVector2Array = PackedVector2Array()
@@ -52,7 +52,7 @@ func _refresh_colors() -> void:
 			_line_color = ThemeTokensLib.COLOR_CHAIN_VALID if _valid else ThemeTokensLib.COLOR_CHAIN_INVALID
 	else:
 		_line_color = ThemeTokensLib.COLOR_CHAIN_VALID if _valid else ThemeTokensLib.COLOR_CHAIN_INVALID
-	var pulse_alpha := 0.12 + sin(_pulse) * 0.05
+	var pulse_alpha := 0.18 + sin(_pulse) * 0.08
 	_glow_color = Color(_line_color, pulse_alpha)
 
 

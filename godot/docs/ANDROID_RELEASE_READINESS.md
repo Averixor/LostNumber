@@ -16,8 +16,8 @@ App shell persists `BackgroundLayer` and overlay layers; individual screens moun
 | Field       | Release (`preset.0`)                  | Debug (`preset.1`)                          |
 | ----------- | ------------------------------------- | ------------------------------------------- |
 | Package     | `com.averixor.lostnumber`             | `com.averixor.lostnumber.dev`               |
-| versionCode | `14`                                  | `14`                                        |
-| versionName | `2.1.4`                               | `2.1.4-dev`                                 |
+| versionCode | `16`                                  | `16`                                        |
+| versionName | `2.1.6`                               | `2.1.6-dev`                                 |
 | Format      | AAB (`export_format=1`)               | APK                                         |
 | minSdk      | 24                                    | 24                                          |
 | targetSdk   | 35                                    | 35                                          |
@@ -26,9 +26,11 @@ App shell persists `BackgroundLayer` and overlay layers; individual screens moun
 
 ### Versioning
 
-Current: `versionName 2.1.4` / `versionCode 14`. The Capacitor app (`android/app/build.gradle`) shares the same package id and the same values, so only one bundle with a given versionCode can live in Play (currently Godot). **Every new upload needs a versionCode greater than any previously uploaded** — next release: code `15`.
+Current: `versionName 2.1.6` / `versionCode 16`. The Capacitor app (`android/app/build.gradle`) shares the same package id and the same values, so only one bundle with a given versionCode can live in Play (currently Godot). **Every new upload needs a versionCode greater than any previously uploaded** — next release: code `17`.
 
 > `versionName` is a human-readable label (free-form). `versionCode` is the integer Play compares — just increment it by 1 each upload.
+>
+> **Naming rule (code ≥ 15):** `versionName = 2.1.(versionCode - 10)` — e.g. code `15` → `2.1.5`, code `16` → `2.1.6`. Debug builds append `-dev`.
 
 ABI note: only `arm64-v8a` + `x86_64` are shipped. Dropping `armeabi-v7a` excludes 32-bit-only devices (~8k in the device catalog) — intentional.
 

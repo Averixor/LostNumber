@@ -10,18 +10,18 @@ script = ExtResource("1_tile")
 
 [node name="Shadow" type="ColorRect" parent="."]
 layout_mode = 0
-offset_top = 5.0
+offset_top = 6.0
 offset_right = 72.0
 offset_bottom = 72.0
 mouse_filter = 2
-color = Color(0, 0, 0, 0.35)
+color = Color(0, 0, 0, 0.42)
 
 [node name="Bg" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_bottom = -3.0
+offset_bottom = -4.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -38,7 +38,7 @@ mouse_filter = 2
 [node name="TopEdge" type="ColorRect" parent="Bg"]
 layout_mode = 0
 offset_right = 72.0
-offset_bottom = 3.0
+offset_bottom = 5.0
 mouse_filter = 2
 
 [node name="BottomEdge" type="ColorRect" parent="Bg"]
@@ -47,9 +47,22 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -3.0
+offset_top = -5.0
 grow_horizontal = 2
 grow_vertical = 0
+mouse_filter = 2
+
+[node name="LeftEdge" type="ColorRect" parent="Bg"]
+layout_mode = 0
+offset_right = 4.0
+offset_bottom = 68.0
+mouse_filter = 2
+
+[node name="RightEdge" type="ColorRect" parent="Bg"]
+layout_mode = 0
+offset_left = 68.0
+offset_right = 72.0
+offset_bottom = 68.0
 mouse_filter = 2
 
 [node name="Label" type="Label" parent="Bg"]
@@ -69,7 +82,7 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_bottom = -3.0
+offset_bottom = -4.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2

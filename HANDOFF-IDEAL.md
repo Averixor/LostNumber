@@ -1,7 +1,7 @@
 # Lost Number — Production Handoff (Ideal Build)
 
 **Package:** `com.averixor.lostnumber`  
-**Version:** `2.1.4` (versionCode `14`)  
+**Version:** `2.1.6` (versionCode `16`)  
 **Audience:** Casual 3+, offline puzzle  
 **Primary Android:** Godot 4.5 native (`build/godot/android/lost-number.aab`)  
 **Secondary:** Capacitor 7 WebView (legacy web parity, `npm run android:bundle`)
@@ -132,7 +132,7 @@ adb install -r build/godot/android/lost-number-debug.apk
 
 ## Play Console checklist
 
-- [ ] Upload `lost-number.aab` (Godot 2.1.4)
+- [ ] Upload `lost-number.aab` (Godot 2.1.6)
 - [ ] Privacy URL: `https://averixor.github.io/LostNumber/privacy.html`
 - [ ] Data Safety: no collection, no sharing
 - [ ] IARC: puzzle, no violence/gambling/IAP/ads

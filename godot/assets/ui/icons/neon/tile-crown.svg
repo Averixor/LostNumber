@@ -1,64 +1,51 @@
 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Tile crown">
   <defs>
-    <linearGradient id="tileCrownStroke" x1="12" y1="14" x2="52" y2="52" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ff78df"/>
-      <stop offset="0.5" stop-color="#ffe3ff"/>
+    <linearGradient id="tileCrownStroke" x1="12" y1="10" x2="52" y2="54" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffb8f0"/>
+      <stop offset="0.35" stop-color="#ff78df"/>
+      <stop offset="0.65" stop-color="#ffe3ff"/>
       <stop offset="1" stop-color="#b783ff"/>
     </linearGradient>
 
-    <radialGradient id="tileCrownFill" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(32 34) rotate(90) scale(26 29)">
-      <stop offset="0" stop-color="#fff2ff" stop-opacity="0.42"/>
-      <stop offset="0.55" stop-color="#ff78df" stop-opacity="0.18"/>
-      <stop offset="1" stop-color="#9b5cff" stop-opacity="0.04"/>
-    </radialGradient>
+    <linearGradient id="tileCrownDepth" x1="32" y1="12" x2="32" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff2ff" stop-opacity="0.55"/>
+      <stop offset="0.45" stop-color="#ff78df" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#7b4fd9" stop-opacity="0.12"/>
+    </linearGradient>
 
-    <filter id="tileCrownGlow" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
-      <feGaussianBlur stdDeviation="2.2" result="blur"/>
-      <feColorMatrix in="blur" type="matrix" values="
-        1 0 0 0 1
-        0 1 0 0 0.22
-        0 0 1 0 0.8
-        0 0 0 0.9 0" result="pinkGlow"/>
-      <feMerge>
-        <feMergeNode in="pinkGlow"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-
-    <filter id="tileCrownSoftGlow" x="-80%" y="-80%" width="260%" height="260%" color-interpolation-filters="sRGB">
-      <feGaussianBlur stdDeviation="5" result="blur"/>
-      <feColorMatrix in="blur" type="matrix" values="
-        1 0 0 0 1
-        0 1 0 0 0.18
-        0 0 1 0 0.78
-        0 0 0 0.45 0"/>
-    </filter>
+    <linearGradient id="tileCrownBevel" x1="20" y1="18" x2="44" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.65"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
   </defs>
 
-  <g filter="url(#tileCrownSoftGlow)" opacity="0.7">
-    <ellipse cx="32" cy="39" rx="24" ry="16" fill="#ff73df"/>
+  <!-- depth shadow (no blur filter — avoids stretch/glow artifacts in Godot) -->
+  <g opacity="0.38" transform="translate(1.6 2.4)">
+    <path d="M12.5 45.5L16.5 24.5L27.5 36.2L32 15L36.5 36.2L47.5 24.5L51.5 45.5H12.5Z" fill="#5a2a8a"/>
+    <path d="M15.2 50.2C20.4 48.8 25.9 48.1 32 48.1C38.1 48.1 43.6 48.8 48.8 50.2" stroke="#5a2a8a" stroke-width="3.7" stroke-linecap="round"/>
   </g>
 
-  <g filter="url(#tileCrownGlow)">
-    <path d="M12.5 45.5L16.5 24.5L27.5 36.2L32 15L36.5 36.2L47.5 24.5L51.5 45.5H12.5Z" fill="url(#tileCrownFill)" stroke="url(#tileCrownStroke)" stroke-width="3.2" stroke-linejoin="round"/>
-    <path d="M15.2 50.2C20.4 48.8 25.9 48.1 32 48.1C38.1 48.1 43.6 48.8 48.8 50.2" stroke="url(#tileCrownStroke)" stroke-width="3.7" stroke-linecap="round"/>
-    <path d="M18.7 44.9C23.1 43.9 27.5 43.4 32 43.4C36.5 43.4 40.9 43.9 45.3 44.9" stroke="#ffe3ff" stroke-width="1.8" stroke-linecap="round" opacity="0.9"/>
+  <!-- main body -->
+  <path d="M12.5 45.5L16.5 24.5L27.5 36.2L32 15L36.5 36.2L47.5 24.5L51.5 45.5H12.5Z" fill="url(#tileCrownDepth)" stroke="url(#tileCrownStroke)" stroke-width="3.2" stroke-linejoin="round"/>
+  <path d="M15.2 50.2C20.4 48.8 25.9 48.1 32 48.1C38.1 48.1 43.6 48.8 48.8 50.2" stroke="url(#tileCrownStroke)" stroke-width="3.7" stroke-linecap="round"/>
+  <path d="M18.7 44.9C23.1 43.9 27.5 43.4 32 43.4C36.5 43.4 40.9 43.9 45.3 44.9" stroke="#ffe3ff" stroke-width="1.8" stroke-linecap="round" opacity="0.92"/>
 
-    <circle cx="16.5" cy="24.5" r="3.1" fill="#ffe3ff"/>
-    <circle cx="32" cy="15" r="3.5" fill="#ffe3ff"/>
-    <circle cx="47.5" cy="24.5" r="3.1" fill="#ffe3ff"/>
+  <!-- bevel highlight -->
+  <path d="M17 26.5L27.8 37.2L32 18.5L36.2 37.2L47 26.5" stroke="url(#tileCrownBevel)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.75"/>
 
-    <path d="M31.9 23.6L35.5 27.2L31.9 30.8L28.3 27.2L31.9 23.6Z" fill="#fff2ff" stroke="#ff98ea" stroke-width="1.4"/>
-    <path d="M25.2 40.5L27.3 38.4L29.4 40.5L27.3 42.6L25.2 40.5Z" fill="#ffe3ff"/>
-    <path d="M31.8 40.2L34.4 37.6L37 40.2L34.4 42.8L31.8 40.2Z" fill="#ffe3ff"/>
-    <path d="M38.5 40.5L40.6 38.4L42.7 40.5L40.6 42.6L38.5 40.5Z" fill="#ffe3ff"/>
-  </g>
+  <circle cx="16.5" cy="24.5" r="3.1" fill="#ffe3ff"/>
+  <circle cx="32" cy="15" r="3.5" fill="#ffe3ff"/>
+  <circle cx="47.5" cy="24.5" r="3.1" fill="#ffe3ff"/>
 
-  <g opacity="0.88" filter="url(#tileCrownGlow)">
-    <path d="M32 5.4L33.3 9.2L37.1 10.5L33.3 11.8L32 15.6L30.7 11.8L26.9 10.5L30.7 9.2L32 5.4Z" fill="#fff2ff"/>
-    <path d="M10.5 29.5L11.5 32.4L14.4 33.4L11.5 34.4L10.5 37.3L9.5 34.4L6.6 33.4L9.5 32.4L10.5 29.5Z" fill="#ffd2fa"/>
-    <path d="M53.5 29.5L54.5 32.4L57.4 33.4L54.5 34.4L53.5 37.3L52.5 34.4L49.6 33.4L52.5 32.4L53.5 29.5Z" fill="#ffd2fa"/>
-    <path d="M23 31L23.8 33.1L25.9 33.9L23.8 34.7L23 36.8L22.2 34.7L20.1 33.9L22.2 33.1L23 31Z" fill="#ffe3ff"/>
-    <path d="M41 31L41.8 33.1L43.9 33.9L41.8 34.7L41 36.8L40.2 34.7L38.1 33.9L40.2 33.1L41 31Z" fill="#ffe3ff"/>
-  </g>
+  <path d="M31.9 23.6L35.5 27.2L31.9 30.8L28.3 27.2L31.9 23.6Z" fill="#fff2ff" stroke="#ff98ea" stroke-width="1.4"/>
+  <path d="M25.2 40.5L27.3 38.4L29.4 40.5L27.3 42.6L25.2 40.5Z" fill="#ffe3ff"/>
+  <path d="M31.8 40.2L34.4 37.6L37 40.2L34.4 42.8L31.8 40.2Z" fill="#ffe3ff"/>
+  <path d="M38.5 40.5L40.6 38.4L42.7 40.5L40.6 42.6L38.5 40.5Z" fill="#ffe3ff"/>
+
+  <!-- stars (no glow filter) -->
+  <path d="M32 5.4L33.3 9.2L37.1 10.5L33.3 11.8L32 15.6L30.7 11.8L26.9 10.5L30.7 9.2L32 5.4Z" fill="#fff2ff"/>
+  <path d="M10.5 29.5L11.5 32.4L14.4 33.4L11.5 34.4L10.5 37.3L9.5 34.4L6.6 33.4L9.5 32.4L10.5 29.5Z" fill="#ffd2fa"/>
+  <path d="M53.5 29.5L54.5 32.4L57.4 33.4L54.5 34.4L53.5 37.3L52.5 34.4L49.6 33.4L52.5 32.4L53.5 29.5Z" fill="#ffd2fa"/>
+  <path d="M23 31L23.8 33.1L25.9 33.9L23.8 34.7L23 36.8L22.2 34.7L20.1 33.9L22.2 33.1L23 31Z" fill="#ffe3ff"/>
+  <path d="M41 31L41.8 33.1L43.9 33.9L41.8 34.7L41 36.8L40.2 34.7L38.1 33.9L40.2 33.1L41 31Z" fill="#ffe3ff"/>
 </svg>

@@ -37,8 +37,8 @@ Play Market (AAB)
 -----------------
   npm run godot:android:release
   # завантажити build/godot/android/lost-number.aab у Play Console
-  # package: com.averixor.lostnumber, versionName 2.1.4 / versionCode 14
-  # наступний upload у Play — versionCode 15+ (обов'язково інкремент)
+  # package: com.averixor.lostnumber, versionName 2.1.6 / versionCode 16
+  # наступний upload у Play — versionCode 17+ (обов'язково інкремент)
   # останній UI-коміт: 61441a4 (backgrounds, bonuses, crown, daily quests, settings)
 
 Legacy Capacitor Android

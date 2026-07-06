@@ -134,7 +134,7 @@ Lost Number — логическая головоломка с числами в
 | **Теги**                 | puzzle, numbers, logic, casual, offline |
 | **Цільова аудиторія**    | Everyone / 3+ (після IARC)              |
 | **Package name**         | `com.averixor.lostnumber`               |
-| **Версія**               | `2.1.4` (versionCode 14)                |
+| **Версія**               | `2.1.6` (versionCode 16)                |
 
 ---
 
