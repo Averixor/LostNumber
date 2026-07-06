@@ -50,7 +50,7 @@ Godot — **основна** ціль релізу Android. Capacitor/Web — le
 
 ## CI
 
-| Workflow                      | Призначення                                            |
-| ----------------------------- | ------------------------------------------------------ |
-| `.github/workflows/ci.yml`    | `npm run release:check` на push/PR                     |
-| `.github/workflows/pages.yml` | Деплой `_site/` на GitHub Pages (якщо Pages увімкнено) |
+| Workflow                      | Призначення                                                   |
+| ----------------------------- | ------------------------------------------------------------- |
+| `.github/workflows/ci.yml`    | `npm run release:check` на push/PR (**без** `godot:test:all`) |
+| `.github/workflows/pages.yml` | Деплой `_site/` на GitHub Pages (якщо Pages увімкнено)        |

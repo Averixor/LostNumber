@@ -92,6 +92,17 @@ npm run godot:verify:aab       # full pre-upload gate (tests + release:check + A
 - `exclude_filter=assets/store/*,assets/icons/neon/*` — Play listing art and unused neon icon set stay out of the AAB.
 - In-game graphics live under `godot/assets/ui/` only.
 
+## Recent UI fixes (commits `bd9a026`, `457e31a` + локальні правки)
+
+- SkinPreview + `ImagePickerHelper.gd` (custom background picker; не MobileImagePicker)
+- Global backgrounds: `ThemeManager.get_background_texture_path()` → `BackgroundLayer` / `LnUi.current_background_path()`
+- Settings: scroll layout, **Back** pinned at bottom; theme toggle cycles dawn/dusk only (`UI_CYCLE_THEMES`; twilight hidden)
+- DailyQuests: scroll + Back at bottom; card layout refresh (`DailyQuestCard.tscn`)
+- Game HUD: bonus/crown visuals; tile crown rendering
+- i18n: **285** keys per locale (uk/ru/en)
+
+Pre-upload gate: `npm run godot:verify:aab` (tests + release:check + AAB manifest). Requires existing AAB at `build/godot/android/lost-number.aab`. **Не комітити** keystore-поля, які export-скрипт може дописати в `export_presets.cfg` — `verify-godot-release.mjs` їх відхиляє.
+
 ## If release fails
 
 | Error                                 | Fix                                                       |
