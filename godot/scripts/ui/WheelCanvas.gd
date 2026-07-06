@@ -13,7 +13,7 @@ var rotation_angle: float = 0.0
 var _spinning := false
 var _wheel_colors: Array[Color] = []
 var _hub_pulse: float = 0.0
-
+var _highlight_index: int = -1
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -52,7 +52,6 @@ func _draw() -> void:
 	var count := sectors.size()
 	if count == 0:
 		return
-
 	var slice := TAU / float(count)
 	var pointer_index := _sector_under_pointer(count, slice)
 	var rim := _rim_color()
@@ -210,12 +209,10 @@ func _arc_points(center: Vector2, radius: float, start: float, end: float, steps
 		pts.append(center + Vector2(cos(ang), sin(ang)) * radius)
 	return pts
 
-
 func animate_to_sector(index: int, duration: float = WheelManagerLib.SPIN_DURATION_SEC) -> void:
 	if _spinning:
 		return
 	_spinning = true
-
 	var count := WheelManagerLib.SECTORS.size()
 	var slice := TAU / float(count)
 	var target := TAU * 5.0 + (TAU - slice * (float(index) + 0.5))
@@ -226,22 +223,17 @@ func animate_to_sector(index: int, duration: float = WheelManagerLib.SPIN_DURATI
 		_spinning = false
 		spin_finished.emit(WheelManagerLib.SECTORS[index], index)
 		return
-
 	var tween := create_tween()
-	tween.tween_method(_set_rotation, rotation_angle, target, duration) \
-		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_method(_set_rotation, rotation_angle, target, duration).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	await tween.finished
-
 	rotation_angle = fmod(target, TAU)
 	queue_redraw()
 	_spinning = false
 	spin_finished.emit(WheelManagerLib.SECTORS[index], index)
 
-
 func _set_rotation(angle: float) -> void:
 	rotation_angle = angle
 	queue_redraw()
-
 
 func is_spinning() -> bool:
 	return _spinning

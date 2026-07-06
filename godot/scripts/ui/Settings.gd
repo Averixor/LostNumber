@@ -32,13 +32,11 @@ const TILE_FONT_SCALES := [0.85, 1.0, 1.1, 1.2]
 func _autoload(name: String) -> Node:
 	return get_node_or_null("/root/" + name)
 
-
 func _i18n(key: String, args: Array = []) -> String:
 	var i18n := _autoload("I18nManager")
 	if i18n != null and i18n.has_method("t"):
 		return str(i18n.call("t", key, args))
 	return key
-
 
 func _navigate_back() -> void:
 	var router := _autoload("ScreenRouter")
@@ -48,7 +46,6 @@ func _navigate_back() -> void:
 	var handled: bool = await router.go_back()
 	if not handled:
 		router.call("replace", "main_menu")
-
 
 func _ready() -> void:
 	LnUiLib.set_background(self, LnUiLib.screen_bg("settings"))
@@ -370,17 +367,30 @@ func _refresh_skin_summary() -> void:
 
 func _setup_language_option() -> void:
 	language_option.clear()
-	language_option.add_item(_i18n("lang_uk"), 0)
-	language_option.add_item(_i18n("lang_ru"), 1)
-	language_option.add_item(_i18n("lang_en"), 2)
-
+	language_option.add_item("Українська", 0)
+	language_option.add_item("Російська", 1)
+	language_option.add_item("Англійська", 2)
 	var language := "uk"
 	var settings := _autoload("SettingsManager")
 	if settings != null:
 		language = str(settings.get("language"))
-	var idx: int = int({"uk": 0, "ru": 1, "en": 2}.get(language, 0))
-	language_option.select(idx)
+	language_option.select(int({"uk": 0, "ru": 1, "en": 2}.get(language, 0)))
 
+func _theme_label() -> String:
+	var theme_mgr := _autoload("ThemeManager")
+	var raw := "dusk"
+	if theme_mgr != null and theme_mgr.has_method("get_theme"):
+		raw = str(theme_mgr.call("get_theme"))
+	elif theme_mgr != null and theme_mgr.has_method("get_current_theme"):
+		raw = str(theme_mgr.call("get_current_theme"))
+	match raw:
+		"dawn": return "Світла"
+		"light": return "Світла"
+		"twilight": return "Сутінки"
+		_: return "Темна"
+
+func _update_theme_button() -> void:
+	theme_button.text = "Тема: %s" % _theme_label()
 
 func _is_compact_layout() -> bool:
 	return get_viewport_rect().size.y <= 920.0
@@ -511,7 +521,6 @@ func _load_leaderboard_opt_in() -> void:
 	if state != null:
 		leaderboard_check.button_pressed = bool(state.progress.leaderboard.get("opt_in", false))
 
-
 func _on_sound_toggled(enabled: bool) -> void:
 	var settings := _autoload("SettingsManager")
 	if settings != null:
@@ -522,7 +531,6 @@ func _on_sound_toggled(enabled: bool) -> void:
 	if audio != null and audio.has_method("apply_audio_settings"):
 		audio.call("apply_audio_settings")
 	_show_saved_toast()
-
 
 func _on_music_toggled(enabled: bool) -> void:
 	var settings := _autoload("SettingsManager")
@@ -611,7 +619,6 @@ func _on_language_selected(index: int) -> void:
 	else:
 		get_tree().change_scene_to_file("res://scenes/Settings.tscn")
 
-
 func _on_leaderboard_toggled(enabled: bool) -> void:
 	var save := _autoload("SaveManager")
 	if save == null or not save.has_method("has_save") or not bool(save.call("has_save")):
@@ -622,7 +629,6 @@ func _on_leaderboard_toggled(enabled: bool) -> void:
 		if save.has_method("save_game"):
 			save.call("save_game", state)
 	_show_saved_toast()
-
 
 func _on_theme_cycle() -> void:
 	var theme_mgr := _autoload("ThemeManager")
@@ -652,32 +658,12 @@ func _on_skin_auto_toggled(enabled: bool) -> void:
 func _on_import_legacy() -> void:
 	var migration := _autoload("LegacySaveMigration")
 	if migration == null:
-		import_status.text = _i18n("settings_import_legacy_failed")
+		import_status.text = "Не вдалося імпортувати"
 		return
-
 	var ok := false
-	if OS.has_feature("android") and migration.has_method("try_manual_import"):
+	if migration.has_method("try_manual_import"):
 		ok = bool(migration.call("try_manual_import"))
-	elif OS.has_feature("pc") or OS.has_feature("macos") or OS.has_feature("linux") or OS.has_feature("windows"):
-		var dialog := FileDialog.new()
-		dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
-		dialog.access = FileDialog.ACCESS_FILESYSTEM
-		dialog.filters = PackedStringArray(["*.json ; JSON saves"])
-		dialog.title = _i18n("settings_import_legacy")
-		dialog.size = Vector2i(640, 420)
-		add_child(dialog)
-		dialog.popup_centered_ratio(0.6)
-		var path: String = await dialog.file_selected
-		dialog.queue_free()
-		if path.is_empty():
-			return
-		ok = bool(migration.call("import_from_file", path))
-	else:
-		import_status.text = _i18n("settings_import_legacy_none")
-		return
-
-	import_status.text = _i18n("settings_import_legacy_success") if ok else _i18n("settings_import_legacy_failed")
-
+	import_status.text = "Імпортовано" if ok else "Не вдалося імпортувати"
 
 func _on_back() -> void:
 	_navigate_back()

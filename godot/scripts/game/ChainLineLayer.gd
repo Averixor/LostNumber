@@ -14,7 +14,8 @@ var _valid: bool = true
 var _pulse: float = 0.0
 var _line_color: Color = ThemeTokensLib.COLOR_CHAIN_VALID
 var _glow_color: Color = ThemeTokensLib.COLOR_CHAIN_VALID
-
+var _label: String = ""
+var _label_pos: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -22,15 +23,17 @@ func _ready() -> void:
 	set_process(true)
 
 
-func set_chain_points(points: PackedVector2Array, valid: bool = true) -> void:
+func set_chain_points(points: PackedVector2Array, valid: bool = true, label: String = "", label_pos: Vector2 = Vector2.ZERO) -> void:
 	_points = points
 	_valid = valid
+	_label = label
+	_label_pos = label_pos
 	_refresh_colors()
 	queue_redraw()
 
-
 func clear_chain() -> void:
 	_points = PackedVector2Array()
+	_label = ""
 	queue_redraw()
 
 
@@ -63,3 +66,20 @@ func _draw() -> void:
 	draw_polyline(_points, _glow_color, STROKE_GLOW, true)
 	draw_polyline(_points, Color(_line_color, 0.72 + sin(_pulse) * 0.1), STROKE_CORE, true)
 	draw_polyline(_points, Color(_line_color.lightened(0.25), 0.9), STROKE_BRIGHT, true)
+	
+	if _label.is_empty():
+		return
+		
+	var font := get_theme_default_font()
+	var fs := 18
+	var w := 54.0
+	var h := 30.0
+	var p := _label_pos + Vector2(-w * 0.5, -50.0)
+	p.x = clampf(p.x, 0.0, maxf(0.0, size.x - w))
+	p.y = clampf(p.y, 0.0, maxf(0.0, size.y - h))
+	var r := Rect2(p, Vector2(w, h))
+	
+	var bg_color := Color(0.08, 0.03, 0.11, 0.88)
+	draw_rect(r, bg_color, true)
+	draw_rect(r, Color(_line_color, 0.65), false, 2.0)
+	draw_string(font, Vector2(r.position.x, r.position.y + 21.0), _label, HORIZONTAL_ALIGNMENT_CENTER, w, fs, _line_color)

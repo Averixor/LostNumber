@@ -1,7 +1,7 @@
 extends Control
 
-const WheelCanvasScript := preload("res://scripts/ui/WheelCanvas.gd")
-const NeonButtonScene := preload("res://scenes/components/NeonButton.tscn")
+const LnUiLib := preload("res://scripts/ui/LnUi.gd")
+const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 
 @onready var wheel_canvas: WheelCanvas = $Layout/VBox/WheelCanvas
 @onready var spin_button: NeonButton = $Layout/VBox/SpinButton
@@ -15,17 +15,12 @@ const NeonButtonScene := preload("res://scenes/components/NeonButton.tscn")
 @onready var result_close: NeonButton = $ResultModal/Center/ResultCard/VBox/CloseButton
 @onready var background: ColorRect = $Background
 
-const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
-const LnUiLib := preload("res://scripts/ui/LnUi.gd")
-
 var _state: GameState
 var _wheel: WheelManager
 var _daily: DailyQuestManager
 
-
 func _autoload(name: String) -> Node:
 	return get_node_or_null("/root/" + name)
-
 
 func _i18n(key: String, args: Array = []) -> String:
 	var i18n := _autoload("I18nManager")
@@ -33,12 +28,10 @@ func _i18n(key: String, args: Array = []) -> String:
 		return str(i18n.call("t", key, args))
 	return key
 
-
 func _play_sfx(name: String) -> void:
 	var audio := _autoload("AudioManager")
 	if audio != null and audio.has_method("play_sfx"):
 		audio.call("play_sfx", name)
-
 
 func _navigate_back() -> void:
 	var router := _autoload("ScreenRouter")
@@ -48,7 +41,6 @@ func _navigate_back() -> void:
 	var handled: bool = await router.go_back()
 	if not handled:
 		router.call("replace", "main_menu")
-
 
 func _ready() -> void:
 	LnUiLib.set_background(self, LnUiLib.screen_bg("wheel"))
@@ -62,7 +54,6 @@ func _ready() -> void:
 	result_close.text = _i18n("btn_close")
 	result_panel.visible = false
 	_style_result_modal()
-
 	spin_button.pressed.connect(_on_spin)
 	back_button.pressed.connect(_on_back)
 	result_close.pressed.connect(_hide_result)
@@ -105,34 +96,22 @@ func _on_spin() -> void:
 	_play_sfx("button_click")
 	var prep := _wheel.prepare_spin()
 	if not prep.ok:
-		var reason := str(prep.get("reason", ""))
-		if reason == "not_enough_xp":
-			_show_result(_i18n("dice_not_enough"))
-		elif reason == "limit":
-			_show_result(_i18n("wheel_limit_reached"))
+		_show_result("Недостатньо XP")
 		_refresh_ui()
 		return
-
 	_play_sfx("wheel_spin")
 	spin_button.disabled = true
-	var idx := int(prep.index)
-	await wheel_canvas.animate_to_sector(idx, WheelManager.SPIN_DURATION_SEC)
-
+	await wheel_canvas.animate_to_sector(int(prep.index), WheelManager.SPIN_DURATION_SEC)
 
 func _on_spin_animation_done(sector: Dictionary, _index: int) -> void:
 	_wheel.finish_spin(sector)
 	_daily.on_wheel_spun()
 	_play_sfx("wheel_reward")
-
-	var msg_key := str(sector.get("message_key", ""))
-	var text := _i18n(msg_key) if not msg_key.is_empty() else str(sector.get("label", ""))
-	_show_result(text)
-
+	_show_result("Виграш: %s" % str(sector.get("label", "")))
 	var save := _autoload("SaveManager")
 	if save != null and save.has_method("save_game"):
 		save.call("save_game", _state)
 	_refresh_ui()
-
 
 func _style_result_modal() -> void:
 	if result_dim != null:
@@ -157,21 +136,15 @@ func _show_result(text: String) -> void:
 	result_label.text = "%s %s" % [win_prefix, prize] if not prize.is_empty() else text
 	result_label.add_theme_color_override("font_color", LnUiLib.ACCENT if not prize.is_empty() else LnUiLib.TEXT)
 	result_panel.visible = true
-	if result_card == null:
-		return
 	result_card.scale = Vector2(0.92, 0.92)
 	result_card.modulate.a = 0.0
 	var tween := create_tween().set_parallel(true)
-	tween.tween_property(result_card, "scale", Vector2.ONE, 0.16) \
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tween.tween_property(result_card, "modulate:a", 1.0, 0.16) \
-		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-
+	tween.tween_property(result_card, "scale", Vector2.ONE, 0.16).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(result_card, "modulate:a", 1.0, 0.16)
 
 func _hide_result() -> void:
 	_play_sfx("button_click")
 	result_panel.visible = false
-
 
 func _load_state() -> GameState:
 	var save := _autoload("SaveManager")
@@ -183,7 +156,6 @@ func _load_state() -> GameState:
 	state.start_new_game()
 	state.xp = 100
 	return state
-
 
 func _on_back() -> void:
 	var save := _autoload("SaveManager")

@@ -37,7 +37,6 @@ var _xp_fill: ColorRect
 var _save_flash_tween: Tween = null
 var _i18n_t: Callable
 
-
 func _ready() -> void:
 	bottom_strip.visible = false
 	message_label.visible = false
@@ -351,7 +350,6 @@ func _bonus_button_for_type(type: String) -> Button:
 
 func set_message(text: String) -> void:
 	message_label.text = text
-
 
 func set_sound_icon(enabled: bool) -> void:
 	if sound_button.icon != null:

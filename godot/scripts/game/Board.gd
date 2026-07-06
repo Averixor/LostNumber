@@ -26,11 +26,10 @@ var _preview_sum_label: Label
 var _preview_status_label: Label
 var _dragging: bool = false
 var _last_pointer_local: Vector2 = Vector2.INF
-var _highlighted_cells: Dictionary = {}
 var _drag_flush_queued: bool = false
 var _pending_drag_local: Vector2 = Vector2.ZERO
 var bonus_pick_mode: bool = false
-
+var _highlighted_cells: Dictionary = {}
 
 func _ready() -> void:
 	_build_grid()
@@ -40,15 +39,12 @@ func _ready() -> void:
 	if settings != null and settings.has_signal("tile_font_scale_changed"):
 		settings.tile_font_scale_changed.connect(_on_tile_font_scale_changed)
 
-
 func bind_state(game_state: GameState) -> void:
 	state = game_state
 	refresh_all()
 
-
 func _build_grid() -> void:
 	_tiles.clear()
-
 	for child in get_children():
 		if child != _preview_bubble:
 			child.queue_free()
@@ -60,21 +56,14 @@ func _build_grid() -> void:
 
 	for x in GRID_W:
 		var col: Array[TileView] = []
-
 		for y in GRID_H:
 			var tile: TileView = TILE_SCENE.instantiate()
 			tile.cell_size = cell_size
-			tile.position = Vector2(
-				x * (cell_size.x + cell_gap),
-				y * (cell_size.y + cell_gap)
-			)
-
+			tile.position = Vector2(x * (cell_size.x + cell_gap), y * (cell_size.y + cell_gap))
 			add_child(tile)
 			tile.setup(Vector2i(x, y), 0)
 			col.append(tile)
-
 		_tiles.append(col)
-
 	_chain_layer = CHAIN_SCENE.instantiate()
 	_chain_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_chain_layer.size = custom_minimum_size
@@ -162,7 +151,6 @@ func _on_tile_font_scale_changed(_scale: float) -> void:
 			if tile != null:
 				tile.refresh_font_size()
 
-
 func refresh_all() -> void:
 	if state == null:
 		return
@@ -174,13 +162,11 @@ func refresh_all() -> void:
 		for y in GRID_H:
 			var value: int = state.board.grid[x][y]
 			var tile: TileView = _tiles[x][y] as TileView
-
 			tile.set_value(value)
 			tile.set_target_highlight(value > 0 and value == board_max)
 			tile.set_chain_selected(false)
 			tile.set_bonus_mode(bonus_pick_mode)
 			tile.set_carry(state.carry_number > 0 and value == state.carry_number)
-
 	_update_chain_visual()
 	_hide_preview_bubble()
 
@@ -385,10 +371,8 @@ func animate_merge_settle(removed: Array, anchor: Vector2i) -> void:
 
 	refresh_all()
 
-
 func _autoload(name: String) -> Node:
 	return get_node_or_null("/root/" + name)
-
 
 func _play_connect_sfx() -> void:
 	var audio: Node = _autoload("AudioManager")
@@ -398,15 +382,10 @@ func _play_connect_sfx() -> void:
 	if settings != null and bool(settings.get("sound_enabled")):
 		Input.vibrate_handheld(20)
 
-
 func _gui_input(event: InputEvent) -> void:
-	if not is_inside_tree():
+	if not is_inside_tree() or state == null or state.phase != GameState.Phase.PLAYING:
 		return
-	if state == null or state.phase != GameState.Phase.PLAYING:
-		return
-
-	var local_pos: Vector2 = _pointer_local_from_gui_event(event)
-
+	var local_pos: Vector2 = event.position
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			_start_drag_at_local(local_pos)
@@ -421,7 +400,6 @@ func _gui_input(event: InputEvent) -> void:
 			_update_preview_position(local_pos)
 			accept_event()
 		return
-
 	if event is InputEventScreenTouch:
 		if event.pressed:
 			_start_drag_at_local(local_pos)
@@ -452,36 +430,28 @@ func _queue_drag(local_pos: Vector2) -> void:
 	_drag_flush_queued = true
 	call_deferred("_flush_pending_drag")
 
-
 func _flush_pending_drag() -> void:
 	_drag_flush_queued = false
-	if not _dragging:
-		return
-	_extend_drag_at_local(_pending_drag_local)
-
+	if _dragging:
+		_extend_drag_at_local(_pending_drag_local)
 
 func _start_drag_at_local(local_pos: Vector2) -> void:
 	var cell: Vector2i = _cell_at_local(local_pos)
-
 	if cell.x < 0:
 		return
-
 	if bonus_pick_mode:
 		cell_picked.emit(cell)
 		return
-
 	_dragging = true
 	_last_pointer_local = local_pos
 	state.begin_chain(cell)
 	_play_tile_select_sfx()
 	_update_chain_visual()
 
-
 func _play_tile_select_sfx() -> void:
 	var audio: Node = _autoload("AudioManager")
 	if audio != null and audio.has_method("play_sfx"):
 		audio.call("play_sfx", "tile_select")
-
 
 func _extend_drag_at_local(local_pos: Vector2) -> void:
 	var cells: Array[Vector2i] = _collect_cells_along_pointer_path(local_pos)
@@ -496,16 +466,13 @@ func _extend_drag_at_local(local_pos: Vector2) -> void:
 		path_changed = true
 		if state.selected_path.size() > path_len_before:
 			_play_connect_sfx()
-
 	if path_changed:
 		_update_chain_visual()
 		_last_pointer_local = local_pos
 
-
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_WINDOW_FOCUS_OUT and _dragging:
 		_finish_drag(false)
-
 
 func _collect_cells_along_pointer_path(local_pos: Vector2) -> Array[Vector2i]:
 	var cells: Array[Vector2i] = []
@@ -547,7 +514,6 @@ func _collect_cells_along_pointer_path(local_pos: Vector2) -> Array[Vector2i]:
 
 	return cells
 
-
 func _finish_drag(play_cancel_signal: bool = true) -> void:
 	if not _dragging:
 		return
@@ -570,16 +536,9 @@ func _finish_drag(play_cancel_signal: bool = true) -> void:
 		chain_finished.emit(finished_path)
 	else:
 		state.clear_chain()
-
 		if play_cancel_signal:
 			chain_cancelled.emit()
-
 	_update_chain_visual()
-
-
-func _pointer_local_from_gui_event(event: InputEvent) -> Vector2:
-	return event.position
-
 
 func _cell_at_local(local_pos: Vector2) -> Vector2i:
 	var step: Vector2 = cell_size + Vector2(cell_gap, cell_gap)
@@ -695,6 +654,13 @@ func _cell_center(cell: Vector2i) -> Vector2:
 	var step: Vector2 = cell_size + Vector2(cell_gap, cell_gap)
 	return Vector2(cell) * step + cell_size * 0.5
 
+func _chain_total() -> int:
+	var total := 0
+	if state == null:
+		return total
+	for p in state.selected_path:
+		total += int(state.board.grid[p.x][p.y])
+	return total
 
 func _update_chain_visual() -> void:
 	if state == null:
@@ -731,11 +697,11 @@ func _update_chain_visual() -> void:
 
 	if _chain_layer == null:
 		return
-
-	if state.selected_path.size() < 2:
+	if state.selected_path.is_empty():
 		_chain_layer.clear_chain()
 		return
-
+	for p in state.selected_path:
+		_tiles[p.x][p.y].set_chain_selected(false)
 	var pts := PackedVector2Array()
 	for p in state.selected_path:
 		pts.append(_cell_center(p))

@@ -53,12 +53,15 @@ const _FEATURE_STUBS := {
 @onready var feature_dim: ColorRect = $FeatureDim
 @onready var feature_stub: FeatureStubOverlay = $FeatureStub
 
-var _tagline_taps := 0
-var _tagline_tap_time := 0
-
 
 func _autoload(name: String) -> Node:
 	return get_node_or_null("/root/" + name)
+
+
+func _navigate(screen_id: String) -> void:
+	var router := _autoload("ScreenRouter")
+	if router != null and router.has_method("push"):
+		router.call("push", screen_id)
 
 
 func _i18n(key: String, args: Array = []) -> String:
@@ -66,12 +69,6 @@ func _i18n(key: String, args: Array = []) -> String:
 	if i18n != null and i18n.has_method("t"):
 		return str(i18n.call("t", key, args))
 	return key
-
-
-func _navigate(screen_id: String) -> void:
-	var router := _autoload("ScreenRouter")
-	if router != null and router.has_method("push"):
-		router.call("push", screen_id)
 
 
 func _ready() -> void:
@@ -109,6 +106,7 @@ func _ready() -> void:
 
 	for btn in [play_button, continue_button, wheel_button]:
 		LnUiLib.apply_button(btn, btn == continue_button and btn.disabled)
+
 	play_button.pressed.connect(_on_play)
 	continue_button.pressed.connect(_on_continue)
 	wheel_button.pressed.connect(_on_wheel)
@@ -165,42 +163,19 @@ func _animate_entrance() -> void:
 	for dock in [dock_premium, dock_tournaments, dock_achievements, dock_daily, dock_bonuses]:
 		items.append(dock)
 	items.append(version_label)
-
 	for item in items:
 		item.modulate.a = 0.0
-
 	await get_tree().process_frame
 	if not is_inside_tree():
 		return
-
 	for i in items.size():
 		var item := items[i]
-		var target_y := item.position.y
-		item.position.y = target_y + 16.0
+		var y := item.position.y
+		item.position.y = y + 14.0
 		var tween := create_tween().set_parallel(true)
-		var delay := 0.05 * i
-		tween.tween_property(item, "modulate:a", 1.0, 0.28) \
-			.set_delay(delay).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		tween.tween_property(item, "position:y", target_y, 0.28) \
-			.set_delay(delay).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-
-
-func _on_tagline_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.double_click:
-		var theme_mgr := _autoload("ThemeManager")
-		if theme_mgr != null and theme_mgr.has_method("cycle_background"):
-			theme_mgr.call("cycle_background")
-	elif event is InputEventMouseButton and event.pressed:
-		var now := Time.get_ticks_msec()
-		if now - _tagline_tap_time > 400:
-			_tagline_taps = 0
-		_tagline_tap_time = now
-		_tagline_taps += 1
-		if _tagline_taps >= 2:
-			_tagline_taps = 0
-			var theme_mgr := _autoload("ThemeManager")
-			if theme_mgr != null and theme_mgr.has_method("cycle_background"):
-				theme_mgr.call("cycle_background")
+		var delay := 0.035 * i
+		tween.tween_property(item, "modulate:a", 1.0, 0.24).set_delay(delay)
+		tween.tween_property(item, "position:y", y, 0.24).set_delay(delay)
 
 
 func _play_button_sfx() -> void:
@@ -232,6 +207,12 @@ func _show_feature_stub(stub_id: String) -> void:
 		_stub_body(stub_id),
 		_i18n("feature_stub_ok")
 	)
+
+
+func _on_tagline_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_play_button_sfx()
+		_navigate("about")
 
 
 func _on_play() -> void:

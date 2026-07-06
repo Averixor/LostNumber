@@ -43,7 +43,6 @@ var _target: bool = false
 var _pressed: bool = false
 var _lift_tween: Tween = null
 
-
 func _ready() -> void:
 	custom_minimum_size = cell_size
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -52,6 +51,7 @@ func _ready() -> void:
 	_ensure_crown_icon()
 	_apply_panel_style()
 	_apply_label_depth()
+	_chain_highlight.visible = false
 	_refresh_visual()
 
 
@@ -135,10 +135,7 @@ func _layout_crown_and_label() -> void:
 func set_value(number: int) -> void:
 	var changed := value != number
 	value = number
-	if number <= 0:
-		_label.text = ""
-	else:
-		_label.text = str(number)
+	_label.text = "" if number <= 0 else str(number)
 	_refresh_visual()
 	if changed and number > 0 and is_inside_tree():
 		var tween := create_tween()
@@ -152,6 +149,9 @@ func set_chain_selected(selected: bool, preview: String = "") -> void:
 	_chain_preview = preview if selected else ""
 	_refresh_visual()
 
+
+func set_chain_selected(_active: bool, _ok: bool = true) -> void:
+	_chain_highlight.visible = false
 
 func set_pressed_visual(pressed: bool) -> void:
 	if _pressed == pressed:
@@ -169,22 +169,18 @@ func set_target_highlight(active: bool) -> void:
 	_target = active
 	_refresh_visual()
 
-
 func set_frozen(frozen: bool) -> void:
 	_frozen = frozen
 	_refresh_visual()
-
 
 func set_bonus_mode(active: bool) -> void:
 	_bonus_mode = active
 	_refresh_visual()
 
-
 func set_carry(active: bool) -> void:
 	_carry = active
 	_carry_badge.visible = false
 	_refresh_visual()
-
 
 func _apply_panel_style() -> void:
 	_shadow.color = Color(0, 0, 0, 0.28)

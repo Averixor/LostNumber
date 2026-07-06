@@ -20,10 +20,8 @@ var state: GameState = GameState.new()
 var _bonus: BonusManager
 var _daily: DailyQuestManager
 
-
 func _autoload(name: String) -> Node:
 	return get_node_or_null("/root/" + name)
-
 
 func _ready() -> void:
 	LnUiLib.set_background(self, LnUiLib.screen_bg("game"))
@@ -31,6 +29,7 @@ func _ready() -> void:
 	level_complete_panel.visible = false
 	pause_overlay.visible = false
 	continue_button.pressed.connect(_on_continue_level)
+	LnUiLib.apply_button(continue_button)
 	resume_button.pressed.connect(_on_pause_resume)
 	pause_menu_button.pressed.connect(_on_back_to_menu)
 
@@ -39,7 +38,6 @@ func _ready() -> void:
 	game_hud.save_pressed.connect(_on_save_pressed)
 	game_hud.theme_pressed.connect(_on_theme_toggle)
 	game_hud.bonus_pressed.connect(_on_bonus_pressed)
-
 	board_view.chain_finished.connect(_on_chain_finished)
 	board_view.chain_cancelled.connect(_on_chain_cancelled)
 	board_view.cell_picked.connect(_on_cell_picked)
@@ -54,17 +52,14 @@ func _ready() -> void:
 			state.start_new_game()
 	else:
 		state.start_new_game()
-
 	_bonus = BonusManager.new(state)
 	_daily = DailyQuestManager.new(state)
 	_daily.ensure_loaded()
 	state.progress.flush_leaderboard_queue()
-
 	board_view.bind_state(state)
 	_refresh_hud()
 	_style_pause_overlay()
 	level_complete_panel.visible = state.should_show_level_complete()
-
 	var audio := _autoload("AudioManager")
 	if audio != null and audio.has_method("play_settings_music"):
 		audio.call("play_settings_music")
@@ -99,14 +94,10 @@ func _style_pause_overlay() -> void:
 	resume_button.text = _i18n("btn_resume")
 	pause_menu_button.text = _i18n("hud_menu")
 
-
 func _apply_theme() -> void:
-	if background == null:
-		return
-	var theme := _autoload("ThemeManager")
-	if theme != null and theme.has_method("get_background_color"):
-		background.color = Color(theme.call("get_background_color"), 0.6)
-
+	LnUiLib.set_background(self, "res://assets/ui/backgrounds/dark/menu-bg-3.png", 0.68)
+	if background != null:
+		background.color = Color(0, 0, 0, 0)
 
 func _i18n(key: String, args: Array = []) -> String:
 	var i18n := _autoload("I18nManager")
@@ -114,10 +105,8 @@ func _i18n(key: String, args: Array = []) -> String:
 		return str(i18n.call("t", key, args))
 	return key
 
-
 func _exit_tree() -> void:
 	_save_game()
-
 
 func _refresh_hud() -> void:
 	var was_bonus_pick := board_view.bonus_pick_mode
@@ -134,18 +123,14 @@ func _refresh_hud() -> void:
 			board_view.refresh_all()
 	_update_sound_button()
 
-
 func _update_sound_button() -> void:
-	var audio := _autoload("AudioManager")
 	var settings := _autoload("SettingsManager")
 	var sound_on := settings == null or bool(settings.get("sound_enabled"))
 	var music_on := settings == null or bool(settings.get("music_enabled"))
 	game_hud.set_sound_icon(sound_on or music_on)
 
-
 func _show_message(key: String) -> void:
 	game_hud.set_message("" if key.is_empty() else _i18n(key))
-
 
 func _play_sfx(name: String) -> void:
 	var audio := _autoload("AudioManager")
@@ -184,7 +169,6 @@ func _on_menu_pressed() -> void:
 	_play_sfx("button_click")
 	_show_pause()
 
-
 func _on_sound_toggle() -> void:
 	_play_sfx("button_click")
 	var audio := _autoload("AudioManager")
@@ -222,7 +206,6 @@ func _on_bonus_pressed(type: String) -> void:
 		_save_game()
 	_refresh_hud()
 
-
 func _on_cell_picked(cell: Vector2i) -> void:
 	var result := _bonus.apply_at_cell(cell)
 	if not result.ok:
@@ -257,7 +240,6 @@ func _on_chain_finished(path: Array[Vector2i]) -> void:
 		board_view.reset_all_highlights()
 		board_view.refresh_all()
 		return
-
 	_play_sfx("merge")
 	_play_sfx("chain_complete")
 	_maybe_vibrate(55)
@@ -272,17 +254,14 @@ func _on_chain_finished(path: Array[Vector2i]) -> void:
 	_refresh_hud()
 	board_view.reset_all_highlights()
 	_save_game()
-
 	var leaderboard := _autoload("LeaderboardService")
 	if leaderboard != null and leaderboard.has_method("queue_best_scores"):
 		leaderboard.call("queue_best_scores", state.progress)
-
 	if result.get("level_complete", false):
 		_daily.on_level_complete()
 		_play_sfx("level_up")
 		_play_sfx("victory")
 		level_complete_panel.visible = state.should_show_level_complete()
-
 
 func _on_chain_cancelled() -> void:
 	_play_sfx("invalid")
@@ -290,19 +269,16 @@ func _on_chain_cancelled() -> void:
 	board_view.refresh_all()
 	game_hud.update_chain_sum(state, false)
 
-
 func _on_continue_level() -> void:
 	_play_sfx("button_click")
 	if state.should_show_level_complete():
 		state.complete_level_transition()
 	else:
 		state.sanitize_win_phase()
-
 	level_complete_panel.visible = false
 	_refresh_hud()
 	board_view.refresh_all()
 	_save_game()
-
 
 func _on_back_to_menu() -> void:
 	_play_sfx("button_click")

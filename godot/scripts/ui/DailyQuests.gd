@@ -11,17 +11,14 @@ const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 
 var _state: GameState
 
-
 func _autoload(name: String) -> Node:
 	return get_node_or_null("/root/" + name)
-
 
 func _i18n(key: String, args: Array = []) -> String:
 	var i18n := _autoload("I18nManager")
 	if i18n != null and i18n.has_method("t"):
 		return str(i18n.call("t", key, args))
 	return key
-
 
 func _navigate_back() -> void:
 	var router := _autoload("ScreenRouter")
@@ -32,9 +29,11 @@ func _navigate_back() -> void:
 	if not handled:
 		router.call("replace", "main_menu")
 
-
 func _ready() -> void:
-	LnUiLib.set_background(self, LnUiLib.screen_bg("daily"))
+	LnUiLib.set_background(self, "res://assets/ui/backgrounds/dark/menu-bg-4.png", 0.66)
+	if background != null:
+		background.color = Color(0, 0, 0, 0)
+	
 	var theme := _autoload("ThemeManager")
 	if background != null and theme != null and theme.has_method("get_background_color"):
 		background.color = Color(theme.call("get_background_color"), 0.6)
@@ -94,10 +93,18 @@ func _animate_entrance() -> void:
 	await LnUiLib.animate_entrance(items)
 
 
+func _quest_text(quest: Dictionary, idx: int) -> String:
+	var key := str(quest.get("text_key", ""))
+	var text := _i18n(key) if not key.is_empty() else ""
+	if text == key or text.is_empty():
+		var fallback := ["З'єднай 10 плиток", "Збери плитку 128", "Використай бонус", "Набери 100 очок", "Заверши одну гру"]
+		text = fallback[idx % fallback.size()]
+	return text
+
 func _render() -> void:
 	for child in list.get_children():
 		child.queue_free()
-
+	
 	var daily := DailyQuestManager.new(_state)
 	daily.ensure_loaded()
 	var progress_prefix := _i18n("daily_progress")
@@ -111,6 +118,7 @@ func _render() -> void:
 		var quest_text := _i18n(text_key) if not text_key.is_empty() else ""
 		if quest_text.is_empty() or quest_text == text_key:
 			quest_text = _fallback_quest_text(qid)
+		
 		var prog: Dictionary = daily.get_progress(qid)
 		var progress_text := "%s %d/%d" % [progress_prefix, int(prog.get("current", 0)), int(prog.get("max", 1))]
 		var reward_text := daily.get_reward_label(qid)
@@ -142,7 +150,6 @@ func _load_state() -> GameState:
 	var state := GameState.new()
 	state.start_new_game()
 	return state
-
 
 func _on_back() -> void:
 	var audio := _autoload("AudioManager")
