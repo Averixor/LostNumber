@@ -68,6 +68,8 @@ func _build_grid() -> void:
 	_chain_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_chain_layer.size = custom_minimum_size
 	add_child(_chain_layer)
+	# Draw under tiles so neon connectors sit in gaps, not over numbers.
+	move_child(_chain_layer, 0)
 	if _preview_bubble != null:
 		move_child(_preview_bubble, get_child_count() - 1)
 

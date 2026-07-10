@@ -1,12 +1,12 @@
 extends Control
 class_name ChainLineLayer
 
-## Neon-green chain connector — 3-pass glow (Dark Neon Fantasy spec).
+## Thin neon chain connector — soft glow + light core (Dark Neon Fantasy).
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
-const STROKE_CORE := 3.5
-const STROKE_GLOW_MID := 7.0
-const STROKE_GLOW_OUTER := 11.0
+const STROKE_CORE := 1.75
+const STROKE_GLOW_MID := 3.5
+const STROKE_GLOW_OUTER := 5.5
 
 var _points: PackedVector2Array = PackedVector2Array()
 var _valid := true
@@ -16,7 +16,8 @@ var _pulse: float = 0.0
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	z_index = 10
+	# Behind tiles so the line sits in gaps and does not cover numbers.
+	z_index = -1
 	set_process(true)
 
 
@@ -55,12 +56,10 @@ func _draw() -> void:
 	if _points.size() < 2:
 		return
 
-	var pulse_boost := 0.08 * sin(_pulse)
-	# Dark understroke keeps the neon line readable on green tiles.
-	draw_polyline(_points, Color(0.02, 0.02, 0.06, 0.82), STROKE_GLOW_OUTER + 4.0, true)
-	var outer := Color(_line_color, 0.28 + pulse_boost)
-	var mid := Color(_line_color, 0.58 + pulse_boost)
-	var core := Color(_line_color.lightened(0.42), 0.98)
+	var pulse_boost := 0.06 * sin(_pulse)
+	var outer := Color(_line_color, 0.16 + pulse_boost)
+	var mid := Color(_line_color, 0.38 + pulse_boost)
+	var core := Color(_line_color.lightened(0.55), 0.92)
 
 	draw_polyline(_points, outer, STROKE_GLOW_OUTER, true)
 	draw_polyline(_points, mid, STROKE_GLOW_MID, true)
