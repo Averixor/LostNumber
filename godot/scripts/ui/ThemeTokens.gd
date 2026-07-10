@@ -74,13 +74,13 @@ const DUSK_COLOR_PREVIEW_INVALID := Color("#ff3366")
 
 const COLOR_CHAIN_VALID := Color("#00ff6b")
 const COLOR_CHAIN_INVALID := Color("#ff3366")
-const COLOR_CHAIN_CONTINUE := Color("#00f0ff")
+const COLOR_CHAIN_CONTINUE := Color("#b83dff")
 const DAWN_COLOR_CHAIN_VALID := Color("#2E7D32")
 const DAWN_COLOR_CHAIN_INVALID := Color("#C62828")
-const DAWN_COLOR_CHAIN_CONTINUE := Color("#F9A825")
+const DAWN_COLOR_CHAIN_CONTINUE := Color("#7B4DFF")
 const DUSK_COLOR_CHAIN_VALID := Color("#00ff6b")
 const DUSK_COLOR_CHAIN_INVALID := Color("#ff3366")
-const DUSK_COLOR_CHAIN_CONTINUE := Color("#00f0ff")
+const DUSK_COLOR_CHAIN_CONTINUE := Color("#b83dff")
 
 const MENU_TITLE_GRADIENT_START := Color("#ffffff")
 const MENU_TITLE_GRADIENT_MID := Color("#ff1b9e")
@@ -118,20 +118,20 @@ const WHEEL_RIM_ORANGE := Color("#ff6600")
 const SPINNER_COLOR := Color("#00ff6b")
 const LOADING_TEXT_COLOR := Color("#c0b8d8")
 
-# --- Tile palette by value — tier colors (green → pink → purple → gold) ---
+# --- Tile palette by value — same hues, lower saturation (esp. greens) ---
 const TILE_COLORS := {
-	2: Color("#00ff6b"),
-	4: Color("#00e9b3"),
-	8: Color("#00d4ff"),
-	16: Color("#ff1b9e"),
-	32: Color("#ff006e"),
-	64: Color("#b83dff"),
-	128: Color("#9030d0"),
-	256: Color("#ffb800"),
-	512: Color("#ff8800"),
-	1024: Color("#ff6600"),
-	2048: Color("#ffe066"),
-	4096: Color("#ffffff"),
+	2: Color("#33d97a"),
+	4: Color("#2dcfab"),
+	8: Color("#33c4e8"),
+	16: Color("#e83d9a"),
+	32: Color("#e02070"),
+	64: Color("#a84de8"),
+	128: Color("#8530c0"),
+	256: Color("#e6a800"),
+	512: Color("#e67a00"),
+	1024: Color("#e65c00"),
+	2048: Color("#f0d060"),
+	4096: Color("#f2f2f2"),
 }
 
 const TILE_LEGENDARY_MIN := 128

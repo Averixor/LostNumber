@@ -5,8 +5,12 @@ class_name TileView
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 const PRESS_LIFT := 3.0
-const BEVEL_THICKNESS := 3.0
-const SIDE_BEVEL := 2.5
+const BEVEL_THICKNESS := 4.0
+const SIDE_BEVEL := 3.5
+const FACE_DARKEN := 0.30
+const Z_FACE := 0
+const Z_SELECTION := 2
+const Z_LABEL := 3
 ## Mirrors css/grid.css .tile-crown — small watermark at top, number stays centered.
 const CROWN_SIZE_RATIO := 0.22
 const CROWN_TOP_RATIO := 0.06
@@ -57,15 +61,18 @@ func _ready() -> void:
 
 
 func _stack_chain_highlight_under_label() -> void:
-	# Selection fill/border must sit above the face but under the number.
-	if _chain_highlight.get_parent() == _bg:
-		return
-	var insert_at := _label.get_index()
-	_chain_highlight.reparent(_bg)
-	_bg.move_child(_chain_highlight, insert_at)
-	_chain_highlight.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_chain_highlight.offset_bottom = 0.0
-	_label.z_index = 2
+	# Stack vs Board ChainLineLayer (z=1): face → laser → selection → label.
+	_bg.z_index = Z_FACE
+	if _chain_highlight.get_parent() != _bg:
+		var insert_at := _label.get_index()
+		_chain_highlight.reparent(_bg)
+		_bg.move_child(_chain_highlight, insert_at)
+		_chain_highlight.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		_chain_highlight.offset_bottom = 0.0
+	_chain_highlight.z_as_relative = false
+	_chain_highlight.z_index = Z_SELECTION
+	_label.z_as_relative = false
+	_label.z_index = Z_LABEL
 
 
 func _apply_bevelling() -> void:
@@ -93,11 +100,12 @@ func _ensure_crown_icon() -> void:
 
 	_crown_icon = _make_crown_layer("CrownIcon", crown_texture)
 	_crown_icon.visible = false
-	_crown_icon.z_index = 0
+	_crown_icon.z_index = Z_FACE
 	_crown_icon.modulate = Color(1.0, 1.0, 1.0, CROWN_WATERMARK_ALPHA)
 	_bg.add_child(_crown_icon)
 	_bg.move_child(_crown_icon, 0)
-	_label.z_index = 2
+	_label.z_as_relative = false
+	_label.z_index = Z_LABEL
 	_layout_crown_and_label()
 
 
@@ -192,7 +200,11 @@ func set_carry(active: bool) -> void:
 	_refresh_visual()
 
 func _apply_panel_style() -> void:
-	_shadow.color = Color(0, 0, 0, 0.28)
+	_shadow.color = Color(0, 0, 0, 0.55)
+	_shadow.offset_top = 8.0
+	_shadow.offset_left = 2.0
+	_shadow.offset_right = cell_size.x + 2.0
+	_shadow.offset_bottom = cell_size.y + 2.0
 
 
 func _get_rim_color() -> Color:
@@ -242,17 +254,15 @@ func _refresh_visual() -> void:
 	elif _bonus_mode:
 		face_color = ThemeTokensLib.COLOR_PREVIEW_INVALID.lightened(0.05)
 	else:
-		# Keep original tile face; chain state is border + light fill only.
+		# Keep value palette; chain state is border + light fill only (no face recolor).
 		face_color = _color_for_value(value)
 
-	_inner.color = face_color
-	var top_lift := 0.18
-	var bottom_shade := 0.22
-	var side_lift := 0.08
-	_top_edge.color = Color(face_color.lightened(top_lift), 0.88)
-	_bottom_edge.color = Color(face_color.darkened(bottom_shade), 0.92)
-	_left_edge.color = Color(face_color.lightened(side_lift), 0.78)
-	_right_edge.color = Color(face_color.darkened(side_lift + 0.06), 0.82)
+	# Darker center + stronger 3D bevel (light top, dark bottom/right).
+	_inner.color = face_color.darkened(FACE_DARKEN)
+	_top_edge.color = Color(face_color.lightened(0.28), 0.95)
+	_bottom_edge.color = Color(face_color.darkened(0.42), 0.96)
+	_left_edge.color = Color(face_color.lightened(0.12), 0.82)
+	_right_edge.color = Color(face_color.darkened(0.32), 0.92)
 
 	var text_color := ThemeTokensLib.tile_text_color_for(face_color, value)
 	_label.add_theme_color_override("font_color", text_color)
@@ -277,11 +287,11 @@ func _refresh_visual() -> void:
 		panel_style.border_color = Color(border_color, 0.95)
 		panel_style.set_border_width_all(2)
 		panel_style.set_corner_radius_all(ThemeTokensLib.TILE_INNER_RADIUS)
-		panel_style.shadow_color = Color(border_color, 0.28)
-		panel_style.shadow_size = 3
+		panel_style.shadow_color = Color(border_color, 0.35)
+		panel_style.shadow_size = 4
 		_chain_highlight.add_theme_stylebox_override("panel", panel_style)
 		if _chain_fill != null:
-			_chain_fill.color = Color(border_color, 0.10)
+			_chain_fill.color = Color(border_color, 0.12)
 	queue_redraw()
 
 
@@ -302,11 +312,11 @@ func _tile_font_size() -> int:
 func _chain_border_color(preview: String) -> Color:
 	match preview:
 		"valid":
-			return ThemeTokensLib.COLOR_PREVIEW_VALID
+			return ThemeTokensLib.COLOR_CHAIN_VALID
 		"invalid":
-			return ThemeTokensLib.COLOR_PREVIEW_INVALID
+			return ThemeTokensLib.COLOR_CHAIN_INVALID
 		_:
-			return ThemeTokensLib.COLOR_SECONDARY
+			return ThemeTokensLib.COLOR_CHAIN_CONTINUE
 
 
 func _color_for_value(n: int) -> Color:

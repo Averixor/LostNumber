@@ -67,10 +67,10 @@ func _build_grid() -> void:
 	_chain_layer = CHAIN_SCENE.instantiate()
 	_chain_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_chain_layer.size = custom_minimum_size
+	# z_index=1: above tile faces, below labels (Tile sets Label z_index=3).
 	add_child(_chain_layer)
-	# Draw under tiles so neon connectors sit in gaps, not over numbers.
-	move_child(_chain_layer, 0)
 	if _preview_bubble != null:
+		_preview_bubble.z_index = 10
 		move_child(_preview_bubble, get_child_count() - 1)
 
 
@@ -110,6 +110,7 @@ func _build_preview_bubble() -> void:
 	_preview_vbox.add_child(_preview_sum_label)
 	_preview_vbox.add_child(_preview_status_label)
 	_preview_bubble.add_child(_preview_vbox)
+	_preview_bubble.z_index = 10
 	add_child(_preview_bubble)
 	_sync_preview_bubble_metrics()
 
@@ -699,4 +700,7 @@ func _update_chain_visual() -> void:
 	for p in state.selected_path:
 		pts.append(_cell_center(p))
 
-	_chain_layer.set_chain_points(pts, can_finish and state.selected_path.size() >= 2)
+	var line_state := "continue"
+	if path_len >= 2:
+		line_state = "valid" if can_finish else "invalid"
+	_chain_layer.set_chain_points(pts, line_state)
