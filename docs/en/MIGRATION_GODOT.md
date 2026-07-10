@@ -36,7 +36,7 @@ Lost Number **2.1.6** ships on **Godot 4.5** / GDScript. The HTML/Capacitor buil
 | Drag chain (8-neighbor, backtrack one step)                                                    | Done    |
 | Merge + gravity + spawn                                                                        | Done    |
 | Level target / complete / carry                                                                | Done    |
-| 40 preset levels + procedural endless                                                          | Done    |
+| 40 algorithmically generated initial configs + procedural branch from index 40+                | Done    |
 | XP base by chain length                                                                        | Done    |
 | Save/load with checksum envelope + `.bak` recovery                                             | Done    |
 | Save chaos tests (`npm run godot:test:save`)                                                   | Done    |
@@ -60,17 +60,17 @@ Lost Number **2.1.6** ships on **Godot 4.5** / GDScript. The HTML/Capacitor buil
 
 ## Remaining work
 
-| Item                                                     | Priority | Notes                                                |
-| -------------------------------------------------------- | -------- | ---------------------------------------------------- |
-| Full neon icon UI parity with JS                         | Medium   | Most icons ported; polish gaps remain                |
-| Wheel canvas animation                                   | Medium   | `WheelCanvas.gd` partial; web arrow/highlight polish |
-| Chain-sum HUD + preview bubble                           | High     | Game screen visual gaps                              |
-| Freeze bonus + pressure transfer                         | Low      | Deferred from MVP rules                              |
-| Victory overlay, confirm dialog, toast                   | Medium   | Web `overlays.css` equivalents                       |
-| Menu skin variants (titleFrame arc/diamond, chip shapes) | Low      | Tokens TODO in `ThemeManager`                        |
-| Achievements / Daily visual polish                       | Medium   | Card layouts partial                                 |
-| Play Games / Firebase leaderboard HTTP                   | Low      | Stub only; offline queue exists                      |
-| Twilight theme art                                       | Low      | In code; hidden from UI until art ships              |
+| Item                                                     | Priority | Notes                                                                   |
+| -------------------------------------------------------- | -------- | ----------------------------------------------------------------------- |
+| Full neon icon UI parity with JS                         | Medium   | Most icons ported; polish gaps remain                                   |
+| Wheel canvas animation                                   | Medium   | `WheelCanvas.gd` partial; web arrow/highlight polish                    |
+| Chain-sum HUD + preview bubble                           | Medium   | Logic in `GameHud.gd` / `Board.gd` — PARTIAL; visual acceptance pending |
+| Freeze bonus + pressure transfer                         | Low      | Deferred from MVP rules                                                 |
+| Victory overlay, confirm dialog, toast                   | Medium   | Web `overlays.css` equivalents                                          |
+| Menu skin variants (titleFrame arc/diamond, chip shapes) | Low      | Tokens TODO in `ThemeManager`                                           |
+| Achievements / Daily visual polish                       | Medium   | Card layouts partial                                                    |
+| Play Games / Firebase leaderboard HTTP                   | Low      | Stub only; offline queue exists                                         |
+| Twilight theme art                                       | Low      | In code; hidden from UI until art ships                                 |
 
 ## Intentionally deferred
 

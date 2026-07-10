@@ -37,9 +37,9 @@ A chain can be committed when:
 
 ## Level progression
 
-### Preset levels (1–40)
+### Initial levels (1–40)
 
-Levels **1–40** use a fixed preset table (`LevelManager.MANUAL_LEVEL_COUNT := 40`). Targets double each level starting at 64:
+The first **40** level configs are **algorithmically generated at init** via `_generate_manual_levels(40)` (`LevelManager.MANUAL_LEVEL_COUNT := 40`). There is no hand-authored preset table in the repo. Targets double each level starting at 64:
 
 | Level    | Target       |
 | -------- | ------------ |
@@ -50,13 +50,13 @@ Levels **1–40** use a fixed preset table (`LevelManager.MANUAL_LEVEL_COUNT := 
 
 Spawn weights and minimum tile values scale with level index.
 
-### Endless procedural (41+)
+### Endless procedural (index 40+)
 
-After level 40, progression continues **procedurally** via `getLevelConfig(levelIndex)` (0-based index):
+From **zero-based index 40**, `get_level_config()` uses a separate procedural branch (`_procedural_target()`, `_build_level_numbers()`, `_generate_new_numbers()`):
 
 - Target is deterministic from level index (no `Math.random()`).
-- Safe power-of-two targets; levels 20, 50, 100, 200, 500+ survive save/reload.
 - `current_level` in save drives resume; target is recomputed on load.
+- High indices (50, 100, 200, 500+) are **not proven safe** until dedicated `LevelManager` tests and a cap-before-overflow fix land — see [AUDIT_MAIN_2026-07-10.md](../../docs/en/AUDIT_MAIN_2026-07-10.md).
 
 Parity with `js/game/state.js` (`MANUAL_LEVEL_COUNT = 40`).
 

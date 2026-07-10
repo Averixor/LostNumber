@@ -11,14 +11,15 @@ Professional technical documentation for the Lost Number project. **Godot 4** is
 
 ## English docs (this folder)
 
-| Document                                       | Description                                                             |
-| ---------------------------------------------- | ----------------------------------------------------------------------- |
-| **[SOURCE_OF_TRUTH.md](./SOURCE_OF_TRUTH.md)** | **Canonical reference** — decisions, version, doc index                 |
-| [GAME.md](./GAME.md)                           | Game description, goal, mechanics, controls, progression                |
-| [MIGRATION_GODOT.md](./MIGRATION_GODOT.md)     | Godot 4 migration: completed work, remaining tasks, removable legacy    |
-| [DECISIONS.md](./DECISIONS.md)                 | Accepted decisions: save format, i18n, screens, visuals, compliance     |
-| [RELEASE.md](./RELEASE.md)                     | Release plans and checklists: Android, Google Play, testing, versioning |
-| [ARCHITECTURE.md](./ARCHITECTURE.md)           | Architecture audit, technical decisions, approved plans, repo layout    |
+| Document                                               | Description                                                             |
+| ------------------------------------------------------ | ----------------------------------------------------------------------- |
+| **[SOURCE_OF_TRUTH.md](./SOURCE_OF_TRUTH.md)**         | **Canonical reference** — decisions, version, doc index                 |
+| [AUDIT_MAIN_2026-07-10.md](./AUDIT_MAIN_2026-07-10.md) | Dated main-branch technical audit (ref `dd6300a`)                       |
+| [GAME.md](./GAME.md)                                   | Game description, goal, mechanics, controls, progression                |
+| [MIGRATION_GODOT.md](./MIGRATION_GODOT.md)             | Godot 4 migration: completed work, remaining tasks, removable legacy    |
+| [DECISIONS.md](./DECISIONS.md)                         | Accepted decisions: save format, i18n, screens, visuals, compliance     |
+| [RELEASE.md](./RELEASE.md)                             | Release plans and checklists: Android, Google Play, testing, versioning |
+| [ARCHITECTURE.md](./ARCHITECTURE.md)                   | Architecture audit, technical decisions, approved plans, repo layout    |
 
 ## Ukrainian / bilingual docs (repository root)
 
@@ -57,8 +58,11 @@ npm run godot:import
 npm run godot:test:all
 npm run godot:android:release   # → build/godot/android/lost-number.aab
 
-# Full local verification
+# Full local verification (rules + save; skips Godot if godot4 missing)
 npm run release:ideal
+
+# Full Godot test suite
+npm run godot:test:all
 
 # Legacy Capacitor/Web
 npm run android:bundle

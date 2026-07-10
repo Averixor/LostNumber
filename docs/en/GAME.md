@@ -54,9 +54,9 @@ A chain can be committed when:
 
 ## Level progression
 
-### Preset levels (1–40)
+### Initial levels (1–40)
 
-Levels **1–40** use a fixed preset table (`LevelManager.MANUAL_LEVEL_COUNT := 40` in `godot/scripts/core/LevelManager.gd`). Targets double each level:
+The first **40** level configs are **algorithmically generated at init** via `_generate_manual_levels(40)` (`LevelManager.MANUAL_LEVEL_COUNT := 40` in `godot/scripts/core/LevelManager.gd`). Targets double each level:
 
 | Level    | Target       |
 | -------- | ------------ |
@@ -67,9 +67,9 @@ Levels **1–40** use a fixed preset table (`LevelManager.MANUAL_LEVEL_COUNT := 
 
 Spawn weights and minimum tile values scale with level (`LevelManager.gd`).
 
-### Endless procedural (41+)
+### Endless procedural (index 40+)
 
-After level 40, targets and spawn tables are generated **procedurally** from level index — deterministic (no random), safe power-of-two targets, survives save/reload via `current_level` in save. Parity with `js/game/state.js` (`MANUAL_LEVEL_COUNT = 40`).
+From zero-based index 40, `get_level_config()` uses a separate procedural branch — deterministic from level index (no random). `current_level` in save drives resume. High levels (50, 100, 500+) are **not proven safe** until dedicated tests land — see [AUDIT_MAIN_2026-07-10.md](./AUDIT_MAIN_2026-07-10.md).
 
 ## XP system
 
