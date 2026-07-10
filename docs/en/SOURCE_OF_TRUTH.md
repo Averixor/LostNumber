@@ -27,28 +27,30 @@ Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`, 
 
 ## Decisions table
 
-| Topic                | Canonical choice                                                                                                             | Verify in code                                          |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| **Ship target**      | Godot 4.5 Android AAB → Google Play (`npm run godot:android:release`)                                                        | `scripts/godot-android-export.sh`, `export_presets.cfg` |
-| **Web / Capacitor**  | Visual reference + legacy; **not** primary Play path                                                                         | `js/`, `android/`, `index.html`                         |
-| **Entry flow**       | `Boot.tscn` → `App.tscn` → screens via `ScreenRouter` autoload                                                               | `project.godot`, `ScreenRouter.gd`                      |
-| **Autoloads**        | SaveManager, SettingsManager, AudioManager, I18nManager, ThemeManager, LeaderboardService, ScreenRouter, LegacySaveMigration | `project.godot` `[autoload]`                            |
-| **Save**             | `user://` envelope v1 + SHA-256 + `.bak`; legacy import via `LegacySaveMigration`                                            | `SaveManager.gd`, `LegacySaveMigration.gd`              |
-| **i18n**             | uk / ru / en — **285 keys** each                                                                                             | `godot/assets/i18n/*.json`, `run_i18n_tests.gd`         |
-| **Levels**           | **40** preset levels + procedural endless after (`MANUAL_LEVEL_COUNT := 40`)                                                 | `LevelManager.gd`                                       |
-| **Visual authority** | Dark Neon Fantasy (`ThemeTokens`, `LnUi`); web = parity reference                                                            | `VISUAL_PORT_MAP.md`                                    |
-| **CI**               | `release:check` only on push/PR; `godot:test:all` **local only**                                                             | `.github/workflows/ci.yml`                              |
-| **Network**          | None — fully offline                                                                                                         | —                                                       |
-| **Cloud / Firebase** | Phase 6 — not started                                                                                                        | `docs/PHASES.md`                                        |
+| Topic                | Canonical choice                                                                                                                   | Verify in code                                          |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| **Ship target**      | Godot 4.5 Android AAB → Google Play (`npm run godot:android:release`)                                                              | `scripts/godot-android-export.sh`, `export_presets.cfg` |
+| **Web / Capacitor**  | Visual reference + legacy; **not** primary Play path                                                                               | `js/`, `android/`, `index.html`                         |
+| **Entry flow**       | `Boot.tscn` → `App.tscn` → screens via `ScreenRouter` autoload                                                                     | `project.godot`, `ScreenRouter.gd`                      |
+| **Autoloads**        | SaveManager, SettingsManager, AudioManager, I18nManager, ThemeManager, LeaderboardService, ScreenRouter, LegacySaveMigration       | `project.godot` `[autoload]`                            |
+| **Save**             | `user://` envelope v1 + SHA-256 + `.bak`; legacy import via `LegacySaveMigration`                                                  | `SaveManager.gd`, `LegacySaveMigration.gd`              |
+| **i18n**             | uk / ru / en — **285 keys** each                                                                                                   | `godot/assets/i18n/*.json`, `run_i18n_tests.gd`         |
+| **Levels**           | First **40** configs algorithmically generated at init (`_generate_manual_levels(40)`); from index 40+ separate procedural branch  | `LevelManager.gd`                                       |
+| **Visual authority** | Dark Neon Fantasy (`ThemeTokens`, `LnUi`); web = **parity reference**; PO + approved Godot screenshots = **acceptance**            | `VISUAL_PORT_MAP.md`                                    |
+| **Legacy import UI** | Settings **Import** button is a stub (`settings_import_legacy_none` only); startup migration + `LegacySaveMigration` autoload work | `Settings.gd`, `LegacySaveMigration.gd`, `Boot.gd`      |
+| **CI**               | `release:check` only on push/PR; `godot:test:all` **local only**                                                                   | `.github/workflows/ci.yml`                              |
+| **Network**          | None — fully offline                                                                                                               | —                                                       |
+| **Cloud / Firebase** | Phase 6 — not started                                                                                                              | `docs/PHASES.md`                                        |
 
 ## Build commands (by role)
 
-| Role                | Command                         | Output                                                     |
-| ------------------- | ------------------------------- | ---------------------------------------------------------- |
-| **Primary release** | `npm run godot:android:release` | `build/godot/android/lost-number.aab`                      |
-| Full local gate     | `npm run release:ideal`         | format + lint + Godot tests                                |
-| CI gate             | `npm run release:check`         | web smoke + static checks                                  |
-| Legacy Capacitor    | `npm run android:bundle`        | `android/app/build/outputs/bundle/release/app-release.aab` |
+| Role                | Command                         | Output                                                               |
+| ------------------- | ------------------------------- | -------------------------------------------------------------------- |
+| **Primary release** | `npm run godot:android:release` | `build/godot/android/lost-number.aab`                                |
+| Full local gate     | `npm run release:ideal`         | format + lint + web checks + Godot rules/save (skips if no `godot4`) |
+| Pre-upload gate     | `npm run godot:verify:aab`      | `godot:test:all` + release:check + AAB manifest                      |
+| CI gate             | `npm run release:check`         | web smoke + static checks                                            |
+| Legacy Capacitor    | `npm run android:bundle`        | `android/app/build/outputs/bundle/release/app-release.aab`           |
 
 ## Doc index — which doc is authoritative for what
 
@@ -72,6 +74,16 @@ Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`, 
 | Web quick start (secondary)                          | root `README.md`                                                |
 | Performance / Firebase phases                        | `docs/PHASES.md`                                                |
 | Capacitor Android (legacy)                           | `docs/ANDROID.md`, `docs/PLAY_STORE.md`                         |
+
+## Known risks and audits
+
+Dated technical audits capture static-analysis findings, test gaps, and release blockers. They are **not** copied into the Master Project Source.
+
+| Audit                                                  | Ref       | Notes                                                                                                                 |
+| ------------------------------------------------------ | --------- | --------------------------------------------------------------------------------------------------------------------- |
+| [AUDIT_MAIN_2026-07-10.md](./AUDIT_MAIN_2026-07-10.md) | `dd6300a` | LevelManager high-index risk, backup-only save, migration plugin path, Settings import stub, CI/`release:ideal` scope |
+
+Update this table when a new dated audit lands on `main`.
 
 ## Intentional non-goals (deferred by design)
 

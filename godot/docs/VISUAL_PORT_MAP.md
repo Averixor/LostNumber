@@ -1,8 +1,9 @@
 # Visual Port Map — Web → Godot
 
 Карта переносу візуалу з еталонної Capacitor/Web-версії (корінь репозиторію) у Godot 4.5.
-Web-версія — джерело правди для UI/UX, кольорів, ассетів та i18n. Godot — фінальна
-ігрова реалізація, яка має виглядати так само.
+Web-версія — **parity reference** для UI/UX, кольорів, ассетів та i18n (не єдине джерело
+істини). Прийняття визначають PO, затверджені Godot-скріншоти та фактична Godot-реалізація.
+Статус **DONE** означає візуальну відповідність parity reference, а не автоматичну згоду PO.
 
 Статуси:
 
@@ -35,7 +36,7 @@ Web-версія — джерело правди для UI/UX, кольорів,
 - Settings: scroll + **Back** pinned at bottom (offset −72 px on Scroll); theme toggle cycles **dawn/dusk only** (`ThemeManager.UI_CYCLE_THEMES`; twilight in code but hidden from UI); skin picker → `SkinPreview` via `ImagePickerHelper.gd` (not MobileImagePicker).
 - SkinPreview: full-screen preview of custom/user background; pick/apply/cancel; reached from Settings.
 - DailyQuests: scroll list + **Back** at bottom (same layout as Settings); card layout in `DailyQuestCard.tscn`.
-- Game/Achievements — MVP; chain-sum HUD і preview bubble ще TODO.
+- Game/Achievements — MVP; chain-sum HUD і preview bubble — **PARTIAL** (логіка в `GameHud.gd` / `Board.gd`; візуальна прийняття pending).
 - Stats/About — мінімальні екрани з back-stack навігацією.
 - Boot: фон з токенів, glow-шар під логотипом (`LnUi.wire_logo_glow`), ProgressBar,
   неонова пульсація (AnimationPlayer), реальний прогрів (SaveManager + preload App), fade у App.
@@ -53,8 +54,8 @@ Web-версія — джерело правди для UI/UX, кольорів,
 | `css/grid.css` selected/valid/invalid стани       | `godot/scripts/game/Tile.gd`        | Tile       | PARTIAL |
 | `css/grid.css` анімації pop/bubbleOut/carryIn     | Godot tween в `Tile.gd`             | Tile       | PARTIAL |
 | `css/grid.css` `.cell.frozen` + `.freeze-counter` | `godot/scripts/game/Board.gd`       | Tile       | PARTIAL |
-| `css/ui.css` `.chain-sum-hud` (+valid/invalid)    | `godot/scenes/Game.tscn` HUD        | Game       | TODO    |
-| `css/ui.css` `.preview-bubble`                    | компонент PreviewBubble             | Game       | TODO    |
+| `css/ui.css` `.chain-sum-hud` (+valid/invalid)    | `GameHud.gd` / `GameHud.tscn`       | Game       | PARTIAL |
+| `css/ui.css` `.preview-bubble`                    | `Board.gd` PreviewBubble            | Game       | PARTIAL |
 
 Примітки:
 

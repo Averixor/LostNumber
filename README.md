@@ -20,7 +20,7 @@ npm run godot:android:release     # → build/godot/android/lost-number.aab
 
 - Точка входу: **`Boot.tscn` → `App.tscn` → `ScreenRouter`** (autoload)
 - Збереження: `user://` envelope v1 + SHA-256 + `.bak`; legacy import — `LegacySaveMigration`
-- Рівні: **40 preset** + процедурний endless після (`LevelManager.gd`)
+- Рівні: **40 algorithmically generated** initial configs + procedural branch from index 40+ (`LevelManager.gd`)
 - Детально: **[godot/README.md](godot/README.md)**, **[HANDOFF-IDEAL.md](HANDOFF-IDEAL.md)**, `godot/docs/ANDROID_RELEASE_READINESS.md`
 
 ## Швидкий старт (web — reference / legacy)
@@ -143,7 +143,7 @@ node ./scripts/test-android-assets.mjs   # build:pages + cap sync + переві
 
 ## Endless progression
 
-Ранні рівні (**1–40**) — preset-таблиця (`LevelManager.MANUAL_LEVEL_COUNT := 40`). Після 40-го — процедурні цілі через `getLevelConfig(levelIndex)` (детерміновано, без `Math.random()`). У збереженні — `current_level`; ціль відновлюється після reload.
+Ранні рівні (**1–40**) — конфігурації, **алгоритмічно згенеровані при ініціалізації** (`_generate_manual_levels(40)`, `LevelManager.MANUAL_LEVEL_COUNT := 40`). З індексу 40 — окрема процедурна гілка через `get_level_config(levelIndex)` (детерміновано). У збереженні — `current_level`; ціль відновлюється після reload. Безпека високих рівнів (50+) — див. [AUDIT_MAIN_2026-07-10.md](docs/en/AUDIT_MAIN_2026-07-10.md).
 
 ## Режими та дебаг
 

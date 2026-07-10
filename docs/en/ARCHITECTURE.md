@@ -16,20 +16,20 @@ High-level technical architecture for Lost Number **2.1.6**. Godot 4.5 is the pr
 │  Google Play  ←  lost-number.aab (Godot, recommended)   │
 ├─────────────────────────────────────────────────────────┤
 │  godot/          Boot→App shell, ScreenRouter, gameplay │
-│  js/ + _site/    Web reference (visual parity source)   │
+│  js/ + _site/    Web parity reference (UI/i18n diff)    │
 │  android/        Capacitor shell (legacy WebView)       │
 │  assets/         Shared neon UI, icons, backgrounds     │
 │  store/          Play Console listing + graphics        │
 └─────────────────────────────────────────────────────────┘
 ```
 
-| Layer           | Stack                                        | Role                                        |
-| --------------- | -------------------------------------------- | ------------------------------------------- |
-| Gameplay (ship) | Godot 4.5 GDScript                           | Boot → App → screens; back-stack navigation |
-| Web reference   | Vanilla JS + Capacitor 7                     | Visual/UI/i18n source; legacy Android       |
-| Save            | `user://` JSON (Godot), `localStorage` (web) | Checksum + `.bak` rollback (Godot)          |
-| Network         | None                                         | Offline-only; no PII                        |
-| CI              | GitHub Actions                               | `release:check` on push/PR                  |
+| Layer           | Stack                                        | Role                                         |
+| --------------- | -------------------------------------------- | -------------------------------------------- |
+| Gameplay (ship) | Godot 4.5 GDScript                           | Boot → App → screens; back-stack navigation  |
+| Web reference   | Vanilla JS + Capacitor 7                     | Parity reference for UI/i18n; legacy Android |
+| Save            | `user://` JSON (Godot), `localStorage` (web) | Checksum + `.bak` rollback (Godot)           |
+| Network         | None                                         | Offline-only; no PII                         |
+| CI              | GitHub Actions                               | `release:check` on push/PR                   |
 
 ## Godot runtime architecture
 
@@ -61,17 +61,17 @@ Registered screens (`ScreenRouter.SCREENS`): MainMenu, Game, Settings, Achieveme
 
 ### Core gameplay modules
 
-| Module          | Path                             | Role                                                                 |
-| --------------- | -------------------------------- | -------------------------------------------------------------------- |
-| Rules           | `scripts/core/Rules.gd`          | Chain validation (1:1 with `rules.js`)                               |
-| Board logic     | `scripts/core/BoardLogic.gd`     | Merge, gravity, spawn                                                |
-| Level manager   | `scripts/core/LevelManager.gd`   | 40 preset levels + procedural endless; targets, carry, spawn weights |
-| Game state      | `scripts/core/GameState.gd`      | Session state                                                        |
-| Board view      | `scripts/game/Board.gd`          | Grid rendering, input                                                |
-| Tile            | `scripts/game/Tile.gd`           | Tile visuals, tweens, chain highlight                                |
-| Chain line      | `scripts/game/ChainLineLayer.gd` | 3-pass neon glow for active chain                                    |
-| Game controller | `scripts/game/Game.gd`           | Orchestrates board + HUD + overlays                                  |
-| Bonuses         | `scripts/game/BonusManager.gd`   | Shuffle, destroy, explosion                                          |
+| Module          | Path                             | Role                                                                            |
+| --------------- | -------------------------------- | ------------------------------------------------------------------------------- |
+| Rules           | `scripts/core/Rules.gd`          | Chain validation (1:1 with `rules.js`)                                          |
+| Board logic     | `scripts/core/BoardLogic.gd`     | Merge, gravity, spawn                                                           |
+| Level manager   | `scripts/core/LevelManager.gd`   | 40 algorithmically generated initial configs + procedural branch from index 40+ |
+| Game state      | `scripts/core/GameState.gd`      | Session state                                                                   |
+| Board view      | `scripts/game/Board.gd`          | Grid rendering, input                                                           |
+| Tile            | `scripts/game/Tile.gd`           | Tile visuals, tweens, chain highlight                                           |
+| Chain line      | `scripts/game/ChainLineLayer.gd` | 3-pass neon glow for active chain                                               |
+| Game controller | `scripts/game/Game.gd`           | Orchestrates board + HUD + overlays                                             |
+| Bonuses         | `scripts/game/BonusManager.gd`   | Shuffle, destroy, explosion                                                     |
 
 ### Meta / UI modules
 
@@ -125,18 +125,18 @@ LostNumber/                      ← canonical project root
 
 ## Key technical decisions (from engineering chats)
 
-| Topic                 | Decision                                                      | Rationale                                                     |
-| --------------------- | ------------------------------------------------------------- | ------------------------------------------------------------- |
-| Single App shell      | `App.tscn` + `ScreenRouter` instead of `change_scene_to_file` | Persistent background, overlay layer, back-stack              |
-| Save integrity        | SHA-256 envelope + `.bak`                                     | Corruption recovery without cloud                             |
-| No encryption at rest | Checksum only                                                 | No secrets in save; offline game                              |
-| ABI filter            | arm64-v8a + x86_64 only                                       | Drop legacy 32-bit (~8k devices)                              |
-| Image picker          | `ImagePickerHelper.gd`                                        | Custom background without MobileImagePicker dependency        |
-| Legacy migration      | Android plugin + file import                                  | Upgrade path from Capacitor WebView saves                     |
-| Visual source         | Web CSS/JS                                                    | `VISUAL_PORT_MAP.md` tracks port status per screen            |
-| Low performance       | `bg_effects_enabled`                                          | Mirrors web `low-performance.css`; disables particles + slide |
-| Floating numbers      | Removed (Phase 5.6)                                           | FPS regression on weak devices                                |
-| Firebase / cloud      | Phase 6 — not started                                         | Blocked until Phase 5 performance closed                      |
+| Topic                 | Decision                                                      | Rationale                                                                    |
+| --------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Single App shell      | `App.tscn` + `ScreenRouter` instead of `change_scene_to_file` | Persistent background, overlay layer, back-stack                             |
+| Save integrity        | SHA-256 envelope + `.bak`                                     | Corruption recovery without cloud                                            |
+| No encryption at rest | Checksum only                                                 | No secrets in save; offline game                                             |
+| ABI filter            | arm64-v8a + x86_64 only                                       | Drop legacy 32-bit (~8k devices)                                             |
+| Image picker          | `ImagePickerHelper.gd`                                        | Custom background without MobileImagePicker dependency                       |
+| Legacy migration      | Android plugin + file import                                  | Upgrade path from Capacitor WebView saves                                    |
+| Visual source         | Web CSS/JS (parity reference)                                 | `VISUAL_PORT_MAP.md` tracks port status; PO + Godot screenshots = acceptance |
+| Low performance       | `bg_effects_enabled`                                          | Mirrors web `low-performance.css`; disables particles + slide                |
+| Floating numbers      | Removed (Phase 5.6)                                           | FPS regression on weak devices                                               |
+| Firebase / cloud      | Phase 6 — not started                                         | Blocked until Phase 5 performance closed                                     |
 
 ## Approved plans
 
@@ -170,7 +170,7 @@ Tracker: `godot/docs/VISUAL_PORT_MAP.md`.
 | `.github/workflows/ci.yml`    | `npm run release:check` on push/PR (no `godot:test:all` in CI) |
 | `.github/workflows/pages.yml` | Deploy `_site/` to GitHub Pages                                |
 
-Local full gate: `npm run release:ideal` (includes Godot tests).
+Local full gate: `npm run release:ideal` (format + lint + web checks + Godot rules/save; skips if no `godot4`). Pre-upload: `npm run godot:verify:aab`.
 
 ## Android plugin architecture
 

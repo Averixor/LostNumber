@@ -49,22 +49,21 @@ npm ci
 npm run release:ideal
 ```
 
-Runs: format, lint, typecheck, static assets, smoke tests, Godot rules + save + smoke tests.
+Runs: format, lint, typecheck, static assets, web smoke tests, Godot **rules + save** (silently skipped if `godot4` is not on PATH). Does **not** run Godot smoke or i18n.
 
-### Godot-specific
+For full Godot coverage before upload:
 
 ```bash
-npm run godot:import
-npm run godot:test:all
+npm run godot:test:all    # rules + save + smoke + i18n
 ```
 
-### Pre-upload AAB gate
+### Pre-upload AAB gate (full release verification)
 
 ```bash
 npm run godot:verify:aab
 ```
 
-Requires existing AAB at `build/godot/android/lost-number.aab`. Runs tests + release:check + AAB manifest validation.
+Runs `godot:test:all`, `release:check`, release export, and AAB manifest validation. Requires existing AAB at `build/godot/android/lost-number.aab`.
 
 **Do not commit** keystore fields that the export script may write into `export_presets.cfg` — `verify-godot-release.mjs` rejects them.
 
@@ -156,18 +155,18 @@ In-game graphics: `godot/assets/ui/` only.
 
 ## On-device QA checklist
 
-| Area          | Verify                                                  |
-| ------------- | ------------------------------------------------------- |
-| Boot          | Splash, preload, fade to MainMenu                       |
-| Gameplay      | Chain drag, merge, gravity, level complete              |
-| Save          | Resume after kill; corrupt primary recovers from `.bak` |
-| Legacy import | Settings → Import legacy save (upgrade from Capacitor)  |
-| Navigation    | Back-stack on all screens; Android hardware back        |
-| Themes        | Dawn/dusk toggle; background cycle on MainMenu          |
-| i18n          | UA/RU/EN switch without missing keys                    |
-| Audio         | SFX + music; mute in settings                           |
-| Low effects   | Particles off; fade-only transitions                    |
-| Performance   | Stable FPS on mid-range Android after extended play     |
+| Area          | Verify                                                                                          |
+| ------------- | ----------------------------------------------------------------------------------------------- |
+| Boot          | Splash, preload, fade to MainMenu                                                               |
+| Gameplay      | Chain drag, merge, gravity, level complete                                                      |
+| Save          | Resume after kill; corrupt primary recovers from `.bak`                                         |
+| Legacy import | Startup migration + `LegacySaveMigration` autoload (Settings Import button is stub — see audit) |
+| Navigation    | Back-stack on all screens; Android hardware back                                                |
+| Themes        | Dawn/dusk toggle; background cycle on MainMenu                                                  |
+| i18n          | UA/RU/EN switch without missing keys                                                            |
+| Audio         | SFX + music; mute in settings                                                                   |
+| Low effects   | Particles off; fade-only transitions                                                            |
+| Performance   | Stable FPS on mid-range Android after extended play                                             |
 
 Detailed QA doc: `docs/ANDROID_QA.md`.
 

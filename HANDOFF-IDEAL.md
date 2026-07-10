@@ -15,20 +15,20 @@
 │  Google Play  ←  lost-number.aab (Godot, recommended)   │
 ├─────────────────────────────────────────────────────────┤
 │  godot/          Boot→App shell, ScreenRouter, gameplay │
-│  js/ + _site/    Web reference (visual parity source)   │
+│  js/ + _site/    Web parity reference (UI/i18n diff)    │
 │  android/        Capacitor shell (legacy WebView)       │
 │  assets/         Neon UI, icons, backgrounds (UA/RU/EN) │
 │  store/          Play Console listing + graphics          │
 └─────────────────────────────────────────────────────────┘
 ```
 
-| Layer           | Stack                                        | Notes                                   |
-| --------------- | -------------------------------------------- | --------------------------------------- |
-| Gameplay (ship) | Godot 4.5 GDScript                           | Boot→App→screens; back-stack navigation |
-| Web reference   | Vanilla JS + Capacitor 7                     | Visual/UI/i18n source; legacy Android   |
-| Save            | `user://` JSON (Godot), `localStorage` (web) | Checksum + `.bak` rollback (Godot)      |
-| Network         | None                                         | GDPR-friendly: no tracking, no PII      |
-| Compliance      | `privacy.html`, Play Data Safety             | Offline-only data                       |
+| Layer           | Stack                                        | Notes                                        |
+| --------------- | -------------------------------------------- | -------------------------------------------- |
+| Gameplay (ship) | Godot 4.5 GDScript                           | Boot→App→screens; back-stack navigation      |
+| Web reference   | Vanilla JS + Capacitor 7                     | Parity reference for UI/i18n; legacy Android |
+| Save            | `user://` JSON (Godot), `localStorage` (web) | Checksum + `.bak` rollback (Godot)           |
+| Network         | None                                         | GDPR-friendly: no tracking, no PII           |
+| Compliance      | `privacy.html`, Play Data Safety             | Offline-only data                            |
 
 ---
 
@@ -80,7 +80,9 @@ npm ci
 npm run release:ideal
 ```
 
-Runs: format, lint, typecheck, static assets, smoke tests, Godot rules + save + smoke tests.
+Runs: format, lint, typecheck, static assets, web smoke tests, Godot **rules + save only** (silently skipped if `godot4` is not on PATH). Does **not** run Godot smoke or i18n tests.
+
+**Full pre-upload gate:** `npm run godot:verify:aab` or `./scripts/verify-godot-aab.sh` (runs `godot:test:all`, `release:check`, release export, AAB manifest checks).
 
 ### Godot runtime (primary)
 
@@ -126,6 +128,8 @@ adb install -r build/godot/android/lost-number-debug.apk
 
 - Corrupt primary → load `.bak` → promote backup to primary
 - Legacy flat `version: 2` saves still load (no envelope)
+- Startup migration: `LegacySaveMigration` autoload + `Boot.gd` (file import + Android plugin when present)
+- Settings **Import legacy save** button is currently a **stub** — shows `settings_import_legacy_none` only; does not invoke manual import
 - Tests: `npm run godot:test:save`
 
 ---
@@ -166,5 +170,5 @@ Excludes: `node_modules`, keystores, `.godot`, generated `godot/android/`.
 ## Challenge / review notes
 
 - **Kyber / mTLS / zero-trust network:** Not applicable — fully offline; save integrity = SHA-256 + backup, not encryption at rest (no secrets in save).
-- **Dual stack risk:** Godot is ship target; Capacitor/Web is visual reference only — do not treat WebView AAB as primary.
+- **Dual stack risk:** Godot is ship target; Capacitor/Web is **parity reference** for UI/i18n diff — do not treat WebView AAB as primary.
 - **versionCode:** Increment on every Play upload (`godot/export_presets.cfg` preset `Android`).
