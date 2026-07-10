@@ -49,6 +49,7 @@ func _ready() -> void:
 	shuffle_button.pressed.connect(func(): bonus_pressed.emit("shuffle"))
 	destroy_button.pressed.connect(func(): bonus_pressed.emit("destroy"))
 	explosion_button.pressed.connect(func(): bonus_pressed.emit("explosion"))
+	_layout_bonus_badges()
 	_apply_styles()
 	_load_icons()
 	var theme := get_node_or_null("/root/ThemeManager")
@@ -132,6 +133,10 @@ func _apply_styles() -> void:
 	level_label.add_theme_font_size_override("font_size", hud_font)
 	level_label.add_theme_color_override("font_color", _theme_color("get_text_color", ThemeTokensLib.COLOR_TEXT))
 	level_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	level_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	level_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+
+	$TopBar.custom_minimum_size.y = ThemeTokensLib.TOUCH_TARGET_MIN
 
 	var panel_style := LnUiLib.hud_panel()
 	$GoalRow/GoalPanel.add_theme_stylebox_override("panel", panel_style)
@@ -142,13 +147,26 @@ func _apply_styles() -> void:
 	_style_badges()
 
 
+func _layout_bonus_badges() -> void:
+	for badge in [explosion_badge, shuffle_badge, destroy_badge]:
+		badge.set_anchors_preset(Control.PRESET_TOP_LEFT)
+		badge.offset_left = -6.0
+		badge.offset_top = -6.0
+		badge.offset_right = 14.0
+		badge.offset_bottom = 14.0
+		badge.custom_minimum_size = Vector2(20, 20)
+		badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		badge.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+
 func _style_badge(badge: Label, count: int) -> void:
 	badge.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_XS)
 	badge.add_theme_color_override("font_color", Color.WHITE)
 	var badge_style := StyleBoxFlat.new()
 	badge_style.bg_color = ThemeTokensLib.COLOR_ACCENT_ORANGE if count > 0 else Color(ThemeTokensLib.COLOR_PREVIEW_INVALID, 0.65)
-	badge_style.set_corner_radius_all(8)
-	badge_style.set_content_margin_all(2)
+	badge_style.set_corner_radius_all(10)
+	badge_style.set_content_margin_all(0)
 	badge.add_theme_stylebox_override("normal", badge_style)
 
 
@@ -163,21 +181,23 @@ func _panel_stylebox() -> StyleBoxFlat:
 
 
 func _style_icon_buttons() -> void:
+	var size := float(ThemeTokensLib.TOUCH_TARGET_MIN)
+	var icon_pad := (size - 24.0) * 0.5
 	for btn in [menu_button, save_button, sound_button, theme_button]:
-		btn.custom_minimum_size = Vector2(
-			maxf(btn.custom_minimum_size.x, ThemeTokensLib.TOUCH_TARGET_MIN),
-			maxf(btn.custom_minimum_size.y, ThemeTokensLib.TOUCH_TARGET_MIN)
-		)
+		btn.custom_minimum_size = Vector2(size, size)
+		btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		btn.focus_mode = Control.FOCUS_NONE
+		btn.text = ""
+		btn.expand_icon = true
+		btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		btn.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
 		btn.add_theme_constant_override("icon_max_width", 24)
 		btn.add_theme_constant_override("icon_max_height", 24)
-		var normal := StyleBoxFlat.new()
-		normal.bg_color = Color(ThemeTokensLib.COLOR_BTN_BG)
-		normal.set_corner_radius_all(8)
-		normal.set_border_width_all(1)
-		normal.border_color = ThemeTokensLib.COLOR_BTN_BORDER
-		normal.shadow_color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.18)
-		normal.shadow_size = 6
+		var normal := LnUiLib.make_icon_button()
+		normal.content_margin_left = icon_pad
+		normal.content_margin_right = icon_pad
+		normal.content_margin_top = icon_pad
+		normal.content_margin_bottom = icon_pad
 		btn.add_theme_stylebox_override("normal", normal)
 		var hover := normal.duplicate()
 		hover.bg_color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.16)
@@ -212,11 +232,17 @@ func _configure_bonus_button(button: Button, path: String) -> void:
 		var tex: Texture2D = load(path)
 		if tex != null:
 			button.icon = tex
+	button.custom_minimum_size.y = 56.0
+	button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	button.clip_text = true
 	button.expand_icon = true
+	button.alignment = HORIZONTAL_ALIGNMENT_CENTER
 	button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	button.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
+	button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
 	button.add_theme_constant_override("icon_max_width", 22)
 	button.add_theme_constant_override("icon_max_height", 22)
+	button.add_theme_constant_override("h_separation", 0)
+	button.add_theme_constant_override("v_separation", 2)
 
 
 func _set_button_icon(button: Button, path: String, clear_text: bool = true) -> void:
@@ -328,8 +354,10 @@ func _style_bonus_button(button: Button, kind: String, count: int, active_bonus:
 	var normal := LnUiLib.glass_box(14, 2, bg, border)
 	normal.content_margin_left = 8
 	normal.content_margin_right = 8
-	normal.content_margin_top = 6
-	normal.content_margin_bottom = 6
+	normal.content_margin_top = 8
+	normal.content_margin_bottom = 8
+	button.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
 	if is_active:
 		normal.shadow_color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.45)
 		normal.shadow_size = 12
