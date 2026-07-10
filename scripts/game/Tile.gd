@@ -9,6 +9,7 @@ const BEVEL_THICKNESS := 4.0
 const SIDE_BEVEL := 3.5
 const FACE_DARKEN := 0.30
 const Z_FACE := 0
+const Z_CROWN := 1
 const Z_SELECTION := 2
 const Z_LABEL := 3
 ## Mirrors css/grid.css .tile-crown — small watermark at top, number stays centered.
@@ -100,25 +101,26 @@ func _ensure_crown_icon() -> void:
 
 	_crown_icon = _make_crown_layer("CrownIcon", crown_texture)
 	_crown_icon.visible = false
-	_crown_icon.z_index = Z_FACE
+	_crown_icon.z_as_relative = false
+	_crown_icon.z_index = Z_CROWN
 	_crown_icon.modulate = Color(1.0, 1.0, 1.0, CROWN_WATERMARK_ALPHA)
 	_bg.add_child(_crown_icon)
-	_bg.move_child(_crown_icon, 0)
+	_bg.move_child(_crown_icon, _label.get_index())
 	_label.z_as_relative = false
 	_label.z_index = Z_LABEL
 	_layout_crown_and_label()
 
 
 func _load_crown_texture() -> Texture2D:
-	var png_path := "res://assets/ui/icons/neon/tile-crown.png"
-	if ResourceLoader.exists(png_path):
-		return load(png_path)
-	var svg_path := "res://assets/ui/icons/neon/tile-crown.png"
-	if ResourceLoader.exists(svg_path):
-		return load(svg_path)
-	svg_path = "res://assets/ui/icons/tile-crown.png"
-	if ResourceLoader.exists(svg_path):
-		return load(svg_path)
+	var paths := [
+		"res://assets/ui/icons/neon/tile-crown.png",
+		"res://assets/ui/icons/tile-crown.png",
+		"res://assets/ui/icons/neon/tile-crown.svg",
+		"res://assets/ui/icons/tile-crown.svg",
+	]
+	for path in paths:
+		if ResourceLoader.exists(path):
+			return load(path)
 	return null
 
 
