@@ -5,6 +5,8 @@ class_name LevelManager
 
 const MANUAL_LEVEL_COUNT := 40
 const INITIAL_TARGET := 64
+## Max exponent for procedural targets (2^52); clamp before shift to avoid int overflow.
+const MAX_PROCEDURAL_TARGET_EXPONENT := 52
 
 var _manual_levels: Array[Dictionary] = []
 
@@ -72,8 +74,9 @@ func _generate_manual_levels(count: int) -> Array[Dictionary]:
 func _procedural_target(level_index: int) -> int:
 	if level_index < MANUAL_LEVEL_COUNT:
 		return _manual_levels[level_index]["target"]
-	var doubled := 64 * int(pow(2, level_index))
-	return mini(doubled, int(pow(2, 52)))
+	# 64 * 2^level_index == 2^(level_index + 6); cap exponent before computing.
+	var exponent := mini(level_index + 6, MAX_PROCEDURAL_TARGET_EXPONENT)
+	return 1 << exponent
 
 
 func _build_level_numbers(level_index: int, target: int) -> Array[int]:
