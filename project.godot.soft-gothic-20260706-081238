@@ -1,0 +1,62 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Lost Number"
+config/description="Offline number-chain puzzle. Godot 2.0."
+config/version="2.1.6"
+run/main_scene="res://scenes/Boot.tscn"
+config/quit_on_go_back=false
+config/features=PackedStringArray("4.5", "Forward Plus")
+config/icon="res://icon.png"
+config/boot_splash/bg_color=Color(0.0313726, 0.0117647, 0.0588235, 1)
+config/boot_splash/fullsize=true
+config/boot_splash/image="res://icon.png"
+config/boot_splash/use_filter=true
+
+[autoload]
+GothicUiStyler="*res://scripts/ui/GothicUiStyler.gd"
+
+SaveManager="*res://scripts/managers/SaveManager.gd"
+SettingsManager="*res://scripts/managers/SettingsManager.gd"
+AudioManager="*res://scripts/managers/AudioManager.gd"
+I18nManager="*res://scripts/managers/I18nManager.gd"
+ThemeManager="*res://scripts/managers/ThemeManager.gd"
+LeaderboardService="*res://scripts/managers/LeaderboardService.gd"
+ScreenRouter="*res://scripts/ui/ScreenRouter.gd"
+LegacySaveMigration="*res://scripts/managers/LegacySaveMigration.gd"
+
+[display]
+
+window/size/viewport_width=420
+window/size/viewport_height=920
+window/size/window_width_override=420
+window/size/window_height_override=920
+window/stretch/mode="canvas_items"
+window/handheld/orientation=1
+
+[gui]
+
+theme/custom="res://themes/lost_number_theme.tres"
+
+[input]
+
+ui_accept={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194309,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true

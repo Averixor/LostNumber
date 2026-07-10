@@ -1,0 +1,47 @@
+[gd_scene load_steps=2 format=3 uid="uid://feature_stub_overlay"]
+
+[ext_resource type="Script" path="res://scripts/ui/FeatureStubOverlay.gd" id="1_stub"]
+
+[node name="FeatureStubOverlay" type="PanelContainer"]
+visible = false
+z_index = 200
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -120.0
+offset_right = 160.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_stub")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Margin/VBox"]
+layout_mode = 2
+horizontal_alignment = 1
+text = "Можливість"
+
+[node name="Body" type="RichTextLabel" parent="Margin/VBox"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+size_flags_vertical = 3
+fit_content = true
+bbcode_enabled = true
+
+[node name="OkButton" type="Button" parent="Margin/VBox"]
+layout_mode = 2
+text = "Зрозуміло"

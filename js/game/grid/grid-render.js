@@ -39,7 +39,7 @@ GridManager.prototype._updateLargestTileMarkers = function () {
         if (!crown) {
           crown = document.createElement('img');
           crown.className = 'tile-crown';
-          crown.src = 'assets/icons/neon/icons/tile-crown.svg';
+          crown.src = 'assets/icons/neon/icons/tile-crown.png';
           crown.alt = '';
           crown.setAttribute?.('aria-hidden', 'true');
           crown.draggable = false;
