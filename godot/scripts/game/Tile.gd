@@ -12,12 +12,15 @@ const Z_FACE := 0
 const Z_CROWN := 1
 const Z_SELECTION := 2
 const Z_LABEL := 3
-## Mirrors css/grid.css .tile-crown — small watermark at top, number stays centered.
-const CROWN_SIZE_RATIO := 0.22
-const CROWN_TOP_RATIO := 0.06
-const CROWN_MIN_PX := 11.0
-const CROWN_MAX_PX := 14.0
-const CROWN_WATERMARK_ALPHA := 0.38
+## Mirrors css/grid.css .tile-crown — crown in top free space, number centered below.
+const CROWN_SIZE_RATIO := 0.24
+const CROWN_TOP_RATIO := 0.08
+const CROWN_MIN_PX := 14.0
+const CROWN_MAX_PX := 20.0
+const CROWN_LABEL_PUSH_RATIO := 0.12
+const CROWN_LABEL_PUSH_MIN_PX := 4.0
+const CROWN_LABEL_PUSH_MAX_PX := 6.0
+const CROWN_GLOW_COLOR := Color(1.0, 0.36, 0.86, 0.75)
 
 @export var cell_size: Vector2 = Vector2(72, 72)
 
@@ -103,7 +106,7 @@ func _ensure_crown_icon() -> void:
 	_crown_icon.visible = false
 	_crown_icon.z_as_relative = false
 	_crown_icon.z_index = Z_CROWN
-	_crown_icon.modulate = Color(1.0, 1.0, 1.0, CROWN_WATERMARK_ALPHA)
+	_crown_icon.modulate = CROWN_GLOW_COLOR
 	_bg.add_child(_crown_icon)
 	_bg.move_child(_crown_icon, _label.get_index())
 	_label.z_as_relative = false
@@ -141,6 +144,15 @@ func setup(pos: Vector2i, number: int) -> void:
 	set_value(number)
 
 
+func _crown_label_push() -> float:
+	var tile_side := minf(cell_size.x, cell_size.y)
+	return clampf(
+		tile_side * CROWN_LABEL_PUSH_RATIO,
+		CROWN_LABEL_PUSH_MIN_PX,
+		CROWN_LABEL_PUSH_MAX_PX
+	)
+
+
 func _layout_crown_and_label() -> void:
 	if _crown_icon == null:
 		return
@@ -153,6 +165,11 @@ func _layout_crown_and_label() -> void:
 	_crown_icon.custom_minimum_size = crown_size
 	_crown_icon.size = crown_size
 	_crown_icon.position = Vector2((cell_size.x - crown_side) * 0.5, crown_top)
+
+
+func _apply_crown_label_offset(crown_visible: bool) -> void:
+	_label.offset_top = _crown_label_push() if crown_visible else 0.0
+	_label.offset_bottom = 0.0
 
 
 func set_value(number: int) -> void:
@@ -274,11 +291,10 @@ func _refresh_visual() -> void:
 	_label.add_theme_constant_override("shadow_offset_y", 2)
 	_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.45))
 
-	_label.offset_top = 0.0
-	_label.offset_bottom = 0.0
-
+	var crown_visible := _target and not _frozen and not _bonus_mode
 	if _crown_icon != null:
-		_crown_icon.visible = _target and not _frozen and not _bonus_mode
+		_crown_icon.visible = crown_visible
+	_apply_crown_label_offset(crown_visible)
 
 	_chain_highlight.visible = false
 	if _selected and not _frozen and not _bonus_mode and not _chain_preview.is_empty():
