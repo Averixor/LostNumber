@@ -143,12 +143,12 @@ adb install -r build/godot/android/lost-number-debug.apk
 
 ## Roadmap (condensed)
 
-| When    | What                                                                                              |
-| ------- | ------------------------------------------------------------------------------------------------- |
-| **Now** | Godot ship: gameplay + save + Android export; UI shell + MainMenu web parity (dock, chips, icons) |
-| Next    | chain-sum HUD, toasts, menu skin variants, achievements/daily visual polish                       |
-| Q2 2026 | Play Games integration, wheel animation, full i18n dictionary                                     |
-| Y3+     | Optional opt-in cloud save                                                                        |
+| When    | What                                                                 |
+| ------- | -------------------------------------------------------------------- |
+| **Now** | Godot ship: gameplay + save + Android export; MainMenu web parity    |
+| Next    | Chain-sum HUD, toasts, menu skin variants, achievements/daily polish |
+| Q2 2026 | Play Games integration, wheel canvas animation polish                |
+| Y3+     | Optional opt-in cloud save                                           |
 
 ---
 

@@ -21,7 +21,9 @@
 | Звук (музика, SFX)                     | [AUDIO.md](./AUDIO.md)                                            |
 | Дебаг-збірка з читами                  | [DEBUG_CHEATS.md](./DEBUG_CHEATS.md)                              |
 | Етапи розвитку (performance, Firebase) | [PHASES.md](./PHASES.md)                                          |
-| **English documentation (en)**         | [docs/en/README.md](./en/README.md)                              |
+| **English documentation (en)**         | [docs/en/README.md](./en/README.md)                               |
+| **Source of truth (canonical)**        | [docs/en/SOURCE_OF_TRUTH.md](./en/SOURCE_OF_TRUTH.md)             |
+| **Production handoff**                 | [HANDOFF-IDEAL.md](../HANDOFF-IDEAL.md)                           |
 
 ## Реліз Android → Play Console (порядок)
 

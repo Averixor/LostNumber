@@ -2,20 +2,39 @@
 
 Panta mēn ta gignōskomena arithmon echontikai panta ga man
 
-Інтерфейс локалізовано українською, російською та англійською. Типовий розмір сітки — 5×8; ціль на рівні зростає разом із прогресом.
+**Primary ship target:** Godot 4.5 Android AAB → Google Play (`2.1.6` / versionCode `16`, package `com.averixor.lostnumber`).  
+**Web / Capacitor** (`js/`, `index.html`, `android/`) — візуальний еталон і legacy-шлях, **не** основний upload у Play.
 
-## Швидкий старт
+Канонічні рішення: **[docs/en/SOURCE_OF_TRUTH.md](docs/en/SOURCE_OF_TRUTH.md)**. English docs: **[docs/en/README.md](docs/en/README.md)**.
 
-Збірка не потрібна — звичайні HTML/CSS/JS без модулів і без бандлера (`<script>` без `type="module"`).
+## Godot (primary — Android / Play)
+
+Нативна збірка Godot 4.5 — **основний** шлях релізу.
+
+```bash
+npm install
+npm run godot:import              # перший раз після clone
+npm run godot:test:all            # rules + save + smoke + i18n (285 ключів)
+npm run godot:android:release     # → build/godot/android/lost-number.aab
+```
+
+- Точка входу: **`Boot.tscn` → `App.tscn` → `ScreenRouter`** (autoload)
+- Збереження: `user://` envelope v1 + SHA-256 + `.bak`; legacy import — `LegacySaveMigration`
+- Рівні: **40 preset** + процедурний endless після (`LevelManager.gd`)
+- Детально: **[godot/README.md](godot/README.md)**, **[HANDOFF-IDEAL.md](HANDOFF-IDEAL.md)**, `godot/docs/ANDROID_RELEASE_READINESS.md`
+
+## Швидкий старт (web — reference / legacy)
+
+Збірка не потрібна — звичайні HTML/CSS/JS без модулів і без бандлера (`<script>` без `type="module"`). Використовуй для візуального паритету та legacy Capacitor, не як primary Play path.
 
 1. Клонуй репозиторій.
 2. Відкрий `index.html` у браузері або підніми локальний статичний сервер.
 
-Для розробки зручно:
-
 ```bash
 npx serve .
 ```
+
+Інтерфейс локалізовано українською, російською та англійською. Типовий розмір сітки — 5×8; ціль на рівні зростає разом із прогресом.
 
 ## Брендинг та графіка
 
@@ -49,9 +68,9 @@ Android mipmap: `python3 scripts/generate-android-icons.py` (джерело — 
 
 Деплой: **`ci.yml`** — `release:check` на кожному push (**Godot-тести `godot:test:all` — лише локально**, CI їх не запускає); **`pages.yml`** — деплой `_site/` лише коли Pages увімкнено (на private repo без Pages run завершується без деплою — див. [docs/GITHUB_PAGES.md](docs/GITHUB_PAGES.md)).
 
-## Android (APK / Google Play)
+## Android — Capacitor (legacy WebView)
 
-Нативна збірка через **Capacitor 7** — той самий код, що в браузері, у WebView-обгортці.
+**Secondary path.** Для Play завантажуй Godot AAB (`npm run godot:android:release`). Capacitor 7 — той самий web-код у WebView-обгортці; залишено для legacy save testing і візуального diff.
 
 ```bash
 npm install
@@ -59,10 +78,9 @@ npm run android:prepare   # зібрати web + sync у android/
 npm run android:open      # Android Studio
 ```
 
-Детально: **[docs/ANDROID.md](docs/ANDROID.md)** (JDK, SDK, кнопка «Назад», debug/release APK).  
-Публікація в Google Play: **[docs/PLAY_STORE.md](docs/PLAY_STORE.md)**. Повний навігатор: **[docs/README.md](docs/README.md)**.
+Детально: **[docs/ANDROID.md](docs/ANDROID.md)**. Play Console: **[docs/PLAY_STORE.md](docs/PLAY_STORE.md)**. Навігатор: **[docs/README.md](docs/README.md)**.
 
-Без магазину можна просто встановити PWA з GitHub Pages («Додати на головний екран»).
+Без магазину можна встановити PWA з GitHub Pages («Додати на головний екран»).
 
 ## Звук і збереження
 
@@ -125,7 +143,7 @@ node ./scripts/test-android-assets.mjs   # build:pages + cap sync + переві
 
 ## Endless progression
 
-Ранні рівні (**1–40**) беруться з preset-таблиці без зміни балансу. Після останнього preset-рівня гра продовжує процедурно: ціль визначається через **`getLevelConfig(levelIndex)`** (0-based індекс) — детерміновано з номера рівня, без `Math.random()` і без прив’язки до платформи. У збереженні лишається **`currentLevel`**; ціль відновлюється після reload. Цілі — safe power-of-two для правил злиття; рівні 20, 50, 100, 200, 500+ працюють коректно після перезавантаження.
+Ранні рівні (**1–40**) — preset-таблиця (`LevelManager.MANUAL_LEVEL_COUNT := 40`). Після 40-го — процедурні цілі через `getLevelConfig(levelIndex)` (детерміновано, без `Math.random()`). У збереженні — `current_level`; ціль відновлюється після reload.
 
 ## Режими та дебаг
 

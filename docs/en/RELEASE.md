@@ -11,16 +11,16 @@ Primary release path: **Godot 4 Android AAB** → Google Play. Capacitor/Web rem
 
 ## Current release identity
 
-| Field | Release | Debug |
-| ----- | ------- | ----- |
-| Package | `com.averixor.lostnumber` | `com.averixor.lostnumber.dev` |
-| versionName | `2.1.6` | `2.1.6-dev` |
-| versionCode | `16` | `16` |
-| Format | AAB | APK |
-| Output | `build/godot/android/lost-number.aab` | `build/godot/android/lost-number-debug.apk` |
-| minSdk | 24 | 24 |
-| targetSdk | 35 | 35 |
-| ABI | arm64-v8a, x86_64 | arm64-v8a, x86_64 |
+| Field       | Release                               | Debug                                       |
+| ----------- | ------------------------------------- | ------------------------------------------- |
+| Package     | `com.averixor.lostnumber`             | `com.averixor.lostnumber.dev`               |
+| versionName | `2.1.6`                               | `2.1.6-dev`                                 |
+| versionCode | `16`                                  | `16`                                        |
+| Format      | AAB                                   | APK                                         |
+| Output      | `build/godot/android/lost-number.aab` | `build/godot/android/lost-number-debug.apk` |
+| minSdk      | 24                                    | 24                                          |
+| targetSdk   | 35                                    | 35                                          |
+| ABI         | arm64-v8a, x86_64                     | arm64-v8a, x86_64                           |
 
 **Next Play upload:** versionCode **17** (must exceed any previously uploaded code).
 
@@ -32,13 +32,13 @@ ABI note: `armeabi-v7a` intentionally excluded (~8k 32-bit-only devices in catal
 
 ## Prerequisites
 
-| Tool | Requirement |
-| ---- | ----------- |
-| Node.js | ≥ 20.19 |
-| Godot | 4.3+ (4.5 tested; `godot4` on PATH) |
-| JDK | 17 at `~/Android/jbr` (snap Godot cannot read `/opt/...`) |
-| Android SDK | `~/Android/Sdk` or `ANDROID_HOME` |
-| Export templates | Auto-downloaded on first export script run |
+| Tool             | Requirement                                               |
+| ---------------- | --------------------------------------------------------- |
+| Node.js          | ≥ 20.19                                                   |
+| Godot            | 4.3+ (4.5 tested; `godot4` on PATH)                       |
+| JDK              | 17 at `~/Android/jbr` (snap Godot cannot read `/opt/...`) |
+| Android SDK      | `~/Android/Sdk` or `ANDROID_HOME`                         |
+| Export templates | Auto-downloaded on first export script run                |
 
 ## Pre-release verification
 
@@ -138,11 +138,11 @@ In-game graphics: `godot/assets/ui/` only.
 
 ## Icons
 
-| Asset | Path |
-| ----- | ---- |
-| Launcher (1024) | `godot/assets/icons/icon-1024.png` |
-| Project icon | `godot/icon.svg` / `godot/icon.png` |
-| Adaptive icons | Not configured (optional for Play) |
+| Asset           | Path                                |
+| --------------- | ----------------------------------- |
+| Launcher (1024) | `godot/assets/icons/icon-1024.png`  |
+| Project icon    | `godot/icon.svg` / `godot/icon.png` |
+| Adaptive icons  | Not configured (optional for Play)  |
 
 ## Google Play Console checklist
 
@@ -156,38 +156,38 @@ In-game graphics: `godot/assets/ui/` only.
 
 ## On-device QA checklist
 
-| Area | Verify |
-| ---- | ------ |
-| Boot | Splash, preload, fade to MainMenu |
-| Gameplay | Chain drag, merge, gravity, level complete |
-| Save | Resume after kill; corrupt primary recovers from `.bak` |
-| Legacy import | Settings → Import legacy save (upgrade from Capacitor) |
-| Navigation | Back-stack on all screens; Android hardware back |
-| Themes | Dawn/dusk toggle; background cycle on MainMenu |
-| i18n | UA/RU/EN switch without missing keys |
-| Audio | SFX + music; mute in settings |
-| Low effects | Particles off; fade-only transitions |
-| Performance | Stable FPS on mid-range Android after extended play |
+| Area          | Verify                                                  |
+| ------------- | ------------------------------------------------------- |
+| Boot          | Splash, preload, fade to MainMenu                       |
+| Gameplay      | Chain drag, merge, gravity, level complete              |
+| Save          | Resume after kill; corrupt primary recovers from `.bak` |
+| Legacy import | Settings → Import legacy save (upgrade from Capacitor)  |
+| Navigation    | Back-stack on all screens; Android hardware back        |
+| Themes        | Dawn/dusk toggle; background cycle on MainMenu          |
+| i18n          | UA/RU/EN switch without missing keys                    |
+| Audio         | SFX + music; mute in settings                           |
+| Low effects   | Particles off; fade-only transitions                    |
+| Performance   | Stable FPS on mid-range Android after extended play     |
 
 Detailed QA doc: `docs/ANDROID_QA.md`.
 
 ## Testing matrix
 
-| Command | Scope |
-| ------- | ----- |
-| `npm run godot:test:all` | Rules, save, smoke (autoloads, scenes compile) |
-| `npm run godot:test:save` | Checksum + backup recovery |
-| `npm run godot:test:i18n` | 285 keys × 3 locales |
-| `timeout 15 godot4 --path godot --headless` | Boot → App → MainMenu, no script errors |
+| Command                                     | Scope                                          |
+| ------------------------------------------- | ---------------------------------------------- |
+| `npm run godot:test:all`                    | Rules, save, smoke (autoloads, scenes compile) |
+| `npm run godot:test:save`                   | Checksum + backup recovery                     |
+| `npm run godot:test:i18n`                   | 285 keys × 3 locales                           |
+| `timeout 15 godot4 --path godot --headless` | Boot → App → MainMenu, no script errors        |
 
 ## Troubleshooting
 
-| Error | Fix |
-| ----- | --- |
-| `Missing android/keystore.properties` | Create file + keystore (see above) |
-| `Keystore not found` | Check `storeFile` path relative to `android/` |
-| Export templates missing | Re-run export script (auto-download) |
-| JDK / SDK not found | Set `JAVA_HOME`, `ANDROID_HOME` |
+| Error                                 | Fix                                           |
+| ------------------------------------- | --------------------------------------------- |
+| `Missing android/keystore.properties` | Create file + keystore (see above)            |
+| `Keystore not found`                  | Check `storeFile` path relative to `android/` |
+| Export templates missing              | Re-run export script (auto-download)          |
+| JDK / SDK not found                   | Set `JAVA_HOME`, `ANDROID_HOME`               |
 
 ## Distribution pack
 
@@ -200,11 +200,11 @@ Excludes: `node_modules`, keystores, `.godot`, generated `godot/android/`.
 
 ## Roadmap (release-adjacent)
 
-| When | What |
-| ---- | ---- |
-| **Now** | Godot ship: gameplay + save + Android export; MainMenu web parity |
-| Next | Chain-sum HUD, toasts, menu skin variants, achievements/daily polish |
-| Q2 2026 | Play Games integration, wheel animation, full i18n dictionary |
-| Y3+ | Optional opt-in cloud save |
+| When    | What                                                                 |
+| ------- | -------------------------------------------------------------------- |
+| **Now** | Godot ship: gameplay + save + Android export; MainMenu web parity    |
+| Next    | Chain-sum HUD, toasts, menu skin variants, achievements/daily polish |
+| Q2 2026 | Play Games integration, wheel canvas animation polish                |
+| Y3+     | Optional opt-in cloud save                                           |
 
 Phase 6 Firebase (auth, Firestore) is **blocked** until Phase 5 performance is closed — see `docs/PHASES.md`.

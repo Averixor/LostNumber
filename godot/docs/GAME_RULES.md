@@ -1,6 +1,6 @@
-# Game Rules (Lost Number MVP)
+# Game Rules (Lost Number)
 
-Reference: `js/core/rules.js` — Godot implementation must match 1:1.
+Reference: `js/core/rules.js` — Godot implementation must match 1:1 (`scripts/core/Rules.gd`).
 
 ## Grid
 
@@ -35,14 +35,30 @@ A chain can be committed when:
 5. If any cell equals **level target** → level complete overlay.
 6. On next level: target ×2, previous target becomes **carry** tile on the new board.
 
-## Levels (MVP)
+## Level progression
 
-| Level | Target       |
-| ----- | ------------ |
-| 1     | 64           |
-| 2     | 128          |
-| 3     | 256          |
-| n     | 64 × 2^(n-1) |
+### Preset levels (1–40)
+
+Levels **1–40** use a fixed preset table (`LevelManager.MANUAL_LEVEL_COUNT := 40`). Targets double each level starting at 64:
+
+| Level    | Target       |
+| -------- | ------------ |
+| 1        | 64           |
+| 2        | 128          |
+| 3        | 256          |
+| n (≤ 40) | 64 × 2^(n−1) |
+
+Spawn weights and minimum tile values scale with level index.
+
+### Endless procedural (41+)
+
+After level 40, progression continues **procedurally** via `getLevelConfig(levelIndex)` (0-based index):
+
+- Target is deterministic from level index (no `Math.random()`).
+- Safe power-of-two targets; levels 20, 50, 100, 200, 500+ survive save/reload.
+- `current_level` in save drives resume; target is recomputed on load.
+
+Parity with `js/game/state.js` (`MANUAL_LEVEL_COUNT = 40`).
 
 ## XP (base by chain length)
 
@@ -56,8 +72,23 @@ A chain can be committed when:
 
 Surplus XP when `sum > target` on level complete.
 
-## Not in MVP
+## Meta features (implemented in Godot)
 
-- Freeze tiles, pressure transfer, shuffle/destroy/explosion bonuses
-- Daily quests, achievements, wheel, themes
-- Login, premium, tournaments, cloud save, ads, IAP
+Core gameplay rules above are MVP; the following meta systems **are implemented** in Godot (visual polish varies — see `VISUAL_PORT_MAP.md`):
+
+| Feature                               | Godot module                                                |
+| ------------------------------------- | ----------------------------------------------------------- |
+| Bonuses (shuffle, destroy, explosion) | `BonusManager.gd` + `GameHud`                               |
+| Daily quests                          | `DailyQuestManager.gd`, `DailyQuests.tscn`                  |
+| Wheel of fortune                      | `WheelManager.gd`, `Wheel.tscn` (canvas animation partial)  |
+| Achievements                          | `Achievements.tscn`, save via `PlayerProgress`              |
+| Stats / About                         | `Stats.tscn`, `About.tscn`                                  |
+| Themes (dawn/dusk)                    | `ThemeManager.gd` (twilight in code, hidden from UI toggle) |
+| i18n (UA / RU / EN)                   | `I18nManager.gd` — 285 keys per locale                      |
+
+## Intentionally deferred
+
+- Freeze tiles, pressure transfer
+- Login, premium, tournaments, cloud save
+- Ads, in-app purchases
+- Play Games / Firebase leaderboard HTTP wiring (stub only — `LeaderboardService.gd`)

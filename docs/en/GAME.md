@@ -17,11 +17,11 @@ Build chains of tiles whose **total sum is a power of two** and exceeds the firs
 
 ## Grid
 
-| Property | Value |
-| -------- | ----- |
-| Size | **5 columns × 8 rows** |
-| Tile values | Powers of two (2, 4, 8, 16, …) |
-| Adjacency | **8 directions** (orthogonal + diagonal) |
+| Property    | Value                                    |
+| ----------- | ---------------------------------------- |
+| Size        | **5 columns × 8 rows**                   |
+| Tile values | Powers of two (2, 4, 8, 16, …)           |
+| Adjacency   | **8 directions** (orthogonal + diagonal) |
 
 ## Chain building rules
 
@@ -54,37 +54,45 @@ A chain can be committed when:
 
 ## Level progression
 
-| Level | Target |
-| ----- | ------ |
-| 1 | 64 |
-| 2 | 128 |
-| 3 | 256 |
-| n | 64 × 2^(n−1) |
+### Preset levels (1–40)
+
+Levels **1–40** use a fixed preset table (`LevelManager.MANUAL_LEVEL_COUNT := 40` in `godot/scripts/core/LevelManager.gd`). Targets double each level:
+
+| Level    | Target       |
+| -------- | ------------ |
+| 1        | 64           |
+| 2        | 128          |
+| 3        | 256          |
+| n (≤ 40) | 64 × 2^(n−1) |
 
 Spawn weights and minimum tile values scale with level (`LevelManager.gd`).
+
+### Endless procedural (41+)
+
+After level 40, targets and spawn tables are generated **procedurally** from level index — deterministic (no random), safe power-of-two targets, survives save/reload via `current_level` in save. Parity with `js/game/state.js` (`MANUAL_LEVEL_COUNT = 40`).
 
 ## XP system
 
 Base XP by chain length:
 
-| Chain length | XP |
-| ------------ | -- |
-| 2 | 4 |
-| 3 | 8 |
-| 4 | 12 |
-| 5 | 18 |
-| 6+ | 25 |
+| Chain length | XP  |
+| ------------ | --- |
+| 2            | 4   |
+| 3            | 8   |
+| 4            | 12  |
+| 5            | 18  |
+| 6+           | 25  |
 
 Additional **surplus XP** is awarded when `sum > target` on level completion.
 
 ## Controls
 
-| Platform | Input |
-| -------- | ----- |
-| Touch (Android) | Drag across adjacent tiles to build a chain; release to commit if valid |
-| Desktop / editor | Mouse drag equivalent to touch |
-| Navigation | Android **Back** handled by `App.gd` → `ScreenRouter.go_back()` |
-| Menus | `ScreenRouter.push()` / `go_back()` — no direct `change_scene_to_file` from screens |
+| Platform         | Input                                                                               |
+| ---------------- | ----------------------------------------------------------------------------------- |
+| Touch (Android)  | Drag across adjacent tiles to build a chain; release to commit if valid             |
+| Desktop / editor | Mouse drag equivalent to touch                                                      |
+| Navigation       | Android **Back** handled by `App.gd` → `ScreenRouter.go_back()`                     |
+| Menus            | `ScreenRouter.push()` / `go_back()` — no direct `change_scene_to_file` from screens |
 
 Low-FPS Android devices use path interpolation during drag to keep chain selection responsive.
 
@@ -92,15 +100,15 @@ Low-FPS Android devices use path interpolation during drag to keep chain selecti
 
 Implemented in Godot with varying visual polish:
 
-| Feature | Status |
-| ------- | ------ |
-| Bonuses (shuffle, destroy, explosion) | Logic + HUD — `BonusManager.gd` |
-| Daily quests | Logic + screen — `DailyQuestManager.gd`, `DailyQuests.tscn` |
-| Wheel of fortune | Logic — `WheelManager.gd`; canvas animation partial |
-| Achievements | Save via `PlayerProgress`; UI partial |
-| Stats / About | Minimal screens with back-stack navigation |
-| Themes (dawn/dusk) | `ThemeManager.gd`; twilight in code, hidden from UI toggle |
-| i18n (UA / RU / EN) | 285 keys per locale — `I18nManager.gd` |
+| Feature                               | Status                                                      |
+| ------------------------------------- | ----------------------------------------------------------- |
+| Bonuses (shuffle, destroy, explosion) | Logic + HUD — `BonusManager.gd`                             |
+| Daily quests                          | Logic + screen — `DailyQuestManager.gd`, `DailyQuests.tscn` |
+| Wheel of fortune                      | Logic — `WheelManager.gd`; canvas animation partial         |
+| Achievements                          | Save via `PlayerProgress`; UI partial                       |
+| Stats / About                         | Minimal screens with back-stack navigation                  |
+| Themes (dawn/dusk)                    | `ThemeManager.gd`; twilight in code, hidden from UI toggle  |
+| i18n (UA / RU / EN)                   | 285 keys per locale — `I18nManager.gd`                      |
 
 ## Not in scope (deferred)
 

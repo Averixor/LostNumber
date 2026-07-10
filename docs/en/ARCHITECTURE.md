@@ -23,28 +23,28 @@ High-level technical architecture for Lost Number **2.1.6**. Godot 4.5 is the pr
 └─────────────────────────────────────────────────────────┘
 ```
 
-| Layer | Stack | Role |
-| ----- | ----- | ---- |
-| Gameplay (ship) | Godot 4.5 GDScript | Boot → App → screens; back-stack navigation |
-| Web reference | Vanilla JS + Capacitor 7 | Visual/UI/i18n source; legacy Android |
-| Save | `user://` JSON (Godot), `localStorage` (web) | Checksum + `.bak` rollback (Godot) |
-| Network | None | Offline-only; no PII |
-| CI | GitHub Actions | `release:check` on push/PR |
+| Layer           | Stack                                        | Role                                        |
+| --------------- | -------------------------------------------- | ------------------------------------------- |
+| Gameplay (ship) | Godot 4.5 GDScript                           | Boot → App → screens; back-stack navigation |
+| Web reference   | Vanilla JS + Capacitor 7                     | Visual/UI/i18n source; legacy Android       |
+| Save            | `user://` JSON (Godot), `localStorage` (web) | Checksum + `.bak` rollback (Godot)          |
+| Network         | None                                         | Offline-only; no PII                        |
+| CI              | GitHub Actions                               | `release:check` on push/PR                  |
 
 ## Godot runtime architecture
 
 ### Autoloads (`project.godot`)
 
-| Autoload | Responsibility |
-| -------- | -------------- |
-| `SaveManager` | Persist/load game state, checksum envelope, backup |
-| `SettingsManager` | User preferences, `bg_effects_enabled`, locale |
-| `AudioManager` | SFX pool, music, semantic event mapping |
-| `I18nManager` | uk/ru/en JSON dictionaries |
-| `ThemeManager` | dawn/dusk/twilight, background rotation |
-| `LeaderboardService` | Offline queue stub |
-| `ScreenRouter` | Screen navigation, back-stack, transitions |
-| `LegacySaveMigration` | Capacitor → Godot save import |
+| Autoload              | Responsibility                                     |
+| --------------------- | -------------------------------------------------- |
+| `SaveManager`         | Persist/load game state, checksum envelope, backup |
+| `SettingsManager`     | User preferences, `bg_effects_enabled`, locale     |
+| `AudioManager`        | SFX pool, music, semantic event mapping            |
+| `I18nManager`         | uk/ru/en JSON dictionaries                         |
+| `ThemeManager`        | dawn/dusk/twilight, background rotation            |
+| `LeaderboardService`  | Offline queue stub                                 |
+| `ScreenRouter`        | Screen navigation, back-stack, transitions         |
+| `LegacySaveMigration` | Capacitor → Godot save import                      |
 
 ### Scene graph
 
@@ -61,29 +61,29 @@ Registered screens (`ScreenRouter.SCREENS`): MainMenu, Game, Settings, Achieveme
 
 ### Core gameplay modules
 
-| Module | Path | Role |
-| ------ | ---- | ---- |
-| Rules | `scripts/core/Rules.gd` | Chain validation (1:1 with `rules.js`) |
-| Board logic | `scripts/core/BoardLogic.gd` | Merge, gravity, spawn |
-| Level manager | `scripts/core/LevelManager.gd` | Targets, carry, spawn weights |
-| Game state | `scripts/core/GameState.gd` | Session state |
-| Board view | `scripts/game/Board.gd` | Grid rendering, input |
-| Tile | `scripts/game/Tile.gd` | Tile visuals, tweens, chain highlight |
-| Chain line | `scripts/game/ChainLineLayer.gd` | 3-pass neon glow for active chain |
-| Game controller | `scripts/game/Game.gd` | Orchestrates board + HUD + overlays |
-| Bonuses | `scripts/game/BonusManager.gd` | Shuffle, destroy, explosion |
+| Module          | Path                             | Role                                                                 |
+| --------------- | -------------------------------- | -------------------------------------------------------------------- |
+| Rules           | `scripts/core/Rules.gd`          | Chain validation (1:1 with `rules.js`)                               |
+| Board logic     | `scripts/core/BoardLogic.gd`     | Merge, gravity, spawn                                                |
+| Level manager   | `scripts/core/LevelManager.gd`   | 40 preset levels + procedural endless; targets, carry, spawn weights |
+| Game state      | `scripts/core/GameState.gd`      | Session state                                                        |
+| Board view      | `scripts/game/Board.gd`          | Grid rendering, input                                                |
+| Tile            | `scripts/game/Tile.gd`           | Tile visuals, tweens, chain highlight                                |
+| Chain line      | `scripts/game/ChainLineLayer.gd` | 3-pass neon glow for active chain                                    |
+| Game controller | `scripts/game/Game.gd`           | Orchestrates board + HUD + overlays                                  |
+| Bonuses         | `scripts/game/BonusManager.gd`   | Shuffle, destroy, explosion                                          |
 
 ### Meta / UI modules
 
-| Module | Path | Role |
-| ------ | ---- | ---- |
-| GameHud | `scripts/ui/GameHud.gd` | XP, target, bonus row |
-| ThemeTokens | `scripts/ui/ThemeTokens.gd` | Dark Neon Fantasy palette + dawn/dusk |
-| LnUi | `scripts/ui/LnUi.gd` | Shared UI helpers, backgrounds, entrance anims |
-| NeonButton | `scenes/components/NeonButton.tscn` | Primary/ghost menu buttons |
-| WheelManager | `scripts/meta/WheelManager.gd` | Spin logic |
-| DailyQuestManager | `scripts/meta/DailyQuestManager.gd` | Quest progress |
-| Achievements | `scripts/ui/Achievements.gd` | Achievement grid |
+| Module            | Path                                | Role                                           |
+| ----------------- | ----------------------------------- | ---------------------------------------------- |
+| GameHud           | `scripts/ui/GameHud.gd`             | XP, target, bonus row                          |
+| ThemeTokens       | `scripts/ui/ThemeTokens.gd`         | Dark Neon Fantasy palette + dawn/dusk          |
+| LnUi              | `scripts/ui/LnUi.gd`                | Shared UI helpers, backgrounds, entrance anims |
+| NeonButton        | `scenes/components/NeonButton.tscn` | Primary/ghost menu buttons                     |
+| WheelManager      | `scripts/meta/WheelManager.gd`      | Spin logic                                     |
+| DailyQuestManager | `scripts/meta/DailyQuestManager.gd` | Quest progress                                 |
+| Achievements      | `scripts/ui/Achievements.gd`        | Achievement grid                               |
 
 ### Visual system (Dark Neon Fantasy)
 
@@ -125,18 +125,18 @@ LostNumber/                      ← canonical project root
 
 ## Key technical decisions (from engineering chats)
 
-| Topic | Decision | Rationale |
-| ----- | -------- | --------- |
-| Single App shell | `App.tscn` + `ScreenRouter` instead of `change_scene_to_file` | Persistent background, overlay layer, back-stack |
-| Save integrity | SHA-256 envelope + `.bak` | Corruption recovery without cloud |
-| No encryption at rest | Checksum only | No secrets in save; offline game |
-| ABI filter | arm64-v8a + x86_64 only | Drop legacy 32-bit (~8k devices) |
-| Image picker | `ImagePickerHelper.gd` | Custom background without MobileImagePicker dependency |
-| Legacy migration | Android plugin + file import | Upgrade path from Capacitor WebView saves |
-| Visual source | Web CSS/JS | `VISUAL_PORT_MAP.md` tracks port status per screen |
-| Low performance | `bg_effects_enabled` | Mirrors web `low-performance.css`; disables particles + slide |
-| Floating numbers | Removed (Phase 5.6) | FPS regression on weak devices |
-| Firebase / cloud | Phase 6 — not started | Blocked until Phase 5 performance closed |
+| Topic                 | Decision                                                      | Rationale                                                     |
+| --------------------- | ------------------------------------------------------------- | ------------------------------------------------------------- |
+| Single App shell      | `App.tscn` + `ScreenRouter` instead of `change_scene_to_file` | Persistent background, overlay layer, back-stack              |
+| Save integrity        | SHA-256 envelope + `.bak`                                     | Corruption recovery without cloud                             |
+| No encryption at rest | Checksum only                                                 | No secrets in save; offline game                              |
+| ABI filter            | arm64-v8a + x86_64 only                                       | Drop legacy 32-bit (~8k devices)                              |
+| Image picker          | `ImagePickerHelper.gd`                                        | Custom background without MobileImagePicker dependency        |
+| Legacy migration      | Android plugin + file import                                  | Upgrade path from Capacitor WebView saves                     |
+| Visual source         | Web CSS/JS                                                    | `VISUAL_PORT_MAP.md` tracks port status per screen            |
+| Low performance       | `bg_effects_enabled`                                          | Mirrors web `low-performance.css`; disables particles + slide |
+| Floating numbers      | Removed (Phase 5.6)                                           | FPS regression on weak devices                                |
+| Firebase / cloud      | Phase 6 — not started                                         | Blocked until Phase 5 performance closed                      |
 
 ## Approved plans
 
@@ -165,10 +165,10 @@ Tracker: `godot/docs/VISUAL_PORT_MAP.md`.
 
 ## CI / automation
 
-| Workflow | Purpose |
-| -------- | ------- |
-| `.github/workflows/ci.yml` | `npm run release:check` on push/PR (no `godot:test:all` in CI) |
-| `.github/workflows/pages.yml` | Deploy `_site/` to GitHub Pages |
+| Workflow                      | Purpose                                                        |
+| ----------------------------- | -------------------------------------------------------------- |
+| `.github/workflows/ci.yml`    | `npm run release:check` on push/PR (no `godot:test:all` in CI) |
+| `.github/workflows/pages.yml` | Deploy `_site/` to GitHub Pages                                |
 
 Local full gate: `npm run release:ideal` (includes Godot tests).
 
@@ -201,6 +201,7 @@ Godot is the **sole** Play upload path. The Capacitor/Web stack exists for visua
 
 ## Further reading
 
+- [SOURCE_OF_TRUTH.md](./SOURCE_OF_TRUTH.md) — canonical decisions and version snapshot
 - [DECISIONS.md](./DECISIONS.md) — save, i18n, screens, compliance
 - [MIGRATION_GODOT.md](./MIGRATION_GODOT.md) — JS → Godot parity checklist
 - [RELEASE.md](./RELEASE.md) — build and Play Console checklists

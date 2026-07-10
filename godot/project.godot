@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Lost Number"
-config/description="Offline number-chain puzzle. Godot 2.0."
+config/description="Offline number-chain puzzle. Godot 4.5 port (v2.1.6)."
 config/version="2.1.6"
 run/main_scene="res://scenes/Boot.tscn"
 config/quit_on_go_back=false
