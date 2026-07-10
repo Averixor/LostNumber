@@ -30,7 +30,7 @@ func _navigate_back() -> void:
 		router.call("replace", "main_menu")
 
 func _ready() -> void:
-	LnUiLib.set_background(self, "res://assets/ui/backgrounds/dark/menu-bg-4.png", 0.66)
+	LnUiLib.apply_screen_background(self, "daily", 0.66)
 	if background != null:
 		background.color = Color(0, 0, 0, 0)
 	
@@ -56,34 +56,59 @@ func _is_compact_layout() -> bool:
 
 
 func _adapt_layout() -> void:
+	if not is_node_ready():
+		return
+	if title_label == null or scroll == null or list == null or back_button == null:
+		return
+
 	var compact := _is_compact_layout()
 	var title_bottom := 52.0 if compact else 56.0
-	var back_top := -56.0 if compact else -56.0
+	var back_top := -56.0
 	var back_bottom := -12.0 if compact else -16.0
 
-	title_label.offset_top = 12.0 if compact else 16.0
-	title_label.offset_bottom = title_bottom
+	var __ln_safe_offset_1 = title_label
 
-	scroll.offset_left = 16.0
-	scroll.offset_right = -16.0
-	scroll.offset_top = title_bottom + 8.0
-	scroll.offset_bottom = back_top - 8.0
+	if __ln_safe_offset_1 != null:
+
+		__ln_safe_offset_1.offset_top = 12.0 if compact else 16.0
+	var __ln_safe_offset_2 = title_label
+	if __ln_safe_offset_2 != null:
+		__ln_safe_offset_2.offset_bottom = title_bottom
+
+	var __ln_safe_offset_3 = scroll
+
+	if __ln_safe_offset_3 != null:
+
+		__ln_safe_offset_3.offset_left = 16.0
+	var __ln_safe_offset_4 = scroll
+	if __ln_safe_offset_4 != null:
+		__ln_safe_offset_4.offset_right = -16.0
+	var __ln_safe_offset_5 = scroll
+	if __ln_safe_offset_5 != null:
+		__ln_safe_offset_5.offset_top = title_bottom + 8.0
+	var __ln_safe_offset_6 = scroll
+	if __ln_safe_offset_6 != null:
+		__ln_safe_offset_6.offset_bottom = back_top - 8.0
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 
-	back_button.offset_top = back_top
-	back_button.offset_bottom = back_bottom
+	var __ln_safe_offset_7 = back_button
+
+	if __ln_safe_offset_7 != null:
+
+		__ln_safe_offset_7.offset_top = back_top
+	var __ln_safe_offset_8 = back_button
+	if __ln_safe_offset_8 != null:
+		__ln_safe_offset_8.offset_bottom = back_bottom
 
 	list.add_theme_constant_override("separation", 4 if compact else 6)
 	for child in list.get_children():
-		if child is DailyQuestCard:
+		if child != null and child.has_method("apply_layout"):
 			child.call("apply_layout", compact)
 
-
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_RESIZED:
+	if what == NOTIFICATION_RESIZED and is_node_ready():
 		_adapt_layout()
-
 
 func _animate_entrance() -> void:
 	var items: Array = [title_label]

@@ -17,12 +17,13 @@ run/main_scene="res://scenes/Boot.tscn"
 config/quit_on_go_back=false
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.png"
-config/boot_splash/bg_color=Color(0.0392157, 0.054902, 0.152941, 1)
+config/boot_splash/bg_color=Color(0.0313726, 0.0117647, 0.0588235, 1)
 config/boot_splash/fullsize=true
 config/boot_splash/image="res://icon.png"
 config/boot_splash/use_filter=true
 
 [autoload]
+GothicUiStyler="*res://scripts/ui/GothicUiStyler.gd"
 
 SaveManager="*res://scripts/managers/SaveManager.gd"
 SettingsManager="*res://scripts/managers/SettingsManager.gd"

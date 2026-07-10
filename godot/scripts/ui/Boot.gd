@@ -66,13 +66,15 @@ func _style_progress_bar() -> void:
 		if theme_mgr.has_method("get_primary_color"):
 			primary = theme_mgr.call("get_primary_color")
 	var bg := StyleBoxFlat.new()
-	bg.bg_color = panel
-	bg.set_corner_radius_all(ThemeTokensLib.RADIUS_SMALL)
+	bg.bg_color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.10)
+	bg.set_corner_radius_all(4)
 	bg.set_border_width_all(1)
-	bg.border_color = LnUiLib.BORDER
+	bg.border_color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.25)
 	var fill := StyleBoxFlat.new()
-	fill.bg_color = primary
-	fill.set_corner_radius_all(ThemeTokensLib.RADIUS_SMALL)
+	fill.bg_color = LnUiLib.GOAL
+	fill.set_corner_radius_all(4)
+	fill.shadow_color = Color(LnUiLib.GOAL, 0.55)
+	fill.shadow_size = 8
 	progress_bar.add_theme_stylebox_override("background", bg)
 	progress_bar.add_theme_stylebox_override("fill", fill)
 

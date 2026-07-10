@@ -5,6 +5,7 @@ class_name GameHud
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 const LnUiLib := preload("res://scripts/ui/LnUi.gd")
+const RulesLib := preload("res://scripts/core/Rules.gd")
 
 signal menu_pressed
 signal sound_pressed
@@ -67,19 +68,19 @@ func _ensure_progress_bars() -> void:
 		return
 
 	_goal_track = _make_bar_track($GoalRow/GoalPanel/GoalHBox)
-	_goal_fill = _make_bar_fill(_goal_track, LnUiLib.GOAL)
+	_goal_fill = _make_bar_fill(_goal_track, LnUiLib.GOAL.lerp(LnUiLib.CYAN, 0.35))
 	$GoalRow/GoalPanel/GoalHBox.move_child(_goal_track, 0)
 
 	_xp_track = _make_bar_track($XpRow/XpPanel/XpHBox)
-	_xp_fill = _make_bar_fill(_xp_track, ThemeTokensLib.COLOR_PRIMARY)
+	_xp_fill = _make_bar_fill(_xp_track, ThemeTokensLib.COLOR_PRIMARY.lerp(ThemeTokensLib.COLOR_SECONDARY, 0.35))
 	$XpRow/XpPanel/XpHBox.move_child(_xp_track, 0)
 
 
 func _make_bar_track(parent: Control) -> ColorRect:
 	var track := ColorRect.new()
 	track.name = "ProgressTrack"
-	track.color = Color(0.05, 0.03, 0.08, 0.72)
-	track.custom_minimum_size = Vector2(0, 14)
+	track.color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.10)
+	track.custom_minimum_size = Vector2(0, 8)
 	track.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	track.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	parent.add_child(track)
@@ -89,8 +90,8 @@ func _make_bar_track(parent: Control) -> ColorRect:
 func _make_bar_fill(track: ColorRect, fill_color: Color) -> ColorRect:
 	var fill := ColorRect.new()
 	fill.name = "ProgressFill"
-	fill.color = Color(fill_color, 0.78)
-	fill.custom_minimum_size = Vector2(0, 14)
+	fill.color = fill_color
+	fill.custom_minimum_size = Vector2(0, 8)
 	fill.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	track.add_child(fill)
@@ -110,16 +111,24 @@ func _set_bar_fill(fill: ColorRect, track: ColorRect, ratio: float) -> void:
 	fill.offset_bottom = 0.0
 	fill.offset_right = 0.0
 	if track != null:
-		track.custom_minimum_size.y = 14
+		track.custom_minimum_size.y = 8
+	if fill != null:
+		fill.color = fill.color if ratio > 0.001 else Color(fill.color, 0.0)
 
 
 func _apply_styles() -> void:
 	var hud_font := ThemeTokensLib.FONT_SIZE_HUD
-	for label in [goal_label, xp_label, chain_sum_label, message_label]:
+	chain_sum_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_CHAIN_BUBBLE)
+	message_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_SMALL)
+	message_label.add_theme_color_override("font_color", ThemeTokensLib.COLOR_MUTED)
+
+	for label in [goal_label, xp_label]:
 		label.add_theme_font_size_override("font_size", hud_font)
 		label.add_theme_color_override("font_color", _theme_color("get_text_color", ThemeTokensLib.COLOR_TEXT))
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
+	chain_sum_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	message_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	level_label.add_theme_font_size_override("font_size", hud_font)
 	level_label.add_theme_color_override("font_color", _theme_color("get_text_color", ThemeTokensLib.COLOR_TEXT))
 	level_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -134,10 +143,10 @@ func _apply_styles() -> void:
 
 
 func _style_badge(badge: Label, count: int) -> void:
-	badge.add_theme_font_size_override("font_size", 10)
+	badge.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_XS)
 	badge.add_theme_color_override("font_color", Color.WHITE)
 	var badge_style := StyleBoxFlat.new()
-	badge_style.bg_color = LnUiLib.ACCENT if count > 0 else Color(LnUiLib.ACCENT_2, 0.55)
+	badge_style.bg_color = ThemeTokensLib.COLOR_ACCENT_ORANGE if count > 0 else Color(ThemeTokensLib.COLOR_PREVIEW_INVALID, 0.65)
 	badge_style.set_corner_radius_all(8)
 	badge_style.set_content_margin_all(2)
 	badge.add_theme_stylebox_override("normal", badge_style)
@@ -155,13 +164,25 @@ func _panel_stylebox() -> StyleBoxFlat:
 
 func _style_icon_buttons() -> void:
 	for btn in [menu_button, save_button, sound_button, theme_button]:
+		btn.custom_minimum_size = Vector2(
+			maxf(btn.custom_minimum_size.x, ThemeTokensLib.TOUCH_TARGET_MIN),
+			maxf(btn.custom_minimum_size.y, ThemeTokensLib.TOUCH_TARGET_MIN)
+		)
+		btn.focus_mode = Control.FOCUS_NONE
+		btn.add_theme_constant_override("icon_max_width", 24)
+		btn.add_theme_constant_override("icon_max_height", 24)
 		var normal := StyleBoxFlat.new()
-		normal.bg_color = Color(ThemeTokensLib.COLOR_BTN_BG, 0.85)
-		normal.set_corner_radius_all(18)
+		normal.bg_color = Color(ThemeTokensLib.COLOR_BTN_BG)
+		normal.set_corner_radius_all(8)
 		normal.set_border_width_all(1)
 		normal.border_color = ThemeTokensLib.COLOR_BTN_BORDER
+		normal.shadow_color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.18)
+		normal.shadow_size = 6
 		btn.add_theme_stylebox_override("normal", normal)
-		btn.add_theme_stylebox_override("hover", normal.duplicate())
+		var hover := normal.duplicate()
+		hover.bg_color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.16)
+		hover.border_color = ThemeTokensLib.COLOR_SECONDARY
+		btn.add_theme_stylebox_override("hover", hover)
 		btn.add_theme_stylebox_override("pressed", normal.duplicate())
 
 
@@ -246,14 +267,31 @@ func refresh(state: GameState, i18n_t: Callable) -> void:
 
 func update_chain_sum(state: GameState, can_finish: bool, dragging: bool = false) -> void:
 	if dragging or state == null or state.selected_path.is_empty():
-		bottom_strip.visible = false
-		message_label.visible = false
-		message_label.text = ""
+		_set_chain_sum_idle()
 		return
 
-	bottom_strip.visible = false
-	message_label.visible = false
-	message_label.text = ""
+	var numbers := PackedInt32Array()
+	for p in state.selected_path:
+		numbers.append(state.board.grid[p.x][p.y])
+	var total := RulesLib.chain_sum(numbers)
+	var is_ok := can_finish and state.selected_path.size() >= 2
+	var accent := ThemeTokensLib.COLOR_PREVIEW_VALID if is_ok else ThemeTokensLib.COLOR_CHAIN_CONTINUE
+
+	bottom_strip.visible = true
+	bottom_strip.add_theme_stylebox_override("panel", LnUiLib.chain_sum_panel(is_ok))
+	chain_sum_label.text = state.format_value(total)
+	chain_sum_label.add_theme_color_override("font_color", accent)
+	chain_sum_label.add_theme_constant_override("outline_size", 2)
+	chain_sum_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.45))
+
+	if _i18n_t.is_valid():
+		if is_ok:
+			message_label.text = str(_i18n_t.call("chain_can_merge"))
+		else:
+			message_label.text = str(_i18n_t.call("chain_sum_hud"))
+	else:
+		message_label.text = ""
+	message_label.visible = not message_label.text.is_empty()
 
 
 func _set_chain_sum_idle() -> void:
@@ -279,14 +317,14 @@ func _style_bonus_button(button: Button, kind: String, count: int, active_bonus:
 	var bg: Color
 	var border: Color
 	if is_active:
-		bg = LnUiLib.ACCENT.lerp(Color.BLACK, 0.12)
-		border = LnUiLib.BORDER_ACTIVE
+		bg = Color(ThemeTokensLib.COLOR_PRIMARY, 0.22)
+		border = ThemeTokensLib.COLOR_SECONDARY
 	elif available:
-		bg = LnUiLib.PANEL
-		border = LnUiLib.BORDER
+		bg = Color(ThemeTokensLib.COLOR_BTN_BG)
+		border = ThemeTokensLib.COLOR_BTN_BORDER
 	else:
-		bg = Color(0.10, 0.07, 0.13, 0.58)
-		border = Color(0.35, 0.23, 0.39, 0.38)
+		bg = Color(ThemeTokensLib.COLOR_BG_TERTIARY, 0.45)
+		border = Color(ThemeTokensLib.COLOR_PANEL_BORDER, 0.35)
 
 	var normal := LnUiLib.glass_box(14, 2, bg, border)
 	normal.content_margin_left = 8
@@ -294,7 +332,7 @@ func _style_bonus_button(button: Button, kind: String, count: int, active_bonus:
 	normal.content_margin_top = 6
 	normal.content_margin_bottom = 6
 	if is_active:
-		normal.shadow_color = Color(LnUiLib.ACCENT, 0.45)
+		normal.shadow_color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.45)
 		normal.shadow_size = 12
 	var hover := normal.duplicate()
 	if is_active:

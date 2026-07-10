@@ -74,6 +74,8 @@ func _i18n(key: String, args: Array = []) -> String:
 func _ready() -> void:
 	LnUiLib.set_background(self, LnUiLib.screen_bg("main_menu"))
 	LnUiLib.wire_logo_glow(logo_image, LnUiLib.LOGO_PATH)
+	logo_image.custom_minimum_size = Vector2(300, 120)
+	_start_logo_pulse()
 	tagline_label.text = _i18n("main_subtitle")
 	tagline_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_SMALL)
 	tagline_label.gui_input.connect(_on_tagline_input)
@@ -104,8 +106,15 @@ func _ready() -> void:
 	continue_button.disabled = not has_save
 	play_button.text = _i18n("menu_new_game") if has_save else _i18n("menu_play")
 
+	play_button.variant = "primary"
+	continue_button.variant = "success"
+	wheel_button.variant = "secondary"
+
 	for btn in [play_button, continue_button, wheel_button]:
-		LnUiLib.apply_button(btn, btn == continue_button and btn.disabled)
+		if btn == continue_button:
+			btn.disabled = not has_save
+		else:
+			btn.disabled = false
 
 	play_button.pressed.connect(_on_play)
 	continue_button.pressed.connect(_on_continue)
@@ -133,6 +142,22 @@ func _ready() -> void:
 		audio.call("play_settings_music")
 
 	_animate_entrance()
+
+
+func _start_logo_pulse() -> void:
+	var host := logo_image.get_parent()
+	if host != null and host.name == "LogoStack":
+		host = host as Control
+	else:
+		host = logo_image
+	if host == null or not host.is_inside_tree():
+		return
+	host.pivot_offset = host.size * 0.5
+	var tween := create_tween().set_loops()
+	tween.tween_property(host, "scale", Vector2(1.04, 1.04), 0.5) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(host, "scale", Vector2.ONE, 0.5) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 
 func _apply_title_style() -> void:

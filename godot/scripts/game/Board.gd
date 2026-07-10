@@ -115,18 +115,20 @@ func _build_preview_bubble() -> void:
 func _sync_preview_bubble_metrics() -> void:
 	if _preview_bubble == null:
 		return
-	var bubble_w := maxf(cell_size.x * 0.92, 58.0)
-	var bubble_h := maxf(cell_size.y * 0.72, 42.0)
+
+	var bubble_w := maxf(cell_size.x * 0.84, 52.0)
+	var bubble_h := maxf(cell_size.y * 0.62, 40.0)
 	_preview_bubble.custom_minimum_size = Vector2(bubble_w, bubble_h)
+
 	if _preview_sum_label != null:
 		var preview_text := _preview_sum_label.text if _preview_sum_label.text != "" else "0"
-		_preview_sum_label.add_theme_font_size_override(
-			"font_size",
-			_tile_font_size_for_text(preview_text) + 2
-		)
-	if _preview_status_label != null:
-		_preview_status_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_SMALL)
+		_preview_sum_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_preview_sum_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		_preview_sum_label.add_theme_font_size_override("font_size", _tile_font_size_for_text(preview_text))
 
+	if _preview_status_label != null:
+		_preview_status_label.text = ""
+		_preview_status_label.visible = false
 
 func _tile_font_scale() -> float:
 	var settings := _autoload("SettingsManager")
@@ -196,52 +198,34 @@ func update_preview_bubble(can_finish: bool, follow_local: Vector2 = Vector2.INF
 	var numbers := PackedInt32Array()
 	for p in state.selected_path:
 		numbers.append(state.board.grid[p.x][p.y])
+
 	var total: int = Rules.chain_sum(numbers)
-	_preview_sum_label.text = state.format_value(total)
-	_preview_sum_label.add_theme_font_size_override(
-		"font_size",
-		_tile_font_size_for_text(_preview_sum_label.text) + 2
-	)
+	var total_text := state.format_value(total)
+	var is_ok := can_finish and state.selected_path.size() >= 2
+	var accent: Color = _theme_chain_valid_color() if is_ok else _theme_chain_invalid_color()
 
-	var path_len := state.selected_path.size()
-	var status_key := ""
-	var status_color: Color
-	var bg_color: Color
-	var border_color: Color
+	if _preview_status_label != null:
+		_preview_status_label.text = ""
+		_preview_status_label.visible = false
 
-	if path_len < 2:
-		status_key = "chain_status_continue"
-		status_color = Color(0.94, 0.94, 0.98, 1.0)
-		bg_color = Color(0.06, 0.04, 0.1, 0.82)
-		border_color = Color(_theme_chain_continue_color(), 0.85)
-	elif can_finish:
-		status_key = "chain_status_valid"
-		status_color = Color.WHITE
-		bg_color = Color(_theme_chain_valid_color(), 0.92)
-		border_color = _theme_chain_valid_color()
-	else:
-		status_key = "chain_status_invalid"
-		status_color = Color.WHITE
-		bg_color = Color(_theme_chain_invalid_color(), 0.88)
-		border_color = _theme_chain_invalid_color()
+	if _preview_sum_label != null:
+		_preview_sum_label.text = total_text
+		_preview_sum_label.add_theme_font_size_override("font_size", _tile_font_size_for_text(total_text))
+		_preview_sum_label.add_theme_color_override("font_color", accent.lightened(0.18))
 
-	_preview_status_label.text = _i18n(status_key)
-	_preview_status_label.add_theme_color_override("font_color", status_color)
-	_preview_sum_label.add_theme_color_override("font_color", status_color if path_len >= 2 else Color.WHITE)
-
-	var style: StyleBoxFlat = StyleBoxFlat.new()
-	style.set_corner_radius_all(ThemeTokensLib.RADIUS_PILL)
-	style.set_border_width_all(2)
-	style.set_content_margin_all(6)
-	style.bg_color = bg_color
-	style.border_color = border_color
-	style.shadow_color = Color(border_color, 0.35)
-	style.shadow_size = 8
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(accent, 0.05)
+	style.border_color = accent
+	style.set_border_width_all(1)
+	style.set_content_margin_all(8)
+	style.set_corner_radius_all(ThemeTokensLib.RADIUS_BUTTON)
+	style.shadow_color = Color(accent, 0.30)
+	style.shadow_size = 12
 	_preview_bubble.add_theme_stylebox_override("panel", style)
 
+	_sync_preview_bubble_metrics()
 	_position_preview_bubble(follow_local)
 	_preview_bubble.visible = true
-
 
 func _position_preview_bubble(follow_local: Vector2) -> void:
 	if _preview_bubble == null or state == null or state.selected_path.is_empty():
@@ -674,20 +658,14 @@ func _update_chain_visual() -> void:
 
 	for cell in _highlighted_cells:
 		if not next.has(cell):
-			var tile: TileView = _tiles[cell.x][cell.y] as TileView
-			tile.set_chain_selected(false)
-			tile.set_pressed_visual(false)
+			var old_tile: TileView = _tiles[cell.x][cell.y] as TileView
+			old_tile.set_chain_selected(false)
+			old_tile.set_pressed_visual(false)
 
-	var path_len := state.selected_path.size()
 	for p in state.selected_path:
 		var tile: TileView = _tiles[p.x][p.y] as TileView
-		var preview := ""
-		if path_len >= 2:
-			preview = "valid" if can_finish else "invalid"
-		elif path_len == 1:
-			preview = "continue"
-		tile.set_chain_selected(true, preview)
-		tile.set_pressed_visual(true)
+		tile.set_chain_selected(false)
+		tile.set_pressed_visual(false)
 
 	_highlighted_cells = next
 	chain_updated.emit(can_finish)
@@ -697,12 +675,13 @@ func _update_chain_visual() -> void:
 
 	if _chain_layer == null:
 		return
-	if state.selected_path.is_empty():
+
+	if state.selected_path.size() < 2:
 		_chain_layer.clear_chain()
 		return
-	for p in state.selected_path:
-		_tiles[p.x][p.y].set_chain_selected(false)
+
 	var pts := PackedVector2Array()
 	for p in state.selected_path:
 		pts.append(_cell_center(p))
-	_chain_layer.set_chain_points(pts, can_finish)
+
+	_chain_layer.set_chain_points(pts, can_finish and state.selected_path.size() >= 2)

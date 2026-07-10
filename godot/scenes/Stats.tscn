@@ -30,7 +30,7 @@ offset_top = 24.0
 offset_right = 120.0
 offset_bottom = 56.0
 grow_horizontal = 2
-text = "Statistics"
+text = "Статистика"
 horizontal_alignment = 1
 
 [node name="Scroll" type="ScrollContainer" parent="."]
@@ -63,4 +63,4 @@ offset_right = 80.0
 offset_bottom = -16.0
 grow_horizontal = 2
 grow_vertical = 0
-text = "Back"
+text = "Назад"

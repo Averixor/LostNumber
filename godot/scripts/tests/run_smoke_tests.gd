@@ -180,7 +180,7 @@ func _assert_script_compiles(path: String, label: String) -> void:
 
 
 func _test_gameplay_core() -> void:
-	var state := GameStateScript.new()
+	var state = GameStateScript.new()
 	state.start_new_game(12345)
 	_assert_eq(state.current_level, 0, "new game level 0")
 	_assert_eq(state.xp, 0, "new game xp 0")
@@ -196,50 +196,50 @@ func _test_gameplay_core() -> void:
 	_assert_true(state.extend_chain(Vector2i(1, 0)), "extend chain")
 	_assert_true(state.can_finish_current_chain(), "chain can finish")
 
-	var before_xp := state.xp
-	var merge := state.merge_current_chain()
+	var before_xp = state.xp
+	var merge = state.merge_current_chain()
 	_assert_true(merge.ok, "merge succeeds")
 	_assert_true(state.xp > before_xp, "xp increases after merge")
 	_assert_eq(int(merge.get("result", 0)), 4, "merge result value")
 
 
 func _test_bonuses() -> void:
-	var state := GameStateScript.new()
+	var state = GameStateScript.new()
 	state.start_new_game(77)
-	var bonus := BonusManagerScript.new(state)
+	var bonus = BonusManagerScript.new(state)
 
 	state.grant_bonus("shuffle", 1)
-	var shuffle := bonus.activate("shuffle")
+	var shuffle = bonus.activate("shuffle")
 	_assert_true(shuffle.ok, "shuffle bonus activates")
 
 	state.grant_bonus("destroy", 1)
-	var pick := bonus.activate("destroy")
+	var pick = bonus.activate("destroy")
 	_assert_true(pick.ok, "destroy pick mode")
-	var destroy := bonus.apply_at_cell(Vector2i(0, 0))
+	var destroy = bonus.apply_at_cell(Vector2i(0, 0))
 	_assert_true(destroy.ok, "destroy applies")
 
 	state.grant_bonus("explosion", 1)
 	bonus.activate("explosion")
-	var blast := bonus.apply_at_cell(Vector2i(2, 2))
+	var blast = bonus.apply_at_cell(Vector2i(2, 2))
 	_assert_true(blast.ok, "explosion applies")
 
 
 func _test_meta_managers() -> void:
-	var state := GameStateScript.new()
+	var state = GameStateScript.new()
 	state.start_new_game(5)
-	var daily := DailyQuestManagerScript.new(state)
+	var daily = DailyQuestManagerScript.new(state)
 	daily.ensure_loaded()
 	_assert_true(daily.get_quests().size() > 0, "daily quests generated")
 
-	var wheel := WheelManagerScript.new(state)
+	var wheel = WheelManagerScript.new(state)
 	state.xp = 100
-	var spin := wheel.spin()
+	var spin = wheel.spin()
 	_assert_true(spin.ok, "wheel spin ok")
 
 
 func _test_old_save_defaults() -> void:
 	_save.delete_save()
-	var state := GameStateScript.new()
+	var state = GameStateScript.new()
 	state.start_new_game(1)
 	state.grant_bonus("shuffle", 1)
 	state.active_bonus = "destroy"

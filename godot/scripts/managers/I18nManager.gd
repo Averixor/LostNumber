@@ -132,6 +132,7 @@ const KEY_ALIASES := {
 	"wheel_xp_50": "wheel_xp_50",
 	"wheel_xp_75": "wheel_xp_75",
 	"wheel_xp_100": "wheel_xp_100",
+	"wheel_win_prefix": "wheel_win_prefix",
 }
 
 const STATIC_FALLBACKS := {
@@ -234,6 +235,11 @@ const STATIC_FALLBACKS := {
 		"uk": "+100 XP",
 		"ru": "+100 XP",
 		"en": "+100 XP",
+	},
+	"wheel_win_prefix": {
+		"uk": "Виграш:",
+		"ru": "Выигрыш:",
+		"en": "Prize:",
 	},
 	"exit_confirm_title": {
 		"uk": "Вийти з гри?",

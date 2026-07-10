@@ -73,17 +73,18 @@ func _render() -> void:
 
 	for key in progress.achievements.keys():
 		var item: Dictionary = progress.achievements[key]
-		var card: AchievementCard = AchievementCardScene.instantiate()
-		card.setup(
-			bool(item.get("unlocked", false)),
-			_achievement_name(key),
-			int(item.get("progress", 0)),
-			int(item.get("max", 1)),
-			unlocked_text,
-			locked_text
-		)
+		var card = AchievementCardScene.instantiate()
 		list.add_child(card)
-
+		if card != null and card.has_method("setup"):
+			card.call(
+				"setup",
+				bool(item.get("unlocked", false)),
+				_achievement_name(key),
+				int(item.get("progress", 0)),
+				int(item.get("max", 1)),
+				unlocked_text,
+				locked_text
+			)
 
 func _load_progress() -> PlayerProgress:
 	var progress := PlayerProgress.new()

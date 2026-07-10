@@ -21,6 +21,7 @@
 | Звук (музика, SFX)                     | [AUDIO.md](./AUDIO.md)                                            |
 | Дебаг-збірка з читами                  | [DEBUG_CHEATS.md](./DEBUG_CHEATS.md)                              |
 | Етапи розвитку (performance, Firebase) | [PHASES.md](./PHASES.md)                                          |
+| **English documentation (en)**         | [docs/en/README.md](./en/README.md)                              |
 
 ## Реліз Android → Play Console (порядок)
 

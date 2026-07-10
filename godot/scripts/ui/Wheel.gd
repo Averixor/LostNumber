@@ -96,18 +96,20 @@ func _on_spin() -> void:
 	_play_sfx("button_click")
 	var prep := _wheel.prepare_spin()
 	if not prep.ok:
-		_show_result("Недостатньо XP")
+		_show_result(_i18n("dice_not_enough"))
 		_refresh_ui()
 		return
 	_play_sfx("wheel_spin")
 	spin_button.disabled = true
+	spin_button.text = _i18n("wheel_spinning")
+	LnUiLib.apply_button(spin_button, true)
 	await wheel_canvas.animate_to_sector(int(prep.index), WheelManager.SPIN_DURATION_SEC)
 
 func _on_spin_animation_done(sector: Dictionary, _index: int) -> void:
 	_wheel.finish_spin(sector)
 	_daily.on_wheel_spun()
 	_play_sfx("wheel_reward")
-	_show_result("Виграш: %s" % str(sector.get("label", "")))
+	_show_result("%s %s" % [_i18n("wheel_win_prefix"), str(sector.get("label", ""))])
 	var save := _autoload("SaveManager")
 	if save != null and save.has_method("save_game"):
 		save.call("save_game", _state)

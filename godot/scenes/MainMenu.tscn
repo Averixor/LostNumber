@@ -1,6 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://mainmenu001"]
 
 [ext_resource type="Script" path="res://scripts/ui/MainMenu.gd" id="1_menu"]
+[ext_resource type="Shader" path="res://themes/title_gradient.gdshader" id="2_gradient"]
 [ext_resource type="PackedScene" uid="uid://neonbutton001" path="res://scenes/components/NeonButton.tscn" id="3_neonbtn"]
 [ext_resource type="PackedScene" uid="uid://menu_dock_btn" path="res://scenes/components/MenuDockButton.tscn" id="4_dock"]
 [ext_resource type="PackedScene" uid="uid://feature_stub_overlay" path="res://scenes/components/FeatureStubOverlay.tscn" id="5_stub"]
@@ -8,9 +9,9 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_menutitle"]
 shader = ExtResource("2_gradient")
-shader_parameter/color_top = Color(1, 0.901961, 1, 1)
-shader_parameter/color_mid = Color(1, 0.372549, 0.701961, 1)
-shader_parameter/color_bottom = Color(0.705882, 0.360784, 1, 1)
+shader_parameter/color_top = Color(1, 1, 1, 1)
+shader_parameter/color_mid = Color(1, 0.105882, 0.619608, 1)
+shader_parameter/color_bottom = Color(0.721569, 0.239216, 1, 1)
 shader_parameter/gradient_height = 110.0
 shader_parameter/mid_point = 0.42
 
@@ -87,7 +88,7 @@ theme_override_constants/separation = 10
 [node name="PlayButton" parent="Layout/RootVBox/Actions/Buttons" instance=ExtResource("3_neonbtn")]
 custom_minimum_size = Vector2(0, 68)
 layout_mode = 2
-variant = 1
+variant = 0
 
 [node name="ContinueButton" parent="Layout/RootVBox/Actions/Buttons" instance=ExtResource("3_neonbtn")]
 custom_minimum_size = Vector2(0, 64)

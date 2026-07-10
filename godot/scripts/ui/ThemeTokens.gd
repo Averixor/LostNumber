@@ -1,21 +1,46 @@
 extends RefCounted
 class_name ThemeTokens
 
-const COLOR_BG := Color("#08030F")
-const COLOR_PANEL := Color(Color("#24122F"), 0.84)
-const COLOR_PANEL_BORDER := Color(Color("#8B4D91"), 0.55)
-const COLOR_CELL := Color(Color("#21142A"), 0.90)
-const COLOR_BTN_BG := Color(Color("#24122F"), 0.86)
-const COLOR_BTN_BORDER := Color(Color("#8B4D91"), 0.56)
-const COLOR_PRIMARY := Color("#FF5FB3")
-const COLOR_SECONDARY := Color("#B45CFF")
-const COLOR_ACCENT := Color("#E186FF")
-const COLOR_TEXT := Color("#F8EFFF")
-const COLOR_MUTED := Color("#CDBBDD")
-const COLOR_CELL_NUMBER := Color("#231A28")
-const COLOR_PREVIEW_VALID := Color("#4DFF7A")
-const COLOR_PREVIEW_INVALID := Color("#FF4D6D")
-const COLOR_OVERLAY_BG := Color(Color("#08030F"), 0.94)
+## Dark Neon Fantasy — base palette (design spec v2)
+const BG_PRIMARY := Color("#0a0e27")
+const BG_SECONDARY := Color("#141829")
+const BG_TERTIARY := Color("#1a1f3a")
+const NEON_PURPLE := Color("#b83dff")
+const NEON_PINK := Color("#ff1b9e")
+const NEON_MAGENTA := Color("#ff006e")
+const NEON_GREEN := Color("#00ff6b")
+const NEON_CYAN := Color("#00f0ff")
+const ACCENT_GOLD := Color("#ffb800")
+const ACCENT_ORANGE := Color("#ff6600")
+const ACCENT_RED := Color("#ff3366")
+const TEXT_PRIMARY := Color("#ffffff")
+const TEXT_SECONDARY := Color("#c0b8d8")
+const TEXT_MUTED := Color("#8a7a9e")
+
+const COLOR_BG := Color("#0a0e27")
+const COLOR_BG_SECONDARY := Color("#141829")
+const COLOR_BG_TERTIARY := Color("#1a1f3a")
+const COLOR_PANEL := Color(Color("#141829"), 0.72)
+const COLOR_PANEL_BORDER := Color(Color("#b83dff"), 0.40)
+const COLOR_CELL := Color(Color("#1a1f3a"), 0.92)
+const COLOR_BTN_BG := Color(Color("#b83dff"), 0.10)
+const COLOR_BTN_BORDER := Color("#b83dff")
+const COLOR_PRIMARY := Color("#b83dff")
+const COLOR_SECONDARY := Color("#ff1b9e")
+const COLOR_ACCENT := Color("#00ff6b")
+const COLOR_NEON_MAGENTA := Color("#ff006e")
+const COLOR_NEON_BLUE := Color("#00f0ff")
+const COLOR_ACCENT_GOLD := Color("#ffb800")
+const COLOR_ACCENT_ORANGE := Color("#ff6600")
+const COLOR_TEXT := Color("#ffffff")
+const COLOR_MUTED := Color("#c0b8d8")
+const COLOR_TERTIARY := Color("#8a7a9e")
+const COLOR_CELL_NUMBER := Color("#0a0e27")
+const COLOR_PREVIEW_VALID := Color("#00ff6b")
+const COLOR_PREVIEW_INVALID := Color("#ff3366")
+const COLOR_OVERLAY_BG := Color(Color("#0a0e27"), 0.88)
+const COLOR_OUTLINE_GLASS := Color(Color("#ffffff"), 0.10)
+const COLOR_DIVIDER := Color(Color("#b83dff"), 0.15)
 
 const DAWN_COLOR_BG := Color("#F8ECFF")
 const DAWN_COLOR_BG2 := Color("#EFE0FA")
@@ -32,78 +57,85 @@ const DAWN_COLOR_MUTED := Color(Color("#2C1838"), 0.78)
 const DAWN_COLOR_PREVIEW_VALID := Color("#2E7D32")
 const DAWN_COLOR_PREVIEW_INVALID := Color("#C62828")
 
-# --- Dusk (dark, default) — css/variables.css html[data-theme='dusk'] ---
-const DUSK_COLOR_BG := Color("#1b1028")  # .app-background fallback / --pwa-theme-color
-const DUSK_COLOR_PANEL := Color(Color("#241630"), 0.82)  # --panel-bg rgba(36,22,48,.82)
-const DUSK_COLOR_PANEL_BORDER := Color(Color("#f6e8de"), 0.18)  # --panel-border
-const DUSK_COLOR_CELL := Color(Color("#36283e"), 0.9)  # --cell-color rgba(54,40,62,.9)
-const DUSK_COLOR_BTN_BG := Color(Color("#3f2a48"), 0.88)  # --btn-bg rgba(63,42,72,.88)
-const DUSK_COLOR_BTN_BORDER := Color(Color("#f6e8de"), 0.15)  # --btn-border
-const DUSK_COLOR_PRIMARY := Color("#ff6b9d")  # --primary-color
-const DUSK_COLOR_SECONDARY := Color("#ff8f6b")  # --secondary-color
-const DUSK_COLOR_ACCENT := Color("#ffb0a0")  # --accent-color
-const DUSK_COLOR_TEXT := Color("#f6e8de")  # --text-color
-const DUSK_COLOR_MUTED := Color("#d9c6b8")  # --muted-color
-const DUSK_COLOR_PREVIEW_VALID := Color("#81c784")  # --preview-valid (dusk)
-const DUSK_COLOR_PREVIEW_INVALID := Color("#e57373")  # --preview-invalid (dusk)
+# --- Dusk (dark default) — aligned with Dark Neon Fantasy spec ---
+const DUSK_COLOR_BG := Color("#0a0e27")
+const DUSK_COLOR_PANEL := Color(Color("#141829"), 0.72)
+const DUSK_COLOR_PANEL_BORDER := Color(Color("#b83dff"), 0.40)
+const DUSK_COLOR_CELL := Color(Color("#1a1f3a"), 0.92)
+const DUSK_COLOR_BTN_BG := Color(Color("#b83dff"), 0.10)
+const DUSK_COLOR_BTN_BORDER := Color("#b83dff")
+const DUSK_COLOR_PRIMARY := Color("#b83dff")
+const DUSK_COLOR_SECONDARY := Color("#ff1b9e")
+const DUSK_COLOR_ACCENT := Color("#00ff6b")
+const DUSK_COLOR_TEXT := Color("#ffffff")
+const DUSK_COLOR_MUTED := Color("#c0b8d8")
+const DUSK_COLOR_PREVIEW_VALID := Color("#00ff6b")
+const DUSK_COLOR_PREVIEW_INVALID := Color("#ff3366")
 
-const COLOR_CHAIN_VALID := Color("#4DFF7A")
-const COLOR_CHAIN_INVALID := Color("#FF4D6D")
-const COLOR_CHAIN_CONTINUE := Color("#FFD966")
+const COLOR_CHAIN_VALID := Color("#00ff6b")
+const COLOR_CHAIN_INVALID := Color("#ff3366")
+const COLOR_CHAIN_CONTINUE := Color("#00f0ff")
 const DAWN_COLOR_CHAIN_VALID := Color("#2E7D32")
 const DAWN_COLOR_CHAIN_INVALID := Color("#C62828")
 const DAWN_COLOR_CHAIN_CONTINUE := Color("#F9A825")
-const DUSK_COLOR_CHAIN_VALID := Color("#4DFF7A")
-const DUSK_COLOR_CHAIN_INVALID := Color("#FF4D6D")
-const DUSK_COLOR_CHAIN_CONTINUE := Color("#FFD966")
+const DUSK_COLOR_CHAIN_VALID := Color("#00ff6b")
+const DUSK_COLOR_CHAIN_INVALID := Color("#ff3366")
+const DUSK_COLOR_CHAIN_CONTINUE := Color("#00f0ff")
 
-const MENU_TITLE_GRADIENT_START := Color("#FFE6FF")
-const MENU_TITLE_GRADIENT_MID := Color("#FF5FB3")
-const MENU_TITLE_GRADIENT_END := Color("#B45CFF")
-const MENU_TITLE_GLOW := Color(Color("#FF5FE1"), 0.54)
-const MENU_PRIMARY_BG_START := Color("#FF5FB3")
-const MENU_PRIMARY_BG_END := Color("#B45CFF")
-const MENU_PRIMARY_BORDER := Color(Color("#FFD8FF"), 0.68)
-const MENU_PRIMARY_GLOW := Color(Color("#FF64C8"), 0.44)
-const MENU_CHIP_BG := Color(Color("#190C2C"), 0.42)
-const MENU_CHIP_BORDER := Color(Color("#FFC6FF"), 0.32)
-const MENU_DOCK_BG := Color(Color("#0C0816"), 0.58)
+const MENU_TITLE_GRADIENT_START := Color("#ffffff")
+const MENU_TITLE_GRADIENT_MID := Color("#ff1b9e")
+const MENU_TITLE_GRADIENT_END := Color("#b83dff")
+const MENU_TITLE_GLOW := Color(Color("#b83dff"), 0.55)
+const MENU_PRIMARY_BG_START := Color(Color("#b83dff"), 0.18)
+const MENU_PRIMARY_BG_END := Color(Color("#ff1b9e"), 0.12)
+const MENU_PRIMARY_BORDER := Color("#b83dff")
+const MENU_PRIMARY_GLOW := Color(Color("#b83dff"), 0.45)
+const MENU_SUCCESS_BG_START := Color(Color("#00ff6b"), 0.14)
+const MENU_SUCCESS_BG_END := Color(Color("#00f0ff"), 0.08)
+const MENU_SUCCESS_BORDER := Color("#00ff6b")
+const MENU_SUCCESS_GLOW := Color(Color("#00ff6b"), 0.40)
+const MENU_CHIP_BG := Color(Color("#141829"), 0.55)
+const MENU_CHIP_BORDER := Color(Color("#b83dff"), 0.35)
+const MENU_DOCK_BG := Color(Color("#0a0e27"), 0.65)
 
-const ICON_PINK := Color("#FF8EEA")
-const ICON_VIOLET := Color("#8D6BFF")
-const ICON_SOFT := Color("#FFD6FF")
+const ICON_PINK := Color("#ff1b9e")
+const ICON_VIOLET := Color("#b83dff")
+const ICON_SOFT := Color("#c0b8d8")
+const ICON_GREEN := Color("#00ff6b")
+const ICON_GOLD := Color("#ffb800")
 
-const COLOR_NEON_BLUE := Color("#FF5FB3")
-const COLOR_CHAIN_GLOW := Color(Color("#FF5FB3"), 0.28)
-const COLOR_CHAIN_BRIGHT := Color("#FFE6FF")
+const COLOR_CHAIN_GLOW := Color(Color("#00ff6b"), 0.35)
+const COLOR_CHAIN_BRIGHT := Color("#00ff6b")
 
 const WHEEL_SECTOR_COLORS := [
-	Color("#3C165F"), Color("#68246F"), Color("#2B3F8F"), Color("#7B2E72"),
-	Color("#372064"), Color("#8A3B68"), Color("#1D536A"), Color("#50326F"),
+	Color("#00ff6b"), Color("#ff1b9e"), Color("#00f0ff"), Color("#b83dff"),
+	Color("#ffb800"), Color("#ff6600"), Color("#ff006e"), Color("#7030a0"),
 ]
 
-const SPINNER_COLOR := Color("#FF5FB3")
-const LOADING_TEXT_COLOR := Color("#F8EFFF")
+const WHEEL_RIM_GOLD := Color("#ffb800")
+const WHEEL_RIM_ORANGE := Color("#ff6600")
 
-# --- Tile palette by value — css/grid.css .cell[data-number] ---
-# Progression: small pastel → mid green/teal → high orange/pink → legendary gold/neon.
+const SPINNER_COLOR := Color("#00ff6b")
+const LOADING_TEXT_COLOR := Color("#c0b8d8")
+
+# --- Tile palette by value — tier colors (green → pink → purple → gold) ---
 const TILE_COLORS := {
-	2: Color("#9BE7A3"),
-	4: Color("#F0A7B3"),
-	8: Color("#EED063"),
-	16: Color("#83BCE9"),
-	32: Color("#B093EA"),
-	64: Color("#FFB347"),
-	128: Color("#FF6EA8"),
-	256: Color("#C77DFF"),
-	512: Color("#72E5FF"),
-	1024: Color("#FFE66D"),
-	2048: Color("#FFFFFF"),
-	4096: Color("#F6C6FF"),
+	2: Color("#00ff6b"),
+	4: Color("#00e9b3"),
+	8: Color("#00d4ff"),
+	16: Color("#ff1b9e"),
+	32: Color("#ff006e"),
+	64: Color("#b83dff"),
+	128: Color("#9030d0"),
+	256: Color("#ffb800"),
+	512: Color("#ff8800"),
+	1024: Color("#ff6600"),
+	2048: Color("#ffe066"),
+	4096: Color("#ffffff"),
 }
 
 const TILE_LEGENDARY_MIN := 128
-const TILE_GOLD_RIM := Color("#FFD700")
+const TILE_GOLD_RIM := Color("#ffb800")
 const TILE_TEXT_LIGHT := Color("#f6e8de")
 
 ## 8192+ in web are gradients; [start, end] pairs (145deg linear-gradient).
@@ -120,29 +152,43 @@ const TILE_GRADIENTS := {
 }
 
 const TILE_SELECTED_BG := Color(Color("#FF5FB3"), 0.0)
-const TILE_VALID_GRADIENT := [Color("#4DFF7A"), Color("#2E7D32")]
-const TILE_INVALID_GRADIENT := [Color("#FF4D6D"), Color("#8B1025")]
+const TILE_VALID_GRADIENT := [Color("#00ff6b"), Color("#00d4ff")]
+const TILE_INVALID_GRADIENT := [Color("#ff3366"), Color("#8B1025")]
 const TILE_FROZEN_BG := Color("#BDC3C7")
 
-const RADIUS_OVERLAY := 22
-const RADIUS_PANEL := 22
-const RADIUS_GRID := 16
-const RADIUS_BUTTON := 22
-const RADIUS_HUD := 16
-const RADIUS_SMALL := 12
-const TILE_RADIUS := 8
-const TILE_INNER_RADIUS := 7
+const RADIUS_OVERLAY := 12
+const RADIUS_PANEL := 8
+const RADIUS_GRID := 8
+const RADIUS_BUTTON := 8
+const RADIUS_HUD := 8
+const RADIUS_SMALL := 6
+const TILE_RADIUS := 4
+const TILE_INNER_RADIUS := 4
 const RADIUS_PILL := 999
 
-# --- Typography — css/base.css, css/ui.css (1rem = 16px) ---
-const FONT_SIZE_TITLE := 26  # .settings-title 1.6rem
-const FONT_SIZE_MENU_TITLE := 49  # .main-menu__title 3.05rem
-const FONT_SIZE_BODY := 15  # .menu-btn ~0.95rem
-const FONT_SIZE_SMALL := 13  # .goal-box / .system-toast 0.85rem
-const FONT_SIZE_HUD := 12  # in-game goal/xp/level rows on narrow mobile
-const FONT_SIZE_TILE := 16  # .cell-inner clamp max 1rem
-const FONT_SIZE_CHAIN_BUBBLE := 24
-const FONT_SIZE_CHIP := 15
+const SPACE_XS := 4
+const SPACE_SM := 8
+const SPACE_MD := 12
+const SPACE_LG := 16
+const SPACE_XL := 24
+const TOUCH_TARGET_MIN := 48
+const SHADOW_SOFT := 8
+const SHADOW_MEDIUM := 12
+const SHADOW_STRONG := 18
+const GLOW_SOFT := 0.18
+const GLOW_MEDIUM := 0.35
+const GLOW_STRONG := 0.55
+
+# --- Typography (design spec, mobile-first) ---
+const FONT_SIZE_TITLE := 20
+const FONT_SIZE_MENU_TITLE := 48
+const FONT_SIZE_BODY := 14
+const FONT_SIZE_SMALL := 12
+const FONT_SIZE_HUD := 12
+const FONT_SIZE_TILE := 28
+const FONT_SIZE_CHAIN_BUBBLE := 36
+const FONT_SIZE_CHIP := 12
+const FONT_SIZE_XS := 10
 
 ## Per-skin gothic-neon palettes (dark + light pairs, index 0–5).
 const SKIN_PALETTES := [
@@ -273,11 +319,15 @@ static func is_legendary_tile_value(n: int) -> bool:
 
 
 static func tile_text_color_for(face: Color, value: int) -> Color:
+	if value <= 0:
+		return COLOR_TEXT
+	if value <= 8 or value in [256, 512, 1024, 2048]:
+		return COLOR_CELL_NUMBER
 	if value >= 8192:
-		return Color.WHITE
+		return COLOR_CELL_NUMBER
 	if face.get_luminance() < 0.42:
 		return TILE_TEXT_LIGHT
-	return COLOR_CELL_NUMBER
+	return COLOR_TEXT
 
 
 static func get_skin_palette(index: int, dark: bool) -> Dictionary:

@@ -65,10 +65,12 @@ func _draw() -> void:
 	draw_circle(center, radius + 6.0, Color(glass, 0.94))
 	draw_arc(center, radius + 6.0, 0.0, TAU, 64, Color(LnUiLib.BORDER, 0.55), 2.0, true)
 
-	# Neon outer rim
-	draw_arc(center, radius + 14.0, 0.0, TAU, 72, Color(neon, 0.22), 8.0, true)
-	draw_arc(center, radius + 11.0, 0.0, TAU, 64, Color(LnUiLib.ACCENT, 0.55), 2.5, true)
-	draw_arc(center, radius + 8.0, 0.0, TAU, 48, Color(rim.lightened(0.12), 0.75), 1.5, true)
+	# Gold-orange outer rim (fortune wheel spec)
+	var gold := ThemeTokensLib.WHEEL_RIM_GOLD
+	var orange := ThemeTokensLib.WHEEL_RIM_ORANGE
+	draw_arc(center, radius + 16.0, 0.0, TAU, 72, Color(gold, 0.28), 10.0, true)
+	draw_arc(center, radius + 12.0, 0.0, TAU, 64, Color(gold, 0.85), 3.0, true)
+	draw_arc(center, radius + 9.0, 0.0, TAU, 48, Color(orange, 0.55), 1.5, true)
 	draw_arc(center, radius + 2.0, 0.0, TAU, 48, Color(0, 0, 0, 0.45), 2.0, true)
 
 	for i in count:

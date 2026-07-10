@@ -145,13 +145,11 @@ func set_value(number: int) -> void:
 
 
 func set_chain_selected(selected: bool, preview: String = "") -> void:
-	_selected = selected
-	_chain_preview = preview if selected else ""
+	_selected = false
+	_chain_preview = ""
+	if _chain_highlight != null:
+		_chain_highlight.visible = false
 	_refresh_visual()
-
-
-func set_chain_selected(_active: bool, _ok: bool = true) -> void:
-	_chain_highlight.visible = false
 
 func set_pressed_visual(pressed: bool) -> void:
 	if _pressed == pressed:
@@ -197,12 +195,16 @@ func _get_rim_color() -> Color:
 func _draw() -> void:
 	if value <= 0:
 		return
+	var face := _inner.color if _inner.color.a > 0.01 else _color_for_value(value)
+	var glow := Color(face, 0.35)
+	var rect := Rect2(Vector2(2, 2), size - Vector2(4, 6))
+	draw_rect(rect.grow(2.0), glow, false, 3.0)
 	var rim := _get_rim_color()
-	var rect := Rect2(Vector2.ZERO, size - Vector2(0, 4))
+	var border_rect := Rect2(Vector2.ZERO, size - Vector2(0, 4))
 	if ThemeTokensLib.is_legendary_tile_value(value):
-		draw_rect(rect, Color(rim, 0.55), false, 2.0)
+		draw_rect(border_rect, Color(rim, 0.65), false, 2.0)
 	else:
-		draw_rect(rect, Color(rim, 0.42), false, 1.5)
+		draw_rect(border_rect, Color(face.lightened(0.15), 0.75), false, 2.0)
 
 
 func _refresh_visual() -> void:

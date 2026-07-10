@@ -95,7 +95,7 @@ func _style_pause_overlay() -> void:
 	pause_menu_button.text = _i18n("hud_menu")
 
 func _apply_theme() -> void:
-	LnUiLib.set_background(self, "res://assets/ui/backgrounds/dark/menu-bg-3.png", 0.68)
+	LnUiLib.apply_screen_background(self, "game", 0.68)
 	if background != null:
 		background.color = Color(0, 0, 0, 0)
 

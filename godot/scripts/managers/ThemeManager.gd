@@ -343,5 +343,29 @@ func _normalize_index(index: int) -> int:
 	return ((index % BACKGROUND_COUNT) + BACKGROUND_COUNT) % BACKGROUND_COUNT
 
 
+
+func set_theme_mode(dark_mode: bool) -> void:
+	theme_id = "dusk" if dark_mode else "dawn"
+	skin_auto = false
+	_sync_settings_theme()
+	_sync_background_to_settings()
+	_save()
+	theme_changed.emit()
+
+
+func set_skin_profile(index: int, dark_mode: bool) -> void:
+	theme_id = "dusk" if dark_mode else "dawn"
+	skin_auto = false
+	background_index = _normalize_index(index)
+	_sync_settings_theme()
+	_sync_background_to_settings()
+	_save()
+	theme_changed.emit()
+
+
+func get_skin_profile_id() -> String:
+	return "%s_%d" % [theme_bucket(), background_index + 1]
+
+
 func _path() -> String:
 	return "user://lost_number_theme.json"

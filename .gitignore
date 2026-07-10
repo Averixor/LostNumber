@@ -106,3 +106,20 @@ android/.idea/
 # JVM / Java crash dumps
 *.hprof
 java_pid*.hprof
+
+# Build output
+/build/
+/_site/
+
+# Godot cache
+godot/.godot/
+
+# Android / Gradle
+.gradle/
+**/.gradle/
+**/build/
+**/intermediates/
+**/outputs/
+
+# Big dumps
+*.hprof

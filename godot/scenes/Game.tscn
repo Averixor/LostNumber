@@ -69,12 +69,12 @@ alignment = 1
 
 [node name="Title" type="Label" parent="LevelCompleteOverlay/Center/VBox"]
 layout_mode = 2
-text = "Level Complete!"
+text = "Рівень пройдено"
 horizontal_alignment = 1
 
 [node name="ContinueButton" type="Button" parent="LevelCompleteOverlay/Center/VBox"]
 layout_mode = 2
-text = "Next Level"
+text = "Наступний рівень"
 
 [node name="PauseOverlay" type="PanelContainer" parent="."]
 visible = false
@@ -98,14 +98,14 @@ alignment = 1
 
 [node name="PauseTitle" type="Label" parent="PauseOverlay/Center/VBox"]
 layout_mode = 2
-text = "Paused"
+text = "Пауза"
 horizontal_alignment = 1
 
 [node name="ResumeButton" parent="PauseOverlay/Center/VBox" instance=ExtResource("4_neon")]
 layout_mode = 2
 variant = 1
-text = "Resume"
+text = "Продовжити"
 
 [node name="MainMenuButton" parent="PauseOverlay/Center/VBox" instance=ExtResource("4_neon")]
 layout_mode = 2
-text = "Main Menu"
+text = "Головне меню"

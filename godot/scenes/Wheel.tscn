@@ -41,7 +41,7 @@ alignment = 1
 
 [node name="Title" type="Label" parent="Layout/VBox"]
 layout_mode = 2
-text = "Wheel"
+text = "Колесо фортуни"
 horizontal_alignment = 1
 
 [node name="WheelCanvas" type="Control" parent="Layout/VBox"]
@@ -59,13 +59,13 @@ custom_minimum_size = Vector2(220, 48)
 layout_mode = 2
 size_flags_horizontal = 4
 variant = 1
-text = "Spin"
+text = "Обернути"
 
 [node name="BackButton" parent="Layout/VBox" instance=ExtResource("3_neon")]
 custom_minimum_size = Vector2(220, 44)
 layout_mode = 2
 size_flags_horizontal = 4
-text = "Back"
+text = "Назад"
 
 [node name="ResultModal" type="PanelContainer" parent="."]
 visible = false
@@ -100,4 +100,4 @@ autowrap_mode = 3
 
 [node name="CloseButton" parent="ResultModal/Center/ResultCard/VBox" instance=ExtResource("3_neon")]
 layout_mode = 2
-text = "Close"
+text = "Закрити"

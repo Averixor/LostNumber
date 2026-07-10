@@ -34,6 +34,10 @@ _resolve_template_dir() {
       echo "$dir"
       return 0
     fi
+    if [[ -f "$dir/templates/android_source.zip" ]]; then
+      echo "$dir/templates"
+      return 0
+    fi
   done
   echo "${candidates[0]}"
 }
@@ -75,9 +79,12 @@ if [[ ! -f "$GODOT_DIR/android/build/build.gradle" ]]; then
   TEMPLATE_ZIP=""
   for candidate in \
     "$HOME/snap/godot4/current/.local/share/godot/export_templates/${GODOT_VERSION}/android_source.zip" \
+    "$HOME/snap/godot4/current/.local/share/godot/export_templates/${GODOT_VERSION}/templates/android_source.zip" \
     "$HOME/snap/godot4/common/.local/share/godot/export_templates/${GODOT_VERSION}/android_source.zip" \
+    "$HOME/snap/godot4/common/.local/share/godot/export_templates/${GODOT_VERSION}/templates/android_source.zip" \
     "$HOME/snap/godot4/10/.local/share/godot/export_templates/4.5.stable/android_source.zip" \
-    "${XDG_DATA_HOME:-$HOME/.local/share}/godot/export_templates/${GODOT_VERSION}/android_source.zip"; do
+    "${XDG_DATA_HOME:-$HOME/.local/share}/godot/export_templates/${GODOT_VERSION}/android_source.zip" \
+    "${XDG_DATA_HOME:-$HOME/.local/share}/godot/export_templates/${GODOT_VERSION}/templates/android_source.zip"; do
     if [[ -f "$candidate" ]]; then
       TEMPLATE_ZIP="$candidate"
       break

@@ -1,9 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://boot001"]
+[gd_scene load_steps=7 format=3 uid="uid://boot001"]
 
-[ext_resource type="Script" path="res://scripts/ui/Boot.gd" id="1_boot"]
-[ext_resource type="Texture2D" path="res://assets/boot/boot-bg.png" id="3_bg"]
-[ext_resource type="Texture2D" path="res://assets/boot/boot-logo.png" id="4_logo"]
-[ext_resource type="Texture2D" path="res://assets/ui/logo/lost-number-logo-glow.png" id="5_glow"]
+[ext_resource type="Script" uid="uid://bbrjx3rweevvc" path="res://scripts/ui/Boot.gd" id="1_boot"]
+[ext_resource type="Texture2D" uid="uid://cky3ydc2mtowq" path="res://assets/boot/boot-bg.png" id="3_bg"]
+[ext_resource type="Texture2D" uid="uid://um2pg1q2ccub" path="res://assets/boot/boot-logo.png" id="4_logo"]
+[ext_resource type="Texture2D" uid="uid://cxtne8123g7f3" path="res://assets/ui/logo/lost-number-logo-glow.png" id="5_glow"]
 
 [sub_resource type="Animation" id="Animation_pulse"]
 resource_name = "pulse"

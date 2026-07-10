@@ -1,24 +1,31 @@
 extends RefCounted
 class_name LnUi
 
-## Shared gothic-neon glass UI styles (Lost Number restyle spec).
+## Shared Dark Neon Fantasy glass UI styles.
 
-const BG_DARK := Color("#08030F")
-const DIM_DARK := Color(0.03, 0.01, 0.06, 0.62)
-const PANEL := Color(0.14, 0.07, 0.19, 0.82)
-const PANEL_HOVER := Color(0.26, 0.13, 0.31, 0.90)
-const PANEL_PRESSED := Color(0.10, 0.05, 0.13, 0.95)
-const BORDER := Color(0.55, 0.30, 0.57, 0.55)
-const BORDER_ACTIVE := Color(1.00, 0.37, 0.70, 0.85)
-const TEXT := Color("#F8EFFF")
-const TEXT_MUTED := Color("#CDBBDD")
-const TEXT_DISABLED := Color("#7B6A86")
-const ACCENT := Color("#FF5FB3")
-const ACCENT_2 := Color("#B45CFF")
-const VALID := Color("#4DFF7A")
-const INVALID := Color("#FF4D6D")
-const XP := Color("#FF5FB3")
-const GOAL := Color("#57F26D")
+const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
+
+const BG_DARK := Color("#0a0e27")
+const BG_SECONDARY := Color("#141829")
+const BG_TERTIARY := Color("#1a1f3a")
+const DIM_DARK := Color(Color("#0a0e27"), 0.70)
+const PANEL := Color(Color("#141829"), 0.72)
+const PANEL_HOVER := Color(Color("#1a1f3a"), 0.82)
+const PANEL_PRESSED := Color(Color("#0a0e27"), 0.92)
+const BORDER := Color(Color("#b83dff"), 0.40)
+const BORDER_ACTIVE := Color("#b83dff")
+const BORDER_LIGHT := Color(Color("#b83dff"), 0.25)
+const TEXT := Color("#ffffff")
+const TEXT_MUTED := Color("#c0b8d8")
+const TEXT_DISABLED := Color("#8a7a9e")
+const ACCENT := Color("#b83dff")
+const ACCENT_2 := Color("#ff1b9e")
+const VALID := Color("#00ff6b")
+const INVALID := Color("#ff3366")
+const XP := Color("#b83dff")
+const GOAL := Color("#00ff6b")
+const GOLD := Color("#ffb800")
+const CYAN := Color("#00f0ff")
 
 const BG_MAIN_MENU := "res://assets/ui/backgrounds/dark/menu-bg-1.png"
 const BG_GAME := "res://assets/ui/backgrounds/dark/menu-bg-3.png"
@@ -68,36 +75,240 @@ const _SCREEN_LIGHT_INDEX := {
 }
 
 
-static func glass_box(radius: int = 22, border_width: int = 2, bg: Color = PANEL, border: Color = BORDER) -> StyleBoxFlat:
+static func apply_screen_background(root: Control, screen: String, dim_alpha: float = 0.70) -> void:
+	set_background(root, screen_bg(screen), dim_alpha)
+
+
+static func make_glass_panel(radius: int = ThemeTokensLib.RADIUS_PANEL, border_width: int = 1) -> StyleBoxFlat:
+	return glass_box(radius, border_width, PANEL, BORDER, Color(ACCENT, ThemeTokensLib.GLOW_SOFT), ThemeTokensLib.SHADOW_MEDIUM)
+
+
+static func make_neon_panel(accent: Color = ACCENT, radius: int = ThemeTokensLib.RADIUS_PANEL) -> StyleBoxFlat:
+	var sb := glass_box(radius, 2, Color(BG_TERTIARY, 0.68), accent, Color(accent, ThemeTokensLib.GLOW_MEDIUM), ThemeTokensLib.SHADOW_STRONG)
+	sb.content_margin_left = ThemeTokensLib.SPACE_LG
+	sb.content_margin_right = ThemeTokensLib.SPACE_LG
+	sb.content_margin_top = ThemeTokensLib.SPACE_MD
+	sb.content_margin_bottom = ThemeTokensLib.SPACE_MD
+	return sb
+
+
+static func make_primary_button() -> StyleBoxFlat:
+	return primary_button_normal()
+
+
+static func make_secondary_button() -> StyleBoxFlat:
+	return button_normal()
+
+
+static func make_icon_button() -> StyleBoxFlat:
+	var sb := glass_box(ThemeTokensLib.RADIUS_BUTTON, 2, Color(ACCENT, 0.10), BORDER_ACTIVE, Color(ACCENT, 0.25), ThemeTokensLib.SHADOW_MEDIUM)
+	sb.content_margin_left = ThemeTokensLib.SPACE_SM
+	sb.content_margin_right = ThemeTokensLib.SPACE_SM
+	sb.content_margin_top = ThemeTokensLib.SPACE_SM
+	sb.content_margin_bottom = ThemeTokensLib.SPACE_SM
+	return sb
+
+
+static func make_booster_button(active: bool = false, available: bool = true) -> StyleBoxFlat:
+	var accent := VALID if active else ACCENT
+	var bg := Color(accent, 0.18 if active else 0.10)
+	var border := accent if available or active else Color(BORDER_LIGHT, 0.55)
+	var sb := glass_box(ThemeTokensLib.RADIUS_BUTTON, 2, bg, border, Color(accent, 0.32 if active else 0.18), ThemeTokensLib.SHADOW_MEDIUM)
+	sb.content_margin_left = ThemeTokensLib.SPACE_SM
+	sb.content_margin_right = ThemeTokensLib.SPACE_SM
+	sb.content_margin_top = ThemeTokensLib.SPACE_XS
+	sb.content_margin_bottom = ThemeTokensLib.SPACE_XS
+	return sb
+
+
+static func make_tile_style(value: int = 0, selected: bool = false) -> StyleBoxFlat:
+	var face := ThemeTokensLib.COLOR_CELL
+	if value > 0 and ThemeTokensLib.TILE_COLORS.has(value):
+		face = ThemeTokensLib.TILE_COLORS[value]
+	elif value > 0 and ThemeTokensLib.TILE_GRADIENTS.has(value):
+		var pair: Array = ThemeTokensLib.TILE_GRADIENTS[value]
+		face = pair[0].lerp(pair[1], 0.5)
+	var border := VALID if selected else Color(face.lightened(0.12), 0.78)
+	var glow := Color(border, 0.38 if selected else 0.22)
+	var sb := glass_box(ThemeTokensLib.TILE_RADIUS, 2, face, border, glow, 8)
+	sb.content_margin_left = 0
+	sb.content_margin_right = 0
+	sb.content_margin_top = 0
+	sb.content_margin_bottom = 0
+	return sb
+
+
+static func make_progress_bar_style(fill_color: Color = VALID) -> Dictionary:
+	return {
+		"track": progress_track(),
+		"fill": progress_fill(fill_color, true),
+	}
+
+
+static func make_toggle_style(checked: bool = false) -> StyleBoxFlat:
+	var accent := VALID if checked else ACCENT
+	return glass_box(ThemeTokensLib.RADIUS_BUTTON, 1, Color(BG_TERTIARY, 0.58), Color(accent, 0.42), Color(accent, 0.12), ThemeTokensLib.SHADOW_SOFT)
+
+
+static func make_dropdown_style() -> StyleBoxFlat:
+	return option_glass_row(false)
+
+
+static func make_header_title(size: int = ThemeTokensLib.FONT_SIZE_TITLE, color: Color = TEXT) -> LabelSettings:
+	var settings := LabelSettings.new()
+	settings.font_size = size
+	settings.font_color = color
+	settings.outline_size = 2
+	settings.outline_color = Color(0, 0, 0, 0.45)
+	settings.shadow_color = Color(ACCENT_2, 0.35)
+	settings.shadow_offset = Vector2(0, 2)
+	return settings
+
+
+static func apply_glow(control: Control, color: Color = ACCENT, size: int = ThemeTokensLib.SHADOW_MEDIUM) -> void:
+	if control == null:
+		return
+	if control is PanelContainer:
+		var current := control.get_theme_stylebox("panel")
+		var sb := current.duplicate() if current is StyleBoxFlat else make_neon_panel(color)
+		if sb is StyleBoxFlat:
+			(sb as StyleBoxFlat).shadow_color = Color(color, 0.35)
+			(sb as StyleBoxFlat).shadow_size = size
+			control.add_theme_stylebox_override("panel", sb)
+	elif control is Button:
+		for state in ["normal", "hover", "pressed", "disabled"]:
+			var current := control.get_theme_stylebox(state)
+			if current is StyleBoxFlat:
+				var sb := (current as StyleBoxFlat).duplicate()
+				sb.shadow_color = Color(color, 0.32)
+				sb.shadow_size = size
+				control.add_theme_stylebox_override(state, sb)
+
+
+static func add_corner_decorations(parent: Control, color: Color = ACCENT, length: float = 18.0, thickness: float = 2.0) -> void:
+	if parent == null or parent.get_node_or_null("LN_CornerDecorations") != null:
+		return
+	var layer := Control.new()
+	layer.name = "LN_CornerDecorations"
+	layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.set_anchors_preset(Control.PRESET_FULL_RECT)
+	parent.add_child(layer)
+	for spec in [
+		["TL_H", 0, 0, length, thickness],
+		["TL_V", 0, 0, thickness, length],
+		["TR_H", -length, 0, 0, thickness],
+		["TR_V", -thickness, 0, 0, length],
+		["BL_H", 0, -thickness, length, 0],
+		["BL_V", 0, -length, thickness, 0],
+		["BR_H", -length, -thickness, 0, 0],
+		["BR_V", -thickness, -length, 0, 0],
+	]:
+		var rect := ColorRect.new()
+		rect.name = str(spec[0])
+		rect.color = color
+		rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		layer.add_child(rect)
+		rect.anchor_left = 1.0 if str(spec[0]).begins_with("TR") or str(spec[0]).begins_with("BR") else 0.0
+		rect.anchor_right = rect.anchor_left
+		rect.anchor_top = 1.0 if str(spec[0]).begins_with("BL") or str(spec[0]).begins_with("BR") else 0.0
+		rect.anchor_bottom = rect.anchor_top
+		rect.offset_left = float(spec[1])
+		rect.offset_top = float(spec[2])
+		rect.offset_right = float(spec[3])
+		rect.offset_bottom = float(spec[4])
+
+
+static func add_magic_divider(parent: Control, color: Color = ACCENT_2, height: float = 2.0) -> ColorRect:
+	var divider := ColorRect.new()
+	divider.name = "LN_MagicDivider"
+	divider.custom_minimum_size = Vector2(0, height)
+	divider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	divider.color = Color(color, 0.72)
+	divider.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(divider)
+	return divider
+
+
+static func glass_box(radius: int = 8, border_width: int = 2, bg: Color = PANEL, border: Color = BORDER, glow: Color = Color.TRANSPARENT, glow_size: int = 0) -> StyleBoxFlat:
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = bg
 	sb.border_color = border
 	sb.set_border_width_all(border_width)
 	sb.set_corner_radius_all(radius)
-	sb.shadow_color = Color(0, 0, 0, 0.35)
-	sb.shadow_size = 8
+	sb.shadow_color = glow if glow.a > 0.0 else Color(0, 0, 0, 0.35)
+	sb.shadow_size = glow_size if glow_size > 0 else 8
 	sb.shadow_offset = Vector2(0, 4)
-	sb.content_margin_left = 18
-	sb.content_margin_right = 18
+	sb.content_margin_left = 16
+	sb.content_margin_right = 16
 	sb.content_margin_top = 12
 	sb.content_margin_bottom = 12
 	return sb
 
 
+static func emphasized_panel(radius: int = 8) -> StyleBoxFlat:
+	return glass_box(radius, 2, Color(BG_TERTIARY, 0.65), BORDER_ACTIVE, Color(ACCENT, 0.18), 16)
+
+
+static func progress_track(height: float = 8.0) -> StyleBoxFlat:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(ACCENT, 0.10)
+	sb.border_color = BORDER_LIGHT
+	sb.set_border_width_all(1)
+	sb.set_corner_radius_all(4)
+	sb.content_margin_top = 0
+	sb.content_margin_bottom = 0
+	sb.content_margin_left = 0
+	sb.content_margin_right = 0
+	return sb
+
+
+static func progress_fill(color: Color, glow: bool = true) -> StyleBoxFlat:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = color
+	sb.set_corner_radius_all(4)
+	if glow:
+		sb.shadow_color = Color(color, 0.55)
+		sb.shadow_size = 6
+	return sb
+
+
 static func button_normal() -> StyleBoxFlat:
-	return glass_box(22, 2, PANEL, BORDER)
+	return glass_box(8, 2, Color(ACCENT, 0.10), BORDER_ACTIVE, Color(ACCENT, 0.22), 12)
 
 
 static func button_hover() -> StyleBoxFlat:
-	return glass_box(22, 2, PANEL_HOVER, BORDER_ACTIVE)
+	var sb := button_normal()
+	sb.bg_color = Color(ACCENT, 0.16)
+	sb.border_color = ACCENT_2
+	sb.shadow_color = Color(ACCENT, 0.35)
+	sb.shadow_size = 16
+	return sb
 
 
 static func button_pressed() -> StyleBoxFlat:
-	return glass_box(22, 2, PANEL_PRESSED, BORDER_ACTIVE)
+	var sb := button_normal()
+	sb.bg_color = Color(ACCENT, 0.22)
+	sb.border_color = ACCENT_2
+	return sb
 
 
 static func button_disabled() -> StyleBoxFlat:
-	return glass_box(22, 2, Color(0.10, 0.07, 0.13, 0.58), Color(0.35, 0.23, 0.39, 0.38))
+	return glass_box(8, 1, Color(BG_TERTIARY, 0.45), Color(BORDER_LIGHT, 0.5), Color.TRANSPARENT, 0)
+
+
+static func primary_button_normal() -> StyleBoxFlat:
+	var sb := glass_box(8, 2, ACCENT.lerp(ACCENT_2, 0.35), BORDER_ACTIVE, Color(ACCENT, 0.40), 12)
+	sb.bg_color = Color(ACCENT, 0.15).lerp(Color(ACCENT_2, 0.10), 0.5)
+	sb.content_margin_top = 14
+	sb.content_margin_bottom = 14
+	return sb
+
+
+static func success_button_normal() -> StyleBoxFlat:
+	var sb := glass_box(8, 2, Color(VALID, 0.14), VALID, Color(VALID, 0.35), 12)
+	sb.content_margin_top = 14
+	sb.content_margin_bottom = 14
+	return sb
 
 
 static func small_pill(bg: Color = Color(0.14, 0.07, 0.19, 0.86), border: Color = BORDER_ACTIVE) -> StyleBoxFlat:
@@ -118,9 +329,9 @@ static func apply_button(btn: Button, disabled: bool = false) -> void:
 	btn.add_theme_color_override("font_hover_color", TEXT)
 	btn.add_theme_color_override("font_pressed_color", TEXT)
 	btn.add_theme_color_override("font_disabled_color", TEXT_DISABLED)
-	btn.add_theme_font_size_override("font_size", 22)
-	if btn.custom_minimum_size.y < 68.0:
-		btn.custom_minimum_size.y = 74
+	btn.add_theme_font_size_override("font_size", 16)
+	if btn.custom_minimum_size.y < 48.0:
+		btn.custom_minimum_size.y = 48
 	btn.focus_mode = Control.FOCUS_NONE
 	btn.disabled = disabled
 	if btn is BaseButton:
@@ -227,11 +438,21 @@ static func load_icon(name: String) -> Texture2D:
 
 
 static func hud_panel() -> StyleBoxFlat:
-	var sb := glass_box(12, 1, PANEL, BORDER)
-	sb.content_margin_left = 8
-	sb.content_margin_right = 8
-	sb.content_margin_top = 6
-	sb.content_margin_bottom = 6
+	var sb := glass_box(8, 1, Color(BG_TERTIARY, 0.55), BORDER_LIGHT, Color(ACCENT, 0.12), 10)
+	sb.content_margin_left = 10
+	sb.content_margin_right = 10
+	sb.content_margin_top = 8
+	sb.content_margin_bottom = 8
+	return sb
+
+
+static func chain_sum_panel(valid: bool) -> StyleBoxFlat:
+	var accent := VALID if valid else INVALID
+	var sb := glass_box(8, 1, Color(accent, 0.05), accent, Color(accent, 0.28), 12)
+	sb.content_margin_left = 12
+	sb.content_margin_right = 12
+	sb.content_margin_top = 10
+	sb.content_margin_bottom = 10
 	return sb
 
 
@@ -254,15 +475,12 @@ static func apply_button_icon(btn: Button, icon_name: String) -> void:
 
 
 static func settings_glass_row(compact: bool = false) -> StyleBoxFlat:
-	var sb := glass_box(12 if compact else 14, 1, Color(0.157, 0.078, 0.216, 0.75), BORDER)
-	var margin := 8 if compact else 10
+	var sb := glass_box(8 if compact else 8, 1, Color(BG_TERTIARY, 0.55), BORDER_LIGHT, Color(ACCENT, 0.08), 8)
+	var margin := 12 if compact else 14
 	sb.content_margin_left = margin
 	sb.content_margin_right = margin
-	sb.content_margin_top = 6 if compact else 8
-	sb.content_margin_bottom = 6 if compact else 8
-	if compact:
-		sb.shadow_size = 4
-		sb.shadow_offset = Vector2(0, 2)
+	sb.content_margin_top = 8 if compact else 10
+	sb.content_margin_bottom = 8 if compact else 10
 	return sb
 
 
@@ -308,10 +526,10 @@ static func apply_settings_row_density(check: CheckButton, compact: bool) -> voi
 
 static func apply_toggle_switch(check: CheckButton, compact: bool = false) -> void:
 	apply_settings_row_density(check, compact)
-	check.add_theme_color_override("icon_normal_color", Color(0.45, 0.38, 0.52))
-	check.add_theme_color_override("icon_hover_color", ACCENT_2)
-	check.add_theme_color_override("icon_pressed_color", ACCENT)
-	check.add_theme_color_override("icon_hover_pressed_color", ACCENT)
+	check.add_theme_color_override("icon_normal_color", TEXT_DISABLED)
+	check.add_theme_color_override("icon_hover_color", VALID)
+	check.add_theme_color_override("icon_pressed_color", VALID)
+	check.add_theme_color_override("icon_hover_pressed_color", VALID)
 	check.add_theme_color_override("icon_disabled_color", TEXT_DISABLED)
 
 
@@ -368,7 +586,7 @@ static func wire_logo_glow(logo: TextureRect, main_path: String = LOGO_PATH) -> 
 	glow.texture = load(LOGO_GLOW_PATH)
 	var glow_size := logo.custom_minimum_size * 1.18
 	_center_texture_rect(glow, glow_size)
-	glow.modulate = Color(1, 1, 1, 0.55)
+	glow.modulate = Color(1, 1, 1, 0.72)
 	host.move_child(glow, 0)
 
 
@@ -381,7 +599,7 @@ static func _center_texture_rect(rect: TextureRect, size: Vector2) -> void:
 	rect.custom_minimum_size = size
 
 
-static func set_background(root: Control, bg_path: String, dim_alpha: float = 0.62) -> void:
+static func set_background(root: Control, bg_path: String, dim_alpha: float = 0.70) -> void:
 	var texture := load_background_texture(bg_path)
 	if texture == null:
 		return
@@ -413,7 +631,7 @@ static func set_background(root: Control, bg_path: String, dim_alpha: float = 0.
 	dim.offset_top = 0
 	dim.offset_right = 0
 	dim.offset_bottom = 0
-	dim.color = Color(0.03, 0.01, 0.06, dim_alpha)
+	dim.color = Color(BG_DARK, dim_alpha)
 	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	# Hide legacy flat ColorRect backgrounds when LN layer is active.

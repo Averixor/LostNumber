@@ -19,7 +19,7 @@ layout_mode = 2
 
 [node name="LevelLabel" type="Label" parent="TopBar"]
 layout_mode = 2
-text = "Level 1"
+text = "Рівень 1"
 
 [node name="TopSpacer" type="Control" parent="TopBar"]
 layout_mode = 2
@@ -56,7 +56,7 @@ theme_override_constants/separation = 2
 
 [node name="GoalLabel" type="Label" parent="GoalRow/GoalPanel/GoalHBox"]
 layout_mode = 2
-text = "Goal: 0/64"
+text = "Ціль: 0/64"
 
 [node name="XpRow" type="HBoxContainer" parent="."]
 layout_mode = 2
@@ -84,7 +84,7 @@ alignment = 1
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Blast"
+text = "Вибух"
 
 [node name="ExplosionBadge" type="Label" parent="BonusBar/ExplosionButton"]
 layout_mode = 0
@@ -100,7 +100,7 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Shuffle"
+text = "Перемішати"
 
 [node name="ShuffleBadge" type="Label" parent="BonusBar/ShuffleButton"]
 layout_mode = 0
@@ -116,7 +116,7 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Destroy"
+text = "Розбити"
 
 [node name="DestroyBadge" type="Label" parent="BonusBar/DestroyButton"]
 layout_mode = 0
@@ -139,7 +139,7 @@ alignment = 1
 [node name="ChainSumLabel" type="Label" parent="BottomStrip/BottomHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Chain sum: 0"
+text = "0"
 
 [node name="MessageLabel" type="Label" parent="BottomStrip/BottomHBox"]
 layout_mode = 2

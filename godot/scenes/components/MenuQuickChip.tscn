@@ -27,4 +27,4 @@ stretch_mode = 5
 [node name="Label" type="Label" parent="HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Chip"
+text = "Дія"
