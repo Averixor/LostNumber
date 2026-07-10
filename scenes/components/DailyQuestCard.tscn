@@ -1,0 +1,57 @@
+[gd_scene load_steps=2 format=3 uid="uid://daily_quest_card"]
+
+[ext_resource type="Script" path="res://scripts/ui/DailyQuestCard.gd" id="1_card"]
+
+[node name="DailyQuestCard" type="Control"]
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+script = ExtResource("1_card")
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBox" type="HBoxContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Content" type="VBoxContainer" parent="Panel/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="Header" type="HBoxContainer" parent="Panel/HBox/Content"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Status" type="Label" parent="Panel/HBox/Content/Header"]
+custom_minimum_size = Vector2(16, 0)
+layout_mode = 2
+text = "○"
+
+[node name="Title" type="Label" parent="Panel/HBox/Content/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Щоденне завдання"
+clip_text = true
+text_overrun_behavior = 3
+
+[node name="Progress" type="Label" parent="Panel/HBox/Content"]
+layout_mode = 2
+text = "Прогрес: 0/1"
+
+[node name="Reward" type="Label" parent="Panel/HBox"]
+custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
+text = "+25 XP"
+horizontal_alignment = 2
+vertical_alignment = 1
+autowrap_mode = 0

@@ -1,9 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://boot001"]
+[gd_scene format=3 uid="uid://boot001"]
 
 [ext_resource type="Script" uid="uid://bbrjx3rweevvc" path="res://scripts/ui/Boot.gd" id="1_boot"]
 [ext_resource type="Texture2D" uid="uid://cky3ydc2mtowq" path="res://assets/boot/boot-bg.png" id="3_bg"]
 [ext_resource type="Texture2D" uid="uid://um2pg1q2ccub" path="res://assets/boot/boot-logo.png" id="4_logo"]
-[ext_resource type="Texture2D" uid="uid://cxtne8123g7f3" path="res://assets/ui/logo/lost-number-logo-glow.png" id="5_glow"]
+[ext_resource type="Texture2D" uid="uid://civlmhm1uqu0o" path="res://assets/ui/logo/lost-number-logo-glow.png" id="5_glow"]
 
 [sub_resource type="Animation" id="Animation_pulse"]
 resource_name = "pulse"
@@ -27,7 +27,7 @@ _data = {
 &"pulse": SubResource("Animation_pulse")
 }
 
-[node name="Boot" type="Control"]
+[node name="Boot" type="Control" unique_id=1296710677]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -36,7 +36,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_boot")
 
-[node name="BackgroundArt" type="TextureRect" parent="."]
+[node name="BackgroundArt" type="TextureRect" parent="." unique_id=2014154368]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -48,7 +48,7 @@ texture = ExtResource("3_bg")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=993752523]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -58,7 +58,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.0705882, 0.0313726, 0.0941176, 0.45)
 
-[node name="Center" type="CenterContainer" parent="."]
+[node name="Center" type="CenterContainer" parent="." unique_id=1544267063]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -66,16 +66,16 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="Center"]
+[node name="VBox" type="VBoxContainer" parent="Center" unique_id=579311355]
 layout_mode = 2
 theme_override_constants/separation = 12
 alignment = 1
 
-[node name="LogoStack" type="Control" parent="Center/VBox"]
+[node name="LogoStack" type="Control" parent="Center/VBox" unique_id=782025964]
 custom_minimum_size = Vector2(360, 160)
 layout_mode = 2
 
-[node name="LogoGlow" type="TextureRect" parent="Center/VBox/LogoStack"]
+[node name="LogoGlow" type="TextureRect" parent="Center/VBox/LogoStack" unique_id=465463906]
 modulate = Color(1, 1, 1, 0.55)
 layout_mode = 0
 anchor_left = 0.5
@@ -93,7 +93,7 @@ texture = ExtResource("5_glow")
 expand_mode = 3
 stretch_mode = 5
 
-[node name="LogoImage" type="TextureRect" parent="Center/VBox/LogoStack"]
+[node name="LogoImage" type="TextureRect" parent="Center/VBox/LogoStack" unique_id=912819004]
 layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
@@ -109,19 +109,17 @@ texture = ExtResource("4_logo")
 expand_mode = 3
 stretch_mode = 5
 
-[node name="Subtitle" type="Label" parent="Center/VBox"]
+[node name="Subtitle" type="Label" parent="Center/VBox" unique_id=2104715867]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "..."
 horizontal_alignment = 1
 
-[node name="Progress" type="ProgressBar" parent="Center/VBox"]
+[node name="Progress" type="ProgressBar" parent="Center/VBox" unique_id=176256852]
 custom_minimum_size = Vector2(280, 12)
 layout_mode = 2
 show_percentage = false
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-&"": SubResource("AnimationLibrary_boot")
-}
-autoplay = "pulse"
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1627657102]
+libraries/ = SubResource("AnimationLibrary_boot")
+autoplay = &"pulse"

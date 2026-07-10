@@ -262,7 +262,7 @@ assert(uiEventsJs.includes('setPointerCapture'), 'grid captures pointer during d
 
 const gridRenderJs = readFileSync(join(root, 'js/game/grid/grid-render.js'), 'utf8');
 assert(gridRenderJs.includes('tile--largest'), 'grid render marks largest tile');
-assert(gridRenderJs.includes('tile-crown.svg'), 'grid render uses tile crown asset');
+assert(gridRenderJs.includes('tile-crown.png'), 'grid render uses tile crown asset');
 
 const gridCss = readFileSync(join(root, 'css/grid.css'), 'utf8');
 assert(gridCss.includes('.tile--largest'), 'grid css styles largest tile crown');

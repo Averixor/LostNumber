@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://boyv8yigdh5kx"
+path="res://.godot/imported/Neon Drift.mp3-28855fc59188a4fdb7ac4275afab3934.mp3str"
+
+[deps]
+
+source_file="res://assets/audio/music/Neon Drift.mp3"
+dest_files=["res://.godot/imported/Neon Drift.mp3-28855fc59188a4fdb7ac4275afab3934.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -65,10 +65,12 @@ func _build_grid() -> void:
 			col.append(tile)
 		_tiles.append(col)
 	_chain_layer = CHAIN_SCENE.instantiate()
-	_chain_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_chain_layer.size = custom_minimum_size
+	# FULL_RECT fills the board after layout; do not set size (non-equal anchors).
+	_chain_layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	# z_index=1: above tile faces, below labels (Tile sets Label z_index=3).
 	add_child(_chain_layer)
 	if _preview_bubble != null:
+		_preview_bubble.z_index = 10
 		move_child(_preview_bubble, get_child_count() - 1)
 
 
@@ -108,6 +110,7 @@ func _build_preview_bubble() -> void:
 	_preview_vbox.add_child(_preview_sum_label)
 	_preview_vbox.add_child(_preview_status_label)
 	_preview_bubble.add_child(_preview_vbox)
+	_preview_bubble.z_index = 10
 	add_child(_preview_bubble)
 	_sync_preview_bubble_metrics()
 
@@ -201,8 +204,15 @@ func update_preview_bubble(can_finish: bool, follow_local: Vector2 = Vector2.INF
 
 	var total: int = Rules.chain_sum(numbers)
 	var total_text := state.format_value(total)
-	var is_ok := can_finish and state.selected_path.size() >= 2
-	var accent: Color = _theme_chain_valid_color() if is_ok else _theme_chain_invalid_color()
+	var path_len := state.selected_path.size()
+	var is_ok := can_finish and path_len >= 2
+	var accent: Color
+	if path_len < 2:
+		accent = _theme_chain_continue_color()
+	elif is_ok:
+		accent = _theme_chain_valid_color()
+	else:
+		accent = _theme_chain_invalid_color()
 
 	if _preview_status_label != null:
 		_preview_status_label.text = ""
@@ -211,16 +221,18 @@ func update_preview_bubble(can_finish: bool, follow_local: Vector2 = Vector2.INF
 	if _preview_sum_label != null:
 		_preview_sum_label.text = total_text
 		_preview_sum_label.add_theme_font_size_override("font_size", _tile_font_size_for_text(total_text))
-		_preview_sum_label.add_theme_color_override("font_color", accent.lightened(0.18))
+		_preview_sum_label.add_theme_color_override("font_color", ThemeTokensLib.COLOR_TEXT)
+		_preview_sum_label.add_theme_constant_override("outline_size", 2)
+		_preview_sum_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.55))
 
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(accent, 0.05)
+	style.bg_color = Color(ThemeTokensLib.BG_PRIMARY, 0.92)
 	style.border_color = accent
-	style.set_border_width_all(1)
+	style.set_border_width_all(2)
 	style.set_content_margin_all(8)
 	style.set_corner_radius_all(ThemeTokensLib.RADIUS_BUTTON)
-	style.shadow_color = Color(accent, 0.30)
-	style.shadow_size = 12
+	style.shadow_color = Color(0, 0, 0, 0.55)
+	style.shadow_size = 10
 	_preview_bubble.add_theme_stylebox_override("panel", style)
 
 	_sync_preview_bubble_metrics()
@@ -662,10 +674,14 @@ func _update_chain_visual() -> void:
 			old_tile.set_chain_selected(false)
 			old_tile.set_pressed_visual(false)
 
+	var path_len := state.selected_path.size()
 	for p in state.selected_path:
 		var tile: TileView = _tiles[p.x][p.y] as TileView
-		tile.set_chain_selected(false)
-		tile.set_pressed_visual(false)
+		var preview := "continue"
+		if path_len >= 2:
+			preview = "valid" if can_finish else "invalid"
+		tile.set_chain_selected(true, preview)
+		tile.set_pressed_visual(true)
 
 	_highlighted_cells = next
 	chain_updated.emit(can_finish)
@@ -684,4 +700,7 @@ func _update_chain_visual() -> void:
 	for p in state.selected_path:
 		pts.append(_cell_center(p))
 
-	_chain_layer.set_chain_points(pts, can_finish and state.selected_path.size() >= 2)
+	var line_state := "continue"
+	if path_len >= 2:
+		line_state = "valid" if can_finish else "invalid"
+	_chain_layer.set_chain_points(pts, line_state)

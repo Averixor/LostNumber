@@ -1,0 +1,14 @@
+[config]
+
+name="LostNumberMigration"
+binary_type="local"
+binary="LostNumberMigrationPlugin/LostNumberMigrationPlugin-release.aar"
+
+[dependencies]
+
+local=["LostNumberMigrationPlugin/LostNumberMigrationPlugin-release.aar"]
+
+[android]
+
+min_sdk="24"
+target_sdk="35"

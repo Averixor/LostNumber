@@ -1,0 +1,148 @@
+[gd_scene load_steps=3 format=3 uid="uid://game_hud_component"]
+
+[ext_resource type="Script" path="res://scripts/ui/GameHud.gd" id="1_hud"]
+[ext_resource type="PackedScene" uid="uid://neonbutton001" path="res://scenes/components/NeonButton.tscn" id="2_neon"]
+
+[node name="GameHud" type="VBoxContainer"]
+theme_override_constants/separation = 6
+alignment = 1
+script = ExtResource("1_hud")
+
+[node name="TopBar" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="MenuButton" type="Button" parent="TopBar"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+
+[node name="LevelLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+text = "Рівень 1"
+
+[node name="TopSpacer" type="Control" parent="TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SaveButton" type="Button" parent="TopBar"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+
+[node name="SoundButton" type="Button" parent="TopBar"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+
+[node name="ThemeButton" type="Button" parent="TopBar"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+
+[node name="SaveIndicator" type="Label" parent="TopBar"]
+visible = false
+layout_mode = 2
+
+[node name="GoalRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="GoalPanel" type="PanelContainer" parent="GoalRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GoalHBox" type="VBoxContainer" parent="GoalRow/GoalPanel"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="GoalLabel" type="Label" parent="GoalRow/GoalPanel/GoalHBox"]
+layout_mode = 2
+text = "Ціль: 0/64"
+
+[node name="XpRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="XpPanel" type="PanelContainer" parent="XpRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="XpHBox" type="VBoxContainer" parent="XpRow/XpPanel"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="XpLabel" type="Label" parent="XpRow/XpPanel/XpHBox"]
+layout_mode = 2
+text = "XP: 0"
+
+[node name="BonusBar" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="ExplosionButton" parent="BonusBar" instance=ExtResource("2_neon")]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Вибух"
+
+[node name="ExplosionBadge" type="Label" parent="BonusBar/ExplosionButton"]
+layout_mode = 0
+offset_left = -8.0
+offset_top = -4.0
+offset_right = 16.0
+offset_bottom = 14.0
+theme_override_font_sizes/font_size = 10
+text = "0"
+horizontal_alignment = 1
+
+[node name="ShuffleButton" parent="BonusBar" instance=ExtResource("2_neon")]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Перемішати"
+
+[node name="ShuffleBadge" type="Label" parent="BonusBar/ShuffleButton"]
+layout_mode = 0
+offset_left = -8.0
+offset_top = -4.0
+offset_right = 16.0
+offset_bottom = 14.0
+theme_override_font_sizes/font_size = 10
+text = "0"
+horizontal_alignment = 1
+
+[node name="DestroyButton" parent="BonusBar" instance=ExtResource("2_neon")]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Розбити"
+
+[node name="DestroyBadge" type="Label" parent="BonusBar/DestroyButton"]
+layout_mode = 0
+offset_left = -8.0
+offset_top = -4.0
+offset_right = 16.0
+offset_bottom = 14.0
+theme_override_font_sizes/font_size = 10
+text = "0"
+horizontal_alignment = 1
+
+[node name="BottomStrip" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="BottomHBox" type="HBoxContainer" parent="BottomStrip"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="ChainSumLabel" type="Label" parent="BottomStrip/BottomHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+
+[node name="MessageLabel" type="Label" parent="BottomStrip/BottomHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 2
+autowrap_mode = 2
