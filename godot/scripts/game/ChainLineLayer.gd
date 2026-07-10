@@ -56,9 +56,11 @@ func _draw() -> void:
 		return
 
 	var pulse_boost := 0.08 * sin(_pulse)
-	var outer := Color(_line_color, 0.22 + pulse_boost)
-	var mid := Color(_line_color, 0.48 + pulse_boost)
-	var core := Color(_line_color, 0.95)
+	# Dark understroke keeps the neon line readable on green tiles.
+	draw_polyline(_points, Color(0.02, 0.02, 0.06, 0.82), STROKE_GLOW_OUTER + 4.0, true)
+	var outer := Color(_line_color, 0.28 + pulse_boost)
+	var mid := Color(_line_color, 0.58 + pulse_boost)
+	var core := Color(_line_color.lightened(0.42), 0.98)
 
 	draw_polyline(_points, outer, STROKE_GLOW_OUTER, true)
 	draw_polyline(_points, mid, STROKE_GLOW_MID, true)

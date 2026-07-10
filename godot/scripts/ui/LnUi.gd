@@ -447,8 +447,8 @@ static func hud_panel() -> StyleBoxFlat:
 
 
 static func chain_sum_panel(valid: bool) -> StyleBoxFlat:
-	var accent := VALID if valid else INVALID
-	var sb := glass_box(8, 1, Color(accent, 0.05), accent, Color(accent, 0.28), 12)
+	var accent := VALID if valid else CYAN
+	var sb := glass_box(8, 2, Color(BG_DARK, 0.92), accent, Color(0, 0, 0, 0.45), 10)
 	sb.content_margin_left = 12
 	sb.content_margin_right = 12
 	sb.content_margin_top = 10

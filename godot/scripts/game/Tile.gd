@@ -145,10 +145,8 @@ func set_value(number: int) -> void:
 
 
 func set_chain_selected(selected: bool, preview: String = "") -> void:
-	_selected = false
-	_chain_preview = ""
-	if _chain_highlight != null:
-		_chain_highlight.visible = false
+	_selected = selected
+	_chain_preview = preview if selected else ""
 	_refresh_visual()
 
 func set_pressed_visual(pressed: bool) -> void:
@@ -230,7 +228,7 @@ func _refresh_visual() -> void:
 		face_color = ThemeTokensLib.TILE_FROZEN_BG
 	elif _bonus_mode:
 		face_color = ThemeTokensLib.COLOR_PREVIEW_INVALID.lightened(0.05)
-	elif _selected and not _chain_preview.is_empty():
+	elif _selected and (_chain_preview == "valid" or _chain_preview == "invalid"):
 		face_color = _chain_face_color(_chain_preview)
 	else:
 		face_color = _color_for_value(value)
@@ -270,6 +268,8 @@ func _refresh_visual() -> void:
 		panel_style.shadow_color = Color(border_color, 0.35)
 		panel_style.shadow_size = 6
 		_chain_highlight.add_theme_stylebox_override("panel", panel_style)
+		if _chain_fill != null:
+			_chain_fill.color = Color(border_color, 0.12)
 	queue_redraw()
 
 

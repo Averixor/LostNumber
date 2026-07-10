@@ -275,14 +275,13 @@ func update_chain_sum(state: GameState, can_finish: bool, dragging: bool = false
 		numbers.append(state.board.grid[p.x][p.y])
 	var total := RulesLib.chain_sum(numbers)
 	var is_ok := can_finish and state.selected_path.size() >= 2
-	var accent := ThemeTokensLib.COLOR_PREVIEW_VALID if is_ok else ThemeTokensLib.COLOR_CHAIN_CONTINUE
 
 	bottom_strip.visible = true
 	bottom_strip.add_theme_stylebox_override("panel", LnUiLib.chain_sum_panel(is_ok))
 	chain_sum_label.text = state.format_value(total)
-	chain_sum_label.add_theme_color_override("font_color", accent)
+	chain_sum_label.add_theme_color_override("font_color", ThemeTokensLib.COLOR_TEXT)
 	chain_sum_label.add_theme_constant_override("outline_size", 2)
-	chain_sum_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.45))
+	chain_sum_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.55))
 
 	if _i18n_t.is_valid():
 		if is_ok:
