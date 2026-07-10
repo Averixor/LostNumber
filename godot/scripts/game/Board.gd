@@ -65,8 +65,8 @@ func _build_grid() -> void:
 			col.append(tile)
 		_tiles.append(col)
 	_chain_layer = CHAIN_SCENE.instantiate()
-	_chain_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_chain_layer.size = custom_minimum_size
+	# FULL_RECT fills the board after layout; do not set size (non-equal anchors).
+	_chain_layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	# z_index=1: above tile faces, below labels (Tile sets Label z_index=3).
 	add_child(_chain_layer)
 	if _preview_bubble != null:
