@@ -27,20 +27,20 @@ Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`, 
 
 ## Decisions table
 
-| Topic                | Canonical choice                                                                                                                   | Verify in code                                          |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| **Ship target**      | Godot 4.5 Android AAB → Google Play (`npm run godot:android:release`)                                                              | `scripts/godot-android-export.sh`, `export_presets.cfg` |
-| **Web / Capacitor**  | Visual reference + legacy; **not** primary Play path                                                                               | `js/`, `android/`, `index.html`                         |
-| **Entry flow**       | `Boot.tscn` → `App.tscn` → screens via `ScreenRouter` autoload                                                                     | `project.godot`, `ScreenRouter.gd`                      |
-| **Autoloads**        | SaveManager, SettingsManager, AudioManager, I18nManager, ThemeManager, LeaderboardService, ScreenRouter, LegacySaveMigration       | `project.godot` `[autoload]`                            |
-| **Save**             | `user://` envelope v1 + SHA-256 + `.bak`; legacy import via `LegacySaveMigration`                                                  | `SaveManager.gd`, `LegacySaveMigration.gd`              |
-| **i18n**             | uk / ru / en — **285 keys** each                                                                                                   | `godot/assets/i18n/*.json`, `run_i18n_tests.gd`         |
-| **Levels**           | First **40** configs algorithmically generated at init (`_generate_manual_levels(40)`); from index 40+ separate procedural branch  | `LevelManager.gd`                                       |
+| Topic                | Canonical choice                                                                                                                               | Verify in code                                          |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| **Ship target**      | Godot 4.5 Android AAB → Google Play (`npm run godot:android:release`)                                                                          | `scripts/godot-android-export.sh`, `export_presets.cfg` |
+| **Web / Capacitor**  | Visual reference + legacy; **not** primary Play path                                                                                           | `js/`, `android/`, `index.html`                         |
+| **Entry flow**       | `Boot.tscn` → `App.tscn` → screens via `ScreenRouter` autoload                                                                                 | `project.godot`, `ScreenRouter.gd`                      |
+| **Autoloads**        | SaveManager, SettingsManager, AudioManager, I18nManager, ThemeManager, LeaderboardService, ScreenRouter, LegacySaveMigration                   | `project.godot` `[autoload]`                            |
+| **Save**             | `user://` envelope v1 + SHA-256 + `.bak`; legacy import via `LegacySaveMigration`                                                              | `SaveManager.gd`, `LegacySaveMigration.gd`              |
+| **i18n**             | uk / ru / en — **285 keys** each                                                                                                               | `godot/assets/i18n/*.json`, `run_i18n_tests.gd`         |
+| **Levels**           | First **40** configs algorithmically generated at init (`_generate_manual_levels(40)`); from index 40+ separate procedural branch              | `LevelManager.gd`                                       |
 | **Visual authority** | **PO mockups + [VISUAL_TARGET.md](./VISUAL_TARGET.md)** = acceptance; gothic fantasy integration over flat neon; web = legacy parity reference | `VISUAL_TARGET.md`, `godot/docs/VISUAL_PORT_MAP.md`     |
-| **Legacy import UI** | Settings **Import** button is a stub (`settings_import_legacy_none` only); startup migration + `LegacySaveMigration` autoload work | `Settings.gd`, `LegacySaveMigration.gd`, `Boot.gd`      |
-| **CI**               | `release:check` only on push/PR; `godot:test:all` **local only**                                                                   | `.github/workflows/ci.yml`                              |
-| **Network**          | None — fully offline                                                                                                               | —                                                       |
-| **Cloud / Firebase** | Phase 6 — not started                                                                                                              | `docs/PHASES.md`                                        |
+| **Legacy import UI** | Settings **Import** button is a stub (`settings_import_legacy_none` only); startup migration + `LegacySaveMigration` autoload work             | `Settings.gd`, `LegacySaveMigration.gd`, `Boot.gd`      |
+| **CI**               | `release:check` only on push/PR; `godot:test:all` **local only**                                                                               | `.github/workflows/ci.yml`                              |
+| **Network**          | None — fully offline                                                                                                                           | —                                                       |
+| **Cloud / Firebase** | Phase 6 — not started                                                                                                                          | `docs/PHASES.md`                                        |
 
 ## Build commands (by role)
 
@@ -54,27 +54,27 @@ Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`, 
 
 ## Doc index — which doc is authoritative for what
 
-| Question                                             | Authoritative doc                                               |
-| ---------------------------------------------------- | --------------------------------------------------------------- |
-| **This file** — decisions, version, doc roles        | `docs/en/SOURCE_OF_TRUTH.md`                                    |
-| Game rules (chain, merge, XP)                        | `godot/docs/GAME_RULES.md` + `docs/en/GAME.md`                  |
-| Endless progression (40 + procedural)                | `godot/docs/GAME_RULES.md`, `LevelManager.gd`                   |
-| Architecture, autoloads, repo layout                 | `docs/en/ARCHITECTURE.md`                                       |
-| Accepted decisions (save, i18n, screens, compliance) | `docs/en/DECISIONS.md`                                          |
-| Release / Play Console checklists                    | `docs/en/RELEASE.md`, `HANDOFF-IDEAL.md`                        |
-| JS → Godot parity checklist                          | `godot/docs/MIGRATION_FROM_JS.md`, `docs/en/MIGRATION_GODOT.md` |
+| Question                                                  | Authoritative doc                                               |
+| --------------------------------------------------------- | --------------------------------------------------------------- |
+| **This file** — decisions, version, doc roles             | `docs/en/SOURCE_OF_TRUTH.md`                                    |
+| Game rules (chain, merge, XP)                             | `godot/docs/GAME_RULES.md` + `docs/en/GAME.md`                  |
+| Endless progression (40 + procedural)                     | `godot/docs/GAME_RULES.md`, `LevelManager.gd`                   |
+| Architecture, autoloads, repo layout                      | `docs/en/ARCHITECTURE.md`                                       |
+| Accepted decisions (save, i18n, screens, compliance)      | `docs/en/DECISIONS.md`                                          |
+| Release / Play Console checklists                         | `docs/en/RELEASE.md`, `HANDOFF-IDEAL.md`                        |
+| JS → Godot parity checklist                               | `godot/docs/MIGRATION_FROM_JS.md`, `docs/en/MIGRATION_GODOT.md` |
 | **Visual north star** (mockups, gaps, per-screen targets) | `docs/en/VISUAL_TARGET.md`                                      |
-| Web → Godot visual port status                       | `godot/docs/VISUAL_PORT_MAP.md`                                 |
-| Android export, signing, presets                     | `godot/docs/ANDROID_RELEASE_READINESS.md`                       |
-| Legacy save import                                   | `godot/docs/LEGACY_SAVE_MIGRATION.md`                           |
-| Folder map (uk)                                      | `PROJECT_STRUCTURE.md`                                          |
-| Doc navigator (uk)                                   | `docs/README.md`                                                |
-| English doc index                                    | `docs/en/README.md`                                             |
-| Production handoff                                   | `HANDOFF-IDEAL.md`                                              |
-| Godot quick start                                    | `godot/README.md`                                               |
-| Web quick start (secondary)                          | root `README.md`                                                |
-| Performance / Firebase phases                        | `docs/PHASES.md`                                                |
-| Capacitor Android (legacy)                           | `docs/ANDROID.md`, `docs/PLAY_STORE.md`                         |
+| Web → Godot visual port status                            | `godot/docs/VISUAL_PORT_MAP.md`                                 |
+| Android export, signing, presets                          | `godot/docs/ANDROID_RELEASE_READINESS.md`                       |
+| Legacy save import                                        | `godot/docs/LEGACY_SAVE_MIGRATION.md`                           |
+| Folder map (uk)                                           | `PROJECT_STRUCTURE.md`                                          |
+| Doc navigator (uk)                                        | `docs/README.md`                                                |
+| English doc index                                         | `docs/en/README.md`                                             |
+| Production handoff                                        | `HANDOFF-IDEAL.md`                                              |
+| Godot quick start                                         | `godot/README.md`                                               |
+| Web quick start (secondary)                               | root `README.md`                                                |
+| Performance / Firebase phases                             | `docs/PHASES.md`                                                |
+| Capacitor Android (legacy)                                | `docs/ANDROID.md`, `docs/PLAY_STORE.md`                         |
 
 ## Known risks and audits
 

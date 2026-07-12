@@ -85,13 +85,13 @@ XP multiplier charm emblem, no literal text characters
 
 ## Sector → file mapping (wheel order, clockwise from top)
 
-| Sector index | Type | File |
-|-------------:|------|------|
-| 0 | +25 XP | `wheel-xp-25.png` (source `4-transparent.png`) |
-| 1 | +50 XP | `wheel-xp-50.png` (source `5-transparent.png`) |
-| 2 | +75 XP | `wheel-xp-75.png` (source `6-transparent.png`) |
-| 3 | +100 XP | `wheel-xp-100.png` (source `7-transparent.png`) |
-| 4 | ×2 XP | `wheel-x2.png` (source `8-transparent.png`) |
-| 5 | Explosion 3×3 | `wheel-explosion.png` (source `1-transparent.png`) |
-| 6 | Shuffle | `wheel-shuffle.png` (source `2-transparent.png`) |
-| 7 | Break / Destroy | `wheel-break.png` (source `3-transparent.png`) |
+| Sector index | Type            | File                                               |
+| -----------: | --------------- | -------------------------------------------------- |
+|            0 | +25 XP          | `wheel-xp-25.png` (source `4-transparent.png`)     |
+|            1 | +50 XP          | `wheel-xp-50.png` (source `5-transparent.png`)     |
+|            2 | +75 XP          | `wheel-xp-75.png` (source `6-transparent.png`)     |
+|            3 | +100 XP         | `wheel-xp-100.png` (source `7-transparent.png`)    |
+|            4 | ×2 XP           | `wheel-x2.png` (source `8-transparent.png`)        |
+|            5 | Explosion 3×3   | `wheel-explosion.png` (source `1-transparent.png`) |
+|            6 | Shuffle         | `wheel-shuffle.png` (source `2-transparent.png`)   |
+|            7 | Break / Destroy | `wheel-break.png` (source `3-transparent.png`)     |
