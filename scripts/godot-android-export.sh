@@ -23,9 +23,22 @@ GODOT_VERSION="$("$GODOT_BIN" --version | head -1 | awk '{print $1}')"
 # Snap reports e.g. 4.5.stable.official.876b29033 — templates use 4.5-stable
 TEMPLATE_VERSION="$(echo "$GODOT_VERSION" | sed -E 's/^([0-9]+\.[0-9]+)\..*/\1-stable/')"
 
+# Godot export compares android/.build_version to GODOT_VERSION_FULL_CONFIG
+# (e.g. 4.7.stable), not the --version FULL_BUILD string (e.g. .official.* / .flathub.*).
+_android_build_version() {
+  local v="$1"
+  v="${v%%.official*}"
+  v="${v%%.flathub*}"
+  v="${v%%.custom*}"
+  echo "$v"
+}
+
+ANDROID_BUILD_VERSION="$(_android_build_version "$GODOT_VERSION")"
+
 _resolve_template_dir() {
   local candidates=(
     "${XDG_DATA_HOME:-$HOME/.local/share}/godot/export_templates/${GODOT_VERSION}"
+    "$HOME/.var/app/org.godotengine.Godot/data/godot/export_templates/${GODOT_VERSION}"
     "$HOME/snap/godot4/common/.local/share/godot/export_templates/${GODOT_VERSION}"
     "$HOME/snap/godot4/current/.local/share/godot/export_templates/${GODOT_VERSION}"
   )
@@ -84,7 +97,9 @@ if [[ ! -f "$GODOT_DIR/android/build/build.gradle" ]]; then
     "$HOME/snap/godot4/common/.local/share/godot/export_templates/${GODOT_VERSION}/templates/android_source.zip" \
     "$HOME/snap/godot4/10/.local/share/godot/export_templates/4.5.stable/android_source.zip" \
     "${XDG_DATA_HOME:-$HOME/.local/share}/godot/export_templates/${GODOT_VERSION}/android_source.zip" \
-    "${XDG_DATA_HOME:-$HOME/.local/share}/godot/export_templates/${GODOT_VERSION}/templates/android_source.zip"; do
+    "${XDG_DATA_HOME:-$HOME/.local/share}/godot/export_templates/${GODOT_VERSION}/templates/android_source.zip" \
+    "$HOME/.var/app/org.godotengine.Godot/data/godot/export_templates/${GODOT_VERSION}/android_source.zip" \
+    "$HOME/.var/app/org.godotengine.Godot/data/godot/export_templates/${GODOT_VERSION}/templates/android_source.zip"; do
     if [[ -f "$candidate" ]]; then
       TEMPLATE_ZIP="$candidate"
       break
@@ -94,10 +109,14 @@ if [[ ! -f "$GODOT_DIR/android/build/build.gradle" ]]; then
     mkdir -p "$GODOT_DIR/android/build" "$GODOT_DIR/android/plugins"
     unzip -qo "$TEMPLATE_ZIP" -d "$GODOT_DIR/android/build"
     chmod +x "$GODOT_DIR/android/build/gradlew" 2>/dev/null || true
-    echo "${GODOT_VERSION%%.official*}" > "$GODOT_DIR/android/.build_version"
+    echo "$ANDROID_BUILD_VERSION" > "$GODOT_DIR/android/.build_version"
   else
     "$GODOT_BIN" --path "$GODOT_DIR" --headless --install-android-build-template
   fi
+fi
+
+if [[ -f "$GODOT_DIR/android/build/build.gradle" ]]; then
+  echo "$ANDROID_BUILD_VERSION" > "$GODOT_DIR/android/.build_version"
 fi
 
 if [[ ! -x "$HOME/Android/jbr/bin/java" && -x /opt/android-studio/jbr/bin/java ]]; then
