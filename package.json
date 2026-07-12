@@ -59,7 +59,7 @@
     "godot:test:save": "godot4 --path godot --headless --script res://scripts/tests/run_save_tests.gd",
     "godot:test:smoke": "godot4 --path godot --headless --script res://scripts/tests/run_smoke_tests.gd",
     "godot:test:levels": "godot4 --path godot --headless --script res://scripts/tests/run_level_manager_tests.gd",
-    "godot:test:all": "npm run godot:test && npm run godot:test:levels && npm run godot:test:save && npm run godot:test:smoke && npm run godot:test:i18n",
+    "godot:test:all": "npm run godot:import && npm run godot:test && npm run godot:test:levels && npm run godot:test:save && npm run godot:test:smoke && npm run godot:test:i18n",
     "godot:test:i18n": "godot4 --path godot --headless --script res://scripts/tests/run_i18n_tests.gd",
     "godot:verify:aab": "bash ./scripts/verify-godot-aab.sh",
     "godot:android:debug": "bash ./scripts/godot-android-export.sh debug",

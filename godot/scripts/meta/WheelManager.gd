@@ -3,19 +3,19 @@ class_name WheelManager
 
 const BASE_COST := 25
 const STEP_COST := 10
-const FREE_SPINS := 5
+const BASE_COST_SPINS := 5
 const MAX_DAILY_SPINS := 20
 const SPIN_DURATION_SEC := 3.1
 
 const SECTORS := [
-	{"id": 0, "type": "xp25", "label": "25 XP", "effect": "xp", "value": 25, "message_key": "wheel_xp_plus"},
-	{"id": 1, "type": "xp50", "label": "50 XP", "effect": "xp", "value": 50, "message_key": "wheel_xp_plus"},
-	{"id": 2, "type": "xp75", "label": "75 XP", "effect": "xp", "value": 75, "message_key": "wheel_xp_plus"},
-	{"id": 3, "type": "xp100", "label": "100 XP", "effect": "xp", "value": 100, "message_key": "wheel_xp_plus"},
-	{"id": 4, "type": "xp_multiplier", "label": "×2 XP", "effect": "multiplier", "value": 5, "message_key": "wheel_xp_multiplier", "multiplier": 2, "turns": 3},
-	{"id": 5, "type": "explosion", "label": "3×3", "effect": "bonus", "value": "explosion", "message_key": "wheel_bonus_explosion_added"},
-	{"id": 6, "type": "shuffle", "label": "Мікс", "effect": "bonus", "value": "shuffle", "message_key": "wheel_bonus_shuffle_added"},
-	{"id": 7, "type": "destroy", "label": "Розбити", "effect": "bonus", "value": "destroy", "message_key": "wheel_bonus_destroy_added"},
+	{"id": 0, "type": "xp25", "label_key": "wheel_xp_25", "effect": "xp", "value": 25, "message_key": "wheel_xp_plus"},
+	{"id": 1, "type": "xp50", "label_key": "wheel_xp_50", "effect": "xp", "value": 50, "message_key": "wheel_xp_plus"},
+	{"id": 2, "type": "xp75", "label_key": "wheel_xp_75", "effect": "xp", "value": 75, "message_key": "wheel_xp_plus"},
+	{"id": 3, "type": "xp100", "label_key": "wheel_xp_100", "effect": "xp", "value": 100, "message_key": "wheel_xp_plus"},
+	{"id": 4, "type": "xp_multiplier", "label_key": "wheel_sector_xp_multiplier", "effect": "multiplier", "value": 5, "message_key": "wheel_xp_multiplier", "multiplier": 2, "turns": 3},
+	{"id": 5, "type": "explosion", "label_key": "wheel_sector_explosion", "effect": "bonus", "value": "explosion", "message_key": "wheel_bonus_explosion_added"},
+	{"id": 6, "type": "shuffle", "label_key": "wheel_sector_shuffle", "effect": "bonus", "value": "shuffle", "message_key": "wheel_bonus_shuffle_added"},
+	{"id": 7, "type": "destroy", "label_key": "wheel_sector_destroy", "effect": "bonus", "value": "destroy", "message_key": "wheel_bonus_destroy_added"},
 ]
 
 var state: GameState
@@ -32,9 +32,9 @@ func check_daily_reset() -> void:
 
 func get_cost() -> int:
 	check_daily_reset()
-	if state.wheel_spins_today < FREE_SPINS:
+	if state.wheel_spins_today < BASE_COST_SPINS:
 		return BASE_COST
-	return BASE_COST + (state.wheel_spins_today - FREE_SPINS) * STEP_COST
+	return BASE_COST + (state.wheel_spins_today - BASE_COST_SPINS) * STEP_COST
 
 func can_spin() -> Dictionary:
 	check_daily_reset()

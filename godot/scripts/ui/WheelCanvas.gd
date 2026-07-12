@@ -108,7 +108,7 @@ func _draw() -> void:
 
 
 func _sector_label(sector: Dictionary) -> String:
-	var key := str(sector.get("message_key", ""))
+	var key := str(sector.get("label_key", sector.get("message_key", "")))
 	if not key.is_empty():
 		var i18n := get_node_or_null("/root/I18nManager")
 		if i18n != null and i18n.has_method("t"):
@@ -132,10 +132,8 @@ func _compact_wheel_label(text: String, sector: Dictionary) -> String:
 		match str(sector.get("value", "")):
 			"explosion":
 				return "3×3"
-			"destroy":
-				return "Розбити"
-			"shuffle":
-				return "Мікс"
+			"destroy", "shuffle":
+				return text
 	return text
 
 

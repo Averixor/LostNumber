@@ -18,6 +18,7 @@ const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 var _state: GameState
 var _wheel: WheelManager
 var _daily: DailyQuestManager
+var _invalid_session := false
 
 func _autoload(name: String) -> Node:
 	return get_node_or_null("/root/" + name)
@@ -63,6 +64,11 @@ func _ready() -> void:
 	LnUiLib.apply_button_icon(result_close, "close.svg")
 
 	_state = _load_state()
+	if _state == null:
+		_invalid_session = true
+		_disable_invalid_session()
+		call_deferred("_leave_invalid_session")
+		return
 	_wheel = WheelManager.new(_state)
 	_daily = DailyQuestManager.new(_state)
 	_daily.ensure_loaded()
@@ -75,13 +81,16 @@ func _animate_entrance() -> void:
 
 
 func _refresh_ui() -> void:
+	if _invalid_session or _state == null or _wheel == null:
+		_disable_invalid_session()
+		return
 	cost_label.add_theme_color_override("font_color", LnUiLib.TEXT_MUTED)
 	cost_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_SMALL)
 	var cost := _wheel.get_cost()
 	var check := _wheel.can_spin()
 	spin_button.disabled = not check.ok or wheel_canvas.is_spinning()
-	if not check.ok and str(check.get("reason", "")) == "not_enough_xp":
-		spin_button.text = _i18n("dice_not_enough")
+	if not check.ok:
+		spin_button.text = _wheel_error_text(str(check.get("reason", "")))
 	else:
 		spin_button.text = _i18n("btn_spin_wheel", [cost])
 	if ResourceLoader.exists(LnUiLib.icon_path("reward-xp.svg")):
@@ -94,9 +103,12 @@ func _refresh_ui() -> void:
 
 func _on_spin() -> void:
 	_play_sfx("button_click")
+	if _invalid_session or _wheel == null:
+		_show_message(_i18n("wheel_no_save"))
+		return
 	var prep := _wheel.prepare_spin()
 	if not prep.ok:
-		_show_result(_i18n("dice_not_enough"))
+		_show_message(_wheel_error_text(str(prep.get("reason", ""))))
 		_refresh_ui()
 		return
 	_play_sfx("wheel_spin")
@@ -106,13 +118,17 @@ func _on_spin() -> void:
 	await wheel_canvas.animate_to_sector(int(prep.index), WheelManager.SPIN_DURATION_SEC)
 
 func _on_spin_animation_done(sector: Dictionary, _index: int) -> void:
+	if _invalid_session or _state == null or _wheel == null or _daily == null:
+		return
 	_wheel.finish_spin(sector)
 	_daily.on_wheel_spun()
 	_play_sfx("wheel_reward")
-	_show_result("%s %s" % [_i18n("wheel_win_prefix"), str(sector.get("label", ""))])
+	_show_result(_sector_label(sector))
 	var save := _autoload("SaveManager")
 	if save != null and save.has_method("save_game"):
-		save.call("save_game", _state)
+		var saved := bool(save.call("save_game", _state))
+		if not saved:
+			push_warning("Wheel: failed to save wheel result")
 	_refresh_ui()
 
 func _style_result_modal() -> void:
@@ -144,6 +160,16 @@ func _show_result(text: String) -> void:
 	tween.tween_property(result_card, "scale", Vector2.ONE, 0.16).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tween.tween_property(result_card, "modulate:a", 1.0, 0.16)
 
+func _show_message(text: String) -> void:
+	result_label.text = text
+	result_label.add_theme_color_override("font_color", LnUiLib.TEXT)
+	result_panel.visible = true
+	result_card.scale = Vector2(0.92, 0.92)
+	result_card.modulate.a = 0.0
+	var tween := create_tween().set_parallel(true)
+	tween.tween_property(result_card, "scale", Vector2.ONE, 0.16).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(result_card, "modulate:a", 1.0, 0.16)
+
 func _hide_result() -> void:
 	_play_sfx("button_click")
 	result_panel.visible = false
@@ -154,14 +180,45 @@ func _load_state() -> GameState:
 		var loaded = save.call("load_game")
 		if loaded != null:
 			return loaded
-	var state := GameState.new()
-	state.start_new_game()
-	state.xp = 100
-	return state
+	return null
+
+func _disable_invalid_session() -> void:
+	if spin_button != null:
+		spin_button.disabled = true
+		spin_button.text = _i18n("wheel_no_save")
+		LnUiLib.apply_button(spin_button, true)
+	if cost_label != null:
+		cost_label.text = _i18n("wheel_no_save_hint")
+
+func _leave_invalid_session() -> void:
+	if not is_inside_tree():
+		return
+	_navigate_back()
+
+func _wheel_error_text(reason: String) -> String:
+	match reason:
+		"spinning":
+			return _i18n("wheel_error_spinning")
+		"limit":
+			return _i18n("wheel_error_limit")
+		"not_enough_xp":
+			return _i18n("wheel_error_not_enough_xp")
+		_:
+			return _i18n("wheel_error_generic")
+
+func _sector_label(sector: Dictionary) -> String:
+	var key := str(sector.get("label_key", ""))
+	if not key.is_empty():
+		var translated := _i18n(key)
+		if translated != key:
+			return translated
+	return str(sector.get("label", ""))
 
 func _on_back() -> void:
 	var save := _autoload("SaveManager")
-	if save != null and save.has_method("save_game"):
-		save.call("save_game", _state)
+	if _state != null and save != null and save.has_method("save_game"):
+		var saved := bool(save.call("save_game", _state))
+		if not saved:
+			push_warning("Wheel: failed to save before leaving")
 	_play_sfx("button_click")
 	_navigate_back()
