@@ -1,11 +1,25 @@
 extends Control
 class_name WheelCanvas
 
-## Dark-fantasy fortune wheel — muted jewel sectors, bronze/gold rim, text labels only.
+## Dark-fantasy fortune wheel — muted jewel sectors, bronze/gold rim, gothic sector icons.
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 const WheelManagerLib := preload("res://scripts/meta/WheelManager.gd")
+
+const WHEEL_ICON_DIR := "res://assets/ui/icons/wheel/"
+const WHEEL_ICON_SIZE := 36.0
+
+const SECTOR_ICON_FILES := {
+	"xp25": "wheel-xp-25.png",
+	"xp50": "wheel-xp-50.png",
+	"xp75": "wheel-xp-75.png",
+	"xp100": "wheel-xp-100.png",
+	"xp_multiplier": "wheel-x2.png",
+	"explosion": "wheel-explosion.png",
+	"shuffle": "wheel-shuffle.png",
+	"destroy": "wheel-break.png",
+}
 
 signal spin_finished(sector: Dictionary, index: int)
 
@@ -14,8 +28,7 @@ var _spinning := false
 var _wheel_colors: Array[Color] = []
 var _hub_pulse: float = 0.0
 var _highlight_index: int = -1
-
-## Reserved for future gothic icon textures (not drawn yet — text labels only).
+var _sector_textures: Dictionary = {}
 var _sector_icon_slots: Dictionary = {}
 
 
@@ -23,6 +36,7 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	custom_minimum_size = Vector2(300, 300)
 	_refresh_theme_colors()
+	_load_sector_icons()
 	set_process(true)
 
 
@@ -89,8 +103,7 @@ func _draw() -> void:
 		var mid := (start + end) * 0.5
 		var label_pos := center + Vector2(cos(mid), sin(mid)) * radius * 0.66
 		var sector: Dictionary = sectors[i]
-		var label := _sector_label(sector)
-		_draw_sector_label(label_pos, label, mid, i == pointer_index)
+		_draw_sector_content(label_pos, sector, mid, i == pointer_index)
 
 	# Inner vignette
 	draw_arc(center, radius * 0.94, 0.0, TAU, 48, Color(0, 0, 0, 0.38), radius * 0.07, true)
@@ -140,17 +153,62 @@ func _compact_wheel_label(text: String, sector: Dictionary) -> String:
 	return text
 
 
-## Future hook: register a Texture2D for a sector type without drawing neon emblems.
+func _load_sector_icons() -> void:
+	_sector_textures.clear()
+	for sector: Dictionary in WheelManagerLib.SECTORS:
+		var sector_type := str(sector.get("type", ""))
+		var file_name: String = SECTOR_ICON_FILES.get(sector_type, "")
+		if file_name.is_empty():
+			continue
+		var path := WHEEL_ICON_DIR + file_name
+		if not ResourceLoader.exists(path):
+			continue
+		var tex := load(path) as Texture2D
+		if tex != null:
+			_sector_textures[sector_type] = tex
+			_sector_icon_slots[sector_type] = tex
+
+
 func set_sector_icon_slot(sector_type: String, texture: Texture2D) -> void:
 	if texture == null:
 		_sector_icon_slots.erase(sector_type)
+		_sector_textures.erase(sector_type)
 	else:
 		_sector_icon_slots[sector_type] = texture
+		_sector_textures[sector_type] = texture
+	queue_redraw()
 
 
-func _draw_sector_label(pos: Vector2, text: String, angle: float, highlighted: bool) -> void:
+func _draw_sector_content(pos: Vector2, sector: Dictionary, angle: float, highlighted: bool) -> void:
+	var sector_type := str(sector.get("type", ""))
+	var tex: Texture2D = _sector_textures.get(sector_type)
+	if tex != null:
+		_draw_sector_icon(pos, tex, angle, highlighted)
+		var effect := str(sector.get("effect", ""))
+		if effect == "xp":
+			var caption := _compact_wheel_label(_sector_label(sector), sector)
+			var caption_pos := pos + Vector2(0.0, WHEEL_ICON_SIZE * 0.34)
+			_draw_sector_label(caption_pos, caption, angle, highlighted, 10)
+		return
+	var label := _sector_label(sector)
+	_draw_sector_label(pos, label, angle, highlighted)
+
+
+func _draw_sector_icon(pos: Vector2, tex: Texture2D, angle: float, highlighted: bool) -> void:
+	var readable_angle := angle + PI * 0.5
+	if cos(readable_angle) < 0.0:
+		readable_angle += PI
+	var half := WHEEL_ICON_SIZE * 0.5
+	var rect := Rect2(-half, -half, WHEEL_ICON_SIZE, WHEEL_ICON_SIZE)
+	draw_set_transform(pos, readable_angle, Vector2.ONE)
+	var modulate := Color(1.0, 1.0, 1.0, 0.98 if highlighted else 0.9)
+	draw_texture_rect(tex, rect, false, modulate)
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
+func _draw_sector_label(pos: Vector2, text: String, angle: float, highlighted: bool, font_size_override: int = -1) -> void:
 	var font := ThemeDB.fallback_font
-	var font_size := 12 if text.length() > 4 else 15
+	var font_size := font_size_override if font_size_override > 0 else (12 if text.length() > 4 else 15)
 	var text_color := Color(0.96, 0.92, 0.82, 0.98 if highlighted else 0.88)
 	var shadow := Color(0, 0, 0, 0.85)
 	var readable_angle := angle + PI * 0.5
