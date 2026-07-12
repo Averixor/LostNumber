@@ -65,8 +65,8 @@ func _build_grid() -> void:
 			col.append(tile)
 		_tiles.append(col)
 	_chain_layer = CHAIN_SCENE.instantiate()
-	_chain_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_chain_layer.size = custom_minimum_size
+	# FULL_RECT fills the board after layout; do not set size (non-equal anchors).
+	_chain_layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	# z_index=1: above tile faces, below labels (Tile sets Label z_index=3).
 	add_child(_chain_layer)
 	if _preview_bubble != null:
@@ -160,18 +160,27 @@ func refresh_all() -> void:
 	if state == null:
 		return
 
-	var board_max := _board_max_value()
 	_clear_chain_highlights()
+	# Exactly one crown: the first tile whose value matches the carried number.
+	var carry_marked := false
+	var carry_val := state.carry_number
 
 	for x in GRID_W:
 		for y in GRID_H:
 			var value: int = state.board.grid[x][y]
 			var tile: TileView = _tiles[x][y] as TileView
 			tile.set_value(value)
-			tile.set_target_highlight(value > 0 and value == board_max)
+			tile.set_target_highlight(false)
 			tile.set_chain_selected(false)
 			tile.set_bonus_mode(bonus_pick_mode)
-			tile.set_carry(state.carry_number > 0 and value == state.carry_number)
+			var is_carry := (
+				not carry_marked
+				and carry_val > 0
+				and value == carry_val
+			)
+			if is_carry:
+				carry_marked = true
+			tile.set_carry(is_carry)
 	_update_chain_visual()
 	_hide_preview_bubble()
 
@@ -332,6 +341,7 @@ func animate_merge_settle(removed: Array, anchor: Vector2i) -> void:
 	await pop_tween.finished
 
 	var fall_tween := create_tween().set_parallel(true)
+	var fall_count := 0
 	var step_y := cell_size.y + cell_gap
 	for x in GRID_W:
 		if not removed_map.has(x):
@@ -351,8 +361,13 @@ func animate_merge_settle(removed: Array, anchor: Vector2i) -> void:
 			var target_pos := tile.position + Vector2(0.0, float(holes_below) * step_y)
 			fall_tween.tween_property(tile, "position", target_pos, 0.22) \
 				.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+			fall_count += 1
 
-	await fall_tween.finished
+	# Empty parallel tweens never emit finished — hang when only top-row cells fall out.
+	if fall_count > 0:
+		await fall_tween.finished
+	else:
+		fall_tween.kill()
 
 	state.board.apply_gravity()
 	state.board.spawn_new_cells(state.current_level, state.carry_number, state.max_reached_number)

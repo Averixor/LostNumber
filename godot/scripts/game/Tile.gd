@@ -12,12 +12,12 @@ const Z_FACE := 0
 const Z_CROWN := 1
 const Z_SELECTION := 2
 const Z_LABEL := 3
-## Mirrors css/grid.css .tile-crown — small watermark at top, number stays centered.
-const CROWN_SIZE_RATIO := 0.22
-const CROWN_TOP_RATIO := 0.06
-const CROWN_MIN_PX := 11.0
-const CROWN_MAX_PX := 14.0
-const CROWN_WATERMARK_ALPHA := 0.38
+## Carry crown: ~22–24% of cell side, clearly visible above the number.
+const CROWN_SIZE_RATIO := 0.24
+const CROWN_TOP_RATIO := 0.04
+const CROWN_MIN_PX := 16.0
+const CROWN_MAX_PX := 28.0
+const CROWN_WATERMARK_ALPHA := 0.72
 
 @export var cell_size: Vector2 = Vector2(72, 72)
 
@@ -253,10 +253,8 @@ func _refresh_visual() -> void:
 	var face_color: Color
 	if _frozen:
 		face_color = ThemeTokensLib.TILE_FROZEN_BG
-	elif _bonus_mode:
-		face_color = ThemeTokensLib.COLOR_PREVIEW_INVALID.lightened(0.05)
 	else:
-		# Keep value palette; chain state is border + light fill only (no face recolor).
+		# Keep value palette; bonus pick uses outline only (no face recolor).
 		face_color = _color_for_value(value)
 
 	# Darker center + stronger 3D bevel (light top, dark bottom/right).
@@ -278,10 +276,26 @@ func _refresh_visual() -> void:
 	_label.offset_bottom = 0.0
 
 	if _crown_icon != null:
-		_crown_icon.visible = _target and not _frozen and not _bonus_mode
+		# Crown marks the singular carry tile from the previous level — never board-max.
+		_crown_icon.visible = _carry and not _frozen
+		if _crown_icon.visible:
+			_layout_crown_and_label()
 
 	_chain_highlight.visible = false
-	if _selected and not _frozen and not _bonus_mode and not _chain_preview.is_empty():
+	if _bonus_mode and not _frozen:
+		_chain_highlight.visible = true
+		var pick_color := ThemeTokensLib.COLOR_ACCENT_ORANGE
+		var pick_style := StyleBoxFlat.new()
+		pick_style.bg_color = Color(0, 0, 0, 0)
+		pick_style.border_color = Color(pick_color, 0.85)
+		pick_style.set_border_width_all(2)
+		pick_style.set_corner_radius_all(ThemeTokensLib.TILE_INNER_RADIUS)
+		pick_style.shadow_color = Color(pick_color, 0.28)
+		pick_style.shadow_size = 4
+		_chain_highlight.add_theme_stylebox_override("panel", pick_style)
+		if _chain_fill != null:
+			_chain_fill.color = Color(pick_color, 0.08)
+	elif _selected and not _frozen and not _chain_preview.is_empty():
 		_chain_highlight.visible = true
 		var border_color := _chain_border_color(_chain_preview)
 		var panel_style := StyleBoxFlat.new()

@@ -165,12 +165,17 @@ func _panel_stylebox() -> StyleBoxFlat:
 func _style_icon_buttons() -> void:
 	for btn in [menu_button, save_button, sound_button, theme_button]:
 		btn.custom_minimum_size = Vector2(
-			maxf(btn.custom_minimum_size.x, ThemeTokensLib.TOUCH_TARGET_MIN),
-			maxf(btn.custom_minimum_size.y, ThemeTokensLib.TOUCH_TARGET_MIN)
+			float(ThemeTokensLib.TOUCH_TARGET_MIN),
+			float(ThemeTokensLib.TOUCH_TARGET_MIN)
 		)
 		btn.focus_mode = Control.FOCUS_NONE
-		btn.add_theme_constant_override("icon_max_width", 24)
-		btn.add_theme_constant_override("icon_max_height", 24)
+		btn.text = ""
+		btn.expand_icon = true
+		btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		btn.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
+		btn.alignment = HORIZONTAL_ALIGNMENT_CENTER
+		btn.add_theme_constant_override("icon_max_width", 26)
+		btn.add_theme_constant_override("icon_max_height", 26)
 		var normal := StyleBoxFlat.new()
 		normal.bg_color = Color(ThemeTokensLib.COLOR_BTN_BG)
 		normal.set_corner_radius_all(8)
@@ -178,12 +183,14 @@ func _style_icon_buttons() -> void:
 		normal.border_color = ThemeTokensLib.COLOR_BTN_BORDER
 		normal.shadow_color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.18)
 		normal.shadow_size = 6
+		normal.set_content_margin_all(10)
 		btn.add_theme_stylebox_override("normal", normal)
 		var hover := normal.duplicate()
 		hover.bg_color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.16)
 		hover.border_color = ThemeTokensLib.COLOR_SECONDARY
 		btn.add_theme_stylebox_override("hover", hover)
 		btn.add_theme_stylebox_override("pressed", normal.duplicate())
+		btn.add_theme_stylebox_override("focus", normal.duplicate())
 
 
 func _style_badges() -> void:
@@ -226,6 +233,9 @@ func _set_button_icon(button: Button, path: String, clear_text: bool = true) -> 
 	if tex != null:
 		button.icon = tex
 		button.expand_icon = true
+		button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
+		button.alignment = HORIZONTAL_ALIGNMENT_CENTER
 		if clear_text:
 			button.text = ""
 

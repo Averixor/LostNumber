@@ -76,6 +76,7 @@ custom_minimum_size = Vector2(360, 160)
 layout_mode = 2
 
 [node name="LogoGlow" type="TextureRect" parent="Center/VBox/LogoStack" unique_id=465463906]
+visible = false
 modulate = Color(1, 1, 1, 0.55)
 layout_mode = 0
 anchor_left = 0.5
@@ -122,4 +123,3 @@ show_percentage = false
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1627657102]
 libraries/ = SubResource("AnimationLibrary_boot")
-autoplay = &"pulse"
