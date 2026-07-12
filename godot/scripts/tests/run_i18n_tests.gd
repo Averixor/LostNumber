@@ -18,6 +18,7 @@ func _init() -> void:
 	_test_empty_string_valid()
 	_test_key_aliases()
 	_test_achievement_names()
+	_test_title_placeholder()
 
 	if failed > 0:
 		push_error("i18n tests failed: %s" % failed)
@@ -57,6 +58,12 @@ func _test_key_aliases() -> void:
 func _test_achievement_names() -> void:
 	var name := str(_i18n.call("achievement_name", "first_game"))
 	_assert_true(name.length() > 0, "achievement_name first_game")
+
+
+func _test_title_placeholder() -> void:
+	var formatted := str(_i18n.call("t", "achievement_unlocked", ["Перша гра"]))
+	_assert_true("{title}" not in formatted, "achievement_unlocked substitutes {title}")
+	_assert_true("Перша гра" in formatted, "achievement_unlocked includes title value")
 
 
 func _cleanup() -> void:

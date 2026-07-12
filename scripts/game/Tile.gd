@@ -12,12 +12,13 @@ const Z_FACE := 0
 const Z_CROWN := 1
 const Z_SELECTION := 2
 const Z_LABEL := 3
-## Carry crown: ~22–24% of cell side, clearly visible above the number.
-const CROWN_SIZE_RATIO := 0.24
-const CROWN_TOP_RATIO := 0.04
-const CROWN_MIN_PX := 16.0
-const CROWN_MAX_PX := 28.0
-const CROWN_WATERMARK_ALPHA := 0.72
+## Carry crown: ~30% of tile height, centered in the top band above the digit.
+const CROWN_SIZE_RATIO := 0.30
+const CROWN_TOP_BAND_RATIO := 0.34
+const CROWN_MIN_PX := 20.0
+const CROWN_MAX_PX := 56.0
+const CROWN_WATERMARK_ALPHA := 0.92
+const CROWN_LABEL_PUSH_RATIO := 0.16
 
 @export var cell_size: Vector2 = Vector2(72, 72)
 
@@ -147,12 +148,24 @@ func _layout_crown_and_label() -> void:
 
 	var tile_side := minf(cell_size.x, cell_size.y)
 	var crown_side := clampf(tile_side * CROWN_SIZE_RATIO, CROWN_MIN_PX, CROWN_MAX_PX)
-	var crown_top := clampf(tile_side * CROWN_TOP_RATIO, 2.0, 6.0)
+	var top_band := tile_side * CROWN_TOP_BAND_RATIO
+	var crown_top := clampf((top_band - crown_side) * 0.5, 3.0, top_band - crown_side)
 	var crown_size := Vector2(crown_side, crown_side)
 
 	_crown_icon.custom_minimum_size = crown_size
 	_crown_icon.size = crown_size
 	_crown_icon.position = Vector2((cell_size.x - crown_side) * 0.5, crown_top)
+
+	# Push digit slightly down so layout reads as “crown above number”.
+	if _crown_icon.visible:
+		var push := clampf(tile_side * CROWN_LABEL_PUSH_RATIO, 8.0, crown_side * 0.7)
+		_label.offset_top = push
+		_label.offset_bottom = 0.0
+		_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	else:
+		_label.offset_top = 0.0
+		_label.offset_bottom = 0.0
+		_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
 
 func set_value(number: int) -> void:
@@ -272,14 +285,13 @@ func _refresh_visual() -> void:
 	_label.add_theme_constant_override("shadow_offset_y", 2)
 	_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.45))
 
-	_label.offset_top = 0.0
-	_label.offset_bottom = 0.0
-
 	if _crown_icon != null:
 		# Crown marks the singular carry tile from the previous level — never board-max.
 		_crown_icon.visible = _carry and not _frozen
-		if _crown_icon.visible:
-			_layout_crown_and_label()
+		_layout_crown_and_label()
+	else:
+		_label.offset_top = 0.0
+		_label.offset_bottom = 0.0
 
 	_chain_highlight.visible = false
 	if _bonus_mode and not _frozen:

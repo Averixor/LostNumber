@@ -13,12 +13,12 @@ signal save_pressed
 signal theme_pressed
 signal bonus_pressed(type: String)
 
-@onready var level_label: Label = $TopBar/LevelLabel
-@onready var save_indicator: Label = $TopBar/SaveIndicator
-@onready var menu_button: Button = $TopBar/MenuButton
-@onready var save_button: Button = $TopBar/SaveButton
-@onready var theme_button: Button = $TopBar/ThemeButton
-@onready var sound_button: Button = $TopBar/SoundButton
+@onready var level_label: Label = $TopBar/BarRow/LevelLabel
+@onready var save_indicator: Label = $TopBar/SaveToast
+@onready var menu_button: Button = $TopBar/BarRow/MenuButton
+@onready var save_button: Button = $TopBar/BarRow/RightCluster/SaveButton
+@onready var theme_button: Button = $TopBar/BarRow/RightCluster/ThemeButton
+@onready var sound_button: Button = $TopBar/BarRow/RightCluster/SoundButton
 @onready var goal_label: Label = $GoalRow/GoalPanel/GoalHBox/GoalLabel
 @onready var xp_label: Label = $XpRow/XpPanel/XpHBox/XpLabel
 @onready var bottom_strip: PanelContainer = $BottomStrip
@@ -208,22 +208,20 @@ func _load_icons() -> void:
 	_set_button_icon(save_button, LnUiLib.icon_path("save.svg"), false)
 	_set_button_icon(theme_button, LnUiLib.icon_path("theme.svg"), false)
 	_set_button_icon(sound_button, LnUiLib.icon_path("sound.svg"), false)
-	_configure_bonus_button(explosion_button, LnUiLib.icon_path("bonus.svg"))
-	_configure_bonus_button(shuffle_button, LnUiLib.icon_path("reset.svg"))
-	_configure_bonus_button(destroy_button, LnUiLib.icon_path("path.svg"))
+	# Bonus buttons are text-only (+ badge / lock). No neon icon under the label.
+	for btn in [explosion_button, shuffle_button, destroy_button]:
+		btn.icon = null
+		btn.expand_icon = false
 
 
-func _configure_bonus_button(button: Button, path: String) -> void:
+func _configure_bonus_button(button: Button, _path: String = "") -> void:
 	button.icon = null
-	if ResourceLoader.exists(path):
-		var tex: Texture2D = load(path)
-		if tex != null:
-			button.icon = tex
-	button.expand_icon = true
+	button.expand_icon = false
 	button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	button.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
-	button.add_theme_constant_override("icon_max_width", 22)
-	button.add_theme_constant_override("icon_max_height", 22)
+	button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
+	button.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	button.add_theme_constant_override("icon_max_width", 20)
+	button.add_theme_constant_override("icon_max_height", 20)
 
 
 func _set_button_icon(button: Button, path: String, clear_text: bool = true) -> void:
@@ -273,6 +271,7 @@ func refresh(state: GameState, i18n_t: Callable) -> void:
 	_clear_bonus_button_focus(state.active_bonus)
 
 	save_indicator.text = ""
+	save_indicator.modulate.a = 0.0
 
 
 func update_chain_sum(state: GameState, can_finish: bool, dragging: bool = false) -> void:
@@ -367,14 +366,12 @@ func _style_bonus_button(button: Button, kind: String, count: int, active_bonus:
 	button.add_theme_color_override("font_disabled_color", LnUiLib.TEXT_DISABLED)
 	button.modulate = Color.WHITE
 
+	# Text-only bonuses; lock icon only when unavailable.
 	if not available:
 		_set_button_icon(button, LnUiLib.icon_path("lock.svg"), false)
-	elif kind == "shuffle":
-		_set_button_icon(button, LnUiLib.icon_path("reset.svg"), false)
-	elif kind == "destroy":
-		_set_button_icon(button, LnUiLib.icon_path("path.svg"), false)
-	elif kind == "explosion":
-		_set_button_icon(button, LnUiLib.icon_path("bonus.svg"), false)
+	else:
+		button.icon = null
+		button.expand_icon = false
 
 
 func _clear_bonus_button_focus(active_bonus: String) -> void:
@@ -405,12 +402,16 @@ func set_sound_icon(enabled: bool) -> void:
 
 
 func flash_save_indicator(text: String) -> void:
+	# Overlay toast — does not participate in TopBarHBox layout.
 	save_indicator.text = text
-	save_indicator.visible = true
 	save_indicator.modulate.a = 1.0
+	save_indicator.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_SMALL)
+	save_indicator.add_theme_color_override("font_color", ThemeTokensLib.COLOR_TEXT)
+	save_indicator.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.75))
+	save_indicator.add_theme_constant_override("outline_size", 3)
 	if _save_flash_tween != null and _save_flash_tween.is_valid():
 		_save_flash_tween.kill()
 	_save_flash_tween = create_tween()
 	_save_flash_tween.tween_interval(1.2)
 	_save_flash_tween.tween_property(save_indicator, "modulate:a", 0.0, 0.35)
-	_save_flash_tween.tween_callback(func(): save_indicator.visible = false)
+	_save_flash_tween.tween_callback(func(): save_indicator.text = "")

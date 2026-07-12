@@ -180,7 +180,11 @@ const STATIC_FALLBACKS := {
 		"uk": "Продовжити",
 		"ru": "Продолжить",
 		"en": "Resume",
-
+	},
+	"save_indicator": {
+		"uk": "Збережено",
+		"ru": "Сохранено",
+		"en": "Saved",
 	},
 	"chain_status_valid": {
 		"uk": "Валідно!",
@@ -356,7 +360,7 @@ func _format(text: String, args: Array) -> String:
 		return text % args
 	# JS-style {placeholders} — match names present in the string, not positional index.
 	var names := [
-		"level", "xp", "target", "cost", "turns", "used", "total", "value", "multiplier", "sum",
+		"title", "level", "xp", "target", "cost", "turns", "used", "total", "value", "multiplier", "sum",
 	]
 	var placeholders: Array[String] = []
 	for name in names:

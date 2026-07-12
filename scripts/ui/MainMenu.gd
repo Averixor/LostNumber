@@ -49,7 +49,7 @@ const _FEATURE_STUBS := {
 @onready var dock_achievements: Button = $Layout/RootVBox/DockRow/DockAchievements
 @onready var dock_daily: Button = $Layout/RootVBox/DockRow/DockDaily
 @onready var dock_bonuses: Button = $Layout/RootVBox/DockRow/DockBonuses
-@onready var exit_button: NeonButton = $Layout/RootVBox/Actions/Buttons/ExitButton
+@onready var exit_button: NeonButton = $Layout/RootVBox/ExitRow/ExitButton
 @onready var version_label: Label = $Layout/RootVBox/VersionLabel
 @onready var feature_dim: ColorRect = $FeatureDim
 @onready var feature_stub: FeatureStubOverlay = $FeatureStub
@@ -113,7 +113,7 @@ func _ready() -> void:
 	continue_button.variant = "success"
 	wheel_button.variant = "secondary"
 	if exit_button != null:
-		exit_button.variant = "ghost"
+		exit_button.variant = "secondary"
 
 	for btn in [play_button, continue_button, wheel_button]:
 		if btn == continue_button or btn == wheel_button:
@@ -190,12 +190,12 @@ func _animate_entrance() -> void:
 		items.append(continue_button)
 	items.append(play_button)
 	items.append(wheel_button)
-	if exit_button != null:
-		items.append(exit_button)
 	for quick in [quick_settings, quick_stats, quick_about]:
 		items.append(quick)
 	for dock in [dock_premium, dock_tournaments, dock_achievements, dock_daily, dock_bonuses]:
 		items.append(dock)
+	if exit_button != null:
+		items.append(exit_button)
 	items.append(version_label)
 	for item in items:
 		item.modulate.a = 0.0
