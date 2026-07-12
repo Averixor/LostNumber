@@ -35,6 +35,14 @@ _android_build_version() {
 
 ANDROID_BUILD_VERSION="$(_android_build_version "$GODOT_VERSION")"
 
+_ensure_android_gdignore() {
+  mkdir -p "$GODOT_DIR/android"
+  cat > "$GODOT_DIR/android/.gdignore" <<'GODOTIGNORE'
+# Ignore generated Android Gradle tree from Godot editor scans.
+*
+GODOTIGNORE
+}
+
 _resolve_template_dir() {
   local candidates=(
     "${XDG_DATA_HOME:-$HOME/.local/share}/godot/export_templates/${GODOT_VERSION}"
@@ -83,6 +91,8 @@ if [[ ! -f "$TEMPLATE_DIR/android_source.zip" ]]; then
   fi
   TEMPLATE_DIR="$(_resolve_template_dir)"
 fi
+
+_ensure_android_gdignore
 
 echo "Importing Godot project..."
 "$GODOT_BIN" --path "$GODOT_DIR" --import --headless
@@ -134,8 +144,12 @@ export PATH="$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$PATH"
 mkdir -p "$GRADLE_USER_HOME" "$ANDROID_USER_HOME"
 
 # Remove artifacts from a previous failed export (keep Gradle template files).
-rm -rf "$GODOT_DIR/android/build/assets" "$GODOT_DIR/android/build/build" "$GODOT_DIR/android/build/.gradle"
-find "$GODOT_DIR/android/build/res" -name '*.import' -delete 2>/dev/null || true
+rm -rf \
+  "$GODOT_DIR/android/build/assets" \
+  "$GODOT_DIR/android/build/build" \
+  "$GODOT_DIR/android/build/.gradle" \
+  "$GODOT_DIR/android/build/src/main/assets"
+find "$GODOT_DIR/android/build" -name '*.import' -delete 2>/dev/null || true
 rm -rf "$GODOT_DIR/android/build/res/mipmap" "$GODOT_DIR/android/build/res/mipmap-"* 2>/dev/null || true
 
 PRESET="Android Debug APK"
