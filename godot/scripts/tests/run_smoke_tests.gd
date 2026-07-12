@@ -7,7 +7,6 @@ const SaveManagerScript := preload("res://scripts/managers/SaveManager.gd")
 const BonusManagerScript := preload("res://scripts/game/BonusManager.gd")
 const DailyQuestManagerScript := preload("res://scripts/meta/DailyQuestManager.gd")
 const WheelManagerScript := preload("res://scripts/meta/WheelManager.gd")
-const WheelScene := preload("res://scenes/Wheel.tscn")
 
 const AUTOLOAD_PATHS := {
 	"SaveManager": "res://scripts/managers/SaveManager.gd",
@@ -243,7 +242,8 @@ func _test_meta_managers() -> void:
 func _test_wheel_without_save_does_not_create_session() -> void:
 	_save.delete_save()
 	var before_has_save := _save.has_save()
-	var wheel := WheelScene.instantiate()
+	var wheel_scene: PackedScene = load("res://scenes/Wheel.tscn")
+	var wheel := wheel_scene.instantiate()
 	root.add_child(wheel)
 	await process_frame
 
