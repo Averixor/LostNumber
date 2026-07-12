@@ -124,9 +124,20 @@ func _show_exit_confirm() -> void:
 	_exit_dialog.dialog_text = _i18n("exit_confirm_text")
 	_exit_dialog.ok_button_text = _i18n("btn_exit")
 	_exit_dialog.cancel_button_text = _i18n("menu_back")
-	_exit_dialog.confirmed.connect(func(): get_tree().quit())
+	_exit_dialog.confirmed.connect(_quit_app)
 	add_child(_exit_dialog)
 	_exit_dialog.popup_centered()
+
+
+func request_exit() -> void:
+	_show_exit_confirm()
+
+
+func _quit_app() -> void:
+	if OS.get_name() == "Android":
+		OS.move_to_background()
+		return
+	get_tree().quit()
 
 
 ## Presents a modal control in ModalLayer with a scale-in (web parity: overlays).

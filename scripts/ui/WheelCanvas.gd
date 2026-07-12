@@ -89,7 +89,7 @@ func _draw() -> void:
 		var label_pos := center + Vector2(cos(mid), sin(mid)) * radius * 0.68
 		var sector: Dictionary = sectors[i]
 		var label := _sector_label(sector)
-		_draw_sector_label(label_pos, label, mid, i == pointer_index)
+		_draw_sector_label(label_pos, label, mid, i == pointer_index, sector)
 
 	# Inner vignette ring
 	draw_arc(center, radius * 0.94, 0.0, TAU, 48, Color(0, 0, 0, 0.32), radius * 0.06, true)
@@ -108,7 +108,7 @@ func _draw() -> void:
 
 
 func _sector_label(sector: Dictionary) -> String:
-	var key := str(sector.get("message_key", ""))
+	var key := str(sector.get("label_key", sector.get("message_key", "")))
 	if not key.is_empty():
 		var i18n := get_node_or_null("/root/I18nManager")
 		if i18n != null and i18n.has_method("t"):
@@ -127,31 +127,67 @@ func _compact_wheel_label(text: String, sector: Dictionary) -> String:
 				digits += ch
 		return digits if not digits.is_empty() else text
 	if effect == "multiplier":
-		return "×2 XP"
+		return "×2"
 	if effect == "bonus":
 		match str(sector.get("value", "")):
 			"explosion":
 				return "3×3"
 			"destroy":
-				return "Розбити"
+				return "×"
 			"shuffle":
-				return "Мікс"
+				return "⇄"
 	return text
 
 
-func _draw_sector_label(pos: Vector2, text: String, angle: float, highlighted: bool) -> void:
+func _sector_icon_path(sector: Dictionary) -> String:
+	var effect := str(sector.get("effect", ""))
+	if effect == "xp":
+		return LnUiLib.icon_path("reward-xp.svg")
+	if effect == "multiplier":
+		return LnUiLib.icon_path("reward-xp.svg")
+	if effect == "bonus":
+		match str(sector.get("value", "")):
+			"explosion":
+				return LnUiLib.icon_path("bonus.svg")
+			"destroy":
+				return LnUiLib.icon_path("path.svg")
+			"shuffle":
+				return LnUiLib.icon_path("reset.svg")
+	return ""
+
+
+func _draw_sector_label(pos: Vector2, text: String, angle: float, highlighted: bool, sector: Dictionary = {}) -> void:
 	var font := ThemeDB.fallback_font
-	var font_size := 13 if text.length() > 4 else 17
-	var text_color := Color(0.96, 0.94, 0.99, 0.98 if highlighted else 0.86)
-	var shadow := Color(0, 0, 0, 0.8)
+	var icon_path := _sector_icon_path(sector)
+	var icon_tex: Texture2D = null
+	if not icon_path.is_empty() and ResourceLoader.exists(icon_path):
+		icon_tex = load(icon_path) as Texture2D
+
 	var readable_angle := angle + PI * 0.5
 	if cos(readable_angle) < 0.0:
 		readable_angle += PI
 	draw_set_transform(pos, readable_angle, Vector2.ONE)
-	var text_size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_CENTER, -1, font_size)
-	var origin := Vector2(-text_size.x * 0.5, font_size * 0.32)
-	draw_string(font, origin + Vector2(1, 2), text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, shadow)
-	draw_string(font, origin, text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, text_color)
+
+	if icon_tex != null:
+		var icon_side := 22.0 if highlighted else 18.0
+		var icon_rect := Rect2(Vector2(-icon_side * 0.5, -icon_side * 0.85), Vector2(icon_side, icon_side))
+		draw_texture_rect(icon_tex, icon_rect, false, Color(1, 1, 1, 0.95 if highlighted else 0.82))
+		var font_size := 12 if text.length() > 3 else 14
+		var text_color := Color(0.96, 0.94, 0.99, 0.98 if highlighted else 0.86)
+		var shadow := Color(0, 0, 0, 0.8)
+		var text_size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_CENTER, -1, font_size)
+		var origin := Vector2(-text_size.x * 0.5, icon_side * 0.55 + font_size * 0.35)
+		draw_string(font, origin + Vector2(1, 2), text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, shadow)
+		draw_string(font, origin, text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, text_color)
+	else:
+		var font_size := 12 if text.length() > 4 else 15
+		var text_color := Color(0.96, 0.94, 0.99, 0.98 if highlighted else 0.86)
+		var shadow := Color(0, 0, 0, 0.8)
+		var text_size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_CENTER, -1, font_size)
+		var origin := Vector2(-text_size.x * 0.5, font_size * 0.32)
+		draw_string(font, origin + Vector2(1, 2), text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, shadow)
+		draw_string(font, origin, text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, text_color)
+
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 

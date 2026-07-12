@@ -132,19 +132,21 @@ func place_carry_unique(carry_number: int, level_index: int, max_reached: int = 
 	if carry_number <= 0:
 		return
 
-	var found := false
+	# Keep exactly one carry tile; replace any duplicates with spawn values.
+	var kept := false
 	for x in grid_w:
 		for y in grid_h:
-			if grid[x][y] == carry_number:
-				found = true
-				break
+			if grid[x][y] != carry_number:
+				continue
+			if kept:
+				var level: Dictionary = level_manager.get_level_config(level_index)
+				grid[x][y] = _pick_spawn_value(
+					level_index, carry_number, level["target"], level["numbers"], max_reached
+				)
+			else:
+				kept = true
 
-	if found:
-		for x in grid_w:
-			for y in grid_h:
-				if grid[x][y] == carry_number:
-					var level: Dictionary = level_manager.get_level_config(level_index)
-					grid[x][y] = _pick_spawn_value(level_index, carry_number, level["target"], level["numbers"], max_reached)
+	if kept:
 		return
 
 	var rx := rng.randi_range(0, grid_w - 1)

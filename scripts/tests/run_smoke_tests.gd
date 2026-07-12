@@ -90,11 +90,12 @@ const KEY_RESOURCES := [
 var failed := 0
 var _save: SaveManagerScript
 var _test_dir := ""
+var _save_added_to_root := false
 
 
 func _init() -> void:
 	print("Lost Number smoke tests...")
-	_save = SaveManagerScript.new()
+	_save = _test_save_manager()
 	_test_dir = ProjectSettings.globalize_path("user://smoke_tests_%d" % Time.get_ticks_msec())
 	DirAccess.make_dir_recursive_absolute(_test_dir)
 	_save.enable_test_root(_test_dir)
@@ -105,7 +106,9 @@ func _init() -> void:
 	_test_key_resources()
 	_test_gameplay_core()
 	_test_bonuses()
+	_test_carry_unique_singular()
 	_test_meta_managers()
+	await _test_wheel_without_save_does_not_create_session()
 	_test_old_save_defaults()
 	_test_minimal_legacy_save()
 
@@ -216,12 +219,30 @@ func _test_bonuses() -> void:
 	var pick = bonus.activate("destroy")
 	_assert_true(pick.ok, "destroy pick mode")
 	var destroy = bonus.apply_at_cell(Vector2i(0, 0))
-	_assert_true(destroy.ok, "destroy applies")
+	_assert_true(destroy.ok, "destroy applies at top-left")
 
 	state.grant_bonus("explosion", 1)
 	bonus.activate("explosion")
-	var blast = bonus.apply_at_cell(Vector2i(2, 2))
-	_assert_true(blast.ok, "explosion applies")
+	var blast = bonus.apply_at_cell(Vector2i(0, 0))
+	_assert_true(blast.ok, "explosion applies at top-left")
+
+
+func _test_carry_unique_singular() -> void:
+	var state = GameStateScript.new()
+	state.start_new_game(11)
+	state.carry_number = 8
+	state.board.fill_random(state.current_level, state.carry_number)
+	# Force several matching values, then unique placement must leave exactly one.
+	state.board.grid[0][0] = 8
+	state.board.grid[1][1] = 8
+	state.board.grid[2][2] = 8
+	state.board.place_carry_unique(8, state.current_level, state.max_reached_number)
+	var count := 0
+	for x in state.board.grid_w:
+		for y in state.board.grid_h:
+			if int(state.board.grid[x][y]) == 8:
+				count += 1
+	_assert_eq(count, 1, "exactly one carry tile after place_carry_unique")
 
 
 func _test_meta_managers() -> void:
@@ -235,6 +256,23 @@ func _test_meta_managers() -> void:
 	state.xp = 100
 	var spin = wheel.spin()
 	_assert_true(spin.ok, "wheel spin ok")
+
+
+func _test_wheel_without_save_does_not_create_session() -> void:
+	_save.delete_save()
+	var before_has_save := _save.has_save()
+	var wheel_scene: PackedScene = load("res://scenes/Wheel.tscn")
+	var wheel := wheel_scene.instantiate()
+	root.add_child(wheel)
+	await process_frame
+
+	_assert_false(before_has_save, "wheel no-save setup starts without save")
+	_assert_true(bool(wheel.get("_invalid_session")), "wheel blocks direct launch without save")
+	_assert_true(wheel.get("_state") == null, "wheel does not create fallback game state")
+	_assert_false(_save.has_save(), "wheel direct launch without save does not write save")
+
+	root.remove_child(wheel)
+	wheel.free()
 
 
 func _test_old_save_defaults() -> void:
@@ -295,8 +333,21 @@ func _write_file(path: String, text: String) -> void:
 
 func _cleanup() -> void:
 	if _save != null:
-		_save.free()
+		if _save_added_to_root:
+			root.remove_child(_save)
+			_save.free()
 		_save = null
+
+
+func _test_save_manager() -> SaveManagerScript:
+	var existing := root.get_node_or_null("SaveManager")
+	if existing != null and existing.has_method("enable_test_root"):
+		return existing as SaveManagerScript
+	var save := SaveManagerScript.new()
+	save.name = "SaveManager"
+	root.add_child(save)
+	_save_added_to_root = true
+	return save
 
 
 func _cleanup_test_dir() -> void:

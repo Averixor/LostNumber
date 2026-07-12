@@ -27,12 +27,25 @@ func _i18n(key: String, args: Array = []) -> String:
 
 func _ready() -> void:
 	LnUiLib.set_background(self, LnUiLib.screen_bg("boot"), 0.55)
-	var main_logo := LnUiLib.BOOT_LOGO_PATH if ResourceLoader.exists(LnUiLib.BOOT_LOGO_PATH) else LnUiLib.LOGO_PATH
-	LnUiLib.wire_logo_glow(logo_image, main_logo)
+	_wire_static_boot_logo()
 	_apply_theme()
 	subtitle_label.text = _i18n("boot_loading")
 	_style_progress_bar()
 	_boot()
+
+
+func _wire_static_boot_logo() -> void:
+	var main_logo := LnUiLib.BOOT_LOGO_PATH if ResourceLoader.exists(LnUiLib.BOOT_LOGO_PATH) else LnUiLib.LOGO_PATH
+	if logo_image != null and ResourceLoader.exists(main_logo):
+		logo_image.texture = load(main_logo)
+		logo_image.modulate = Color.WHITE
+	var glow := get_node_or_null("Center/VBox/LogoStack/LogoGlow") as TextureRect
+	if glow != null:
+		glow.visible = false
+	var anim := get_node_or_null("AnimationPlayer") as AnimationPlayer
+	if anim != null:
+		anim.stop()
+		anim.autoplay = ""
 
 
 func _apply_theme() -> void:

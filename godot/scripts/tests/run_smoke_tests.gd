@@ -106,6 +106,7 @@ func _init() -> void:
 	_test_key_resources()
 	_test_gameplay_core()
 	_test_bonuses()
+	_test_carry_unique_singular()
 	_test_meta_managers()
 	await _test_wheel_without_save_does_not_create_session()
 	_test_old_save_defaults()
@@ -218,12 +219,30 @@ func _test_bonuses() -> void:
 	var pick = bonus.activate("destroy")
 	_assert_true(pick.ok, "destroy pick mode")
 	var destroy = bonus.apply_at_cell(Vector2i(0, 0))
-	_assert_true(destroy.ok, "destroy applies")
+	_assert_true(destroy.ok, "destroy applies at top-left")
 
 	state.grant_bonus("explosion", 1)
 	bonus.activate("explosion")
-	var blast = bonus.apply_at_cell(Vector2i(2, 2))
-	_assert_true(blast.ok, "explosion applies")
+	var blast = bonus.apply_at_cell(Vector2i(0, 0))
+	_assert_true(blast.ok, "explosion applies at top-left")
+
+
+func _test_carry_unique_singular() -> void:
+	var state = GameStateScript.new()
+	state.start_new_game(11)
+	state.carry_number = 8
+	state.board.fill_random(state.current_level, state.carry_number)
+	# Force several matching values, then unique placement must leave exactly one.
+	state.board.grid[0][0] = 8
+	state.board.grid[1][1] = 8
+	state.board.grid[2][2] = 8
+	state.board.place_carry_unique(8, state.current_level, state.max_reached_number)
+	var count := 0
+	for x in state.board.grid_w:
+		for y in state.board.grid_h:
+			if int(state.board.grid[x][y]) == 8:
+				count += 1
+	_assert_eq(count, 1, "exactly one carry tile after place_carry_unique")
 
 
 func _test_meta_managers() -> void:

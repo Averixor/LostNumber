@@ -105,6 +105,7 @@ func _build_cards() -> void:
 		card.set_meta("skin_index", i)
 
 		var box := VBoxContainer.new()
+		box.name = "VBox"
 		box.add_theme_constant_override("separation", 5)
 		card.add_child(box)
 

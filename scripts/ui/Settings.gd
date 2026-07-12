@@ -24,6 +24,7 @@ const TILE_FONT_SCALES := [0.85, 1.0, 1.1, 1.2]
 @onready var skin_auto_check: CheckButton = get_node_or_null("Scroll/VBox/SkinAutoCheck") as CheckButton
 @onready var import_button: Button = get_node_or_null("Scroll/VBox/ImportLegacyButton") as Button
 @onready var import_status: Label = get_node_or_null("Scroll/VBox/ImportStatus") as Label
+@onready var exit_button: Button = get_node_or_null("Scroll/VBox/ExitButton") as Button
 @onready var back_button: Button = get_node_or_null("BackButton") as Button
 @onready var title_label: Label = get_node_or_null("Title") as Label
 @onready var background: ColorRect = get_node_or_null("Background") as ColorRect
@@ -106,6 +107,31 @@ func _setup_labels() -> void:
 		import_button.text = _i18n("settings_import_legacy")
 	if import_status != null:
 		import_status.text = ""
+	if exit_button != null:
+		exit_button.text = _i18n("btn_exit")
+
+	_ensure_option_label(sfx_volume_option, "settings_sfx_volume_label")
+	_ensure_option_label(music_volume_option, "settings_music_volume_label")
+	_ensure_option_label(music_track_option, "settings_music_track_label")
+	_ensure_option_label(tile_font_size_option, "settings_tile_font_size_label")
+	_ensure_option_label(language_option, "settings_language_label")
+
+
+func _ensure_option_label(option: OptionButton, key: String) -> void:
+	if option == null or option.get_parent() == null:
+		return
+	var parent := option.get_parent()
+	var label_name := "Label_%s" % option.name
+	var label := parent.get_node_or_null(label_name) as Label
+	if label == null:
+		label = Label.new()
+		label.name = label_name
+		parent.add_child(label)
+		parent.move_child(label, option.get_index())
+	label.text = _i18n(key)
+	label.add_theme_font_size_override("font_size", 14)
+	label.add_theme_color_override("font_color", ThemeTokensLib.COLOR_TEXT)
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 
 func _setup_options() -> void:
@@ -136,8 +162,17 @@ func _setup_options() -> void:
 
 	if tile_font_size_option != null:
 		tile_font_size_option.clear()
-		for scale in TILE_FONT_SCALES:
-			tile_font_size_option.add_item("%d%%" % int(round(scale * 100.0)))
+		var font_keys := [
+			"settings_tile_font_85",
+			"settings_tile_font_100",
+			"settings_tile_font_110",
+			"settings_tile_font_120",
+		]
+		for i in TILE_FONT_SCALES.size():
+			var scale: float = TILE_FONT_SCALES[i]
+			var key: String = font_keys[i] if i < font_keys.size() else ""
+			var label := _i18n(key) if not key.is_empty() else "%d%%" % int(round(scale * 100.0))
+			tile_font_size_option.add_item(label if label != key else "%d%%" % int(round(scale * 100.0)))
 
 
 func _load_settings() -> void:
@@ -186,7 +221,7 @@ func _style_controls() -> void:
 	if title_label != null:
 		LnUiLib.apply_title(title_label, 24)
 
-	for btn in [back_button, theme_button, skin_pick_button, import_button]:
+	for btn in [back_button, theme_button, skin_pick_button, import_button, exit_button]:
 		if btn != null:
 			LnUiLib.apply_button(btn)
 
@@ -226,6 +261,8 @@ func _connect_signals() -> void:
 		skin_auto_check.toggled.connect(_on_skin_auto_toggled)
 	if import_button != null:
 		import_button.pressed.connect(_on_import_legacy)
+	if exit_button != null:
+		exit_button.pressed.connect(_on_exit)
 	if back_button != null:
 		back_button.pressed.connect(_on_back)
 
@@ -375,6 +412,17 @@ func _on_skin_auto_toggled(enabled: bool) -> void:
 func _on_import_legacy() -> void:
 	if import_status != null:
 		import_status.text = _i18n("settings_import_legacy_none")
+
+
+func _on_exit() -> void:
+	var app := get_tree().root.get_node_or_null("App")
+	if app != null and app.has_method("request_exit"):
+		app.call("request_exit")
+		return
+	if OS.get_name() == "Android":
+		OS.move_to_background()
+		return
+	get_tree().quit()
 
 
 func _on_back() -> void:

@@ -49,6 +49,7 @@ const _FEATURE_STUBS := {
 @onready var dock_achievements: Button = $Layout/RootVBox/DockRow/DockAchievements
 @onready var dock_daily: Button = $Layout/RootVBox/DockRow/DockDaily
 @onready var dock_bonuses: Button = $Layout/RootVBox/DockRow/DockBonuses
+@onready var exit_button: NeonButton = $Layout/RootVBox/Actions/Buttons/ExitButton
 @onready var version_label: Label = $Layout/RootVBox/VersionLabel
 @onready var feature_dim: ColorRect = $FeatureDim
 @onready var feature_stub: FeatureStubOverlay = $FeatureStub
@@ -73,9 +74,7 @@ func _i18n(key: String, args: Array = []) -> String:
 
 func _ready() -> void:
 	LnUiLib.set_background(self, LnUiLib.screen_bg("main_menu"))
-	LnUiLib.wire_logo_glow(logo_image, LnUiLib.LOGO_PATH)
-	logo_image.custom_minimum_size = Vector2(300, 120)
-	_start_logo_pulse()
+	_wire_static_logo()
 	tagline_label.text = _i18n("main_subtitle")
 	tagline_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_SMALL)
 	tagline_label.gui_input.connect(_on_tagline_input)
@@ -83,12 +82,16 @@ func _ready() -> void:
 	play_button.text = _i18n("menu_play")
 	continue_button.text = _i18n("menu_continue")
 	wheel_button.text = _i18n("menu_wheel")
+	if exit_button != null:
+		exit_button.text = _i18n("btn_exit")
 	version_label.text = _i18n("version_label", [str(ProjectSettings.get_setting("application/config/version", ""))])
 	version_label.add_theme_font_size_override("font_size", 11)
 
 	_set_button_icon(play_button, LnUiLib.icon_path("new-game.svg"))
 	_set_button_icon(continue_button, LnUiLib.icon_path("continue.svg"))
 	_set_button_icon(wheel_button, LnUiLib.icon_path("wheel.svg"))
+	if exit_button != null:
+		_set_button_icon(exit_button, LnUiLib.icon_path("exit.svg"))
 
 	quick_settings.call("setup", _i18n("btn_settings"), LnUiLib.icon_path("settings.svg"))
 	quick_stats.call("setup", _i18n("btn_stats"), LnUiLib.icon_path("statistics.svg"))
@@ -109,9 +112,11 @@ func _ready() -> void:
 	play_button.variant = "primary"
 	continue_button.variant = "success"
 	wheel_button.variant = "secondary"
+	if exit_button != null:
+		exit_button.variant = "ghost"
 
 	for btn in [play_button, continue_button, wheel_button]:
-		if btn == continue_button:
+		if btn == continue_button or btn == wheel_button:
 			btn.disabled = not has_save
 		else:
 			btn.disabled = false
@@ -119,6 +124,8 @@ func _ready() -> void:
 	play_button.pressed.connect(_on_play)
 	continue_button.pressed.connect(_on_continue)
 	wheel_button.pressed.connect(_on_wheel)
+	if exit_button != null:
+		exit_button.pressed.connect(_on_exit)
 	quick_settings.pressed.connect(_on_settings)
 	quick_stats.pressed.connect(_on_stats)
 	quick_about.pressed.connect(_on_about)
@@ -144,20 +151,20 @@ func _ready() -> void:
 	_animate_entrance()
 
 
-func _start_logo_pulse() -> void:
-	var host := logo_image.get_parent()
-	if host != null and host.name == "LogoStack":
-		host = host as Control
-	else:
-		host = logo_image
-	if host == null or not host.is_inside_tree():
+func _wire_static_logo() -> void:
+	if logo_image == null:
 		return
-	host.pivot_offset = host.size * 0.5
-	var tween := create_tween().set_loops()
-	tween.tween_property(host, "scale", Vector2(1.04, 1.04), 0.5) \
-		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tween.tween_property(host, "scale", Vector2.ONE, 0.5) \
-		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	# Single static logo — no glow stack, no pulse (avoids doubled/blurry look on device).
+	var glow := logo_image.get_parent().get_node_or_null("LogoGlow") if logo_image.get_parent() else null
+	if glow != null:
+		glow.visible = false
+	if ResourceLoader.exists(LnUiLib.LOGO_PATH):
+		logo_image.texture = load(LnUiLib.LOGO_PATH)
+	logo_image.custom_minimum_size = Vector2(300, 120)
+	logo_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	logo_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	logo_image.modulate = Color.WHITE
+	logo_image.scale = Vector2.ONE
 
 
 func _apply_title_style() -> void:
@@ -183,6 +190,8 @@ func _animate_entrance() -> void:
 		items.append(continue_button)
 	items.append(play_button)
 	items.append(wheel_button)
+	if exit_button != null:
+		items.append(exit_button)
 	for quick in [quick_settings, quick_stats, quick_about]:
 		items.append(quick)
 	for dock in [dock_premium, dock_tournaments, dock_achievements, dock_daily, dock_bonuses]:
@@ -255,7 +264,24 @@ func _on_continue() -> void:
 
 func _on_wheel() -> void:
 	_play_button_sfx()
+	var save := _autoload("SaveManager")
+	var has_save: bool = save != null and save.has_method("has_save") and bool(save.call("has_save"))
+	if not has_save:
+		return
 	_navigate("wheel")
+
+
+func _on_exit() -> void:
+	_play_button_sfx()
+	var app := get_tree().root.get_node_or_null("App")
+	if app != null and app.has_method("request_exit"):
+		app.call("request_exit")
+		return
+	if OS.get_name() == "Android":
+		# Prefer backgrounding on Android when App shell is unavailable.
+		OS.move_to_background()
+		return
+	get_tree().quit()
 
 
 func _on_settings() -> void:
