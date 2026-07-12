@@ -76,14 +76,14 @@ func _render() -> void:
 		list.add_child(card)
 		if card != null and card.has_method("setup"):
 			var title := _achievement_name(key)
-			var unlocked_text := _i18n("achievement_unlocked", [title])
+			var unlocked := bool(item.get("unlocked", false))
 			card.call(
 				"setup",
-				bool(item.get("unlocked", false)),
+				unlocked,
 				title,
 				int(item.get("progress", 0)),
 				int(item.get("max", 1)),
-				unlocked_text,
+				"✓",
 				locked_text
 			)
 

@@ -46,6 +46,18 @@ custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 size_flags_vertical = 3
 
+[node name="ExitRow" type="VBoxContainer" parent="Layout/RootVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="ExitButton" parent="Layout/RootVBox/ExitRow" instance=ExtResource("3_neonbtn")]
+custom_minimum_size = Vector2(302, 52)
+layout_mode = 2
+size_flags_horizontal = 4
+variant = 1
+text = "Вийти"
+
 [node name="Hero" type="VBoxContainer" parent="Layout/RootVBox"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -140,18 +152,6 @@ size_flags_horizontal = 3
 [node name="DockBonuses" parent="Layout/RootVBox/DockRow" instance=ExtResource("4_dock")]
 layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="ExitRow" type="VBoxContainer" parent="Layout/RootVBox"]
-layout_mode = 2
-theme_override_constants/separation = 8
-alignment = 1
-
-[node name="ExitButton" parent="Layout/RootVBox/ExitRow" instance=ExtResource("3_neonbtn")]
-custom_minimum_size = Vector2(302, 56)
-layout_mode = 2
-size_flags_horizontal = 4
-variant = 1
-text = "Вийти"
 
 [node name="VersionLabel" type="Label" parent="Layout/RootVBox"]
 layout_mode = 2

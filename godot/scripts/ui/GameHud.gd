@@ -366,12 +366,9 @@ func _style_bonus_button(button: Button, kind: String, count: int, active_bonus:
 	button.add_theme_color_override("font_disabled_color", LnUiLib.TEXT_DISABLED)
 	button.modulate = Color.WHITE
 
-	# Text-only bonuses; lock icon only when unavailable.
-	if not available:
-		_set_button_icon(button, LnUiLib.icon_path("lock.svg"), false)
-	else:
-		button.icon = null
-		button.expand_icon = false
+	# Text-only bonuses — no icons under labels (lock or bonus art).
+	button.icon = null
+	button.expand_icon = false
 
 
 func _clear_bonus_button_focus(active_bonus: String) -> void:
