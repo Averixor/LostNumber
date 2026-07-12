@@ -2,7 +2,7 @@
 language: en
 title: Lost Number — Source of Truth
 version: 2.1.6
-last_updated: 2026-07-10
+last_updated: 2026-07-12
 ---
 
 # Lost Number — Source of Truth
@@ -36,7 +36,7 @@ Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`, 
 | **Save**             | `user://` envelope v1 + SHA-256 + `.bak`; legacy import via `LegacySaveMigration`                                                  | `SaveManager.gd`, `LegacySaveMigration.gd`              |
 | **i18n**             | uk / ru / en — **285 keys** each                                                                                                   | `godot/assets/i18n/*.json`, `run_i18n_tests.gd`         |
 | **Levels**           | First **40** configs algorithmically generated at init (`_generate_manual_levels(40)`); from index 40+ separate procedural branch  | `LevelManager.gd`                                       |
-| **Visual authority** | Dark Neon Fantasy (`ThemeTokens`, `LnUi`); web = **parity reference**; PO + approved Godot screenshots = **acceptance**            | `VISUAL_PORT_MAP.md`                                    |
+| **Visual authority** | **PO mockups + [VISUAL_TARGET.md](./VISUAL_TARGET.md)** = acceptance; gothic fantasy integration over flat neon; web = legacy parity reference | `VISUAL_TARGET.md`, `godot/docs/VISUAL_PORT_MAP.md`     |
 | **Legacy import UI** | Settings **Import** button is a stub (`settings_import_legacy_none` only); startup migration + `LegacySaveMigration` autoload work | `Settings.gd`, `LegacySaveMigration.gd`, `Boot.gd`      |
 | **CI**               | `release:check` only on push/PR; `godot:test:all` **local only**                                                                   | `.github/workflows/ci.yml`                              |
 | **Network**          | None — fully offline                                                                                                               | —                                                       |
@@ -63,6 +63,7 @@ Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`, 
 | Accepted decisions (save, i18n, screens, compliance) | `docs/en/DECISIONS.md`                                          |
 | Release / Play Console checklists                    | `docs/en/RELEASE.md`, `HANDOFF-IDEAL.md`                        |
 | JS → Godot parity checklist                          | `godot/docs/MIGRATION_FROM_JS.md`, `docs/en/MIGRATION_GODOT.md` |
+| **Visual north star** (mockups, gaps, per-screen targets) | `docs/en/VISUAL_TARGET.md`                                      |
 | Web → Godot visual port status                       | `godot/docs/VISUAL_PORT_MAP.md`                                 |
 | Android export, signing, presets                     | `godot/docs/ANDROID_RELEASE_READINESS.md`                       |
 | Legacy save import                                   | `godot/docs/LEGACY_SAVE_MIGRATION.md`                           |
