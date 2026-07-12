@@ -7,6 +7,7 @@ const SaveManagerScript := preload("res://scripts/managers/SaveManager.gd")
 const BonusManagerScript := preload("res://scripts/game/BonusManager.gd")
 const DailyQuestManagerScript := preload("res://scripts/meta/DailyQuestManager.gd")
 const WheelManagerScript := preload("res://scripts/meta/WheelManager.gd")
+const WheelScene := preload("res://scenes/Wheel.tscn")
 
 const AUTOLOAD_PATHS := {
 	"SaveManager": "res://scripts/managers/SaveManager.gd",
@@ -90,11 +91,12 @@ const KEY_RESOURCES := [
 var failed := 0
 var _save: SaveManagerScript
 var _test_dir := ""
+var _save_added_to_root := false
 
 
 func _init() -> void:
 	print("Lost Number smoke tests...")
-	_save = SaveManagerScript.new()
+	_save = _test_save_manager()
 	_test_dir = ProjectSettings.globalize_path("user://smoke_tests_%d" % Time.get_ticks_msec())
 	DirAccess.make_dir_recursive_absolute(_test_dir)
 	_save.enable_test_root(_test_dir)
@@ -106,6 +108,7 @@ func _init() -> void:
 	_test_gameplay_core()
 	_test_bonuses()
 	_test_meta_managers()
+	await _test_wheel_without_save_does_not_create_session()
 	_test_old_save_defaults()
 	_test_minimal_legacy_save()
 
@@ -237,6 +240,22 @@ func _test_meta_managers() -> void:
 	_assert_true(spin.ok, "wheel spin ok")
 
 
+func _test_wheel_without_save_does_not_create_session() -> void:
+	_save.delete_save()
+	var before_has_save := _save.has_save()
+	var wheel := WheelScene.instantiate()
+	root.add_child(wheel)
+	await process_frame
+
+	_assert_false(before_has_save, "wheel no-save setup starts without save")
+	_assert_true(bool(wheel.get("_invalid_session")), "wheel blocks direct launch without save")
+	_assert_true(wheel.get("_state") == null, "wheel does not create fallback game state")
+	_assert_false(_save.has_save(), "wheel direct launch without save does not write save")
+
+	root.remove_child(wheel)
+	wheel.free()
+
+
 func _test_old_save_defaults() -> void:
 	_save.delete_save()
 	var state = GameStateScript.new()
@@ -295,8 +314,21 @@ func _write_file(path: String, text: String) -> void:
 
 func _cleanup() -> void:
 	if _save != null:
-		_save.free()
+		if _save_added_to_root:
+			root.remove_child(_save)
+			_save.free()
 		_save = null
+
+
+func _test_save_manager() -> SaveManagerScript:
+	var existing := root.get_node_or_null("SaveManager")
+	if existing != null and existing.has_method("enable_test_root"):
+		return existing as SaveManagerScript
+	var save := SaveManagerScript.new()
+	save.name = "SaveManager"
+	root.add_child(save)
+	_save_added_to_root = true
+	return save
 
 
 func _cleanup_test_dir() -> void:

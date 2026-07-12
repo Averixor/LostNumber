@@ -111,7 +111,7 @@ func _ready() -> void:
 	wheel_button.variant = "secondary"
 
 	for btn in [play_button, continue_button, wheel_button]:
-		if btn == continue_button:
+		if btn == continue_button or btn == wheel_button:
 			btn.disabled = not has_save
 		else:
 			btn.disabled = false
@@ -255,6 +255,10 @@ func _on_continue() -> void:
 
 func _on_wheel() -> void:
 	_play_button_sfx()
+	var save := _autoload("SaveManager")
+	var has_save: bool = save != null and save.has_method("has_save") and bool(save.call("has_save"))
+	if not has_save:
+		return
 	_navigate("wheel")
 
 
