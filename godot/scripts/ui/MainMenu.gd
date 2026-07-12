@@ -74,6 +74,7 @@ func _i18n(key: String, args: Array = []) -> String:
 
 func _ready() -> void:
 	LnUiLib.set_background(self, LnUiLib.screen_bg("main_menu"))
+	_apply_safe_area_top()
 	_wire_static_logo()
 	tagline_label.text = _i18n("main_subtitle")
 	tagline_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_SMALL)
@@ -151,6 +152,18 @@ func _ready() -> void:
 	_animate_entrance()
 
 
+func _apply_safe_area_top() -> void:
+	var layout := $Layout as MarginContainer
+	if layout == null:
+		return
+	var safe: Rect2i = DisplayServer.get_display_safe_area()
+	var top_inset := safe.position.y
+	if top_inset <= 0:
+		return
+	var base_top := layout.get_theme_constant("margin_top")
+	layout.add_theme_constant_override("margin_top", base_top + top_inset)
+
+
 func _wire_static_logo() -> void:
 	if logo_image == null:
 		return
@@ -215,11 +228,14 @@ func _animate_entrance() -> void:
 		return
 	for i in items.size():
 		var item := items[i]
-		var y := item.position.y
-		item.position.y = y + 14.0
 		var tween := create_tween().set_parallel(true)
 		var delay := 0.035 * i
 		tween.tween_property(item, "modulate:a", 1.0, 0.24).set_delay(delay)
+		# Skip vertical slide on top exit — it overlaps Hero (later sibling) and steals taps.
+		if item == exit_button:
+			continue
+		var y := item.position.y
+		item.position.y = y + 14.0
 		tween.tween_property(item, "position:y", y, 0.24).set_delay(delay)
 
 
