@@ -279,7 +279,7 @@ func _on_exit() -> void:
 		return
 	if OS.get_name() == "Android":
 		# Prefer backgrounding on Android when App shell is unavailable.
-		OS.move_to_background()
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MINIMIZED)
 		return
 	get_tree().quit()
 

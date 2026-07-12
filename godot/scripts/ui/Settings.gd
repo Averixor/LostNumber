@@ -420,7 +420,7 @@ func _on_exit() -> void:
 		app.call("request_exit")
 		return
 	if OS.get_name() == "Android":
-		OS.move_to_background()
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MINIMIZED)
 		return
 	get_tree().quit()
 

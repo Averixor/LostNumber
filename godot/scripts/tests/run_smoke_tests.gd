@@ -179,6 +179,11 @@ func _assert_script_compiles(path: String, label: String) -> void:
 		failed += 1
 		push_error("FAIL: %s is not GDScript (%s)" % [label, path])
 		return
+	var reload_err := (script as GDScript).reload(true)
+	if reload_err != OK:
+		failed += 1
+		push_error("FAIL: %s parse/reload failed (%s, err=%s)" % [label, path, reload_err])
+		return
 	print("OK: %s (%s)" % [label, path])
 
 
