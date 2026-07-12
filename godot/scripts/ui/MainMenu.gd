@@ -89,7 +89,7 @@ func _ready() -> void:
 
 	_set_button_icon(play_button, LnUiLib.icon_path("new-game.svg"))
 	_set_button_icon(continue_button, LnUiLib.icon_path("continue.svg"))
-	_set_button_icon(wheel_button, LnUiLib.icon_path("wheel.svg"))
+	_set_wheel_button_icon(wheel_button, "wheel-x2.png", 28)
 	if exit_button != null:
 		_set_button_icon(exit_button, LnUiLib.icon_path("exit.svg"))
 
@@ -182,6 +182,17 @@ func _set_button_icon(button: Button, path: String) -> void:
 	if tex != null:
 		button.icon = tex
 		button.expand_icon = true
+
+
+func _set_wheel_button_icon(button: Button, file_name: String, max_size: int = 28) -> void:
+	var tex := LnUiLib.load_wheel_icon(file_name)
+	if tex == null:
+		_set_button_icon(button, LnUiLib.icon_path("wheel.svg"))
+		return
+	button.icon = tex
+	button.expand_icon = true
+	button.add_theme_constant_override("icon_max_width", max_size)
+	button.add_theme_constant_override("icon_max_height", max_size)
 
 
 func _animate_entrance() -> void:

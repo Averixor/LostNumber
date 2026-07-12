@@ -7,6 +7,13 @@ const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 const RulesLib := preload("res://scripts/core/Rules.gd")
 
+const BONUS_WHEEL_ICONS := {
+	"explosion": "wheel-explosion.png",
+	"shuffle": "wheel-shuffle.png",
+	"destroy": "wheel-break.png",
+}
+const BONUS_ICON_SIZE := 22
+
 signal menu_pressed
 signal sound_pressed
 signal save_pressed
@@ -208,20 +215,34 @@ func _load_icons() -> void:
 	_set_button_icon(save_button, LnUiLib.icon_path("save.svg"), false)
 	_set_button_icon(theme_button, LnUiLib.icon_path("theme.svg"), false)
 	_set_button_icon(sound_button, LnUiLib.icon_path("sound.svg"), false)
-	# Bonus buttons are text-only (+ badge / lock). No neon icon under the label.
-	for btn in [explosion_button, shuffle_button, destroy_button]:
-		btn.icon = null
-		btn.expand_icon = false
+	for kind in BONUS_WHEEL_ICONS:
+		var btn := _bonus_button_for_type(kind)
+		if btn != null:
+			_apply_bonus_wheel_icon(btn, kind)
 
 
-func _configure_bonus_button(button: Button, _path: String = "") -> void:
-	button.icon = null
+func _configure_bonus_button(button: Button, kind: String) -> void:
+	_apply_bonus_wheel_icon(button, kind)
+
+
+func _apply_bonus_wheel_icon(button: Button, kind: String) -> void:
+	var file_name: String = BONUS_WHEEL_ICONS.get(kind, "")
+	if file_name.is_empty():
+		button.icon = null
+		button.expand_icon = false
+		return
+	var tex := LnUiLib.load_wheel_icon(file_name)
+	if tex == null:
+		button.icon = null
+		button.expand_icon = false
+		return
+	button.icon = tex
 	button.expand_icon = false
-	button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	button.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
 	button.alignment = HORIZONTAL_ALIGNMENT_CENTER
-	button.add_theme_constant_override("icon_max_width", 20)
-	button.add_theme_constant_override("icon_max_height", 20)
+	button.add_theme_constant_override("icon_max_width", BONUS_ICON_SIZE)
+	button.add_theme_constant_override("icon_max_height", BONUS_ICON_SIZE)
 
 
 func _set_button_icon(button: Button, path: String, clear_text: bool = true) -> void:
@@ -335,7 +356,7 @@ func _style_bonus_button(button: Button, kind: String, count: int, active_bonus:
 		border = Color(ThemeTokensLib.COLOR_PANEL_BORDER, 0.35)
 
 	var normal := LnUiLib.glass_box(14, 2, bg, border)
-	normal.content_margin_left = 8
+	normal.content_margin_left = 6
 	normal.content_margin_right = 8
 	normal.content_margin_top = 6
 	normal.content_margin_bottom = 6
@@ -366,9 +387,7 @@ func _style_bonus_button(button: Button, kind: String, count: int, active_bonus:
 	button.add_theme_color_override("font_disabled_color", LnUiLib.TEXT_DISABLED)
 	button.modulate = Color.WHITE
 
-	# Text-only bonuses — no icons under labels (lock or bonus art).
-	button.icon = null
-	button.expand_icon = false
+	_apply_bonus_wheel_icon(button, kind)
 
 
 func _clear_bonus_button_focus(active_bonus: String) -> void:

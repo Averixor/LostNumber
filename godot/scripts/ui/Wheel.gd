@@ -93,9 +93,7 @@ func _refresh_ui() -> void:
 		spin_button.text = _wheel_error_text(str(check.get("reason", "")))
 	else:
 		spin_button.text = _i18n("btn_spin_wheel", [cost])
-	if ResourceLoader.exists(LnUiLib.icon_path("reward-xp.svg")):
-		spin_button.icon = load(LnUiLib.icon_path("reward-xp.svg"))
-		spin_button.expand_icon = true
+	LnUiLib.apply_wheel_button_icon(spin_button, "wheel-xp-25.png", 26)
 	LnUiLib.apply_button(spin_button, spin_button.disabled)
 	var remaining := WheelManager.MAX_DAILY_SPINS - _state.wheel_spins_today
 	cost_label.text = "%s: %d/%d" % [_i18n("wheel_title"), _state.wheel_spins_today, WheelManager.MAX_DAILY_SPINS]

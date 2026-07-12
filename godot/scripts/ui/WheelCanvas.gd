@@ -8,7 +8,7 @@ const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 const WheelManagerLib := preload("res://scripts/meta/WheelManager.gd")
 
 const WHEEL_ICON_DIR := "res://assets/ui/icons/wheel/"
-const WHEEL_ICON_SIZE := 36.0
+const WHEEL_ICON_SIZE := 44.0
 
 const SECTOR_ICON_FILES := {
 	"xp25": "wheel-xp-25.png",

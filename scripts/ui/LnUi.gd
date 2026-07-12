@@ -40,6 +40,7 @@ const BOOT_LOGO_PATH := "res://assets/boot/boot-logo.png"
 const LOGO_PATH := "res://assets/ui/logo/lost-number-logo.png"
 const LOGO_GLOW_PATH := "res://assets/ui/logo/lost-number-logo-glow.png"
 const ICON_DIR := "res://assets/ui/icons/neon/"
+const WHEEL_ICON_DIR := "res://assets/ui/icons/wheel/"
 
 const LIGHT_BACKGROUNDS := [
 	"res://assets/ui/backgrounds/light/bg-light-01.png",
@@ -373,6 +374,27 @@ static func apply_body(label: Label, size: int = 22) -> void:
 
 static func icon_path(name: String) -> String:
 	return ICON_DIR + name
+
+
+static func wheel_icon_path(file_name: String) -> String:
+	return WHEEL_ICON_DIR + file_name
+
+
+static func load_wheel_icon(file_name: String) -> Texture2D:
+	var path := wheel_icon_path(file_name)
+	if ResourceLoader.exists(path):
+		return load(path) as Texture2D
+	return null
+
+
+static func apply_wheel_button_icon(btn: Button, file_name: String, max_size: int = 26) -> void:
+	var tex := load_wheel_icon(file_name)
+	if tex == null:
+		return
+	btn.icon = tex
+	btn.expand_icon = true
+	btn.add_theme_constant_override("icon_max_width", max_size)
+	btn.add_theme_constant_override("icon_max_height", max_size)
 
 
 static func _theme_manager() -> Node:
