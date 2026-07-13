@@ -8,10 +8,10 @@
     "@capacitor/cli": "^7.6.7",
     "@capacitor/core": "^7.6.7",
     "@capacitor/status-bar": "^7.0.6",
-    "@cursor/sdk": "^1.0.12",
-    "eslint": "^10.3.0",
-    "globals": "^17.6.0",
-    "prettier": "3.5.3",
+    "@cursor/sdk": "^1.0.23",
+    "eslint": "^10.7.0",
+    "globals": "^17.7.0",
+    "prettier": "3.9.5",
     "typescript": "^5.9.3"
   },
   "scripts": {
