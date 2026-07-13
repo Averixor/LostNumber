@@ -68,7 +68,6 @@ func _render() -> void:
 		child.queue_free()
 
 	var progress := _load_progress()
-	var unlocked_text := _i18n("achievement_unlocked")
 	var locked_text := _i18n("achievement_locked")
 
 	for key in progress.achievements.keys():
@@ -76,13 +75,15 @@ func _render() -> void:
 		var card = AchievementCardScene.instantiate()
 		list.add_child(card)
 		if card != null and card.has_method("setup"):
+			var title := _achievement_name(key)
+			var unlocked := bool(item.get("unlocked", false))
 			card.call(
 				"setup",
-				bool(item.get("unlocked", false)),
-				_achievement_name(key),
+				unlocked,
+				title,
 				int(item.get("progress", 0)),
 				int(item.get("max", 1)),
-				unlocked_text,
+				"✓",
 				locked_text
 			)
 

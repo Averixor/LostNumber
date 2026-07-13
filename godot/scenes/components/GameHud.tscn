@@ -8,38 +8,73 @@ theme_override_constants/separation = 6
 alignment = 1
 script = ExtResource("1_hud")
 
-[node name="TopBar" type="HBoxContainer" parent="."]
+[node name="TopBar" type="Control" parent="."]
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
-theme_override_constants/separation = 6
+
+[node name="BarRow" type="HBoxContainer" parent="TopBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
 alignment = 1
 
-[node name="MenuButton" type="Button" parent="TopBar"]
-custom_minimum_size = Vector2(36, 36)
+[node name="MenuButton" type="Button" parent="TopBar/BarRow"]
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 
-[node name="LevelLabel" type="Label" parent="TopBar"]
-layout_mode = 2
-text = "Рівень 1"
-
-[node name="TopSpacer" type="Control" parent="TopBar"]
+[node name="LeftSpacer" type="Control" parent="TopBar/BarRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SaveButton" type="Button" parent="TopBar"]
-custom_minimum_size = Vector2(36, 36)
+[node name="LevelLabel" type="Label" parent="TopBar/BarRow"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Рівень 1"
+horizontal_alignment = 1
+
+[node name="RightSpacer" type="Control" parent="TopBar/BarRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RightCluster" type="HBoxContainer" parent="TopBar/BarRow"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="SaveButton" type="Button" parent="TopBar/BarRow/RightCluster"]
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 
-[node name="SoundButton" type="Button" parent="TopBar"]
-custom_minimum_size = Vector2(36, 36)
+[node name="SoundButton" type="Button" parent="TopBar/BarRow/RightCluster"]
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 
-[node name="ThemeButton" type="Button" parent="TopBar"]
-custom_minimum_size = Vector2(36, 36)
+[node name="ThemeButton" type="Button" parent="TopBar/BarRow/RightCluster"]
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 
-[node name="SaveIndicator" type="Label" parent="TopBar"]
-visible = false
-layout_mode = 2
+[node name="SaveToast" type="Label" parent="TopBar"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -72.0
+offset_top = -14.0
+offset_right = 72.0
+offset_bottom = 14.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="GoalRow" type="HBoxContainer" parent="."]
 layout_mode = 2

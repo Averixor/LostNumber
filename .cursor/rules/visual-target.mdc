@@ -1,0 +1,8 @@
+---
+description: Visual north star — gothic integration, not flat neon stickers
+alwaysApply: true
+---
+
+# Lost Number — visual reminder
+
+Canonical target: `docs/en/VISUAL_TARGET.md`. UI must integrate with the scene (stone/metal frames, horns, chains) — not flat neon rectangles on castle/lava backgrounds. Wheel: ornate rim, large readable segment icons + i18n labels. Main menu: centered logo, 1–2 stone-framed CTAs, bottom pedestal icon row. Match UI chrome to active theme profile (hell/lava, gothic purple, royal purple).

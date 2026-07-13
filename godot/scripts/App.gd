@@ -125,7 +125,7 @@ func _show_exit_confirm() -> void:
 	_exit_dialog.ok_button_text = _i18n("btn_exit")
 	_exit_dialog.cancel_button_text = _i18n("menu_back")
 	_exit_dialog.confirmed.connect(_quit_app)
-	add_child(_exit_dialog)
+	modal_layer.add_child(_exit_dialog)
 	_exit_dialog.popup_centered()
 
 
@@ -134,9 +134,6 @@ func request_exit() -> void:
 
 
 func _quit_app() -> void:
-	if OS.get_name() == "Android":
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MINIMIZED)
-		return
 	get_tree().quit()
 
 

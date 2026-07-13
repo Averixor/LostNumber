@@ -108,12 +108,13 @@ const COLOR_CHAIN_GLOW := Color(Color("#00ff6b"), 0.35)
 const COLOR_CHAIN_BRIGHT := Color("#00ff6b")
 
 const WHEEL_SECTOR_COLORS := [
-	Color("#00ff6b"), Color("#ff1b9e"), Color("#00f0ff"), Color("#b83dff"),
-	Color("#ffb800"), Color("#ff6600"), Color("#ff006e"), Color("#7030a0"),
+	Color("#3d6b4a"), Color("#6b3a58"), Color("#3a5a6b"), Color("#4a3a6b"),
+	Color("#6b5a32"), Color("#6b4a2e"), Color("#5a2e48"), Color("#3a2a55"),
 ]
 
-const WHEEL_RIM_GOLD := Color("#ffb800")
-const WHEEL_RIM_ORANGE := Color("#ff6600")
+const WHEEL_RIM_GOLD := Color("#c9a227")
+const WHEEL_RIM_BRONZE := Color("#8a6230")
+const WHEEL_RIM_ORANGE := Color("#a86b2e")
 
 const SPINNER_COLOR := Color("#00ff6b")
 const LOADING_TEXT_COLOR := Color("#c0b8d8")

@@ -129,9 +129,14 @@ func _ensure_option_label(option: OptionButton, key: String) -> void:
 		parent.add_child(label)
 		parent.move_child(label, option.get_index())
 	label.text = _i18n(key)
-	label.add_theme_font_size_override("font_size", 14)
+	label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_BODY)
 	label.add_theme_color_override("font_color", ThemeTokensLib.COLOR_TEXT)
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var font: Font = get_theme_default_font()
+	if font == null:
+		font = ThemeDB.fallback_font
+	if font != null:
+		label.add_theme_font_override("font", font)
 
 
 func _setup_options() -> void:
@@ -232,6 +237,41 @@ func _style_controls() -> void:
 	for option in [sfx_volume_option, music_volume_option, music_track_option, tile_font_size_option, language_option]:
 		if option != null:
 			LnUiLib.apply_option_row_style(option, false)
+
+	_apply_unified_font()
+
+
+func _apply_unified_font() -> void:
+	## One theme font family + body size across Settings labels, toggles, options.
+	var font: Font = get_theme_default_font()
+	if font == null:
+		font = ThemeDB.fallback_font
+	var body_size := ThemeTokensLib.FONT_SIZE_BODY
+	var title_size := ThemeTokensLib.FONT_SIZE_TITLE + 4
+
+	if title_label != null:
+		if font != null:
+			title_label.add_theme_font_override("font", font)
+		title_label.add_theme_font_size_override("font_size", title_size)
+
+	var controls: Array = [
+		sound_check, music_check, bg_effects_check, leaderboard_check, skin_auto_check,
+		sfx_volume_option, music_volume_option, music_track_option, tile_font_size_option, language_option,
+		theme_button, skin_pick_button, import_button, exit_button, back_button,
+		skin_label, import_status,
+	]
+	if vbox != null:
+		for child in vbox.get_children():
+			if child is Label and child not in controls:
+				controls.append(child)
+
+	for ctrl in controls:
+		if ctrl == null:
+			continue
+		if font != null:
+			ctrl.add_theme_font_override("font", font)
+		ctrl.add_theme_font_size_override("font_size", body_size)
+		ctrl.add_theme_color_override("font_color", ThemeTokensLib.COLOR_TEXT)
 
 
 func _connect_signals() -> void:
