@@ -69,7 +69,8 @@
     "godot:android:release": "bash ./scripts/godot-android-export.sh release",
     "pack:unified": "bash ./scripts/pack-unified.sh",
     "cursor:audit": "node ./scripts/cursor-audit-local.mjs",
-    "cursor:audit:stream": "node ./scripts/cursor-audit-local.mjs --stream"
+    "cursor:audit:stream": "node ./scripts/cursor-audit-local.mjs --stream",
+    "godot:android:adb-install": "bash ./scripts/godot-android-adb-install.sh"
   },
   "engines": {
     "node": ">=20.19.0"
