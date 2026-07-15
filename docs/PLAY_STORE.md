@@ -61,8 +61,9 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 ## 3. Privacy Policy
 
 - Файл: `privacy.html` (корінь репозиторію)
-- Хостинг: `npm run privacy:package` → `privacy-host/` (Netlify Drop, Cloudflare Pages тощо)
-- URL для Play Console: ваш опублікований URL до `privacy.html`
+- Хостинг: GitHub Pages автоматично після push у `main` (`.github/workflows/pages.yml`, лише privacy)
+- Альтернатива: `npm run privacy:package` → `privacy-host/` (Netlify Drop, Cloudflare Pages тощо)
+- URL для Play Console: `https://averixor.github.io/LostNumber/privacy.html`
 
 ## 4. Заповнення сторінки застосунку
 
