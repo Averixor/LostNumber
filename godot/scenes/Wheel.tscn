@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://wheel001"]
 
-[ext_resource type="Script" path="res://scripts/ui/Wheel.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/ui/GothicWheel.gd" id="1_script"]
 [ext_resource type="Script" path="res://scripts/ui/WheelCanvas.gd" id="2_canvas"]
 [ext_resource type="PackedScene" uid="uid://neonbutton001" path="res://scenes/components/NeonButton.tscn" id="3_neon"]
 
