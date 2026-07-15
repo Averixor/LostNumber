@@ -11,10 +11,10 @@
 
 **Не** деплоїться веб-гра (`index.html` гри, `js/`, `css/`).
 
-| URL                                                  | Призначення                          |
-| ---------------------------------------------------- | ------------------------------------ |
-| `https://averixor.github.io/LostNumber/privacy.html` | Privacy Policy для Play Console      |
-| `https://averixor.github.io/LostNumber/`             | Редirect на `privacy.html`           |
+| URL                                                  | Призначення                     |
+| ---------------------------------------------------- | ------------------------------- |
+| `https://averixor.github.io/LostNumber/privacy.html` | Privacy Policy для Play Console |
+| `https://averixor.github.io/LostNumber/`             | Редirect на `privacy.html`      |
 
 Потрібен публічний репозиторій і увімкнений GitHub Pages (джерело: **GitHub Actions**).
 
