@@ -39,6 +39,8 @@ func _style_pause_overlay() -> void:
 	pause_menu_button.text = _i18n("hud_menu")
 	_style_action_button(resume_button, true)
 	_style_action_button(pause_menu_button, false)
+	# Base Game._ready() styles ContinueButton before calling this hook.
+	_style_level_complete_overlay()
 
 
 func _style_level_complete_overlay() -> void:
