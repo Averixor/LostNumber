@@ -1,0 +1,2 @@
+droid:
+	./build.sh
