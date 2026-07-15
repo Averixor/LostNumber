@@ -19,6 +19,10 @@ printf '%s\n' "Importing Godot resources..."
 printf '%s\n' "Running resource path case check..."
 python3 "$ROOT_DIR/tools/path_case_lint.py" "$ROOT_DIR/godot"
 
+printf '%s\n' "Running visual skin checks..."
+"$GODOT_BIN" --headless --path "$ROOT_DIR/godot" \
+	--script res://scripts/tests/run_visual_skin_tests.gd
+
 printf '%s\n' "Building Android debug APK..."
 "$GODOT_BIN" --headless --path "$ROOT_DIR/godot" \
 	--export-debug "Android" "$ROOT_DIR/build/lostnumber-debug.apk"

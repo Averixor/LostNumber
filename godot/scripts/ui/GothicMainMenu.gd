@@ -3,7 +3,6 @@ class_name GothicMainMenu
 
 const GothicScreenMixinLib := preload("res://scripts/ui/GothicScreenMixin.gd")
 const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
-const MENU_BACKDROP := "res://assets/ui/skins/gothic_crystal/game-backdrop.svg"
 
 
 func _ready() -> void:
@@ -15,7 +14,7 @@ func _ready() -> void:
 
 
 func _apply_gothic_visuals() -> void:
-	GothicScreenMixinLib.apply_background(self, MENU_BACKDROP, 0.28)
+	GothicScreenMixinLib.apply_background(self, "", 0.28, &"menu")
 	for button in [play_button, continue_button, wheel_button, exit_button]:
 		GothicScreenMixinLib.style_button(self, button)
 	for button in [quick_settings, quick_stats, quick_about]:
