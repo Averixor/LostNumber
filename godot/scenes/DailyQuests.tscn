@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://daily001"]
 
-[ext_resource type="Script" path="res://scripts/ui/DailyQuests.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/ui/GothicDailyQuests.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://neonbutton001" path="res://scenes/components/NeonButton.tscn" id="2_neon"]
 
 [node name="DailyQuests" type="Control"]

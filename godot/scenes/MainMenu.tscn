@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://mainmenu001"]
 
-[ext_resource type="Script" path="res://scripts/ui/MainMenu.gd" id="1_menu"]
+[ext_resource type="Script" path="res://scripts/ui/GothicMainMenu.gd" id="1_menu"]
 [ext_resource type="Shader" path="res://themes/title_gradient.gdshader" id="2_gradient"]
 [ext_resource type="PackedScene" uid="uid://neonbutton001" path="res://scenes/components/NeonButton.tscn" id="3_neonbtn"]
 [ext_resource type="PackedScene" uid="uid://menu_dock_btn" path="res://scenes/components/MenuDockButton.tscn" id="4_dock"]
