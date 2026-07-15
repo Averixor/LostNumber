@@ -1,17 +1,27 @@
 extends "res://scripts/ui/MainMenu.gd"
 class_name GothicMainMenu
 
-const GothicScreenMixin := preload("res://scripts/ui/GothicScreenMixin.gd")
+const GothicScreenMixinLib := preload("res://scripts/ui/GothicScreenMixin.gd")
+const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
+const MENU_BACKDROP := "res://assets/ui/skins/gothic_crystal/game-backdrop.svg"
 
-var _mixin := GothicScreenMixin.new()
 
 func _ready() -> void:
-	_mixin._apply_gothic_background("menu")
-	_style_buttons()
 	super._ready()
+	_apply_gothic_visuals()
+	var theme := _autoload("ThemeManager")
+	if theme != null and theme.has_signal("theme_changed"):
+		theme.theme_changed.connect(_apply_gothic_visuals)
 
-func _style_buttons() -> void:
-	for btn in [play_button, wheel_button, settings_button, stats_button, achievements_button]:
-		btn.add_theme_stylebox_override("normal", GothicVisuals.icon_button({}, "normal"))
-		btn.add_theme_stylebox_override("hover", GothicVisuals.icon_button({}, "hover"))
-		btn.add_theme_stylebox_override("pressed", GothicVisuals.icon_button({}, "pressed"))
+
+func _apply_gothic_visuals() -> void:
+	GothicScreenMixinLib.apply_background(self, MENU_BACKDROP, 0.28)
+	for button in [play_button, continue_button, wheel_button, exit_button]:
+		GothicScreenMixinLib.style_button(self, button)
+	for button in [quick_settings, quick_stats, quick_about]:
+		GothicScreenMixinLib.style_button(self, button)
+	for button in [dock_premium, dock_tournaments, dock_achievements, dock_daily, dock_bonuses]:
+		GothicScreenMixinLib.style_button(self, button)
+
+	tagline_label.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
+	version_label.add_theme_color_override("font_color", GothicVisualsLib.TEXT_MUTED)
