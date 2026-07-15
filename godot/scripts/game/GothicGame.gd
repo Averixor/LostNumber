@@ -4,11 +4,11 @@ extends "res://scripts/game/Game.gd"
 ## Gameplay state, saves, navigation and localization remain in Game.gd.
 
 const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
-const GOTHIC_GAME_BG := "res://assets/ui/skins/gothic_crystal/game-backdrop.svg"
+const GothicScreenMixinLib := preload("res://scripts/ui/GothicScreenMixin.gd")
 
 
 func _apply_theme() -> void:
-	LnUiLib.set_background(self, GOTHIC_GAME_BG, 0.34)
+	GothicScreenMixinLib.apply_background(self, "", 0.34, &"game")
 	if background != null:
 		background.color = Color.TRANSPARENT
 		background.visible = false
