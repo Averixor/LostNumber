@@ -47,3 +47,16 @@ static func style_button(host: Node, button: Button) -> void:
 	button.add_theme_color_override("font_hover_color", GothicVisualsLib.GOLD_LIGHT)
 	button.add_theme_color_override("font_pressed_color", GothicVisualsLib.TEXT_IVORY)
 	button.add_theme_color_override("font_disabled_color", GothicVisualsLib.TEXT_MUTED)
+
+
+static func style_subtree(host: Node, root: Node) -> void:
+	if root == null:
+		return
+	if root is PanelContainer:
+		style_panel(host, root as PanelContainer)
+	elif root is Button:
+		style_button(host, root as Button)
+	elif root is Label:
+		(root as Label).add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
+	for child in root.get_children():
+		style_subtree(host, child)
