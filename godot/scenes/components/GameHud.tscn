@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://game_hud_component"]
 
-[ext_resource type="Script" path="res://scripts/ui/GameHud.gd" id="1_hud"]
+[ext_resource type="Script" path="res://scripts/ui/GothicGameHud.gd" id="1_hud"]
 [ext_resource type="PackedScene" uid="uid://neonbutton001" path="res://scenes/components/NeonButton.tscn" id="2_neon"]
 
 [node name="GameHud" type="VBoxContainer"]
