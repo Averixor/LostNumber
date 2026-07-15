@@ -22,7 +22,8 @@ func _ensure_gothic_frame() -> void:
 		_gothic_frame = PanelContainer.new()
 		_gothic_frame.name = "GothicBoardFrame"
 		_gothic_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		_gothic_frame.z_index = -1
+		# Keep the frame in the board's canvas layer; child order places it behind tiles.
+		_gothic_frame.z_index = 0
 		add_child(_gothic_frame)
 		move_child(_gothic_frame, 0)
 
