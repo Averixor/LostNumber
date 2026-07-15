@@ -11,16 +11,16 @@ Primary release path: **Godot 4 Android AAB** → Google Play. Web/JS/Capacitor 
 
 ## Current release identity
 
-| Field       | Release                               | Debug                                       |
-| ----------- | ------------------------------------- | ------------------------------------------- |
-| Package     | `com.averixor.lostnumber`             | `com.averixor.lostnumber.dev`               |
-| versionName | `2.1.6`                               | `2.1.6-dev`                                 |
-| versionCode | `16`                                  | `16`                                        |
-| Format      | AAB                                   | APK                                         |
+| Field       | Release                         | Debug                                 |
+| ----------- | ------------------------------- | ------------------------------------- |
+| Package     | `com.averixor.lostnumber`       | `com.averixor.lostnumber.dev`         |
+| versionName | `2.1.6`                         | `2.1.6-dev`                           |
+| versionCode | `16`                            | `16`                                  |
+| Format      | AAB                             | APK                                   |
 | Output      | `build/android/lost-number.aab` | `build/android/lost-number-debug.apk` |
-| minSdk      | 24                                    | 24                                          |
-| targetSdk   | 35                                    | 35                                          |
-| ABI         | arm64-v8a, x86_64                     | arm64-v8a, x86_64                           |
+| minSdk      | 24                              | 24                                    |
+| targetSdk   | 35                              | 35                                    |
+| ABI         | arm64-v8a, x86_64               | arm64-v8a, x86_64                     |
 
 **Next Play upload:** versionCode **17** (must exceed any previously uploaded code).
 

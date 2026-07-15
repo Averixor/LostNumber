@@ -6,8 +6,8 @@
 
 | Артефакт                       | Шлях / команда                                                                        |
 | ------------------------------ | ------------------------------------------------------------------------------------- |
-| Release AAB (Godot)            | `npm run godot:android:release` → `build/android/lost-number.aab`               |
-| Debug APK (локальна перевірка) | `npm run godot:android:debug` → `build/android/lost-number-debug.apk`           |
+| Release AAB (Godot)            | `npm run godot:android:release` → `build/android/lost-number.aab`                     |
+| Debug APK (локальна перевірка) | `npm run godot:android:debug` → `build/android/lost-number-debug.apk`                 |
 | Іконка Play (512)              | `store/play-high-res-icon-512.png`                                                    |
 | Feature graphic                | `store/feature-graphic-1024x500.png`                                                  |
 | Чернетки скріншотів            | `store/screenshots/phone/`                                                            |

@@ -11,8 +11,8 @@
 | `LostNumber-good-project.zip` | Web + Capacitor + Godot + store | **База** — вже в репо                                     |
 | `LostNumber-handoff (1).zip`  | Старіший handoff                | **Не використовувати** — гірші chain/audio фікси          |
 | `Нова тека.zip`               | Логотипи, фони, feature graphic | **Вже в** `assets/`, `store/google-play-games/originals/` |
-| `lost-number-debug.apk`       | Godot debug збірка              | **Скопійовано в** `build/android/`                  |
-| `lost-number.aab`             | Godot release для Play          | **Скопійовано в** `build/android/`                  |
+| `lost-number-debug.apk`       | Godot debug збірка              | **Скопійовано в** `build/android/`                        |
+| `lost-number.aab`             | Godot release для Play          | **Скопійовано в** `build/android/`                        |
 
 ## Що взято з кожного джерела
 
@@ -39,10 +39,10 @@
 
 ## Android (Godot only)
 
-| Мета                            | Команда                         | Артефакт                                            |
-| ------------------------------- | ------------------------------- | --------------------------------------------------- |
-| **Play Market**                   | `npm run godot:android:release` | `build/android/lost-number.aab`               |
-| Debug на телефон                | `npm run godot:android:debug`   | `build/android/lost-number-debug.apk`         |
+| Мета             | Команда                         | Артефакт                              |
+| ---------------- | ------------------------------- | ------------------------------------- |
+| **Play Market**  | `npm run godot:android:release` | `build/android/lost-number.aab`       |
+| Debug на телефон | `npm run godot:android:debug`   | `build/android/lost-number-debug.apk` |
 
 > Capacitor/WebView шлях видалено з репозиторію (2026-07).
 

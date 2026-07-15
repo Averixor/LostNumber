@@ -34,13 +34,13 @@ Static page **`privacy.html`** at repo root — not part of the game. Host separ
 
 Повний навігатор: **[docs/README.md](docs/README.md)**
 
-| Topic | Doc |
-| ----- | --- |
-| Folder structure | [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md) |
-| Canonical decisions | [docs/en/SOURCE_OF_TRUTH.md](docs/en/SOURCE_OF_TRUTH.md) |
-| Visual target | [docs/en/VISUAL_TARGET.md](docs/en/VISUAL_TARGET.md) |
-| Android release | [docs/ANDROID_RELEASE_READINESS.md](docs/ANDROID_RELEASE_READINESS.md) |
-| Play Store | [docs/PLAY_STORE.md](docs/PLAY_STORE.md) |
+| Topic               | Doc                                                                    |
+| ------------------- | ---------------------------------------------------------------------- |
+| Folder structure    | [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md)                 |
+| Canonical decisions | [docs/en/SOURCE_OF_TRUTH.md](docs/en/SOURCE_OF_TRUTH.md)               |
+| Visual target       | [docs/en/VISUAL_TARGET.md](docs/en/VISUAL_TARGET.md)                   |
+| Android release     | [docs/ANDROID_RELEASE_READINESS.md](docs/ANDROID_RELEASE_READINESS.md) |
+| Play Store          | [docs/PLAY_STORE.md](docs/PLAY_STORE.md)                               |
 
 ## Structure
 

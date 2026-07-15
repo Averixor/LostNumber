@@ -37,12 +37,12 @@ Export templates are downloaded automatically on first build if missing.
 
 ## Play Console upload
 
-| Field       | Value                                                          |
-| ----------- | -------------------------------------------------------------- |
-| Package     | `com.averixor.lostnumber`                                      |
-| Version     | `2.1.6` (versionCode 16)                                       |
+| Field       | Value                                                    |
+| ----------- | -------------------------------------------------------- |
+| Package     | `com.averixor.lostnumber`                                |
+| Version     | `2.1.6` (versionCode 16)                                 |
 | AAB         | `build/android/lost-number.aab`                          |
-| Privacy URL | `https://averixor.github.io/LostNumber/privacy.html`           |
+| Privacy URL | `https://averixor.github.io/LostNumber/privacy.html`     |
 | Store texts | `docs/store-listing/` or `store/PLAY_CONSOLE_LISTING.md` |
 
 Full checklist: [docs/PLAY_STORE.md](../docs/PLAY_STORE.md) — same listing assets; only the build artifact path changes.
@@ -56,7 +56,7 @@ Full checklist: [docs/PLAY_STORE.md](../docs/PLAY_STORE.md) — same listing ass
 | Save        | `localStorage`                | `user://lost_number_save.json` + legacy import (`LegacySaveMigration`) |
 | Navigation  | `ScreenManager` + DOM screens | `ScreenRouter` + back-stack, fade transitions                          |
 | UI shell    | `#appBackground` + CSS        | `App.tscn` + `BackgroundLayer`, `NeonButton`, tokens                   |
-| Package     | —                             | `build/android/...`                                              |
+| Package     | —                             | `build/android/...`                                                    |
 
 ## Current scope (Godot 2.1.6)
 

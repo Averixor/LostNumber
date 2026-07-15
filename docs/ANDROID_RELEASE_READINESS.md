@@ -13,15 +13,15 @@ App shell persists `BackgroundLayer` and overlay layers; individual screens moun
 
 ## Export preset (`export_presets.cfg`)
 
-| Field       | Release (`preset.0`)                  | Debug (`preset.1`)                          |
-| ----------- | ------------------------------------- | ------------------------------------------- |
-| Package     | `com.averixor.lostnumber`             | `com.averixor.lostnumber.dev`               |
-| versionCode | `16`                                  | `16`                                        |
-| versionName | `2.1.6`                               | `2.1.6-dev`                                 |
-| Format      | AAB (`export_format=1`)               | APK                                         |
-| minSdk      | 24                                    | 24                                          |
-| targetSdk   | 35                                    | 35                                          |
-| ABI         | arm64-v8a, x86_64                     | arm64-v8a, x86_64                           |
+| Field       | Release (`preset.0`)            | Debug (`preset.1`)                    |
+| ----------- | ------------------------------- | ------------------------------------- |
+| Package     | `com.averixor.lostnumber`       | `com.averixor.lostnumber.dev`         |
+| versionCode | `16`                            | `16`                                  |
+| versionName | `2.1.6`                         | `2.1.6-dev`                           |
+| Format      | AAB (`export_format=1`)         | APK                                   |
+| minSdk      | 24                              | 24                                    |
+| targetSdk   | 35                              | 35                                    |
+| ABI         | arm64-v8a, x86_64               | arm64-v8a, x86_64                     |
 | Output      | `build/android/lost-number.aab` | `build/android/lost-number-debug.apk` |
 
 ### Versioning

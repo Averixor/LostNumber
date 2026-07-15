@@ -22,12 +22,12 @@ High-level technical architecture for Lost Number **2.1.6**. Godot 4.5 is the so
 └─────────────────────────────────────────────────────────┘
 ```
 
-| Layer           | Stack                            | Role                                        |
-| --------------- | -------------------------------- | ------------------------------------------- |
-| Gameplay (ship) | Godot 4.5 GDScript               | Boot → App → screens; back-stack navigation |
-| Save            | `user://` JSON (Godot)           | Checksum + `.bak` rollback                  |
-| Network         | None                             | Offline-only; no PII                        |
-| CI              | GitHub Actions                   | `release:check` on push/PR                  |
+| Layer           | Stack                  | Role                                        |
+| --------------- | ---------------------- | ------------------------------------------- |
+| Gameplay (ship) | Godot 4.5 GDScript     | Boot → App → screens; back-stack navigation |
+| Save            | `user://` JSON (Godot) | Checksum + `.bak` rollback                  |
+| Network         | None                   | Offline-only; no PII                        |
+| CI              | GitHub Actions         | `release:check` on push/PR                  |
 
 ## Godot runtime architecture
 
@@ -127,7 +127,7 @@ LostNumber/                      ← canonical project root
 | ABI filter            | arm64-v8a + x86_64 only                                       | Drop legacy 32-bit (~8k devices)                                             |
 | Image picker          | `ImagePickerHelper.gd`                                        | Custom background without MobileImagePicker dependency                       |
 | Legacy migration      | Android plugin + file import                                  | Upgrade path from old Web/Capacitor saves                                    |
-| Visual source         | PO mockups + [VISUAL_TARGET.md](./VISUAL_TARGET.md)            | Gothic fantasy integration; archive map in `docs/archive/VISUAL_PORT_MAP.md` |
+| Visual source         | PO mockups + [VISUAL_TARGET.md](./VISUAL_TARGET.md)           | Gothic fantasy integration; archive map in `docs/archive/VISUAL_PORT_MAP.md` |
 | Low performance       | `bg_effects_enabled`                                          | Mirrors web `low-performance.css`; disables particles + slide                |
 | Floating numbers      | Removed (Phase 5.6)                                           | FPS regression on weak devices                                               |
 | Firebase / cloud      | Phase 6 — not started                                         | Blocked until Phase 5 performance closed                                     |
@@ -159,9 +159,9 @@ Tracker: [docs/archive/VISUAL_PORT_MAP.md](../archive/VISUAL_PORT_MAP.md) (histo
 
 ## CI / automation
 
-| Workflow                      | Purpose                                                        |
-| ----------------------------- | -------------------------------------------------------------- |
-| `.github/workflows/ci.yml`    | `npm run release:check` on push/PR (no `godot:test:all` in CI) |
+| Workflow                   | Purpose                                                        |
+| -------------------------- | -------------------------------------------------------------- |
+| `.github/workflows/ci.yml` | `npm run release:check` on push/PR (no `godot:test:all` in CI) |
 
 Local full gate: `npm run release:ideal` (format + lint + repo checks + Godot rules/save; skips if no `godot4`). Pre-upload: `npm run godot:verify:aab`.
 

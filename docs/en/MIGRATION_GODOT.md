@@ -82,13 +82,13 @@ Per `GAME_RULES.md` and product scope:
 
 ## What can be removed or demoted
 
-| Path                                                  | Recommendation                                                                |
-| ----------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Path                                                  | Recommendation                                                             |
+| ----------------------------------------------------- | -------------------------------------------------------------------------- |
 | `js/`, `css/`, `index.html`                           | **Removed** from repo (July 2026); see `docs/archive/` for historical maps |
-| `android/` (Capacitor)                                | **Removed** — only `android/keystore/` remains for Godot signing          |
-| `godot/assets/icons/neon/` (duplicate tree)           | **Removed** — canonical icons at `godot/assets/ui/icons/neon/`                |
-| `assets/store/*` in AAB                               | **Excluded** via `export_presets.cfg` `exclude_filter`                        |
-| Floating background numbers (`createFloatingNumbers`) | **Removed** from product (Phase 5.6)                                          |
+| `android/` (Capacitor)                                | **Removed** — only `android/keystore/` remains for Godot signing           |
+| `godot/assets/icons/neon/` (duplicate tree)           | **Removed** — canonical icons at `godot/assets/ui/icons/neon/`             |
+| `assets/store/*` in AAB                               | **Excluded** via `export_presets.cfg` `exclude_filter`                     |
+| Floating background numbers (`createFloatingNumbers`) | **Removed** from product (Phase 5.6)                                       |
 
 Do **not** treat `docs/archive/` migration maps as current ship requirements — use `docs/en/VISUAL_TARGET.md` for acceptance.
 

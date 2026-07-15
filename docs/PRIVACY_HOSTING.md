@@ -13,11 +13,11 @@ npm run privacy:package
 
 ## Варіанти URL
 
-| Варіант | Примітка |
-| ------- | -------- |
+| Варіант                                              | Примітка                                     |
+| ---------------------------------------------------- | -------------------------------------------- |
 | `https://averixor.github.io/LostNumber/privacy.html` | Якщо репозиторій публічний і Pages увімкнено |
-| Netlify / Vercel / Cloudflare | `npm run privacy:package` → drag-and-drop |
-| Власний домен | Скопіюйте `privacy.html` або `privacy-host/` |
+| Netlify / Vercel / Cloudflare                        | `npm run privacy:package` → drag-and-drop    |
+| Власний домен                                        | Скопіюйте `privacy.html` або `privacy-host/` |
 
 URL у Play Console має відкриватися в браузері **до** відправки на перевірку.
 

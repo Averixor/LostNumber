@@ -11,13 +11,13 @@ Record of decisions that govern implementation. Changes require explicit review 
 
 ## Ship target
 
-| Decision              | Choice                                                                         |
-| --------------------- | ------------------------------------------------------------------------------ |
+| Decision              | Choice                                                                   |
+| --------------------- | ------------------------------------------------------------------------ |
 | Primary Android build | **Godot 4.5** AAB (`build/android/lost-number.aab`)                      |
-| Visual authority      | PO mockups + [VISUAL_TARGET.md](./VISUAL_TARGET.md) — not legacy Web/CSS      |
-| Legacy Android        | Removed (Capacitor/WebView stack deleted July 2026)                            |
-| Runtime network       | **None** — fully offline; GDPR-friendly (no tracking, no PII)                  |
-| Cloud budget          | **$0** runtime                                                                 |
+| Visual authority      | PO mockups + [VISUAL_TARGET.md](./VISUAL_TARGET.md) — not legacy Web/CSS |
+| Legacy Android        | Removed (Capacitor/WebView stack deleted July 2026)                      |
+| Runtime network       | **None** — fully offline; GDPR-friendly (no tracking, no PII)            |
+| Cloud budget          | **$0** runtime                                                           |
 
 ## Save format (Godot)
 
@@ -178,14 +178,14 @@ Game scenes reference **`assets/ui/` only**, never `assets/store/*`.
 
 ## Compliance
 
-| Topic                     | Decision                                                      |
-| ------------------------- | ------------------------------------------------------------- |
+| Topic                     | Decision                                                         |
+| ------------------------- | ---------------------------------------------------------------- |
 | Privacy policy            | `privacy.html` — see [PRIVACY_HOSTING.md](../PRIVACY_HOSTING.md) |
-| Play Data Safety          | No collection, no sharing                                     |
-| IARC                      | Puzzle; no violence, gambling, IAP, or ads                    |
-| Audience                  | Casual 3+                                                     |
-| Save encryption at rest   | Not required — SHA-256 integrity + backup; no secrets in save |
-| Kyber / mTLS / zero-trust | N/A — offline consumer game                                   |
+| Play Data Safety          | No collection, no sharing                                        |
+| IARC                      | Puzzle; no violence, gambling, IAP, or ads                       |
+| Audience                  | Casual 3+                                                        |
+| Save encryption at rest   | Not required — SHA-256 integrity + backup; no secrets in save    |
+| Kyber / mTLS / zero-trust | N/A — offline consumer game                                      |
 
 ## Versioning
 
