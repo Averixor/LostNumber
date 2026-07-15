@@ -23,9 +23,6 @@
       <stop offset="0.68" stop-color="#6d279e"/>
       <stop offset="1" stop-color="#21102d"/>
     </radialGradient>
-    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
-      <feGaussianBlur stdDeviation="9"/>
-    </filter>
     <pattern id="stone" width="72" height="56" patternUnits="userSpaceOnUse">
       <rect width="72" height="56" fill="#151219"/>
       <path d="M0 27 H72 M34 0 V27 M12 27 V56 M57 27 V56" stroke="#29232d" stroke-width="2" opacity="0.55"/>
@@ -48,10 +45,10 @@
     <path d="M518 0 C458 96 500 188 446 276 C414 329 466 414 430 495" fill="none" stroke="#6f5b45" stroke-width="3" stroke-dasharray="10 9"/>
   </g>
 
-  <g filter="url(#glow)" opacity="0.45" fill="#a84eff">
-    <circle cx="84" cy="352" r="22"/>
-    <circle cx="456" cy="352" r="22"/>
-    <circle cx="270" cy="78" r="28"/>
+  <g opacity="0.22" fill="#a84eff">
+    <circle cx="84" cy="352" r="38"/>
+    <circle cx="456" cy="352" r="38"/>
+    <circle cx="270" cy="78" r="46"/>
   </g>
   <g>
     <path d="M84 319 L105 351 L84 386 L63 351 Z" fill="#170c20" stroke="url(#metal)" stroke-width="4"/>
