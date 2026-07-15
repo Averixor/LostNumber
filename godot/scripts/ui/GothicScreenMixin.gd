@@ -9,10 +9,19 @@ const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
 const DEFAULT_BACKDROP := "res://assets/ui/skins/gothic_crystal/game-backdrop.svg"
 
 
-static func apply_background(host: Control, backdrop_path: String = DEFAULT_BACKDROP, dim_alpha: float = 0.34) -> void:
+static func apply_background(
+	host: Control,
+	backdrop_path: String = "",
+	dim_alpha: float = 0.34,
+	screen_kind: StringName = &"menu"
+) -> void:
 	if host == null:
 		return
 	var resolved_path := backdrop_path
+	if resolved_path.is_empty():
+		var theme := host.get_node_or_null("/root/ThemeManager")
+		if theme != null and theme.has_method("get_visual_background_path"):
+			resolved_path = str(theme.call("get_visual_background_path", screen_kind))
 	if resolved_path.is_empty() or not ResourceLoader.exists(resolved_path):
 		resolved_path = DEFAULT_BACKDROP
 	if ResourceLoader.exists(resolved_path):
