@@ -1,17 +1,49 @@
-extends Node
+extends RefCounted
+class_name GothicScreenMixin
 
-## Mixin for applying gothic crystal visuals to full‑screen UI scenes.
-## Usage: `class_name GothicScreenMixin` in a script, then `extends GothicScreenMixin` *plus* `extends` of logic script via multiple inheritance (GDScript supports only single extends, so we use `load()` trick or composition).
+## Shared Gothic Crystal presentation helpers.
+## Resource paths are case-sensitive and must match repository filenames exactly.
 
-func _apply_gothic_background(screen_id: String) -> void:
-	var bg_path := "res://assets/ui/skins/gothic_crystal/%s-backdrop.svg" % screen_id
-	LnUiLib.set_background(self, bg_path, 0.34)
+const LnUiLib := preload("res://scripts/ui/LnUi.gd")
+const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
+const DEFAULT_BACKDROP := "res://assets/ui/skins/gothic_crystal/game-backdrop.svg"
 
-func _style_glass_panel(panel: PanelContainer) -> void:
+
+static func apply_background(host: Control, backdrop_path: String = DEFAULT_BACKDROP, dim_alpha: float = 0.34) -> void:
+	if host == null:
+		return
+	var resolved_path := backdrop_path
+	if resolved_path.is_empty() or not ResourceLoader.exists(resolved_path):
+		resolved_path = DEFAULT_BACKDROP
+	if ResourceLoader.exists(resolved_path):
+		LnUiLib.set_background(host, resolved_path, dim_alpha)
+
+
+static func palette(host: Node) -> Dictionary:
+	if host == null:
+		return {}
+	var theme := host.get_node_or_null("/root/ThemeManager")
+	if theme != null and theme.has_method("get_palette"):
+		return theme.call("get_palette")
+	return {}
+
+
+static func style_panel(host: Node, panel: PanelContainer) -> void:
 	if panel == null:
 		return
-	var palette := {}
-	var theme := get_node_or_null("/root/ThemeManager")
-	if theme != null and theme.has_method("get_palette"):
-		palette = theme.call("get_palette")
-	panel.add_theme_stylebox_override("panel", GothicVisuals.hud_panel(palette))
+	panel.add_theme_stylebox_override("panel", GothicVisualsLib.hud_panel(palette(host)))
+
+
+static func style_button(host: Node, button: Button) -> void:
+	if button == null:
+		return
+	var colors := palette(host)
+	button.add_theme_stylebox_override("normal", GothicVisualsLib.icon_button(colors, "normal"))
+	button.add_theme_stylebox_override("hover", GothicVisualsLib.icon_button(colors, "hover"))
+	button.add_theme_stylebox_override("pressed", GothicVisualsLib.icon_button(colors, "pressed"))
+	button.add_theme_stylebox_override("disabled", GothicVisualsLib.icon_button(colors, "disabled"))
+	button.add_theme_stylebox_override("focus", GothicVisualsLib.icon_button(colors, "hover"))
+	button.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
+	button.add_theme_color_override("font_hover_color", GothicVisualsLib.GOLD_LIGHT)
+	button.add_theme_color_override("font_pressed_color", GothicVisualsLib.TEXT_IVORY)
+	button.add_theme_color_override("font_disabled_color", GothicVisualsLib.TEXT_MUTED)
