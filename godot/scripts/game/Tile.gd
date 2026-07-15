@@ -1,13 +1,14 @@
 extends Control
 class_name TileView
 
-## Themed grid cell with 2.5D bevel, shadow, chain glow, and press lift.
+## Themed grid cell with gothic crystal frame, 2.5D stone face, chain glow, and press lift.
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
+const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
 const PRESS_LIFT := 3.0
 const BEVEL_THICKNESS := 4.0
 const SIDE_BEVEL := 3.5
-const FACE_DARKEN := 0.30
+const FACE_DARKEN := 0.10
 const Z_FACE := 0
 const Z_CROWN := 1
 const Z_SELECTION := 2
@@ -29,6 +30,7 @@ const CROWN_LABEL_PUSH_RATIO := 0.16
 @onready var _bottom_edge: ColorRect = $Bg/BottomEdge
 @onready var _left_edge: ColorRect = $Bg/LeftEdge
 @onready var _right_edge: ColorRect = $Bg/RightEdge
+@onready var _frame: TextureRect = $Bg/Frame
 @onready var _label: Label = $Bg/Label
 @onready var _chain_highlight: PanelContainer = $ChainHighlight
 @onready var _chain_fill: ColorRect = $ChainHighlight/Fill
@@ -59,11 +61,14 @@ func _ready() -> void:
 	_apply_label_depth()
 	_stack_chain_highlight_under_label()
 	_chain_highlight.visible = false
+	var theme := get_node_or_null("/root/ThemeManager")
+	if theme != null and theme.has_signal("theme_changed"):
+		theme.theme_changed.connect(_refresh_visual)
 	_refresh_visual()
 
 
 func _stack_chain_highlight_under_label() -> void:
-	# Stack vs Board ChainLineLayer (z=1): face → laser → selection → label.
+	# Stack vs Board ChainLineLayer (z=1): face/frame → laser → selection → label.
 	_bg.z_index = Z_FACE
 	if _chain_highlight.get_parent() != _bg:
 		var insert_at := _label.get_index()
@@ -86,10 +91,10 @@ func _apply_bevelling() -> void:
 
 func _apply_label_depth() -> void:
 	_label.add_theme_constant_override("outline_size", 2)
-	_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.55))
+	_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.72))
 	_label.add_theme_constant_override("shadow_offset_x", 0)
 	_label.add_theme_constant_override("shadow_offset_y", 2)
-	_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.45))
+	_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.58))
 
 
 func _ensure_crown_icon() -> void:
@@ -104,7 +109,7 @@ func _ensure_crown_icon() -> void:
 	_crown_icon.visible = false
 	_crown_icon.z_as_relative = false
 	_crown_icon.z_index = Z_CROWN
-	_crown_icon.modulate = Color(1.0, 1.0, 1.0, CROWN_WATERMARK_ALPHA)
+	_crown_icon.modulate = Color(1.0, 0.88, 0.48, CROWN_WATERMARK_ALPHA)
 	_bg.add_child(_crown_icon)
 	_bg.move_child(_crown_icon, _label.get_index())
 	_label.z_as_relative = false
@@ -185,6 +190,7 @@ func set_chain_selected(selected: bool, preview: String = "") -> void:
 	_chain_preview = preview if selected else ""
 	_refresh_visual()
 
+
 func set_pressed_visual(pressed: bool) -> void:
 	if _pressed == pressed:
 		return
@@ -201,21 +207,25 @@ func set_target_highlight(active: bool) -> void:
 	_target = active
 	_refresh_visual()
 
+
 func set_frozen(frozen: bool) -> void:
 	_frozen = frozen
 	_refresh_visual()
 
+
 func set_bonus_mode(active: bool) -> void:
 	_bonus_mode = active
 	_refresh_visual()
+
 
 func set_carry(active: bool) -> void:
 	_carry = active
 	_carry_badge.visible = false
 	_refresh_visual()
 
+
 func _apply_panel_style() -> void:
-	_shadow.color = Color(0, 0, 0, 0.55)
+	_shadow.color = Color(0, 0, 0, 0.64)
 	_shadow.offset_top = 8.0
 	_shadow.offset_left = 2.0
 	_shadow.offset_right = cell_size.x + 2.0
@@ -226,23 +236,18 @@ func _get_rim_color() -> Color:
 	var theme := get_node_or_null("/root/ThemeManager")
 	if theme != null and theme.has_method("get_palette"):
 		var palette: Dictionary = theme.call("get_palette")
-		return Color(palette.get("rim", Color("#D4AF37")), 0.65)
-	return Color("#D4AF37", 0.55)
+		return Color(palette.get("rim", GothicVisualsLib.GOLD), 0.78)
+	return Color(GothicVisualsLib.GOLD, 0.72)
 
 
 func _draw() -> void:
 	if value <= 0:
 		return
 	var face := _inner.color if _inner.color.a > 0.01 else _color_for_value(value)
-	var glow := Color(face, 0.35)
-	var rect := Rect2(Vector2(2, 2), size - Vector2(4, 6))
-	draw_rect(rect.grow(2.0), glow, false, 3.0)
 	var rim := _get_rim_color()
-	var border_rect := Rect2(Vector2.ZERO, size - Vector2(0, 4))
-	if ThemeTokensLib.is_legendary_tile_value(value):
-		draw_rect(border_rect, Color(rim, 0.65), false, 2.0)
-	else:
-		draw_rect(border_rect, Color(face.lightened(0.15), 0.75), false, 2.0)
+	var rect := Rect2(Vector2(2, 2), size - Vector2(4, 6))
+	var aura := rim if ThemeTokensLib.is_legendary_tile_value(value) else face.lightened(0.22)
+	draw_rect(rect.grow(1.5), Color(aura, 0.30), false, 2.0)
 
 
 func _refresh_visual() -> void:
@@ -255,6 +260,7 @@ func _refresh_visual() -> void:
 		_bottom_edge.color = Color.TRANSPARENT
 		_left_edge.color = Color.TRANSPARENT
 		_right_edge.color = Color.TRANSPARENT
+		_frame.visible = false
 		_shadow.visible = false
 		_label.text = ""
 		if _crown_icon != null:
@@ -263,27 +269,29 @@ func _refresh_visual() -> void:
 		return
 
 	_shadow.visible = true
+	_frame.visible = true
 	var face_color: Color
 	if _frozen:
 		face_color = ThemeTokensLib.TILE_FROZEN_BG
 	else:
-		# Keep value palette; bonus pick uses outline only (no face recolor).
+		# Value remains data-driven; the art frame never contains a baked number.
 		face_color = _color_for_value(value)
 
-	# Darker center + stronger 3D bevel (light top, dark bottom/right).
+	# Stone center with restrained bevel. The ornate SVG frame carries the material identity.
 	_inner.color = face_color.darkened(FACE_DARKEN)
-	_top_edge.color = Color(face_color.lightened(0.28), 0.95)
-	_bottom_edge.color = Color(face_color.darkened(0.42), 0.96)
-	_left_edge.color = Color(face_color.lightened(0.12), 0.82)
-	_right_edge.color = Color(face_color.darkened(0.32), 0.92)
+	_top_edge.color = Color(face_color.lightened(0.16), 0.62)
+	_bottom_edge.color = Color(face_color.darkened(0.34), 0.88)
+	_left_edge.color = Color(face_color.lightened(0.08), 0.54)
+	_right_edge.color = Color(face_color.darkened(0.24), 0.76)
+	_frame.modulate = GothicVisualsLib.tile_frame_tint(value, _frozen, _get_rim_color())
 
-	var text_color := ThemeTokensLib.tile_text_color_for(face_color, value)
+	var text_color := GothicVisualsLib.tile_text_color(face_color, value)
 	_label.add_theme_color_override("font_color", text_color)
 	_label.add_theme_font_size_override("font_size", _tile_font_size())
 	_label.add_theme_constant_override("outline_size", 2)
-	_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.55))
+	_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.74))
 	_label.add_theme_constant_override("shadow_offset_y", 2)
-	_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.45))
+	_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.58))
 
 	if _crown_icon != null:
 		# Crown marks the singular carry tile from the previous level — never board-max.
@@ -299,11 +307,11 @@ func _refresh_visual() -> void:
 		var pick_color := ThemeTokensLib.COLOR_ACCENT_ORANGE
 		var pick_style := StyleBoxFlat.new()
 		pick_style.bg_color = Color(0, 0, 0, 0)
-		pick_style.border_color = Color(pick_color, 0.85)
+		pick_style.border_color = Color(pick_color, 0.90)
 		pick_style.set_border_width_all(2)
 		pick_style.set_corner_radius_all(ThemeTokensLib.TILE_INNER_RADIUS)
-		pick_style.shadow_color = Color(pick_color, 0.28)
-		pick_style.shadow_size = 4
+		pick_style.shadow_color = Color(pick_color, 0.34)
+		pick_style.shadow_size = 5
 		_chain_highlight.add_theme_stylebox_override("panel", pick_style)
 		if _chain_fill != null:
 			_chain_fill.color = Color(pick_color, 0.08)
@@ -312,11 +320,11 @@ func _refresh_visual() -> void:
 		var border_color := _chain_border_color(_chain_preview)
 		var panel_style := StyleBoxFlat.new()
 		panel_style.bg_color = Color(0, 0, 0, 0)
-		panel_style.border_color = Color(border_color, 0.95)
+		panel_style.border_color = Color(border_color, 0.98)
 		panel_style.set_border_width_all(2)
 		panel_style.set_corner_radius_all(ThemeTokensLib.TILE_INNER_RADIUS)
-		panel_style.shadow_color = Color(border_color, 0.35)
-		panel_style.shadow_size = 4
+		panel_style.shadow_color = Color(border_color, 0.42)
+		panel_style.shadow_size = 6
 		_chain_highlight.add_theme_stylebox_override("panel", panel_style)
 		if _chain_fill != null:
 			_chain_fill.color = Color(border_color, 0.12)
@@ -348,14 +356,7 @@ func _chain_border_color(preview: String) -> Color:
 
 
 func _color_for_value(n: int) -> Color:
-	if ThemeTokensLib.TILE_COLORS.has(n):
-		return ThemeTokensLib.TILE_COLORS[n]
 	if ThemeTokensLib.TILE_GRADIENTS.has(n):
 		var pair: Array = ThemeTokensLib.TILE_GRADIENTS[n]
-		return pair[0].lerp(pair[1], 0.5)
-	var log_val := 0
-	var t := n
-	while t > 1:
-		t /= 2
-		log_val += 1
-	return Color.from_hsv(fmod(log_val * 0.09 + 0.08, 1.0), 0.52, 0.78)
+		return pair[0].lerp(pair[1], 0.5).darkened(0.38)
+	return GothicVisualsLib.tile_face_color(n)
