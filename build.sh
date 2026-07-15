@@ -1,11 +1,26 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
-echo "🤖 Import resources..."
-godot --headless --quit --import-resources .
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+GODOT_BIN="${GODOT_BIN:-godot4}"
+if ! command -v "$GODOT_BIN" >/dev/null 2>&1; then
+	GODOT_BIN="godot"
+fi
+if ! command -v "$GODOT_BIN" >/dev/null 2>&1; then
+	echo "Godot executable not found. Set GODOT_BIN or install godot4." >&2
+	exit 127
+fi
 
-echo "📦 Build debug APK..."
-mkdir -p build
-godot --headless --export-debug "Android" build/lostnumber-debug.apk
+mkdir -p "$ROOT_DIR/build"
 
-echo "✅ Done!"
+printf '%s\n' "Importing Godot resources..."
+"$GODOT_BIN" --headless --path "$ROOT_DIR/godot" --editor --quit
+
+printf '%s\n' "Running resource path case check..."
+python3 "$ROOT_DIR/tools/path_case_lint.py" "$ROOT_DIR/godot"
+
+printf '%s\n' "Building Android debug APK..."
+"$GODOT_BIN" --headless --path "$ROOT_DIR/godot" \
+	--export-debug "Android" "$ROOT_DIR/build/lostnumber-debug.apk"
+
+printf '%s\n' "Done: $ROOT_DIR/build/lostnumber-debug.apk"
