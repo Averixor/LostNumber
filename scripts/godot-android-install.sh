@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Clean reinstall Godot debug APK on connected phone (no stale WebView/cache).
+# Build and update the separate Godot debug APK while preserving app data.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -20,4 +20,4 @@ echo "→ godot:android:debug (build)"
 echo "→ launch"
 adb shell monkey -p "$PKG_DEV" -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1 || true
 
-echo "Done: $PKG_DEV installed fresh on device."
+echo "Done: $PKG_DEV updated on device; release package and userdata untouched."

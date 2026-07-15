@@ -18,14 +18,16 @@ node_modules/
 _site/
 privacy-host/
 
-# Capacitor / Android build artifacts
+# Capacitor / Android build artifacts (removed — Godot uses godot/android/build/)
 android/.gradle/
-android/app/build/
+android/app/
 android/build/
 android/local.properties
-*.apk
-*.aab
+# Godot Android APK/AAB output (binaries gitignored; README tracked)
 build/
+!build/android/
+build/android/*
+!build/android/README.md
 
 # Local browser/debug profiles
 .chrome-*/
@@ -74,7 +76,7 @@ copilot-messages.log
 *.exe
 *.msi
 *.bat
-!android/gradlew.bat
+!godot/android/build/gradlew.bat
 *.cmd
 *.com
 *.scr
@@ -118,6 +120,10 @@ godot/.godot/
 .gradle/
 **/.gradle/
 **/build/
+!/build/
+!/build/android/
+/build/android/*
+!/build/android/README.md
 **/intermediates/
 **/outputs/
 

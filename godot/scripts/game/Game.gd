@@ -8,12 +8,14 @@ const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 @onready var game_hud: GameHud = $VBox/GameHud
 @onready var board_view: BoardView = $VBox/BoardView
 @onready var level_complete_panel: PanelContainer = $LevelCompleteOverlay
-@onready var continue_button: Button = $LevelCompleteOverlay/Center/VBox/ContinueButton
-@onready var overlay_title: Label = $LevelCompleteOverlay/Center/VBox/Title
+@onready var level_complete_modal: PanelContainer = $LevelCompleteOverlay/Center/ModalFrame
+@onready var continue_button: Button = $LevelCompleteOverlay/Center/ModalFrame/VBox/ContinueButton
+@onready var overlay_title: Label = $LevelCompleteOverlay/Center/ModalFrame/VBox/Title
 @onready var pause_overlay: PanelContainer = $PauseOverlay
-@onready var pause_title: Label = $PauseOverlay/Center/VBox/PauseTitle
-@onready var resume_button: NeonButton = $PauseOverlay/Center/VBox/ResumeButton
-@onready var pause_menu_button: NeonButton = $PauseOverlay/Center/VBox/MainMenuButton
+@onready var pause_modal: PanelContainer = $PauseOverlay/Center/ModalFrame
+@onready var pause_title: Label = $PauseOverlay/Center/ModalFrame/VBox/PauseTitle
+@onready var resume_button: NeonButton = $PauseOverlay/Center/ModalFrame/VBox/ResumeButton
+@onready var pause_menu_button: NeonButton = $PauseOverlay/Center/ModalFrame/VBox/MainMenuButton
 @onready var background: ColorRect = $Background
 
 var state: GameState = GameState.new()
@@ -24,12 +26,13 @@ func _autoload(name: String) -> Node:
 	return get_node_or_null("/root/" + name)
 
 func _ready() -> void:
-	LnUiLib.set_background(self, LnUiLib.screen_bg("game"))
+	LnUiLib.apply_screen_background(self, "game", 0.62)
+	_bind_theme_updates()
 	_apply_theme()
 	level_complete_panel.visible = false
 	pause_overlay.visible = false
 	continue_button.pressed.connect(_on_continue_level)
-	LnUiLib.apply_button(continue_button)
+	LnUiLib.apply_button(continue_button, false, true)
 	resume_button.pressed.connect(_on_pause_resume)
 	pause_menu_button.pressed.connect(_on_back_to_menu)
 
@@ -43,8 +46,11 @@ func _ready() -> void:
 	board_view.cell_picked.connect(_on_cell_picked)
 	board_view.chain_updated.connect(_on_chain_updated)
 
+	var skip_persistence := bool(get_meta("visual_capture_no_persistence", false))
 	var save := _autoload("SaveManager")
-	if save != null and save.has_method("has_save") and bool(save.call("has_save")):
+	if skip_persistence:
+		state.start_new_game(20260715)
+	elif save != null and save.has_method("has_save") and bool(save.call("has_save")):
 		var loaded_state = save.call("load_game", state)
 		if loaded_state != null:
 			state = loaded_state
@@ -58,7 +64,6 @@ func _ready() -> void:
 	state.progress.flush_leaderboard_queue()
 	board_view.bind_state(state)
 	_refresh_hud()
-	_style_pause_overlay()
 	level_complete_panel.visible = state.should_show_level_complete()
 	var audio := _autoload("AudioManager")
 	if audio != null and audio.has_method("play_settings_music"):
@@ -81,23 +86,79 @@ func handle_back() -> bool:
 	return true
 
 
-func _style_pause_overlay() -> void:
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(ThemeTokensLib.COLOR_OVERLAY_BG, 0.92)
-	style.set_corner_radius_all(ThemeTokensLib.RADIUS_OVERLAY)
-	style.set_border_width_all(1)
-	style.border_color = ThemeTokensLib.COLOR_PANEL_BORDER
-	style.set_content_margin_all(20)
-	pause_overlay.add_theme_stylebox_override("panel", style)
+func _bind_theme_updates() -> void:
+	var theme := _autoload("ThemeManager")
+	if theme != null and theme.has_signal("theme_changed"):
+		var callback := Callable(self, "_apply_theme")
+		if not theme.is_connected("theme_changed", callback):
+			theme.connect("theme_changed", callback)
+
+
+func _style_overlays() -> void:
+	level_complete_panel.add_theme_stylebox_override("panel", _overlay_dim_style(0.82))
+	pause_overlay.add_theme_stylebox_override("panel", _overlay_dim_style(0.78))
+	level_complete_modal.add_theme_stylebox_override("panel", _modal_frame_style())
+	pause_modal.add_theme_stylebox_override("panel", _modal_frame_style())
+
 	pause_title.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_TITLE)
+	overlay_title.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_TITLE)
+	var theme := _autoload("ThemeManager")
+	var text_color := LnUiLib.TEXT
+	var title_color := LnUiLib.ACCENT_2
+	if theme != null:
+		if theme.has_method("get_text_color"):
+			text_color = theme.call("get_text_color", true) as Color
+		if theme.has_method("get_secondary_color"):
+			title_color = theme.call("get_secondary_color", true) as Color
+	pause_title.add_theme_color_override("font_color", title_color)
+	overlay_title.add_theme_color_override("font_color", title_color)
+	LnUiLib.add_corner_decorations(level_complete_modal, title_color, 24.0, 2.0)
+	LnUiLib.add_corner_decorations(pause_modal, title_color, 24.0, 2.0)
+	LnUiLib.apply_button(continue_button, false, true)
+	LnUiLib.apply_button(resume_button, false, true)
+	LnUiLib.apply_button(pause_menu_button, false, true)
+	continue_button.add_theme_color_override("font_color", text_color)
+	continue_button.add_theme_color_override("font_hover_color", text_color)
+	continue_button.add_theme_color_override("font_pressed_color", text_color)
+
 	pause_title.text = _i18n("pause_title")
 	resume_button.text = _i18n("btn_resume")
 	pause_menu_button.text = _i18n("hud_menu")
+	overlay_title.text = _i18n("level_complete")
+	continue_button.text = _i18n("next_level")
+
+
+func _overlay_dim_style(alpha: float) -> StyleBoxFlat:
+	var dim_color := Color(ThemeTokensLib.COLOR_OVERLAY_BG, alpha)
+	var theme := _autoload("ThemeManager")
+	if theme != null and theme.has_method("get_overlay_color"):
+		dim_color = theme.call("get_overlay_color", alpha, true) as Color
+	var style := StyleBoxFlat.new()
+	style.bg_color = dim_color
+	style.set_content_margin_all(0)
+	return style
+
+
+func _modal_frame_style() -> StyleBox:
+	var style: StyleBox
+	var theme := _autoload("ThemeManager")
+	if theme != null and theme.has_method("get_visual_style"):
+		style = theme.call("get_visual_style", &"modal") as StyleBox
+	if style == null:
+		style = LnUiLib.make_neon_panel(LnUiLib.ACCENT_2, ThemeTokensLib.RADIUS_OVERLAY)
+	else:
+		style = style.duplicate(true) as StyleBox
+	style.content_margin_left = ThemeTokensLib.SPACE_XL
+	style.content_margin_right = ThemeTokensLib.SPACE_XL
+	style.content_margin_top = ThemeTokensLib.SPACE_XL
+	style.content_margin_bottom = ThemeTokensLib.SPACE_XL
+	return style
 
 func _apply_theme() -> void:
-	LnUiLib.apply_screen_background(self, "game", 0.68)
+	LnUiLib.apply_screen_background(self, "game", 0.62)
 	if background != null:
 		background.color = Color(0, 0, 0, 0)
+	_style_overlays()
 
 func _i18n(key: String, args: Array = []) -> String:
 	var i18n := _autoload("I18nManager")
@@ -146,6 +207,8 @@ func _maybe_vibrate(duration_ms: int = 35) -> void:
 
 
 func _save_game() -> void:
+	if bool(get_meta("visual_capture_no_persistence", false)):
+		return
 	var save := _autoload("SaveManager")
 	if save != null and save.has_method("save_game"):
 		save.call("save_game", state)

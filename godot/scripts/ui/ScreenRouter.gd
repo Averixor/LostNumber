@@ -18,6 +18,7 @@ const SCREENS := {
 	"stats": "res://scenes/Stats.tscn",
 	"about": "res://scenes/About.tscn",
 	"skin_preview": "res://scenes/SkinPreview.tscn",
+	"background_preview": "res://scenes/BackgroundPreview.tscn",
 }
 
 const FADE_DURATION := 0.18

@@ -135,7 +135,14 @@ const TILE_COLORS := {
 	4096: Color("#f2f2f2"),
 }
 
-const TILE_LEGENDARY_MIN := 128
+const TILE_COMMON_MAX := 8
+const TILE_UNCOMMON_MIN := 16
+const TILE_UNCOMMON_MAX := 64
+const TILE_RARE_MIN := 128
+const TILE_RARE_MAX := 512
+const TILE_EPIC_MIN := 1024
+const TILE_EPIC_MAX := 4096
+const TILE_LEGENDARY_MIN := 8192
 const TILE_GOLD_RIM := Color("#ffb800")
 const TILE_TEXT_LIGHT := Color("#f6e8de")
 

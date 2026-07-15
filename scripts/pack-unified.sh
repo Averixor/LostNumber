@@ -9,13 +9,6 @@ ARCHIVE="$OUT_DIR/LostNumber-unified-${STAMP}.zip"
 
 mkdir -p "$OUT_DIR"
 
-SYNCED_FLAGS="$ROOT/android/app/src/main/assets/public/js/system/build-flags.generated.js"
-if [[ -f "$SYNCED_FLAGS" ]] && grep -Eq 'cheatsEnabled[[:space:]]*:[[:space:]]*true' "$SYNCED_FLAGS"; then
-  echo "Refusing to pack archive: android synced assets still have cheatsEnabled:true"
-  echo "Run: npm run android:sync"
-  exit 1
-fi
-
 echo "Packing unified project → $ARCHIVE"
 
 cd "$ROOT"
@@ -26,16 +19,9 @@ zip -r "$ARCHIVE" . \
   -x 'dist/*' \
   -x 'build/*' \
   -x 'godot/.godot/*' \
-  -x 'godot/android/*' \
-  -x 'android/.gradle/*' \
-  -x 'android/.idea/*' \
-  -x 'android/app/build/*' \
-  -x 'android/build/*' \
-  -x 'android/capacitor-cordova-android-plugins/build/*' \
-  -x 'android/local.properties' \
+  -x 'godot/android/build/*' \
   -x 'android/keystore/*' \
   -x 'android/keystore.properties' \
-  -x '_site/*' \
   -x '.cursor/*' \
   -x '.idea/*' \
   -x '.vscode/*' \
@@ -52,9 +38,6 @@ zip -r "$ARCHIVE" . \
   -x '*.zip' \
   -x 'current_manifest.xml' \
   -x 'old_manifest.xml' \
-  -x 'js/app/ui/*.bak_*' \
-  -x 'js/game/grid/*.bak_*' \
-  -x 'js/system/platform/*.bak_*'
 
 ls -lh "$ARCHIVE"
-echo "Done. Handoff: HANDOFF.txt + MERGE_NOTES.md"
+echo "Done. Handoff: docs/HANDOFF.txt + docs/archive/MERGE_NOTES.md"

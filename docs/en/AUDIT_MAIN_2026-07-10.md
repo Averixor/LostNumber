@@ -164,7 +164,7 @@ Three JSON files: `godot/assets/i18n/{uk,ru,en}.json` — **285 keys** each (con
 | minSdk      | 24                                    | 24                                          |
 | targetSdk   | 35                                    | 35                                          |
 | ABI         | arm64-v8a, x86_64                     | arm64-v8a, x86_64                           |
-| Output      | `build/godot/android/lost-number.aab` | `build/godot/android/lost-number-debug.apk` |
+| Output      | `build/android/lost-number.aab` | `build/android/lost-number-debug.apk` |
 
 Internet permission disabled. Vibration and image access enabled for custom backgrounds.
 

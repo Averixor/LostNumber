@@ -146,10 +146,8 @@ func _compact_wheel_label(text: String, sector: Dictionary) -> String:
 		match str(sector.get("value", "")):
 			"explosion":
 				return "3×3"
-			"destroy":
-				return "Break"
-			"shuffle":
-				return "Mix"
+			"destroy", "shuffle":
+				return text
 	return text
 
 

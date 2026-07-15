@@ -7,16 +7,17 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
+GODOT = ROOT / "godot"
 STORE = ROOT / "store"
-ICON_SRC = ROOT / "assets/icons/icon-1024.png"
-ICON_FALLBACK = ROOT / "assets/icons/icon.png"
+ICON_SRC = GODOT / "assets/store/icon-1024.png"
+ICON_FALLBACK = GODOT / "icon.png"
 BG = (27, 16, 40)  # #1b1028
 PHONE_W, PHONE_H = 1080, 1920
 
 SCREENSHOT_SPECS = [
     (
         "01-menu-dark.png",
-        ROOT / "assets/images/dark/menu-bg-1.png",
+        GODOT / "assets/ui/backgrounds/dark/menu-bg-1.png",
         "Lost Number",
         "Логічна головоломка з числами",
         ["Рівні · бонуси · офлайн"],
@@ -24,7 +25,7 @@ SCREENSHOT_SPECS = [
     ),
     (
         "02-menu-light.png",
-        ROOT / "assets/images/light/bg-light-01.png",
+        GODOT / "assets/ui/backgrounds/light/bg-light-01.png",
         "Дві теми",
         "Темна та світла",
         ["Неон і світанок", "Зручно вдень і ввечері"],
@@ -32,7 +33,7 @@ SCREENSHOT_SPECS = [
     ),
     (
         "03-levels-bonuses.png",
-        ROOT / "assets/images/dark/menu-bg-3.png",
+        GODOT / "assets/ui/backgrounds/dark/menu-bg-3.png",
         "Рівні та бонуси",
         "Сітка 5×8",
         ["Вибух · перемішування", "Щоденні завдання"],
@@ -40,7 +41,7 @@ SCREENSHOT_SPECS = [
     ),
     (
         "04-offline-calm.png",
-        ROOT / "assets/images/light/bg-light-03.png",
+        GODOT / "assets/ui/backgrounds/light/bg-light-03.png",
         "Без реклами",
         "Грай у своєму темпі",
         ["Збереження на пристрої", "UA · RU · EN"],

@@ -62,17 +62,21 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="VBox" type="VBoxContainer" parent="LevelCompleteOverlay/Center"]
+[node name="ModalFrame" type="PanelContainer" parent="LevelCompleteOverlay/Center"]
+custom_minimum_size = Vector2(292, 0)
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="LevelCompleteOverlay/Center/ModalFrame"]
 layout_mode = 2
 theme_override_constants/separation = 16
 alignment = 1
 
-[node name="Title" type="Label" parent="LevelCompleteOverlay/Center/VBox"]
+[node name="Title" type="Label" parent="LevelCompleteOverlay/Center/ModalFrame/VBox"]
 layout_mode = 2
 text = "Рівень пройдено"
 horizontal_alignment = 1
 
-[node name="ContinueButton" type="Button" parent="LevelCompleteOverlay/Center/VBox"]
+[node name="ContinueButton" type="Button" parent="LevelCompleteOverlay/Center/ModalFrame/VBox"]
 layout_mode = 2
 text = "Наступний рівень"
 
@@ -89,23 +93,28 @@ mouse_filter = 0
 
 [node name="Center" type="CenterContainer" parent="PauseOverlay"]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="VBox" type="VBoxContainer" parent="PauseOverlay/Center"]
-custom_minimum_size = Vector2(240, 0)
+[node name="ModalFrame" type="PanelContainer" parent="PauseOverlay/Center"]
+custom_minimum_size = Vector2(292, 0)
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="PauseOverlay/Center/ModalFrame"]
 layout_mode = 2
 theme_override_constants/separation = 12
 alignment = 1
 
-[node name="PauseTitle" type="Label" parent="PauseOverlay/Center/VBox"]
+[node name="PauseTitle" type="Label" parent="PauseOverlay/Center/ModalFrame/VBox"]
 layout_mode = 2
 text = "Пауза"
 horizontal_alignment = 1
 
-[node name="ResumeButton" parent="PauseOverlay/Center/VBox" instance=ExtResource("4_neon")]
+[node name="ResumeButton" parent="PauseOverlay/Center/ModalFrame/VBox" instance=ExtResource("4_neon")]
 layout_mode = 2
 variant = 1
 text = "Продовжити"
 
-[node name="MainMenuButton" parent="PauseOverlay/Center/VBox" instance=ExtResource("4_neon")]
+[node name="MainMenuButton" parent="PauseOverlay/Center/ModalFrame/VBox" instance=ExtResource("4_neon")]
 layout_mode = 2
 text = "Головне меню"

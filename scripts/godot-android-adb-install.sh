@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
-# Uninstall existing Lost Number packages, then install debug APK (no -r upgrade).
+# Install/update the separate debug package without touching release userdata.
 # Use after npm run godot:android:debug, or via godot-android-install.sh.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-APK="$ROOT/build/godot/android/lost-number-debug.apk"
+APK="$ROOT/build/android/lost-number-debug.apk"
 PKG_DEV="com.averixor.lostnumber.dev"
-PKG_RELEASE="com.averixor.lostnumber"
 
 adb start-server >/dev/null 2>&1 || true
 
@@ -20,9 +19,5 @@ if [[ ! -f "$APK" ]]; then
   exit 1
 fi
 
-echo "→ adb uninstall old packages"
-adb uninstall "$PKG_DEV" 2>/dev/null || true
-adb uninstall "$PKG_RELEASE" 2>/dev/null || true
-
-echo "→ adb install $APK"
-adb install "$APK"
+echo "→ adb install -r $APK (preserve $PKG_DEV data; release package untouched)"
+adb install -r "$APK"

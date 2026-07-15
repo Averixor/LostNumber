@@ -34,8 +34,8 @@ try {
 }
 
 const defaultPrompt =
-  'You audit the LostNumber browser game repo (vanilla JS under js/). Focus on reliability and UX continuity.\n' +
-  '- Read primarily: js/system/error/errorHandler.js, js/system/error/errorHandlerFallback.js, js/system/platform/freezeSystem.js, js/system/i18n/i18n.js, js/system/platform/storage.js, js/ui/.\n' +
+  'You audit the LostNumber Godot 4 repo (GDScript under godot/). Focus on reliability, save integrity, and Android release readiness.\n' +
+  '- Read primarily: godot/scripts/managers/SaveManager.gd, godot/scripts/core/Rules.gd, godot/scripts/ui/ScreenRouter.gd, godot/scripts/game/, godot/scripts/ui/.\n' +
   '- Output exactly: (1) three highest-impact concrete improvements with file paths and why; (2) one i18n or user-facing consistency note.\n' +
   '- Advisory only: do not propose editing files in this run.';
 

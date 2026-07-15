@@ -1,36 +1,58 @@
 #!/usr/bin/env node
-import { spawnSync } from 'node:child_process';
+/**
+ * Lightweight repo smoke tests (no godot4 required): Godot project layout + privacy page.
+ */
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const tests = [
-  'scripts/test-min-tile.mjs',
-  'scripts/test-level-config.mjs',
-  'scripts/test-storage-fallback.mjs',
-  'scripts/test-error-handler-fallback.mjs',
-  'scripts/test-grid-dom-sync.mjs',
-  'scripts/test-critical-fixes.mjs',
-  'scripts/test-package2.mjs',
-  'scripts/test-menu-navigation.mjs',
-  'scripts/test-menu-layout.mjs',
-  'scripts/test-background-rotator.mjs',
-  'scripts/test-build-flags.mjs',
-  'scripts/test-audio-background.mjs',
-  'scripts/test-grid-chain-cancel.mjs',
-  'scripts/test-feedback.mjs',
-];
+const failures = [];
 
-for (const test of tests) {
-  const result = spawnSync(process.execPath, [join(root, test)], {
-    cwd: root,
-    stdio: 'inherit',
-    shell: false,
-  });
-
-  if (result.status !== 0) {
-    process.exit(result.status ?? 1);
+function requirePath(rel) {
+  const full = join(root, rel);
+  if (!existsSync(full)) {
+    failures.push(`Missing required path: ${rel}`);
   }
 }
 
-console.log('Smoke tests passed.');
+const requiredPaths = [
+  'godot/project.godot',
+  'godot/export_presets.cfg',
+  'godot/scenes/Boot.tscn',
+  'godot/scenes/App.tscn',
+  'godot/scenes/MainMenu.tscn',
+  'godot/scenes/Game.tscn',
+  'godot/scripts/ui/ScreenRouter.gd',
+  'godot/scripts/managers/SaveManager.gd',
+  'godot/assets/i18n/uk.json',
+  'godot/assets/i18n/ru.json',
+  'godot/assets/i18n/en.json',
+  'privacy.html',
+  'store/PLAY_CONSOLE_LISTING.md',
+];
+
+for (const rel of requiredPaths) {
+  requirePath(rel);
+}
+
+const projectGodot = join(root, 'godot/project.godot');
+if (existsSync(projectGodot)) {
+  const content = readFileSync(projectGodot, 'utf8');
+  if (!content.includes('run/main_scene="res://scenes/Boot.tscn"')) {
+    failures.push('godot/project.godot must use Boot.tscn as main scene');
+  }
+  if (!content.includes('ScreenRouter=')) {
+    failures.push('godot/project.godot must autoload ScreenRouter');
+  }
+}
+
+if (failures.length) {
+  console.error('Smoke tests failed:');
+  for (const failure of failures) {
+    console.error(`- ${failure}`);
+  }
+  process.exit(1);
+}
+
+console.log('Smoke tests passed (Godot project layout).');

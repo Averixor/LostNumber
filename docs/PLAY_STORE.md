@@ -4,22 +4,22 @@
 
 ## Швидкий статус
 
-| Артефакт                         | Шлях / команда                                                                        |
-| -------------------------------- | ------------------------------------------------------------------------------------- |
-| Release AAB                      | `npm run android:bundle` → `android/app/build/outputs/bundle/release/app-release.aab` |
-| Release APK (локальна перевірка) | `npm run android:release`                                                             |
-| Іконка Play (512)                | `store/play-high-res-icon-512.png`                                                    |
-| Feature graphic                  | `store/feature-graphic-1024x500.png`                                                  |
-| Чернетки скріншотів              | `store/screenshots/phone/`                                                            |
-| Описи магазину                   | `docs/store-listing/` + **`store/PLAY_CONSOLE_LISTING.md`** (готові поля для Console) |
-| Privacy Policy URL               | `https://averixor.github.io/LostNumber/privacy.html`                                  |
+| Артефакт                       | Шлях / команда                                                                        |
+| ------------------------------ | ------------------------------------------------------------------------------------- |
+| Release AAB (Godot)            | `npm run godot:android:release` → `build/android/lost-number.aab`               |
+| Debug APK (локальна перевірка) | `npm run godot:android:debug` → `build/android/lost-number-debug.apk`           |
+| Іконка Play (512)              | `store/play-high-res-icon-512.png`                                                    |
+| Feature graphic                | `store/feature-graphic-1024x500.png`                                                  |
+| Чернетки скріншотів            | `store/screenshots/phone/`                                                            |
+| Описи магазину                 | `docs/store-listing/` + **`store/PLAY_CONSOLE_LISTING.md`** (готові поля для Console) |
+| Privacy Policy URL             | `https://averixor.github.io/LostNumber/privacy.html`                                  |
 
 ## 1. Збірка AAB
 
 ```bash
-cd ~/git/LostNumber
+cd ~/Desktop/LostNumber
 npm run release:check
-npm run android:bundle
+npm run godot:android:release
 ```
 
 Потрібен `android/keystore.properties` (не в git). У цьому проєкті типово:
@@ -60,9 +60,9 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 
 ## 3. Privacy Policy
 
-- Файл: `privacy.html` (копіюється в `_site/` при `npm run build:pages`)
-- URL для Play Console: **https://averixor.github.io/LostNumber/privacy.html**
-- Після зміни політики: `npm run build:pages` + деплой GitHub Pages
+- Файл: `privacy.html` (корінь репозиторію)
+- Хостинг: `npm run privacy:package` → `privacy-host/` (Netlify Drop, Cloudflare Pages тощо)
+- URL для Play Console: ваш опублікований URL до `privacy.html`
 
 ## 4. Заповнення сторінки застосунку
 
@@ -144,7 +144,7 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 
 Додатково в **App content**: Ads — No; In-app purchases — No.
 
-Потрібен успішний деплой privacy URL — див. [GITHUB_PAGES.md](./GITHUB_PAGES.md).
+Потрібен успішний деплой privacy URL — див. [PRIVACY_HOSTING.md](./PRIVACY_HOSTING.md).
 
 Детальна таблиця відповідей для листингу: **`store/PLAY_CONSOLE_LISTING.md`**. Процедура нижче — канонічна.
 
@@ -169,12 +169,11 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 
 Поточні значення:
 
-| Артефакт                           | versionName | versionCode |
-| ---------------------------------- | ----------- | ----------- |
-| Godot (основний, у Play)           | `2.1.6`     | `16`        |
-| Capacitor (legacy, `build.gradle`) | `2.1.6`     | `16`        |
+| Артефакт     | versionName | versionCode |
+| ------------ | ----------- | ----------- |
+| Godot (ship) | `2.1.6`     | `16`        |
 
-Оскільки обидва мають один package id і однаковий code `16`, у Play може існувати лише **один** бандл з цим кодом (зараз — Godot). Кожен новий upload потребує **versionCode більший за будь-який раніше завантажений** (наступний реліз — code `17`, name `2.1.7`).
+Кожен новий upload потребує **versionCode більший за будь-який раніше завантажений** (наступний реліз — code `17`, name `2.1.7`).
 
 > Правило іменування (code ≥ 15): `versionName = 2.1.(versionCode - 10)`.
 
@@ -183,9 +182,8 @@ ABI: постачаються лише `arm64-v8a` + `x86_64`. Без `armeabi-v
 ## 10. Корисні команди
 
 ```bash
-npm run android:sync          # оновити web assets у android/
-npm run android:release       # signed APK
-npm run android:bundle        # signed AAB для Play
+npm run godot:android:release   # signed AAB для Play
+npm run godot:android:debug     # debug APK
 python3 scripts/prepare-play-store-assets.py
 ```
 

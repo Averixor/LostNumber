@@ -1,6 +1,5 @@
 /**
- * ESLint для ванільного проєкту (глобалі з index.html).
- * Клас StorageManager збігається з ідеєю Web API — no-redeclare залишаємо вимкненим для js/**.
+ * ESLint for npm tooling scripts under scripts/.
  */
 
 import globals from 'globals';
@@ -9,33 +8,15 @@ export default [
   {
     ignores: [
       'node_modules/**',
-      '_site/**',
       '.git/**',
       '.project/**',
       '.chrome-*/**',
       'coverage/**',
       'dist/**',
       'build/**',
+      'godot/**',
       'android/**',
-      'android/app/src/main/assets/**',
     ],
-  },
-  {
-    files: ['js/**/*.js'],
-    languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'script',
-      globals: globals.browser,
-    },
-    rules: {
-      'no-debugger': 'error',
-      // Без модулів клас «використовується» з інших файлів — per-file аналіз дає сотні хибних спрацьовувань.
-      'no-unused-vars': 'off',
-      eqeqeq: ['warn', 'smart'],
-      'no-var': 'warn',
-      'prefer-const': 'warn',
-      'no-redeclare': 'off',
-    },
   },
   {
     files: ['**/*.mjs'],

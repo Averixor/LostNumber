@@ -16,7 +16,7 @@
 | **Email підтримки**    | `ryabinin.sergei.alekseevich@gmail.com`              |
 | **Privacy Policy URL** | `https://averixor.github.io/LostNumber/privacy.html` |
 
-> **Privacy URL** має відкриватися в браузері до відправки на перевірку. Якщо GitHub Pages недоступний — див. [docs/GITHUB_PAGES.md](../docs/GITHUB_PAGES.md).
+> **Privacy URL** має відкриватися в браузері до відправки на перевірку. Якщо GitHub Pages недоступний — див. [docs/PRIVACY_HOSTING.md](./PRIVACY_HOSTING.md).
 
 ---
 

@@ -40,7 +40,7 @@ writeFileSync(
 3. After deploy, open: https://YOUR-SITE.netlify.app/privacy.html
 4. Use that URL in Google Play Console (Store listing + Data safety)
 
-Or make the GitHub repo public and use GitHub Pages — see docs/GITHUB_PAGES.md
+Or make the GitHub repo public and use GitHub Pages — see docs/PRIVACY_HOSTING.md
 `,
 );
 

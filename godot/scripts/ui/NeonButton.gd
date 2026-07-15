@@ -25,6 +25,9 @@ func _ready() -> void:
 	resized.connect(_update_pivot)
 	button_down.connect(_on_button_down)
 	button_up.connect(_on_button_up)
+	var theme_mgr := get_node_or_null("/root/ThemeManager")
+	if theme_mgr != null and theme_mgr.has_signal("theme_changed"):
+		theme_mgr.theme_changed.connect(_apply_styles)
 	_update_pivot()
 
 
@@ -41,6 +44,9 @@ func _on_button_up() -> void:
 
 
 func _animate_scale(target: float) -> void:
+	if not LnUiLib.effects_enabled():
+		scale = Vector2.ONE
+		return
 	if _press_tween != null and _press_tween.is_valid():
 		_press_tween.kill()
 	_press_tween = create_tween()
@@ -84,6 +90,15 @@ func _focus_ring(radius: int, color: Color) -> StyleBoxFlat:
 
 func _apply_primary() -> void:
 	var radius := ThemeTokensLib.RADIUS_BUTTON
+	var themed := LnUiLib.primary_button_normal()
+	if themed is StyleBoxTexture:
+		var hover := LnUiLib.button_hover()
+		var pressed := LnUiLib.button_pressed()
+		var disabled := LnUiLib.button_disabled()
+		_set_styleboxes(themed, hover, pressed, disabled, _focus_ring(radius, ThemeTokensLib.MENU_PRIMARY_BORDER))
+		_set_font_colors(Color.WHITE, Color.WHITE)
+		add_theme_font_size_override("font_size", 16)
+		return
 	var normal := _base_stylebox(radius)
 	normal.bg_color = ThemeTokensLib.MENU_PRIMARY_BG_START.lerp(ThemeTokensLib.MENU_PRIMARY_BG_END, 0.5)
 	normal.set_border_width_all(2)
@@ -111,6 +126,15 @@ func _apply_primary() -> void:
 
 func _apply_success() -> void:
 	var radius := ThemeTokensLib.RADIUS_BUTTON
+	var themed := LnUiLib.success_button_normal()
+	if themed is StyleBoxTexture:
+		var hover := LnUiLib.button_hover()
+		var pressed := LnUiLib.button_pressed()
+		var disabled := LnUiLib.button_disabled()
+		_set_styleboxes(themed, hover, pressed, disabled, _focus_ring(radius, ThemeTokensLib.MENU_SUCCESS_BORDER))
+		_set_font_colors(Color.WHITE, Color.WHITE)
+		add_theme_font_size_override("font_size", 16)
+		return
 	var normal := _base_stylebox(radius)
 	normal.bg_color = ThemeTokensLib.MENU_SUCCESS_BG_START.lerp(ThemeTokensLib.MENU_SUCCESS_BG_END, 0.5)
 	normal.set_border_width_all(2)
@@ -173,7 +197,7 @@ func _apply_ghost() -> void:
 	add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_SMALL)
 
 
-func _set_styleboxes(normal: StyleBoxFlat, hover: StyleBoxFlat, pressed: StyleBoxFlat, disabled: StyleBoxFlat, focus: StyleBoxFlat) -> void:
+func _set_styleboxes(normal: StyleBox, hover: StyleBox, pressed: StyleBox, disabled: StyleBox, focus: StyleBox) -> void:
 	add_theme_stylebox_override("normal", normal)
 	add_theme_stylebox_override("hover", hover)
 	add_theme_stylebox_override("pressed", pressed)

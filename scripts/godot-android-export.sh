@@ -8,7 +8,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 GODOT_DIR="$ROOT/godot"
-BUILD_DIR="$ROOT/build/godot/android"
+BUILD_DIR="$ROOT/build/android"
 GODOT_BIN="${GODOT_BIN:-godot4}"
 MODE="${1:-debug}"
 
@@ -209,3 +209,6 @@ fi
 
 echo "Done: $OUTPUT"
 ls -lh "$OUTPUT"
+
+# Remove stray APK/AAB from Godot Gradle tree (canonical output is BUILD_DIR only).
+find "$GODOT_DIR/android/build" -type f \( -name '*.apk' -o -name '*.aab' \) -delete 2>/dev/null || true

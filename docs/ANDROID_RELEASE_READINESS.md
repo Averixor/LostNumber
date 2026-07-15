@@ -22,11 +22,11 @@ App shell persists `BackgroundLayer` and overlay layers; individual screens moun
 | minSdk      | 24                                    | 24                                          |
 | targetSdk   | 35                                    | 35                                          |
 | ABI         | arm64-v8a, x86_64                     | arm64-v8a, x86_64                           |
-| Output      | `build/godot/android/lost-number.aab` | `build/godot/android/lost-number-debug.apk` |
+| Output      | `build/android/lost-number.aab` | `build/android/lost-number-debug.apk` |
 
 ### Versioning
 
-Current: `versionName 2.1.6` / `versionCode 16`. The Capacitor app (`android/app/build.gradle`) shares the same package id and the same values, so only one bundle with a given versionCode can live in Play (currently Godot). **Every new upload needs a versionCode greater than any previously uploaded** — next release: code `17`.
+Current: `versionName 2.1.6` / `versionCode 16`. **Every new upload needs a versionCode greater than any previously uploaded** — next release: code `17`.
 
 > `versionName` is a human-readable label (free-form). `versionCode` is the integer Play compares — just increment it by 1 each upload.
 >
@@ -103,7 +103,7 @@ npm run godot:verify:aab       # full pre-upload gate (tests + release:check + A
 - Game HUD: bonus/crown visuals; tile crown rendering
 - i18n: **285** keys per locale (uk/ru/en)
 
-Pre-upload gate: `npm run godot:verify:aab` (tests + release:check + AAB manifest). Requires existing AAB at `build/godot/android/lost-number.aab`. **Не комітити** keystore-поля, які export-скрипт може дописати в `export_presets.cfg` — `verify-godot-release.mjs` їх відхиляє.
+Pre-upload gate: `npm run godot:verify:aab` (tests + release:check + AAB manifest). Requires existing AAB at `build/android/lost-number.aab`. **Не комітити** keystore-поля, які export-скрипт може дописати в `export_presets.cfg` — `verify-godot-release.mjs` їх відхиляє.
 
 ## If release fails
 

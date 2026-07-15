@@ -1,6 +1,6 @@
 # Lost Number — Godot → Google Play
 
-Godot 4 build is the **primary** Android ship target. Capacitor/WebView remains a legacy reference path.
+Godot 4 build is the **sole** Android ship target for Google Play.
 
 ## Quick start
 
@@ -26,11 +26,11 @@ chmod +x scripts/godot-android-export.sh
 
 # Debug APK on phone
 npm run godot:android:debug
-adb install -r build/godot/android/lost-number-debug.apk
+adb install -r build/android/lost-number-debug.apk
 
 # Release AAB for Play Console
 npm run godot:android:release
-# → build/godot/android/lost-number.aab
+# → build/android/lost-number.aab
 ```
 
 Export templates are downloaded automatically on first build if missing.
@@ -41,22 +41,22 @@ Export templates are downloaded automatically on first build if missing.
 | ----------- | -------------------------------------------------------------- |
 | Package     | `com.averixor.lostnumber`                                      |
 | Version     | `2.1.6` (versionCode 16)                                       |
-| AAB         | `build/godot/android/lost-number.aab`                          |
+| AAB         | `build/android/lost-number.aab`                          |
 | Privacy URL | `https://averixor.github.io/LostNumber/privacy.html`           |
-| Store texts | `godot/docs/store-listing/` or `store/PLAY_CONSOLE_LISTING.md` |
+| Store texts | `docs/store-listing/` or `store/PLAY_CONSOLE_LISTING.md` |
 
 Full checklist: [docs/PLAY_STORE.md](../docs/PLAY_STORE.md) — same listing assets; only the build artifact path changes.
 
-## What changed vs Capacitor
+## Architecture notes (web reference → Godot)
 
-| Area        | Capacitor (legacy)              | Godot (ship)                                                           |
-| ----------- | ------------------------------- | ---------------------------------------------------------------------- |
-| Touch input | WebView + JS pointer events     | Native `_input` + path interpolation in `Board.gd`                     |
-| Audio       | Web Audio API                   | `AudioStreamPlayer` in `AudioManager.gd`                               |
-| Save        | `localStorage`                  | `user://lost_number_save.json` + legacy import (`LegacySaveMigration`) |
-| Navigation  | `ScreenManager` + DOM screens   | `ScreenRouter` + back-stack, fade transitions                          |
-| UI shell    | `#appBackground` + CSS          | `App.tscn` + `BackgroundLayer`, `NeonButton`, tokens                   |
-| Package     | `android/app/build/outputs/...` | `build/godot/android/...`                                              |
+| Area        | Web/JS reference              | Godot (ship)                                                           |
+| ----------- | ----------------------------- | ---------------------------------------------------------------------- |
+| Touch input | WebView + JS pointer events   | Native `_input` + path interpolation in `Board.gd`                     |
+| Audio       | Web Audio API                 | `AudioStreamPlayer` in `AudioManager.gd`                               |
+| Save        | `localStorage`                | `user://lost_number_save.json` + legacy import (`LegacySaveMigration`) |
+| Navigation  | `ScreenManager` + DOM screens | `ScreenRouter` + back-stack, fade transitions                          |
+| UI shell    | `#appBackground` + CSS        | `App.tscn` + `BackgroundLayer`, `NeonButton`, tokens                   |
+| Package     | —                             | `build/android/...`                                              |
 
 ## Current scope (Godot 2.1.6)
 
@@ -64,11 +64,11 @@ Full checklist: [docs/PLAY_STORE.md](../docs/PLAY_STORE.md) — same listing ass
 
 **UI:** Boot splash, App shell, ScreenRouter (fade/slide), BackgroundLayer, NeonButton, GameHud, Tile/ChainLineLayer, wheel canvas, achievement/daily cards.
 
-**Legacy save:** Capacitor/Web JSON → Godot via `LegacySaveMigration` (file + Settings import; Android plugin PARTIAL). See `godot/docs/LEGACY_SAVE_MIGRATION.md`.
+**Legacy save:** старі Web/Capacitor JSON → Godot через `LegacySaveMigration` (файл + Settings import; Android plugin PARTIAL). Див. [LEGACY_SAVE_MIGRATION.md](./LEGACY_SAVE_MIGRATION.md).
 
 **Pre-AAB gate:** `npm run godot:verify:aab` (tests + release:check + AAB export + artifact checks).
 
-Visual parity still open: menu dock/quick-row, chain-sum HUD, stats screen — see `godot/docs/VISUAL_PORT_MAP.md`.
+Візуальні прогалини: menu dock/quick-row, chain-sum HUD, stats screen — див. [docs/en/VISUAL_TARGET.md](./en/VISUAL_TARGET.md) (актуальний target); історична карта: [archive/VISUAL_PORT_MAP.md](./archive/VISUAL_PORT_MAP.md).
 
 ## Store graphics vs in-game assets
 

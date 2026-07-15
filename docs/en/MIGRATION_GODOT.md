@@ -7,7 +7,7 @@ last_updated: 2026-07-10
 
 # Godot 4 Migration Plan
 
-Lost Number **2.1.6** ships on **Godot 4.5** / GDScript. The HTML/Capacitor build (`js/`, `index.html`, `android/`) remains a **visual reference prototype** and legacy Android path — not the primary Play upload target.
+Lost Number **2.1.6** ships on **Godot 4.5** / GDScript only. The former browser/JS prototype has been removed from the repo; the table below is kept as a historical migration map.
 
 ## Architecture map
 
@@ -84,13 +84,13 @@ Per `GAME_RULES.md` and product scope:
 
 | Path                                                  | Recommendation                                                                |
 | ----------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `js/`, `css/`, `index.html`                           | **Keep** as visual/i18n reference; do not treat as ship target                |
-| `android/` (Capacitor)                                | **Keep** for legacy save testing and visual diff; demote from primary release |
+| `js/`, `css/`, `index.html`                           | **Removed** from repo (July 2026); see `docs/archive/` for historical maps |
+| `android/` (Capacitor)                                | **Removed** — only `android/keystore/` remains for Godot signing          |
 | `godot/assets/icons/neon/` (duplicate tree)           | **Removed** — canonical icons at `godot/assets/ui/icons/neon/`                |
 | `assets/store/*` in AAB                               | **Excluded** via `export_presets.cfg` `exclude_filter`                        |
 | Floating background numbers (`createFloatingNumbers`) | **Removed** from product (Phase 5.6)                                          |
 
-Do **not** delete the web stack until visual port map items marked TODO/PARTIAL are closed or explicitly waived.
+Do **not** treat `docs/archive/` migration maps as current ship requirements — use `docs/en/VISUAL_TARGET.md` for acceptance.
 
 ## Running Godot
 
@@ -108,8 +108,8 @@ godot4 --path godot --headless --script res://scripts/tests/run_rules_tests.gd
 
 ## Save format note
 
-Godot uses its own JSON schema (`version: 2` inside an `envelope_version: 1` wrapper with `data_json` + SHA-256 `checksum`). It is **not** byte-compatible with web `localStorage.lostNumberSave` v2. One-time import is handled by `LegacySaveMigration.gd` and the `LostNumberMigration` Android plugin — see [DECISIONS.md](./DECISIONS.md) and `godot/docs/LEGACY_SAVE_MIGRATION.md`.
+Godot uses its own JSON schema (`version: 2` inside an `envelope_version: 1` wrapper with `data_json` + SHA-256 `checksum`). It is **not** byte-compatible with web `localStorage.lostNumberSave` v2. One-time import is handled by `LegacySaveMigration.gd` and the `LostNumberMigration` Android plugin — see [DECISIONS.md](./DECISIONS.md) and `docs/LEGACY_SAVE_MIGRATION.md`.
 
 ## Visual port tracker
 
-Detailed screen-by-screen status: `godot/docs/VISUAL_PORT_MAP.md`.
+Detailed screen-by-screen status: `docs/archive/VISUAL_PORT_MAP.md` (historical).

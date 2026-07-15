@@ -7,7 +7,7 @@ last_updated: 2026-07-10
 
 # Release Plans & Checklists
 
-Primary release path: **Godot 4 Android AAB** → Google Play. Capacitor/Web remains a legacy fallback.
+Primary release path: **Godot 4 Android AAB** → Google Play. Web/JS/Capacitor stack removed from repo (July 2026).
 
 ## Current release identity
 
@@ -17,7 +17,7 @@ Primary release path: **Godot 4 Android AAB** → Google Play. Capacitor/Web rem
 | versionName | `2.1.6`                               | `2.1.6-dev`                                 |
 | versionCode | `16`                                  | `16`                                        |
 | Format      | AAB                                   | APK                                         |
-| Output      | `build/godot/android/lost-number.aab` | `build/godot/android/lost-number-debug.apk` |
+| Output      | `build/android/lost-number.aab` | `build/android/lost-number-debug.apk` |
 | minSdk      | 24                                    | 24                                          |
 | targetSdk   | 35                                    | 35                                          |
 | ABI         | arm64-v8a, x86_64                     | arm64-v8a, x86_64                           |
@@ -63,7 +63,7 @@ npm run godot:test:all    # rules + save + smoke + i18n
 npm run godot:verify:aab
 ```
 
-Runs `godot:test:all`, `release:check`, release export, and AAB manifest validation. Requires existing AAB at `build/godot/android/lost-number.aab`.
+Runs `godot:test:all`, `release:check`, release export, and AAB manifest validation. Requires existing AAB at `build/android/lost-number.aab`.
 
 **Do not commit** keystore fields that the export script may write into `export_presets.cfg` — `verify-godot-release.mjs` rejects them.
 
@@ -82,19 +82,8 @@ npm run godot:android:release   # Play AAB
 ```bash
 npm run godot:android:debug
 adb uninstall com.averixor.lostnumber.dev 2>/dev/null || true
-adb install -r build/godot/android/lost-number-debug.apk
+adb install -r build/android/lost-number-debug.apk
 ```
-
-### Legacy Capacitor (secondary)
-
-```bash
-npm run release:check
-npm run verify:android
-npm run android:bundle
-# → android/app/build/outputs/bundle/release/app-release.aab
-```
-
-Only one AAB per `versionCode` can be uploaded — prefer Godot.
 
 ## Signing (release)
 
@@ -150,7 +139,7 @@ In-game graphics: `godot/assets/ui/` only.
 - [ ] Data Safety: no collection, no sharing
 - [ ] IARC: puzzle, no violence/gambling/IAP/ads
 - [ ] Screenshots from **real Godot build** (replace menu drafts)
-- [ ] Listing copy: `store/PLAY_CONSOLE_LISTING.md` / `godot/docs/PLAY_CONSOLE_LISTING.md`
+- [ ] Listing copy: `store/PLAY_CONSOLE_LISTING.md` / `docs/PLAY_CONSOLE_LISTING.md`
 - [ ] Rollout: Internal → Closed → Production
 
 ## On-device QA checklist

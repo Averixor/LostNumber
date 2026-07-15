@@ -21,7 +21,9 @@ const TILE_FONT_SCALES := [0.85, 1.0, 1.1, 1.2]
 @onready var theme_button: Button = get_node_or_null("Scroll/VBox/ThemeButton") as Button
 @onready var skin_label: Label = get_node_or_null("Scroll/VBox/SkinLabel") as Label
 @onready var skin_pick_button: Button = get_node_or_null("Scroll/VBox/SkinPickButton") as Button
-@onready var skin_auto_check: CheckButton = get_node_or_null("Scroll/VBox/SkinAutoCheck") as CheckButton
+@onready var background_label: Label = get_node_or_null("Scroll/VBox/BackgroundLabel") as Label
+@onready var background_pick_button: Button = get_node_or_null("Scroll/VBox/BackgroundPickButton") as Button
+@onready var background_auto_check: CheckButton = get_node_or_null("Scroll/VBox/BackgroundAutoCheck") as CheckButton
 @onready var import_button: Button = get_node_or_null("Scroll/VBox/ImportLegacyButton") as Button
 @onready var import_status: Label = get_node_or_null("Scroll/VBox/ImportStatus") as Label
 @onready var exit_button: Button = get_node_or_null("Scroll/VBox/ExitButton") as Button
@@ -100,9 +102,13 @@ func _setup_labels() -> void:
 	if skin_label != null:
 		skin_label.text = _i18n("settings_visual_skin_label")
 	if skin_pick_button != null:
-		skin_pick_button.text = _i18n("settings_pick_background")
-	if skin_auto_check != null:
-		skin_auto_check.text = _i18n("settings_visual_skin_auto")
+		skin_pick_button.text = _i18n("settings_visual_skin_pick")
+	if background_label != null:
+		background_label.text = _i18n("settings_background_label")
+	if background_pick_button != null:
+		background_pick_button.text = _i18n("settings_pick_background")
+	if background_auto_check != null:
+		background_auto_check.text = _i18n("settings_background_auto")
 	if import_button != null:
 		import_button.text = _i18n("settings_import_legacy")
 	if import_status != null:
@@ -142,9 +148,9 @@ func _ensure_option_label(option: OptionButton, key: String) -> void:
 func _setup_options() -> void:
 	if language_option != null:
 		language_option.clear()
-		language_option.add_item("Українська")
-		language_option.add_item("Російська")
-		language_option.add_item("Англійська")
+		language_option.add_item(_i18n("settings_language_ua"))
+		language_option.add_item(_i18n("settings_language_ru"))
+		language_option.add_item(_i18n("settings_language_en"))
 
 	if sfx_volume_option != null:
 		sfx_volume_option.clear()
@@ -213,8 +219,8 @@ func _load_settings() -> void:
 		language_option.select(idx)
 
 	var theme_mgr = _theme()
-	if skin_auto_check != null:
-		skin_auto_check.button_pressed = bool(_get_value(theme_mgr, "skin_auto", false))
+	if background_auto_check != null:
+		background_auto_check.button_pressed = bool(_get_value(theme_mgr, "skin_auto", false))
 
 	_refresh_theme_button()
 
@@ -226,11 +232,11 @@ func _style_controls() -> void:
 	if title_label != null:
 		LnUiLib.apply_title(title_label, 24)
 
-	for btn in [back_button, theme_button, skin_pick_button, import_button, exit_button]:
+	for btn in [back_button, theme_button, skin_pick_button, background_pick_button, import_button, exit_button]:
 		if btn != null:
-			LnUiLib.apply_button(btn)
+			LnUiLib.apply_button(btn, btn.disabled)
 
-	for check in [sound_check, music_check, bg_effects_check, leaderboard_check, skin_auto_check]:
+	for check in [sound_check, music_check, bg_effects_check, leaderboard_check, background_auto_check]:
 		if check != null:
 			LnUiLib.apply_toggle_switch(check, false)
 
@@ -255,10 +261,10 @@ func _apply_unified_font() -> void:
 		title_label.add_theme_font_size_override("font_size", title_size)
 
 	var controls: Array = [
-		sound_check, music_check, bg_effects_check, leaderboard_check, skin_auto_check,
+		sound_check, music_check, bg_effects_check, leaderboard_check, background_auto_check,
 		sfx_volume_option, music_volume_option, music_track_option, tile_font_size_option, language_option,
-		theme_button, skin_pick_button, import_button, exit_button, back_button,
-		skin_label, import_status,
+		theme_button, skin_pick_button, background_pick_button, import_button, exit_button, back_button,
+		skin_label, background_label, import_status,
 	]
 	if vbox != null:
 		for child in vbox.get_children():
@@ -297,8 +303,10 @@ func _connect_signals() -> void:
 		theme_button.pressed.connect(_on_theme_cycle)
 	if skin_pick_button != null:
 		skin_pick_button.pressed.connect(_on_skin_pick_pressed)
-	if skin_auto_check != null:
-		skin_auto_check.toggled.connect(_on_skin_auto_toggled)
+	if background_pick_button != null:
+		background_pick_button.pressed.connect(_on_background_pick_pressed)
+	if background_auto_check != null:
+		background_auto_check.toggled.connect(_on_background_auto_toggled)
 	if import_button != null:
 		import_button.pressed.connect(_on_import_legacy)
 	if exit_button != null:
@@ -354,7 +362,11 @@ func _refresh_theme_button() -> void:
 	var theme_name := _i18n(theme_key)
 	if theme_name == theme_key:
 		theme_name = theme_id
-	theme_button.text = "%s %s" % [_i18n("settings_theme_label").trim_suffix(":"), theme_name]
+	theme_button.text = "%s: %s" % [_i18n("settings_theme_label").trim_suffix(":"), theme_name]
+	# Global brightness belongs to meta screens and remains independent from a
+	# dark-only gameplay art kit.
+	theme_button.disabled = false
+	theme_button.tooltip_text = ""
 
 
 func _apply_audio() -> void:
@@ -383,7 +395,10 @@ func _on_bg_effects_toggled(enabled: bool) -> void:
 	var settings = _settings()
 	if settings != null:
 		settings.set("bg_effects_enabled", enabled)
-	_save()
+		_save()
+	var theme_mgr = _theme()
+	if theme_mgr != null and theme_mgr.has_method("notify_visual_settings_changed"):
+		theme_mgr.call("notify_visual_settings_changed")
 
 
 func _on_sfx_volume_selected(index: int) -> void:
@@ -421,7 +436,11 @@ func _on_language_selected(index: int) -> void:
 	var settings = _settings()
 	if settings != null:
 		settings.set("language", langs[clampi(index, 0, langs.size() - 1)])
-	_save()
+		_save()
+		# Refresh visible labels and option entries without reopening Settings.
+		_setup_labels()
+		_setup_options()
+		_load_settings()
 
 
 func _on_leaderboard_toggled(enabled: bool) -> void:
@@ -442,7 +461,13 @@ func _on_skin_pick_pressed() -> void:
 		await router.call("push", "skin_preview")
 
 
-func _on_skin_auto_toggled(enabled: bool) -> void:
+func _on_background_pick_pressed() -> void:
+	var router := _autoload("ScreenRouter")
+	if router != null and router.has_method("push"):
+		await router.call("push", "background_preview")
+
+
+func _on_background_auto_toggled(enabled: bool) -> void:
 	var theme_mgr = _theme()
 	if theme_mgr != null and theme_mgr.has_method("set_skin_auto"):
 		theme_mgr.call("set_skin_auto", enabled)
@@ -450,8 +475,20 @@ func _on_skin_auto_toggled(enabled: bool) -> void:
 
 
 func _on_import_legacy() -> void:
+	var migration := _autoload("LegacySaveMigration")
+	if migration == null or not migration.has_method("try_manual_import"):
+		if import_status != null:
+			import_status.text = _i18n("settings_import_legacy_failed")
+		return
+	if import_button != null:
+		import_button.disabled = true
+	var imported := bool(migration.call("try_manual_import"))
+	if import_button != null:
+		import_button.disabled = false
 	if import_status != null:
-		import_status.text = _i18n("settings_import_legacy_none")
+		import_status.text = _i18n(
+			"settings_import_legacy_success" if imported else "settings_import_legacy_none"
+		)
 
 
 func _on_exit() -> void:

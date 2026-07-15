@@ -1,6 +1,6 @@
 # Lost Number — Godot 4 (primary Android)
 
-Native Godot port — **ship target for Google Play**. Capacitor/Web (`js/`, `index.html`) remains the visual reference and legacy build path.
+Native Godot port — **ship target for Google Play**.
 
 ## Requirements
 
@@ -51,11 +51,11 @@ timeout 15 godot4 --path godot --headless
 ## Android
 
 ```bash
-npm run godot:android:debug     # build/godot/android/lost-number-debug.apk
-npm run godot:android:release   # build/godot/android/lost-number.aab
+npm run godot:android:debug     # build/android/lost-number-debug.apk
+npm run godot:android:release   # build/android/lost-number.aab
 ```
 
-Version: `2.1.6` / versionCode `16` (`export_presets.cfg`). Details: `godot/docs/ANDROID_RELEASE_READINESS.md`, `godot/docs/PLAY_STORE_GODOT.md`. Legacy save: `godot/docs/LEGACY_SAVE_MIGRATION.md` (file import + `LostNumberMigration` Android plugin AAR).
+Version: `2.1.6` / versionCode `16` (`export_presets.cfg`). Details: `docs/ANDROID_RELEASE_READINESS.md`, `docs/PLAY_STORE_GODOT.md`. Legacy save: `docs/LEGACY_SAVE_MIGRATION.md` (file import + `LostNumberMigration` Android plugin AAR).
 
 ## Structure
 
@@ -71,7 +71,7 @@ scripts/
   core/                Rules, BoardLogic, GameState, LevelManager (40 preset + endless), …
   game/                Game, Board, Tile, ChainLineLayer, BonusManager
   ui/                  GameHud, SkinPreview, ImagePickerHelper, WheelCanvas, AchievementCard, DailyQuestCard, …
-  assets/i18n/         uk.json, ru.json, en.json — 285 keys each (from js/system/i18n/i18n.js)
+  assets/i18n/         uk.json, ru.json, en.json — 285 keys each
   managers/            SaveManager, SettingsManager, AudioManager, ThemeManager, I18nManager, …
   ui/                  ScreenRouter, Boot, MainMenu, ThemeTokens, …
   meta/                WheelManager, DailyQuestManager
@@ -83,9 +83,7 @@ assets/
   ui/icons/                      neon SVG (UI copy; neon/ excluded from AAB export)
   audio/{music,sfx}/             mp3 via git LFS
 docs/
-  VISUAL_PORT_MAP.md     Web → Godot visual parity tracker
-  MIGRATION_FROM_JS.md   logic port map
-  GAME_RULES.md
+  README.md              → docs/ (canonical documentation)
 ```
 
 ## Visual foundation (Sprint 1)
@@ -95,6 +93,6 @@ docs/
 - `NeonButton` — primary / secondary / ghost (no default grey Godot buttons on MainMenu)
 - MainMenu: gradient title, primary actions, quick-row chips, bottom dock, SVG icons, feature stubs, bg cycle (tagline double-tap; theme toggle dawn/dusk only — twilight hidden in UI)
 - Settings → SkinPreview: custom background via `ImagePickerHelper.gd`; Back button pinned at bottom
-- Stats / About screens; legacy save plugin (`android/plugins/LostNumberMigrationPlugin/`)
+- Stats / About screens; legacy save plugin (`godot/android/plugins/LostNumberMigrationPlugin/`)
 
-Next visual work: `godot/docs/VISUAL_PORT_MAP.md` (chain-sum HUD, toasts, menu skin variants).
+Next visual work: `docs/en/VISUAL_TARGET.md` (chain-sum HUD, toasts, menu skin variants). Historical port map: `docs/archive/VISUAL_PORT_MAP.md`.

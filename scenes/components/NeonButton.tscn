@@ -1,9 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://neonbutton001"]
-
-[ext_resource type="Script" path="res://scripts/ui/NeonButton.gd" id="1_neonbtn"]
-
-[node name="NeonButton" type="Button"]
-custom_minimum_size = Vector2(0, 44)
-offset_right = 260.0
-offset_bottom = 44.0
-script = ExtResource("1_neonbtn")
