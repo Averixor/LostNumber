@@ -90,20 +90,23 @@ func _focus_ring(radius: int, color: Color) -> StyleBoxFlat:
 
 func _apply_primary() -> void:
 	var radius := ThemeTokensLib.RADIUS_BUTTON
-	var themed := LnUiLib.primary_button_normal()
+	var use_skin := _uses_visual_skin()
+	var themed := LnUiLib.primary_button_normal(use_skin)
 	if themed is StyleBoxTexture:
-		var hover := LnUiLib.button_hover()
-		var pressed := LnUiLib.button_pressed()
-		var disabled := LnUiLib.button_disabled()
-		_set_styleboxes(themed, hover, pressed, disabled, _focus_ring(radius, ThemeTokensLib.MENU_PRIMARY_BORDER))
+		var hover := LnUiLib.button_hover(use_skin)
+		var pressed := LnUiLib.button_pressed(use_skin)
+		var disabled := LnUiLib.button_disabled(use_skin)
+		_set_styleboxes(themed, hover, pressed, disabled, _focus_ring(radius, _menu_primary_border()))
 		_set_font_colors(Color.WHITE, Color.WHITE)
 		add_theme_font_size_override("font_size", 16)
 		return
 	var normal := _base_stylebox(radius)
-	normal.bg_color = ThemeTokensLib.MENU_PRIMARY_BG_START.lerp(ThemeTokensLib.MENU_PRIMARY_BG_END, 0.5)
+	var bg_start := _menu_primary_bg_start()
+	var bg_end := _menu_primary_bg_end()
+	normal.bg_color = bg_start.lerp(bg_end, 0.5)
 	normal.set_border_width_all(2)
-	normal.border_color = ThemeTokensLib.MENU_PRIMARY_BORDER
-	normal.shadow_color = ThemeTokensLib.MENU_PRIMARY_GLOW
+	normal.border_color = _menu_primary_border()
+	normal.shadow_color = _menu_primary_glow()
 	normal.shadow_size = 12
 
 	var hover: StyleBoxFlat = normal.duplicate()
@@ -119,27 +122,30 @@ func _apply_primary() -> void:
 	disabled.bg_color = Color(normal.bg_color, 0.35)
 	disabled.shadow_size = 0
 
-	_set_styleboxes(normal, hover, pressed, disabled, _focus_ring(radius, ThemeTokensLib.MENU_PRIMARY_BORDER))
+	_set_styleboxes(normal, hover, pressed, disabled, _focus_ring(radius, _menu_primary_border()))
 	_set_font_colors(Color.WHITE, Color.WHITE)
 	add_theme_font_size_override("font_size", 16)
 
 
 func _apply_success() -> void:
 	var radius := ThemeTokensLib.RADIUS_BUTTON
-	var themed := LnUiLib.success_button_normal()
+	var use_skin := _uses_visual_skin()
+	var themed := LnUiLib.success_button_normal(use_skin)
 	if themed is StyleBoxTexture:
-		var hover := LnUiLib.button_hover()
-		var pressed := LnUiLib.button_pressed()
-		var disabled := LnUiLib.button_disabled()
-		_set_styleboxes(themed, hover, pressed, disabled, _focus_ring(radius, ThemeTokensLib.MENU_SUCCESS_BORDER))
+		var hover := LnUiLib.button_hover(use_skin)
+		var pressed := LnUiLib.button_pressed(use_skin)
+		var disabled := LnUiLib.button_disabled(use_skin)
+		_set_styleboxes(themed, hover, pressed, disabled, _focus_ring(radius, _menu_success_border()))
 		_set_font_colors(Color.WHITE, Color.WHITE)
 		add_theme_font_size_override("font_size", 16)
 		return
 	var normal := _base_stylebox(radius)
-	normal.bg_color = ThemeTokensLib.MENU_SUCCESS_BG_START.lerp(ThemeTokensLib.MENU_SUCCESS_BG_END, 0.5)
+	var bg_start := _menu_success_bg_start()
+	var bg_end := _menu_success_bg_end()
+	normal.bg_color = bg_start.lerp(bg_end, 0.5)
 	normal.set_border_width_all(2)
-	normal.border_color = ThemeTokensLib.MENU_SUCCESS_BORDER
-	normal.shadow_color = ThemeTokensLib.MENU_SUCCESS_GLOW
+	normal.border_color = _menu_success_border()
+	normal.shadow_color = _menu_success_glow()
 	normal.shadow_size = 12
 
 	var hover: StyleBoxFlat = normal.duplicate()
@@ -153,28 +159,29 @@ func _apply_success() -> void:
 	disabled.bg_color = Color(normal.bg_color, 0.35)
 	disabled.shadow_size = 0
 
-	_set_styleboxes(normal, hover, pressed, disabled, _focus_ring(radius, ThemeTokensLib.MENU_SUCCESS_BORDER))
+	_set_styleboxes(normal, hover, pressed, disabled, _focus_ring(radius, _menu_success_border()))
 	_set_font_colors(Color.WHITE, Color.WHITE)
 	add_theme_font_size_override("font_size", 16)
 
 
 func _apply_secondary() -> void:
 	var radius := ThemeTokensLib.RADIUS_BUTTON
-	var normal := LnUiLib.button_normal()
+	var use_skin := _uses_visual_skin()
+	var normal := LnUiLib.button_normal(use_skin)
 	normal.content_margin_top = 12.0
 	normal.content_margin_bottom = 12.0
 
-	var hover := LnUiLib.button_hover()
+	var hover := LnUiLib.button_hover(use_skin)
 	hover.content_margin_top = 12.0
 	hover.content_margin_bottom = 12.0
 
-	var pressed := LnUiLib.button_pressed()
+	var pressed := LnUiLib.button_pressed(use_skin)
 	pressed.content_margin_top = 12.0
 	pressed.content_margin_bottom = 12.0
 
-	var disabled := LnUiLib.button_disabled()
+	var disabled := LnUiLib.button_disabled(use_skin)
 
-	_set_styleboxes(normal, hover, pressed, disabled, _focus_ring(radius, ThemeTokensLib.COLOR_PRIMARY))
+	_set_styleboxes(normal, hover, pressed, disabled, _focus_ring(radius, _menu_primary_border()))
 	_set_font_colors(ThemeTokensLib.COLOR_TEXT, ThemeTokensLib.COLOR_SECONDARY)
 	add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_BODY)
 
@@ -211,3 +218,47 @@ func _set_font_colors(base: Color, active: Color) -> void:
 	add_theme_color_override("font_pressed_color", active)
 	add_theme_color_override("font_focus_color", base)
 	add_theme_color_override("font_disabled_color", Color(base, 0.45))
+
+
+func _uses_visual_skin() -> bool:
+	var theme_mgr := get_node_or_null("/root/ThemeManager")
+	return theme_mgr != null and theme_mgr.has_method("get_visual_skin") and theme_mgr.call("get_visual_skin") != null
+
+
+func _theme_color(method: String, fallback: Color) -> Color:
+	var theme_mgr := get_node_or_null("/root/ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method(method):
+		return theme_mgr.call(method, true)
+	return fallback
+
+
+func _menu_primary_border() -> Color:
+	return _theme_color("get_primary_color", ThemeTokensLib.MENU_PRIMARY_BORDER)
+
+
+func _menu_primary_glow() -> Color:
+	return Color(_menu_primary_border(), 0.45)
+
+
+func _menu_primary_bg_start() -> Color:
+	return Color(_menu_primary_border(), 0.18)
+
+
+func _menu_primary_bg_end() -> Color:
+	return Color(ThemeTokensLib.MENU_PRIMARY_BG_END)
+
+
+func _menu_success_border() -> Color:
+	return _theme_color("get_success_color", ThemeTokensLib.MENU_SUCCESS_BORDER)
+
+
+func _menu_success_glow() -> Color:
+	return Color(_menu_success_border(), 0.40)
+
+
+func _menu_success_bg_start() -> Color:
+	return Color(_menu_success_border(), 0.14)
+
+
+func _menu_success_bg_end() -> Color:
+	return Color(ThemeTokensLib.MENU_SUCCESS_BG_END)

@@ -25,7 +25,11 @@ static func apply_background(
 	if resolved_path.is_empty() or not ResourceLoader.exists(resolved_path):
 		resolved_path = DEFAULT_BACKDROP
 	if ResourceLoader.exists(resolved_path):
-		LnUiLib.set_background(host, resolved_path, dim_alpha)
+		var use_skin := false
+		var theme := host.get_node_or_null("/root/ThemeManager")
+		if theme != null and theme.has_method("get_visual_skin"):
+			use_skin = theme.call("get_visual_skin") != null
+		LnUiLib.set_background(host, resolved_path, dim_alpha, use_skin)
 
 
 static func palette(host: Node) -> Dictionary:
@@ -33,7 +37,8 @@ static func palette(host: Node) -> Dictionary:
 		return {}
 	var theme := host.get_node_or_null("/root/ThemeManager")
 	if theme != null and theme.has_method("get_palette"):
-		return theme.call("get_palette")
+		var use_skin := theme.has_method("get_visual_skin") and theme.call("get_visual_skin") != null
+		return theme.call("get_palette", use_skin)
 	return {}
 
 

@@ -88,7 +88,11 @@ func _ready() -> void:
 	version_label.text = _i18n("version_label", [str(ProjectSettings.get_setting("application/config/version", ""))])
 	version_label.add_theme_font_size_override("font_size", 11)
 
+	_set_button_icon(play_button, LnUiLib.icon_path("home.png"))
+	_set_button_icon(continue_button, LnUiLib.icon_path("save.png"))
 	_set_wheel_button_icon(wheel_button, "wheel-x2.png", 28)
+	if exit_button != null:
+		_set_button_icon(exit_button, LnUiLib.icon_path("back.png"))
 
 	quick_settings.call("setup", _i18n("btn_settings"), LnUiLib.icon_path("settings.png"))
 	quick_stats.call("setup", _i18n("btn_stats"), LnUiLib.icon_path("statistics.png"))
