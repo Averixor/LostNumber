@@ -7,7 +7,7 @@ last_updated: 2026-07-10
 
 # Architecture & Repository Layout
 
-High-level technical architecture for Lost Number **2.1.6**. Godot 4.5 is the sole production runtime.
+High-level technical architecture for Lost Number **2.1.6**. Godot 4.7 is the sole production runtime.
 
 ## System overview
 
@@ -24,7 +24,7 @@ High-level technical architecture for Lost Number **2.1.6**. Godot 4.5 is the so
 
 | Layer           | Stack                  | Role                                        |
 | --------------- | ---------------------- | ------------------------------------------- |
-| Gameplay (ship) | Godot 4.5 GDScript     | Boot → App → screens; back-stack navigation |
+| Gameplay (ship) | Godot 4.7 GDScript     | Boot → App → screens; back-stack navigation |
 | Save            | `user://` JSON (Godot) | Checksum + `.bak` rollback                  |
 | Network         | None                   | Offline-only; no PII                        |
 | CI              | GitHub Actions         | `release:check` on push/PR                  |
@@ -190,7 +190,7 @@ flowchart TD
 
 ## Ship target
 
-Godot 4.5 AAB is the **sole** Play upload path. Web/JS/Capacitor stack removed from repo (July 2026). Legacy save import remains for users upgrading from old builds.
+Godot 4.7 AAB is the **sole** Play upload path. Web/JS/Capacitor stack removed from repo (July 2026). Legacy save import remains for users upgrading from old builds.
 
 ## Further reading
 

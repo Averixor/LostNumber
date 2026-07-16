@@ -1,10 +1,10 @@
 # Lost Number — Godot 4 (Android)
 
-Єдина playable-реалізація — **Godot 4.5** у `godot/`. Ship target: Google Play (`npm run godot:android:release` → `build/android/lost-number.aab`).
+Єдина playable-реалізація — **Godot 4.7** у `godot/`. Ship target: Google Play (`npm run godot:android:release` → `build/android/lost-number.aab`).
 
 ## Requirements
 
-- Godot **4.3+** (4.5 tested)
+- Godot **4.7+** (4.7 tested; `config/features` у `project.godot`)
 - Portrait 420×920 (`godot/project.godot`)
 - Node.js ≥ 20.19 for npm scripts
 

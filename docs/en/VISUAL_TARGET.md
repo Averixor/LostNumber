@@ -9,7 +9,7 @@ status: canonical
 
 # Lost Number — Visual North Star
 
-**Canonical visual target** for Lost Number (Godot 4.5 Android). When implementation, `VISUAL_PORT_MAP.md`, or web parity docs disagree with this file, **this file wins** for acceptance criteria — then update code and trackers.
+**Canonical visual target** for Lost Number (Godot 4.7 Android). When implementation, `VISUAL_PORT_MAP.md`, or web parity docs disagree with this file, **this file wins** for acceptance criteria — then update code and trackers.
 
 **Reference mockups:** PO-approved gothic-fantasy screenshots (Jul 2026) — hell/lava, gothic purple (dusk), royal purple variants. Same layout principles across themes; only palette and background art change.
 

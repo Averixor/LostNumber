@@ -74,7 +74,7 @@ Then create `android/keystore.properties` following the pattern above with match
 
 ## Prerequisites
 
-- Godot 4.3+ (`godot4` on PATH)
+- Godot 4.7+ (`godot4` on PATH)
 - Android SDK: `~/Android/Sdk` (or `ANDROID_HOME`)
 - JDK 17: `~/Android/jbr` (snap Godot cannot read `/opt/...`)
 - Export templates (script auto-downloads on first build)
