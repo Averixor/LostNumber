@@ -19,7 +19,7 @@ Entry flow: **`Boot.tscn`** (main_scene) → **`App.tscn`** → screens mounted 
 
 ## Android build
 
-Requirements: Godot 4.3+, JDK 17, Android SDK (API 35), `android/keystore.properties` for release.
+Requirements: Godot 4.7+, JDK 17, Android SDK (API 35), `android/keystore.properties` for release.
 
 ```bash
 chmod +x scripts/godot-android-export.sh

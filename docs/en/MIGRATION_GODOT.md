@@ -7,7 +7,7 @@ last_updated: 2026-07-10
 
 # Godot 4 Migration Plan
 
-Lost Number **2.1.6** ships on **Godot 4.5** / GDScript only. The former browser/JS prototype has been removed from the repo; the table below is kept as a historical migration map.
+Lost Number **2.1.6** ships on **Godot 4.7** / GDScript only. The former browser/JS prototype has been removed from the repo; the table below is kept as a historical migration map.
 
 ## Architecture map
 

@@ -4,7 +4,7 @@ Native Godot port — **ship target for Google Play**.
 
 ## Requirements
 
-- Godot **4.3+** (4.5 tested)
+- Godot **4.7+** (4.7 tested)
 - Portrait 420×920 (`project.godot`)
 - Node.js ≥ 20.19 for npm scripts
 

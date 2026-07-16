@@ -1,6 +1,6 @@
 # Lost Number — структура проєкту
 
-**Єдина playable-реалізація:** Godot 4.5 Android (`godot/`, `npm run godot:android:release`). Канон: `docs/en/SOURCE_OF_TRUTH.md`.
+**Єдина playable-реалізація:** Godot 4.7 Android (`godot/`, `npm run godot:android:release`). Канон: `docs/en/SOURCE_OF_TRUTH.md`.
 
 **Endless progression:** рівні 1–40 — preset-таблиця (`LevelManager.MANUAL_LEVEL_COUNT := 40`); далі — процедурні цілі через `getLevelConfig(levelIndex)`.
 

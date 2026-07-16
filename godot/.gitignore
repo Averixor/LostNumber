@@ -5,3 +5,4 @@ android/build/
 android/.build_version
 !android/plugins/
 !android/plugins/**
+android/plugins/**/.gradle/

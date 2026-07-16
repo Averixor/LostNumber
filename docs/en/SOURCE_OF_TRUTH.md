@@ -18,7 +18,7 @@ Single canonical reference for PO-approved decisions. When docs disagree with th
 | versionName         | `2.1.6`                                |
 | versionCode         | `16`                                   |
 | Next Play upload    | versionCode `17` (mandatory increment) |
-| Engine              | Godot **4.5**                          |
+| Engine              | Godot **4.7**                          |
 | npm package version | `2.1.6`                                |
 
 **Versioning rule (code ≥ 15):** `versionName = 2.1.(versionCode - 10)` — e.g. code `16` → `2.1.6`. Debug builds append `-dev`.
@@ -29,7 +29,7 @@ Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`.
 
 | Topic                | Canonical choice                                                                                                                   | Verify in code                                          |
 | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| **Ship target**      | Godot 4.5 Android AAB → Google Play (`npm run godot:android:release`)                                                              | `scripts/godot-android-export.sh`, `export_presets.cfg` |
+| **Ship target**      | Godot 4.7 Android AAB → Google Play (`npm run godot:android:release`)                                                              | `scripts/godot-android-export.sh`, `export_presets.cfg` |
 | **Entry flow**       | `Boot.tscn` → `App.tscn` → screens via `ScreenRouter` autoload                                                                     | `godot/project.godot`, `ScreenRouter.gd`                |
 | **Autoloads**        | SaveManager, SettingsManager, AudioManager, I18nManager, ThemeManager, LeaderboardService, ScreenRouter, LegacySaveMigration       | `project.godot` `[autoload]`                            |
 | **Save**             | `user://` envelope v1 + SHA-256 + `.bak`; legacy import via `LegacySaveMigration`                                                  | `SaveManager.gd`, `LegacySaveMigration.gd`              |
