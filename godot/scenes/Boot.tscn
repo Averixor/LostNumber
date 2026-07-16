@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bbrjx3rweevvc" path="res://scripts/ui/Boot.gd" id="1_boot"]
 [ext_resource type="Texture2D" uid="uid://cky3ydc2mtowq" path="res://assets/boot/boot-bg.png" id="3_bg"]
-[ext_resource type="Texture2D" uid="uid://um2pg1q2ccub" path="res://assets/boot/boot-logo.png" id="4_logo"]
+[ext_resource type="Texture2D" uid="uid://b8av6ktuaxs51" path="res://icon-1024.png" id="4_logo"]
 [ext_resource type="Texture2D" uid="uid://civlmhm1uqu0o" path="res://assets/ui/logo/lost-number-logo-glow.png" id="5_glow"]
 
 [sub_resource type="Animation" id="Animation_pulse"]

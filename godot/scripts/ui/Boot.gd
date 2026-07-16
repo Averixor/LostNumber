@@ -37,8 +37,10 @@ func _ready() -> void:
 func _wire_static_boot_logo() -> void:
 	var main_logo := LnUiLib.BOOT_LOGO_PATH if ResourceLoader.exists(LnUiLib.BOOT_LOGO_PATH) else LnUiLib.LOGO_PATH
 	if logo_image != null and ResourceLoader.exists(main_logo):
-		logo_image.texture = load(main_logo)
+		var tex: Texture2D = load(main_logo)
+		logo_image.texture = tex
 		logo_image.modulate = Color.WHITE
+		_fit_boot_logo(tex)
 	var glow := get_node_or_null("Center/VBox/LogoStack/LogoGlow") as TextureRect
 	if glow != null:
 		glow.visible = false
@@ -46,6 +48,26 @@ func _wire_static_boot_logo() -> void:
 	if anim != null:
 		anim.stop()
 		anim.autoplay = ""
+
+
+func _fit_boot_logo(tex: Texture2D) -> void:
+	var stack := logo_image.get_parent() as Control
+	if stack == null or tex == null:
+		return
+	var tex_size := tex.get_size()
+	if tex_size.x <= 0.0 or tex_size.y <= 0.0:
+		return
+	var vp := get_viewport_rect().size
+	var aspect := tex_size.x / tex_size.y
+	var max_w := vp.x * 0.88
+	var max_h := vp.y * 0.68
+	var w := max_w
+	var h := w / aspect
+	if h > max_h:
+		h = max_h
+		w = h * aspect
+	stack.custom_minimum_size = Vector2(w, h)
+	logo_image.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 
 func _apply_theme() -> void:
