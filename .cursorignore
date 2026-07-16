@@ -22,5 +22,4 @@ build/
 # Large binary assets
 audio/
 *.mp3
-*.png
 *.ico

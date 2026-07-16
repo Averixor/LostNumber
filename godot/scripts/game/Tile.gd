@@ -119,9 +119,7 @@ func _ensure_crown_icon() -> void:
 
 func _load_crown_texture() -> Texture2D:
 	var paths := [
-		"res://assets/ui/icons/neon/tile-crown.png",
 		"res://assets/ui/icons/tile-crown.png",
-		"res://assets/ui/icons/neon/tile-crown.svg",
 		"res://assets/ui/icons/tile-crown.svg",
 	]
 	for path in paths:

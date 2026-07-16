@@ -5,7 +5,7 @@ class_name GothicVisuals
 ## The concept artwork remains a composition reference; this helper exposes scalable,
 ## text-free materials that work with any tile value and all three localizations.
 
-const TILE_FRAME_PATH := "res://assets/ui/skins/gothic_crystal/tile-frame.svg"
+const TILE_FRAME_PATH := "res://assets/ui/skins/gothic_crystal/tile-frame.png"
 
 const STONE_BLACK := Color("#100d16")
 const STONE_DEEP := Color("#18131f")

@@ -39,7 +39,8 @@ const BG_BOOT := "res://assets/boot/boot-bg.png"
 const BOOT_LOGO_PATH := "res://assets/boot/boot-logo.png"
 const LOGO_PATH := "res://assets/ui/logo/lost-number-logo.png"
 const LOGO_GLOW_PATH := "res://assets/ui/logo/lost-number-logo-glow.png"
-const ICON_DIR := "res://assets/ui/icons/neon/"
+const GOTHIC_ICON_DIR := "res://assets/ui/icons/gothic/"
+const ICON_FALLBACK_DIR := "res://assets/ui/icons/"
 const WHEEL_ICON_DIR := "res://assets/ui/icons/wheel/"
 
 const LIGHT_BACKGROUNDS := [
@@ -418,7 +419,13 @@ static func apply_body(label: Label, size: int = 22) -> void:
 
 
 static func icon_path(name: String) -> String:
-	return ICON_DIR + name
+	var gothic := GOTHIC_ICON_DIR + name
+	if ResourceLoader.exists(gothic):
+		return gothic
+	var fallback := ICON_FALLBACK_DIR + name
+	if ResourceLoader.exists(fallback):
+		return fallback
+	return gothic
 
 
 static func wheel_icon_path(file_name: String) -> String:

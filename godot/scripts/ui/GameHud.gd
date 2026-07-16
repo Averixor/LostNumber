@@ -13,8 +13,6 @@ const BONUS_WHEEL_ICONS := {
 	"destroy": "wheel-break.png",
 }
 const BONUS_ICON_SIZE := 22
-const GOTHIC_ICON_DIR := "res://assets/ui/icons/gothic/"
-
 signal menu_pressed
 signal sound_pressed
 signal save_pressed
@@ -250,11 +248,6 @@ func _load_icons() -> void:
 
 
 func _hud_icon_path(file_name: String) -> String:
-	var theme := get_node_or_null("/root/ThemeManager")
-	if theme != null and str(theme.get("visual_skin_id")) == "gothic_crystal":
-		var gothic_path := GOTHIC_ICON_DIR + file_name
-		if ResourceLoader.exists(gothic_path):
-			return gothic_path
 	return LnUiLib.icon_path(file_name)
 
 

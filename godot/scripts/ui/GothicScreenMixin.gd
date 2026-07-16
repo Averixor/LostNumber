@@ -6,7 +6,7 @@ class_name GothicScreenMixin
 
 const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
-const DEFAULT_BACKDROP := "res://assets/ui/skins/gothic_crystal/game-backdrop.svg"
+const DEFAULT_BACKDROP := "res://assets/ui/skins/gothic_crystal/game-backdrop.png"
 
 
 static func apply_background(
