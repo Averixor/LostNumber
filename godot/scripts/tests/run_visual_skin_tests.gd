@@ -29,11 +29,15 @@ func _test_resource() -> void:
 	if skin == null:
 		return
 	_assert_true(skin.is_valid(), "Gothic Crystal resource is valid")
+	_assert_true(skin.is_valid_skin(), "Gothic Crystal manager validation API is valid")
 	_assert_true(skin.skin_id == &"gothic_crystal", "Gothic Crystal id matches")
 	_assert_true(skin.background_for(&"menu") != null, "menu background is assigned")
 	_assert_true(skin.background_for(&"game") != null, "game background is assigned")
 	_assert_true(skin.tile_frame_for_value(2) != null, "common tile frame is assigned")
 	_assert_true(skin.tile_frame_for_value(4096) != null, "legendary tile frame is assigned")
+	_assert_true(skin.tile_style_for_value(2) != null, "tile style is generated from frame")
+	_assert_true(skin.palette(true).has("primary"), "visual skin palette exposes primary color")
+	_assert_true(skin.overlay_color(true).a > 0.0, "visual skin overlay is visible")
 
 
 func _test_manager_api() -> void:
@@ -45,6 +49,9 @@ func _test_manager_api() -> void:
 		manager.get_visual_background_path(&"menu") == "res://assets/ui/skins/gothic_crystal/game-backdrop.svg",
 		"manager resolves exact-case menu background path"
 	)
+	_assert_true(manager.get_tile_rarity(4096) == &"legendary", "manager resolves legendary rarity")
+	_assert_true(manager.get_tile_style_for_value(2) != null, "manager resolves tile style")
+	_assert_true(manager.get_palette(true).has("primary"), "manager resolves visual palette")
 	_assert_true(not manager.set_visual_skin(&"missing_skin"), "manager rejects unknown visual skin")
 	manager.free()
 
