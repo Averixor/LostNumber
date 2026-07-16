@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://tile_component"]
+[gd_scene load_steps=2 format=3 uid="uid://tile_component"]
 
 [ext_resource type="Script" path="res://scripts/game/Tile.gd" id="1_tile"]
-[ext_resource type="Texture2D" path="res://assets/ui/skins/gothic_crystal/tiles/stone_frame.webp" id="2_frame"]
 
 [node name="Tile" type="Control"]
 custom_minimum_size = Vector2(72, 72)
@@ -23,6 +22,15 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="MaterialBackground" type="PanelContainer" parent="Bg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -66,8 +74,7 @@ offset_right = 72.0
 offset_bottom = 68.0
 mouse_filter = 2
 
-[node name="Frame" type="TextureRect" parent="Bg"]
-z_index = 1
+[node name="CrystalOverlay" type="Control" parent="Bg"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -75,9 +82,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("2_frame")
-expand_mode = 1
-stretch_mode = 0
 
 [node name="Label" type="Label" parent="Bg"]
 layout_mode = 1

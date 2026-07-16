@@ -119,19 +119,19 @@ const WHEEL_RIM_ORANGE := Color("#a86b2e")
 const SPINNER_COLOR := Color("#00ff6b")
 const LOADING_TEXT_COLOR := Color("#c0b8d8")
 
-# --- Tile palette by value — same hues, lower saturation (esp. greens) ---
+# --- Tile palette by value — v13 gameplay hues (muted gothic crystal, still distinct) ---
 const TILE_COLORS := {
-	2: Color("#33d97a"),
-	4: Color("#2dcfab"),
-	8: Color("#33c4e8"),
-	16: Color("#e83d9a"),
-	32: Color("#e02070"),
-	64: Color("#a84de8"),
-	128: Color("#8530c0"),
-	256: Color("#e6a800"),
-	512: Color("#e67a00"),
+	2: Color("#3c8c52"),
+	4: Color("#a83d6c"),
+	8: Color("#c98219"),
+	16: Color("#237e90"),
+	32: Color("#734fb2"),
+	64: Color("#b13d45"),
+	128: Color("#3d64ae"),
+	256: Color("#704080"),
+	512: Color("#89512c"),
 	1024: Color("#e65c00"),
-	2048: Color("#f0d060"),
+	2048: Color("#b8862d"),
 	4096: Color("#f2f2f2"),
 }
 

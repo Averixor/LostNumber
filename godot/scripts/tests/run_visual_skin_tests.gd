@@ -35,7 +35,7 @@ func _test_resource() -> void:
 	_assert_true(skin.background_for(&"menu") != null, "menu background is assigned")
 	_assert_true(skin.background_for(&"game") != null, "game background is assigned")
 	_assert_true(skin.tile_frame_for_value(2) != null, "common tile frame is assigned")
-	_assert_true(skin.tile_frame_for_value(4096) != null, "legendary tile frame is assigned")
+	_assert_true(skin.tile_frame_for_value(8192) != null, "legendary tile frame is assigned")
 	_assert_true(skin.tile_style_for_value(2) != null, "tile style is generated from frame")
 	_assert_true(skin.palette(true).has("primary"), "visual skin palette exposes primary color")
 	_assert_true(skin.overlay_color(true).a > 0.0, "visual skin overlay is visible")
@@ -50,7 +50,8 @@ func _test_manager_api() -> void:
 		manager.get_visual_background_path(&"menu") == "res://assets/ui/skins/gothic_crystal/game-backdrop.png",
 		"manager resolves exact-case menu background path"
 	)
-	_assert_true(manager.get_tile_rarity(4096) == &"legendary", "manager resolves legendary rarity")
+	_assert_true(manager.get_tile_rarity(16) == &"uncommon", "manager resolves uncommon rarity at 16+")
+	_assert_true(manager.get_tile_rarity(8192) == &"legendary", "manager resolves legendary rarity")
 	_assert_true(manager.get_tile_style_for_value(2) != null, "manager resolves tile style")
 	var face_2: Color = manager.get_tile_face_color(2)
 	var face_4: Color = manager.get_tile_face_color(4)

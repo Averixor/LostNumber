@@ -8,9 +8,10 @@ class_name GothicVisuals
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 
-## Border-only frame: transparent center so per-value face colors show through.
+## Border-only atlas frame: transparent center so per-value face colors show through.
 const TILE_FRAME_PATH := "res://assets/ui/skins/gothic_crystal/tiles/stone_frame.webp"
-## Full-frame tile art shipped alongside stone_frame; kept for skin previews / future rarity variants.
+const TILE_FRAME_ATLAS_REGION := Rect2(140, 130, 1320, 1340)
+## Full-frame concept art; not used on the live board (opaque crystal center).
 const TILE_FRAME_ART_PATH := "res://assets/ui/skins/gothic_crystal/tile-frame.png"
 
 const STONE_BLACK := Color("#100d16")

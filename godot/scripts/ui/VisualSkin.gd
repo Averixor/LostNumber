@@ -7,6 +7,9 @@ class_name VisualSkin
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 
+## Cropped forged frame inside the stone_frame.webp atlas (v13 gameplay reference).
+const TILE_FRAME_ATLAS_REGION := Rect2(140, 130, 1320, 1340)
+
 @export var skin_id: StringName
 @export var name_key: StringName = &"visual_skin_1"
 @export var description_key: StringName = &"visual_skin_1"
@@ -106,23 +109,47 @@ func tile_frame_for_value(value: int) -> Texture2D:
 			return tile_common
 
 
-func tile_style_for_value(value: int, _frozen: bool = false) -> StyleBox:
+func tile_style_for_value(value: int, frozen: bool = false) -> StyleBox:
+	if frozen and tile_frozen_overlay != null:
+		return _make_tile_style(tile_frozen_overlay, Color(0.64, 0.74, 0.78, 0.9))
 	var texture := tile_frame_for_value(value)
 	if texture == null:
 		return null
+	return _make_tile_style(texture, _tile_frame_modulate(value))
+
+
+func _make_tile_style(texture: Texture2D, modulate: Color) -> StyleBoxTexture:
 	var style := StyleBoxTexture.new()
 	style.texture = texture
+	style.region_rect = TILE_FRAME_ATLAS_REGION
+	style.modulate_color = modulate
 	style.set_content_margin_all(6.0)
 	return style
 
 
+func _tile_frame_modulate(value: int) -> Color:
+	match rarity_for_value(value):
+		&"legendary":
+			return Color(0.86, 0.72, 0.48, 0.98)
+		&"epic":
+			return Color(0.64, 0.55, 0.7, 0.96)
+		&"rare":
+			return Color(0.56, 0.59, 0.68, 0.94)
+		&"uncommon":
+			return Color(0.57, 0.53, 0.57, 0.92)
+		_:
+			return Color(0.54, 0.51, 0.5, 0.9)
+
+
 static func rarity_for_value(value: int) -> StringName:
-	if value >= 2048:
+	if value >= 8192:
 		return &"legendary"
-	if value >= 512:
+	if value >= 1024:
 		return &"epic"
 	if value >= 128:
 		return &"rare"
+	if value >= 16:
+		return &"uncommon"
 	return &"common"
 
 
