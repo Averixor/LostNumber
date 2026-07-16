@@ -58,6 +58,8 @@
     "node": ">=20.19.0"
   },
   "overrides": {
-    "undici": "6.27.0"
+    "@connectrpc/connect-node": {
+      "undici": "6.27.0"
+    }
   }
 }
