@@ -94,7 +94,7 @@ func _ready() -> void:
 	_set_wheel_button_icon(wheel_button, "wheel-x2.png", 28)
 	_set_button_icon(settings_button, LnUiLib.icon_path("settings.png"))
 	if exit_button != null:
-		_set_button_icon(exit_button, LnUiLib.icon_path("back.png"))
+		_set_button_icon(exit_button, LnUiLib.icon_path("exit.png"))
 
 	# Row 1: Daily tasks, Achievements, About
 	quick_daily.call("setup", _i18n("dock_daily"), LnUiLib.icon_path("daily-tasks.png"))
