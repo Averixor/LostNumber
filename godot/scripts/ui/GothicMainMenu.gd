@@ -30,6 +30,5 @@ func _refresh_cta_styles() -> void:
 	for button in [play_button, continue_button, wheel_button, settings_button, exit_button]:
 		if button == null:
 			continue
-		button.variant = "primary"
 		if button.has_method("set_gothic_cta"):
 			button.call("set_gothic_cta", true)

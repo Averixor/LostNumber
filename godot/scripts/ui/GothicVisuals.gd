@@ -87,10 +87,19 @@ static func icon_button(palette: Dictionary = {}, state: String = "normal") -> S
 
 
 static func cta_button(palette: Dictionary = {}, state: String = "normal") -> StyleBoxFlat:
-	var style := _stone_button_base(palette, 10, 14)
+	var rim: Color = palette.get("rim", GOLD)
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(STONE_MID.lightened(0.05), 0.92)
+	style.border_color = Color(rim, 0.82)
+	style.set_corner_radius_all(10)
+	style.content_margin_top = 14.0
+	style.content_margin_bottom = 14.0
 	style.content_margin_left = 16.0
 	style.content_margin_right = 16.0
-	_apply_stone_button_state(style, palette, state)
+	style.shadow_color = Color(STONE_BLACK, 0.42)
+	style.shadow_size = 5
+	style.shadow_offset = Vector2(0, 3)
+	_apply_cta_button_state(style, palette, state)
 	return style
 
 
@@ -130,6 +139,46 @@ static func _apply_stone_button_state(style: StyleBoxFlat, palette: Dictionary, 
 			style.border_color = Color(IRON, 0.45)
 			style.shadow_color = Color.TRANSPARENT
 			style.shadow_size = 0
+
+
+static func _apply_cta_button_state(style: StyleBoxFlat, palette: Dictionary, state: String) -> void:
+	var rim: Color = palette.get("rim", GOLD)
+	var highlight := Color(GOLD_LIGHT.lerp(rim, 0.30), 0.92)
+	var shadow_edge := Color(BRONZE_DARK.lerp(STONE_BLACK, 0.35), 0.88)
+	match state:
+		"normal":
+			style.border_width_top = 3
+			style.border_width_left = 3
+			style.border_width_bottom = 2
+			style.border_width_right = 2
+			style.border_color = highlight
+		"hover":
+			style.bg_color = Color(STONE_MID.lightened(0.10), 0.96)
+			style.border_width_top = 3
+			style.border_width_left = 3
+			style.border_width_bottom = 2
+			style.border_width_right = 2
+			style.border_color = Color(GOLD_LIGHT, 0.95)
+			style.shadow_color = Color(STONE_BLACK, 0.48)
+			style.shadow_size = 6
+			style.shadow_offset = Vector2(0, 4)
+		"pressed":
+			style.bg_color = Color(STONE_BLACK, 0.96)
+			style.border_width_top = 1
+			style.border_width_left = 1
+			style.border_width_bottom = 3
+			style.border_width_right = 3
+			style.border_color = shadow_edge
+			style.shadow_color = Color(STONE_BLACK, 0.28)
+			style.shadow_size = 2
+			style.shadow_offset = Vector2(0, 1)
+		"disabled":
+			style.bg_color = Color(STONE_BLACK, 0.55)
+			style.border_color = Color(IRON, 0.45)
+			style.set_border_width_all(2)
+			style.shadow_color = Color.TRANSPARENT
+			style.shadow_size = 0
+			style.shadow_offset = Vector2.ZERO
 
 
 static func booster_button(palette: Dictionary, active: bool, available: bool) -> StyleBoxFlat:
