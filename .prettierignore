@@ -20,3 +20,6 @@ build/
 
 *.min.js
 *.bundle.js
+
+# Legacy JS migration dumps — not maintained for formatting
+docs/archive/**
