@@ -3,6 +3,9 @@ class_name VisualSkin
 
 ## Data-driven container for one visual art skin.
 ## User-facing text is never baked into these textures.
+## Tile face colors are always per-value (ThemeTokens); rarity colors are chrome fallbacks only.
+
+const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 
 @export var skin_id: StringName
 @export var name_key: StringName = &"visual_skin_1"
@@ -124,6 +127,12 @@ static func rarity_for_value(value: int) -> StringName:
 
 
 func tile_face_color_for_value(value: int) -> Color:
+	# Distinct face per tile value — never collapse 2/4/8/16 into one rarity bucket.
+	if ThemeTokensLib.TILE_COLORS.has(value):
+		return ThemeTokensLib.TILE_COLORS[value]
+	if ThemeTokensLib.TILE_GRADIENTS.has(value):
+		var pair: Array = ThemeTokensLib.TILE_GRADIENTS[value]
+		return pair[0].lerp(pair[1], 0.5)
 	match rarity_for_value(value):
 		&"legendary":
 			return tile_legendary_color

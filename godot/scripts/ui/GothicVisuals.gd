@@ -4,6 +4,9 @@ class_name GothicVisuals
 ## Runtime-safe gothic crystal visual layer.
 ## The concept artwork remains a composition reference; this helper exposes scalable,
 ## text-free materials that work with any tile value and all three localizations.
+## Tile face hues stay value-distinct (ThemeTokens); gothic contributes frame/HUD chrome only.
+
+const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 
 const TILE_FRAME_PATH := "res://assets/ui/skins/gothic_crystal/tile-frame.png"
 
@@ -20,27 +23,15 @@ const CRYSTAL_LIGHT := Color("#d8b4ff")
 const TEXT_IVORY := Color("#f7ead5")
 const TEXT_MUTED := Color("#bbaec4")
 
-const TILE_PALETTE := {
-	2: Color("#19352d"),
-	4: Color("#17343a"),
-	8: Color("#1b3044"),
-	16: Color("#362033"),
-	32: Color("#421f31"),
-	64: Color("#302140"),
-	128: Color("#281d3c"),
-	256: Color("#43341d"),
-	512: Color("#472b1c"),
-	1024: Color("#48231f"),
-	2048: Color("#51421f"),
-	4096: Color("#34333b"),
-}
-
 
 static func tile_face_color(value: int) -> Color:
-	if TILE_PALETTE.has(value):
-		return TILE_PALETTE[value]
 	if value <= 0:
 		return Color.TRANSPARENT
+	if ThemeTokensLib.TILE_COLORS.has(value):
+		return ThemeTokensLib.TILE_COLORS[value]
+	if ThemeTokensLib.TILE_GRADIENTS.has(value):
+		var pair: Array = ThemeTokensLib.TILE_GRADIENTS[value]
+		return pair[0].lerp(pair[1], 0.5)
 
 	var exponent := 0
 	var cursor := value
@@ -48,8 +39,8 @@ static func tile_face_color(value: int) -> Color:
 		cursor /= 2
 		exponent += 1
 
-	var hue := fmod(0.73 + float(exponent) * 0.045, 1.0)
-	return Color.from_hsv(hue, 0.42, 0.29)
+	# Bright HSV fallback for unknown powers of two (pre-gothic Tile.gd parity).
+	return Color.from_hsv(fmod(float(exponent) * 0.09 + 0.08, 1.0), 0.52, 0.78)
 
 
 static func tile_text_color(face: Color, value: int) -> Color:

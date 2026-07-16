@@ -283,7 +283,7 @@ func _refresh_visual() -> void:
 	_right_edge.color = Color(face_color.darkened(0.24), 0.76)
 	_frame.modulate = GothicVisualsLib.tile_frame_tint(value, _frozen, _get_rim_color())
 
-	var text_color := GothicVisualsLib.tile_text_color(face_color, value)
+	var text_color := ThemeTokensLib.tile_text_color_for(face_color, value)
 	_label.add_theme_color_override("font_color", text_color)
 	_label.add_theme_font_size_override("font_size", _tile_font_size())
 	_label.add_theme_constant_override("outline_size", 2)
@@ -354,7 +354,8 @@ func _chain_border_color(preview: String) -> Color:
 
 
 func _color_for_value(n: int) -> Color:
-	if ThemeTokensLib.TILE_GRADIENTS.has(n):
-		var pair: Array = ThemeTokensLib.TILE_GRADIENTS[n]
-		return pair[0].lerp(pair[1], 0.5).darkened(0.38)
+	# Per-value neon palette (ThemeTokens). Gothic frame/tint stays separate.
+	var theme := get_node_or_null("/root/ThemeManager")
+	if theme != null and theme.has_method("get_tile_face_color"):
+		return theme.get_tile_face_color(n)
 	return GothicVisualsLib.tile_face_color(n)
