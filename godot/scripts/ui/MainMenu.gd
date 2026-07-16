@@ -88,21 +88,17 @@ func _ready() -> void:
 	version_label.text = _i18n("version_label", [str(ProjectSettings.get_setting("application/config/version", ""))])
 	version_label.add_theme_font_size_override("font_size", 11)
 
-	_set_button_icon(play_button, LnUiLib.icon_path("new-game.svg"))
-	_set_button_icon(continue_button, LnUiLib.icon_path("continue.svg"))
 	_set_wheel_button_icon(wheel_button, "wheel-x2.png", 28)
-	if exit_button != null:
-		_set_button_icon(exit_button, LnUiLib.icon_path("exit.svg"))
 
-	quick_settings.call("setup", _i18n("btn_settings"), LnUiLib.icon_path("settings.svg"))
-	quick_stats.call("setup", _i18n("btn_stats"), LnUiLib.icon_path("statistics.svg"))
-	quick_about.call("setup", _i18n("btn_about"), LnUiLib.icon_path("about.svg"))
+	quick_settings.call("setup", _i18n("btn_settings"), LnUiLib.icon_path("settings.png"))
+	quick_stats.call("setup", _i18n("btn_stats"), LnUiLib.icon_path("statistics.png"))
+	quick_about.call("setup", _i18n("btn_about"), LnUiLib.icon_path("about.png"))
 
-	dock_premium.call("setup", _i18n("dock_premium"), LnUiLib.icon_path("premium.svg"))
-	dock_tournaments.call("setup", _i18n("dock_tournaments"), LnUiLib.icon_path("tournaments.svg"))
-	dock_achievements.call("setup", _i18n("dock_achievements"), LnUiLib.icon_path("achievements.svg"))
-	dock_daily.call("setup", _i18n("dock_daily"), LnUiLib.icon_path("daily-tasks.svg"))
-	dock_bonuses.call("setup", _i18n("dock_bonuses"), LnUiLib.icon_path("bonus.svg"))
+	dock_premium.call("setup", _i18n("dock_premium"), LnUiLib.icon_path("premium.png"))
+	dock_tournaments.call("setup", _i18n("dock_tournaments"), LnUiLib.icon_path("tournaments.png"))
+	dock_achievements.call("setup", _i18n("dock_achievements"), LnUiLib.icon_path("achievements.png"))
+	dock_daily.call("setup", _i18n("dock_daily"), LnUiLib.icon_path("daily-tasks.png"))
+	dock_bonuses.call("setup", _i18n("dock_bonuses"), LnUiLib.icon_path("bonus.png"))
 
 	var save := _autoload("SaveManager")
 	var has_save: bool = save != null and save.has_method("has_save") and bool(save.call("has_save"))
@@ -200,7 +196,6 @@ func _set_button_icon(button: Button, path: String) -> void:
 func _set_wheel_button_icon(button: Button, file_name: String, max_size: int = 28) -> void:
 	var tex := LnUiLib.load_wheel_icon(file_name)
 	if tex == null:
-		_set_button_icon(button, LnUiLib.icon_path("wheel.svg"))
 		return
 	button.icon = tex
 	button.expand_icon = true

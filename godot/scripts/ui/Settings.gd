@@ -236,6 +236,9 @@ func _style_controls() -> void:
 		if btn != null:
 			LnUiLib.apply_button(btn, btn.disabled)
 
+	if back_button != null:
+		LnUiLib.apply_button_icon(back_button, "back.png")
+
 	for check in [sound_check, music_check, bg_effects_check, leaderboard_check, background_auto_check]:
 		if check != null:
 			LnUiLib.apply_toggle_switch(check, false)

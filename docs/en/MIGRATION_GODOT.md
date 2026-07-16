@@ -62,7 +62,7 @@ Lost Number **2.1.6** ships on **Godot 4.5** / GDScript only. The former browser
 
 | Item                                                     | Priority | Notes                                                                   |
 | -------------------------------------------------------- | -------- | ----------------------------------------------------------------------- |
-| Full neon icon UI parity with JS                         | Medium   | Most icons ported; polish gaps remain                                   |
+| Gothic PNG icon polish (primary CTAs, stats row icons)   | Medium   | HUD/dock/back on gothic PNG; neon SVG pack removed                      |
 | Wheel canvas animation                                   | Medium   | `WheelCanvas.gd` partial; web arrow/highlight polish                    |
 | Chain-sum HUD + preview bubble                           | Medium   | Logic in `GameHud.gd` / `Board.gd` — PARTIAL; visual acceptance pending |
 | Freeze bonus + pressure transfer                         | Low      | Deferred from MVP rules                                                 |
@@ -86,7 +86,7 @@ Per `GAME_RULES.md` and product scope:
 | ----------------------------------------------------- | -------------------------------------------------------------------------- |
 | `js/`, `css/`, `index.html`                           | **Removed** from repo (July 2026); see `docs/archive/` for historical maps |
 | `android/` (Capacitor)                                | **Removed** — only `android/keystore/` remains for Godot signing           |
-| `godot/assets/icons/neon/` (duplicate tree)           | **Removed** — canonical icons at `godot/assets/ui/icons/neon/`             |
+| `godot/assets/ui/icons/neon/` (legacy SVG pack)       | **Removed** — use `godot/assets/ui/icons/gothic/*.png` + `wheel/` PNGs     |
 | `assets/store/*` in AAB                               | **Excluded** via `export_presets.cfg` `exclude_filter`                     |
 | Floating background numbers (`createFloatingNumbers`) | **Removed** from product (Phase 5.6)                                       |
 

@@ -120,9 +120,9 @@ keytool -genkeypair -v \
 AAB excludes non-runtime assets:
 
 - `assets/store/*` — Play listing graphics
-- `assets/icons/neon/*` — unused duplicate icon set
+- `scripts/tests/*` — headless test harness
 
-In-game graphics: `godot/assets/ui/` only.
+In-game graphics: `godot/assets/ui/` (gothic PNG icons, wheel PNGs, skins).
 
 ## Icons
 
