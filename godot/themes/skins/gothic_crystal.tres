@@ -7,9 +7,12 @@
 [resource]
 script = ExtResource("1_skin")
 skin_id = &"gothic_crystal"
+name_key = &"visual_skin_1"
+description_key = &"visual_skin_1"
+supports_light_mode = false
 menu_background = ExtResource("2_background")
 game_background = ExtResource("2_background")
-overlay_color = Color(0.0313725, 0.0235294, 0.0509804, 0.72)
+overlay_color_value = Color(0.0313725, 0.0235294, 0.0509804, 0.72)
 tile_common = ExtResource("3_tile")
 tile_rare = ExtResource("3_tile")
 tile_epic = ExtResource("3_tile")
