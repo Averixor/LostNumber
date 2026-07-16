@@ -66,11 +66,11 @@ else
   fi
 fi
 
-mark_bashrc "CAPACITOR_ANDROID_STUDIO_PATH" "export CAPACITOR_ANDROID_STUDIO_PATH=\"$STUDIO_SH\""
+mark_bashrc "ANDROID_STUDIO_PATH" "export ANDROID_STUDIO_PATH=\"$STUDIO_SH\""
 mark_bashrc "JAVA_HOME" "export JAVA_HOME=\"\${JAVA_HOME:-\$(dirname \"\$(dirname \"\$(readlink -f \"\$(command -v java)\")\")\")}\""
 mark_bashrc "ANDROID_HOME" "export ANDROID_HOME=\"\${ANDROID_HOME:-\$HOME/Android/Sdk}\""
 
-export CAPACITOR_ANDROID_STUDIO_PATH="$STUDIO_SH"
+export ANDROID_STUDIO_PATH="$STUDIO_SH"
 export ANDROID_HOME="${ANDROID_HOME:-$HOME/Android/Sdk}"
 
 echo ""

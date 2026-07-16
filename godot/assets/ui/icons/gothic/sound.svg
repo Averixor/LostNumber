@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="sound">
+  <defs>
+    <linearGradient id="ln_sound_stroke" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F4E7D3"/>
+      <stop offset="0.38" stop-color="#C29A63"/>
+      <stop offset="1" stop-color="#76583D"/>
+    </linearGradient>
+    <filter id="ln_sound_glow" x="-45%" y="-45%" width="190%" height="190%">
+      <feGaussianBlur stdDeviation="0.7" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <g fill="none" stroke="url(#ln_sound_stroke)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" filter="url(#ln_sound_glow)">
+<path d="M14 27 H25 L39 15 V49 L25 37 H14 Z"/>
+<path d="M45 24 C49 28 49 36 45 40"/>
+<path d="M50 18 C58 26 58 38 50 46"/>
+  </g>
+</svg>

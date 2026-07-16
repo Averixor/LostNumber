@@ -53,6 +53,18 @@ function verifyExportPresetsNoSecrets() {
     }
   }
 
+  const excludeFilters = [...content.matchAll(/^exclude_filter="([^"]*)"/gm)].map(
+    (match) => match[1],
+  );
+  if (
+    excludeFilters.length < 2 ||
+    excludeFilters.some((filter) => !filter.includes('scripts/tests/*'))
+  ) {
+    fail('all Android presets must exclude scripts/tests/* from packaged builds');
+  } else {
+    ok('Android presets exclude test and capture scripts');
+  }
+
   ok('export_presets.cfg has no keystore passwords');
 }
 
@@ -212,7 +224,7 @@ function verifyAab(aabPath) {
 }
 
 verifyExportPresetsNoSecrets();
-verifyAab(join(root, 'build/godot/android/lost-number.aab'));
+verifyAab(join(root, 'build/android/lost-number.aab'));
 
 if (failures.length) {
   console.error('\nGodot release verification failed:');

@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://neonbutton001" path="res://scenes/components/NeonButton.tscn" id="2_neon"]
 
 [node name="GameHud" type="VBoxContainer"]
-theme_override_constants/separation = 6
+theme_override_constants/separation = 4
 alignment = 1
 script = ExtResource("1_hud")
 
@@ -19,7 +19,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 4
 alignment = 1
 
 [node name="MenuButton" type="Button" parent="TopBar/BarRow"]
@@ -87,7 +87,7 @@ size_flags_horizontal = 3
 
 [node name="GoalHBox" type="VBoxContainer" parent="GoalRow/GoalPanel"]
 layout_mode = 2
-theme_override_constants/separation = 2
+theme_override_constants/separation = 1
 
 [node name="GoalLabel" type="Label" parent="GoalRow/GoalPanel/GoalHBox"]
 layout_mode = 2
@@ -104,7 +104,7 @@ size_flags_horizontal = 3
 
 [node name="XpHBox" type="VBoxContainer" parent="XpRow/XpPanel"]
 layout_mode = 2
-theme_override_constants/separation = 2
+theme_override_constants/separation = 1
 
 [node name="XpLabel" type="Label" parent="XpRow/XpPanel/XpHBox"]
 layout_mode = 2
@@ -116,50 +116,56 @@ theme_override_constants/separation = 4
 alignment = 1
 
 [node name="ExplosionButton" parent="BonusBar" instance=ExtResource("2_neon")]
-custom_minimum_size = Vector2(0, 56)
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Вибух"
 
 [node name="ExplosionBadge" type="Label" parent="BonusBar/ExplosionButton"]
-layout_mode = 0
-offset_left = -8.0
-offset_top = -4.0
-offset_right = 16.0
-offset_bottom = 14.0
-theme_override_font_sizes/font_size = 10
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -20.0
+offset_top = 3.0
+offset_right = -3.0
+offset_bottom = 20.0
+theme_override_font_sizes/font_size = 9
 text = "0"
 horizontal_alignment = 1
 
 [node name="ShuffleButton" parent="BonusBar" instance=ExtResource("2_neon")]
-custom_minimum_size = Vector2(0, 56)
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Перемішати"
 
 [node name="ShuffleBadge" type="Label" parent="BonusBar/ShuffleButton"]
-layout_mode = 0
-offset_left = -8.0
-offset_top = -4.0
-offset_right = 16.0
-offset_bottom = 14.0
-theme_override_font_sizes/font_size = 10
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -20.0
+offset_top = 3.0
+offset_right = -3.0
+offset_bottom = 20.0
+theme_override_font_sizes/font_size = 9
 text = "0"
 horizontal_alignment = 1
 
 [node name="DestroyButton" parent="BonusBar" instance=ExtResource("2_neon")]
-custom_minimum_size = Vector2(0, 56)
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Розбити"
 
 [node name="DestroyBadge" type="Label" parent="BonusBar/DestroyButton"]
-layout_mode = 0
-offset_left = -8.0
-offset_top = -4.0
-offset_right = 16.0
-offset_bottom = 14.0
-theme_override_font_sizes/font_size = 10
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -20.0
+offset_top = 3.0
+offset_right = -3.0
+offset_bottom = 20.0
+theme_override_font_sizes/font_size = 9
 text = "0"
 horizontal_alignment = 1
 

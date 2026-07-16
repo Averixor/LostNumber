@@ -20,6 +20,8 @@ const GRID_H := 8
 var state: GameState
 var _tiles: Array[Array] = []
 var _chain_layer: ChainLineLayer
+var _field_fill: PanelContainer
+var _field_frame: PanelContainer
 var _preview_bubble: PanelContainer
 var _preview_vbox: VBoxContainer
 var _preview_sum_label: Label
@@ -38,6 +40,9 @@ func _ready() -> void:
 	var settings := get_node_or_null("/root/SettingsManager")
 	if settings != null and settings.has_signal("tile_font_scale_changed"):
 		settings.tile_font_scale_changed.connect(_on_tile_font_scale_changed)
+	var theme_mgr := get_node_or_null("/root/ThemeManager")
+	if theme_mgr != null and theme_mgr.has_signal("theme_changed"):
+		theme_mgr.theme_changed.connect(_on_visual_theme_changed)
 
 func bind_state(game_state: GameState) -> void:
 	state = game_state
@@ -46,13 +51,14 @@ func bind_state(game_state: GameState) -> void:
 func _build_grid() -> void:
 	_tiles.clear()
 	for child in get_children():
-		if child != _preview_bubble:
+		if child != _preview_bubble and child != _field_fill and child != _field_frame:
 			child.queue_free()
 
 	custom_minimum_size = Vector2(
 		GRID_W * cell_size.x + (GRID_W - 1) * cell_gap,
 		GRID_H * cell_size.y + (GRID_H - 1) * cell_gap
 	)
+	_ensure_field_frame()
 
 	for x in GRID_W:
 		var col: Array[TileView] = []
@@ -72,6 +78,77 @@ func _build_grid() -> void:
 	if _preview_bubble != null:
 		_preview_bubble.z_index = 10
 		move_child(_preview_bubble, get_child_count() - 1)
+
+
+func _ensure_field_frame() -> void:
+	if _field_fill == null:
+		_field_fill = PanelContainer.new()
+		_field_fill.name = "GothicFieldFill"
+		_field_fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_field_fill.z_as_relative = false
+		_field_fill.z_index = 0
+		add_child(_field_fill)
+		move_child(_field_fill, 0)
+	if _field_frame == null:
+		_field_frame = PanelContainer.new()
+		_field_frame.name = "GothicFieldFrame"
+		_field_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_field_frame.z_as_relative = false
+		# The single perimeter sits above cell faces, so the grid reads as one
+		# forged board instead of forty unrelated cards.
+		_field_frame.z_index = 2
+		add_child(_field_frame)
+		move_child(_field_frame, 1)
+	var frame_position := Vector2(-6, -6)
+	var frame_size := custom_minimum_size + Vector2(12, 12)
+	_field_fill.position = frame_position
+	_field_fill.size = frame_size
+	_field_frame.position = frame_position
+	_field_frame.size = frame_size
+	_apply_field_style()
+
+
+func _apply_field_style() -> void:
+	if _field_frame == null:
+		return
+	var fill := StyleBoxFlat.new()
+	fill.bg_color = Color("#15101b")
+	fill.set_corner_radius_all(5)
+	fill.shadow_color = Color(0, 0, 0, 0.62)
+	fill.shadow_size = 8 if _effects_enabled() else 3
+	_field_fill.add_theme_stylebox_override("panel", fill)
+	var theme_mgr := get_node_or_null("/root/ThemeManager")
+	var style: StyleBox = null
+	if theme_mgr != null and theme_mgr.has_method("get_visual_style"):
+		style = theme_mgr.call("get_visual_style", &"board") as StyleBox
+	if style == null:
+		var fallback := StyleBoxFlat.new()
+		fallback.bg_color = Color(0.03, 0.02, 0.05, 0.82)
+		fallback.border_color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.42)
+		fallback.set_border_width_all(2)
+		fallback.set_corner_radius_all(ThemeTokensLib.RADIUS_GRID)
+		fallback.shadow_color = Color(0, 0, 0, 0.48)
+		fallback.shadow_size = 12
+		style = fallback
+	_field_frame.add_theme_stylebox_override("panel", style)
+
+
+func _theme_rim_color() -> Color:
+	var theme_mgr := get_node_or_null("/root/ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("get_palette"):
+		var palette: Dictionary = theme_mgr.call("get_palette", true)
+		return palette.get("rim", Color("#c79a52"))
+	return Color("#c79a52")
+
+
+func _on_visual_theme_changed() -> void:
+	_apply_field_style()
+	for column in _tiles:
+		for tile in column:
+			if tile is TileView:
+				(tile as TileView).refresh_font_size()
+	if _chain_layer != null:
+		_chain_layer.queue_redraw()
 
 
 func is_chain_dragging() -> bool:
@@ -119,8 +196,8 @@ func _sync_preview_bubble_metrics() -> void:
 	if _preview_bubble == null:
 		return
 
-	var bubble_w := maxf(cell_size.x * 0.84, 52.0)
-	var bubble_h := maxf(cell_size.y * 0.62, 40.0)
+	var bubble_w := maxf(cell_size.x * 0.66, 46.0)
+	var bubble_h := maxf(cell_size.y * 0.44, 30.0)
 	_preview_bubble.custom_minimum_size = Vector2(bubble_w, bubble_h)
 
 	if _preview_sum_label != null:
@@ -235,13 +312,13 @@ func update_preview_bubble(can_finish: bool, follow_local: Vector2 = Vector2.INF
 		_preview_sum_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.55))
 
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(ThemeTokensLib.BG_PRIMARY, 0.92)
+	style.bg_color = Color("#0b0a10", 0.96)
 	style.border_color = accent
-	style.set_border_width_all(2)
-	style.set_content_margin_all(8)
-	style.set_corner_radius_all(ThemeTokensLib.RADIUS_BUTTON)
+	style.set_border_width_all(1)
+	style.set_content_margin_all(5)
+	style.set_corner_radius_all(12)
 	style.shadow_color = Color(0, 0, 0, 0.55)
-	style.shadow_size = 10
+	style.shadow_size = 5
 	_preview_bubble.add_theme_stylebox_override("panel", style)
 
 	_sync_preview_bubble_metrics()
@@ -317,6 +394,21 @@ func animate_merge_settle(removed: Array, anchor: Vector2i) -> void:
 
 	_clear_chain_highlights()
 	_hide_preview_bubble()
+	if not _effects_enabled():
+		for cell in removed:
+			if cell is Vector2i:
+				(_tiles[cell.x][cell.y] as TileView).set_value(0)
+		state.board.apply_gravity()
+		state.board.spawn_new_cells(state.current_level, state.carry_number, state.max_reached_number)
+		for x in GRID_W:
+			for y in GRID_H:
+				var static_tile := _tiles[x][y] as TileView
+				var static_step := cell_size + Vector2(cell_gap, cell_gap)
+				static_tile.position = Vector2(x * static_step.x, y * static_step.y)
+				static_tile.scale = Vector2.ONE
+				static_tile.modulate = Color.WHITE
+		refresh_all()
+		return
 
 	var removed_map: Dictionary = {}
 	for cell in removed:
@@ -384,6 +476,11 @@ func animate_merge_settle(removed: Array, anchor: Vector2i) -> void:
 
 func _autoload(name: String) -> Node:
 	return get_node_or_null("/root/" + name)
+
+
+func _effects_enabled() -> bool:
+	var theme_mgr := _autoload("ThemeManager")
+	return theme_mgr == null or not theme_mgr.has_method("effects_enabled") or bool(theme_mgr.call("effects_enabled"))
 
 func _play_connect_sfx() -> void:
 	var audio: Node = _autoload("AudioManager")

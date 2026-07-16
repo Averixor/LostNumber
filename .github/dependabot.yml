@@ -9,8 +9,6 @@ updates:
       time: '09:00'
       timezone: 'Europe/Kyiv'
     open-pull-requests-limit: 5
-    reviewers:
-      - 'Averixor'
     groups:
       npm-dependencies:
         patterns:
@@ -28,8 +26,6 @@ updates:
       time: '09:15'
       timezone: 'Europe/Kyiv'
     open-pull-requests-limit: 5
-    reviewers:
-      - 'Averixor'
     groups:
       github-actions:
         patterns:
@@ -43,8 +39,6 @@ updates:
       time: '09:30'
       timezone: 'Europe/Kyiv'
     open-pull-requests-limit: 5
-    reviewers:
-      - 'Averixor'
     groups:
       android-dependencies:
         patterns:

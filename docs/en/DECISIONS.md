@@ -11,13 +11,13 @@ Record of decisions that govern implementation. Changes require explicit review 
 
 ## Ship target
 
-| Decision              | Choice                                                                         |
-| --------------------- | ------------------------------------------------------------------------------ |
-| Primary Android build | **Godot 4.5** AAB (`build/godot/android/lost-number.aab`)                      |
-| Visual reference      | Capacitor/Web (`js/`, `css/`, `index.html`)                                    |
-| Legacy Android        | Capacitor WebView AAB — secondary; same package id, shared versionCode history |
-| Runtime network       | **None** — fully offline; GDPR-friendly (no tracking, no PII)                  |
-| Cloud budget          | **$0** runtime                                                                 |
+| Decision              | Choice                                                                   |
+| --------------------- | ------------------------------------------------------------------------ |
+| Primary Android build | **Godot 4.5** AAB (`build/android/lost-number.aab`)                      |
+| Visual authority      | PO mockups + [VISUAL_TARGET.md](./VISUAL_TARGET.md) — not legacy Web/CSS |
+| Legacy Android        | Removed (Capacitor/WebView stack deleted July 2026)                      |
+| Runtime network       | **None** — fully offline; GDPR-friendly (no tracking, no PII)            |
+| Cloud budget          | **$0** runtime                                                           |
 
 ## Save format (Godot)
 
@@ -178,14 +178,14 @@ Game scenes reference **`assets/ui/` only**, never `assets/store/*`.
 
 ## Compliance
 
-| Topic                     | Decision                                                      |
-| ------------------------- | ------------------------------------------------------------- |
-| Privacy policy            | `privacy.html` — hosted on GitHub Pages                       |
-| Play Data Safety          | No collection, no sharing                                     |
-| IARC                      | Puzzle; no violence, gambling, IAP, or ads                    |
-| Audience                  | Casual 3+                                                     |
-| Save encryption at rest   | Not required — SHA-256 integrity + backup; no secrets in save |
-| Kyber / mTLS / zero-trust | N/A — offline consumer game                                   |
+| Topic                     | Decision                                                         |
+| ------------------------- | ---------------------------------------------------------------- |
+| Privacy policy            | `privacy.html` — see [PRIVACY_HOSTING.md](../PRIVACY_HOSTING.md) |
+| Play Data Safety          | No collection, no sharing                                        |
+| IARC                      | Puzzle; no violence, gambling, IAP, or ads                       |
+| Audience                  | Casual 3+                                                        |
+| Save encryption at rest   | Not required — SHA-256 integrity + backup; no secrets in save    |
+| Kyber / mTLS / zero-trust | N/A — offline consumer game                                      |
 
 ## Versioning
 
@@ -195,8 +195,6 @@ Game scenes reference **`assets/ui/` only**, never `assets/store/*`.
 | `versionCode` | `16`        | Increment by 1 on every Play upload                 |
 | Debug suffix  | `2.1.6-dev` | Debug preset package: `com.averixor.lostnumber.dev` |
 
-## Dual-stack risk mitigation
+## Versioning note
 
-- Treat Godot as **sole** Play upload path.
-- Use web build only for visual diff and legacy save migration testing.
-- Only one bundle per `versionCode` can exist in Play (Godot and Capacitor share package id).
+Godot is the **sole** Play upload path. Increment `versionCode` by 1 on every upload.

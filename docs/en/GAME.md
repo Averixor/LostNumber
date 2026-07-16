@@ -9,7 +9,7 @@ last_updated: 2026-07-10
 
 Lost Number is an offline 2D number-chain puzzle for casual players (3+). The player connects adjacent tiles on a grid to build valid chains, merge them into higher powers of two, and reach level targets to progress.
 
-**Reference implementation:** Godot 4 (`godot/scripts/core/Rules.gd`) must match `js/core/rules.js` 1:1.
+**Canonical implementation:** Godot 4 (`godot/scripts/core/Rules.gd`).
 
 ## Goal
 

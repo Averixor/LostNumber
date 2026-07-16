@@ -26,31 +26,52 @@ func _ready() -> void:
 	var theme_mgr := AutoloadAccessLib.get_autoload("ThemeManager")
 	if theme_mgr != null and theme_mgr.has_signal("theme_changed"):
 		theme_mgr.theme_changed.connect(refresh)
+	var router := AutoloadAccessLib.get_autoload("ScreenRouter")
+	if router != null and router.has_signal("screen_changed"):
+		router.screen_changed.connect(_on_screen_changed)
+	var settings := AutoloadAccessLib.get_autoload("SettingsManager")
+	if settings != null and settings.has_signal("settings_saved"):
+		settings.settings_saved.connect(refresh)
 	resized.connect(_on_resized)
 	refresh()
 
 
 func refresh() -> void:
 	var theme_mgr := AutoloadAccessLib.get_autoload("ThemeManager")
+	var screen_id := _current_screen_id()
+	var use_visual_skin := screen_id == "game"
 	var dark := true
 	if theme_mgr != null and theme_mgr.has_method("is_dark"):
 		dark = bool(theme_mgr.call("is_dark"))
 
 	base_color.color = ThemeTokensLib.COLOR_BG if dark else ThemeTokensLib.DAWN_COLOR_BG
 	if theme_mgr != null and theme_mgr.has_method("get_palette"):
-		var palette: Dictionary = theme_mgr.call("get_palette")
+		var palette: Dictionary = theme_mgr.call("get_palette", use_visual_skin)
 		base_color.color = palette.get("bg", base_color.color)
 
 	art.texture = null
 	if theme_mgr != null and theme_mgr.has_method("get_background_texture_path"):
-		var path := str(theme_mgr.call("get_background_texture_path"))
+		var path := str(theme_mgr.call("get_background_texture_path", screen_id))
 		art.texture = LnUiLib.load_background_texture(path)
 
-	# Web parity: dusk uses a dark overlay over the art, dawn a light veil.
-	dim_overlay.color = Color(0.03, 0.01, 0.07, 0.4) if dark else Color(Color("#ffe8f8"), 0.35)
+	if theme_mgr != null and theme_mgr.has_method("get_overlay_color"):
+		dim_overlay.color = theme_mgr.call("get_overlay_color", -1.0, use_visual_skin)
+	else:
+		dim_overlay.color = Color(0.03, 0.01, 0.07, 0.4) if dark else Color(Color("#ffe8f8"), 0.35)
 
-	_setup_glow(dark, theme_mgr)
-	_setup_effects()
+	_setup_glow(dark, theme_mgr, use_visual_skin)
+	_setup_effects(theme_mgr, use_visual_skin)
+
+
+func _on_screen_changed(_screen_id: String) -> void:
+	refresh()
+
+
+func _current_screen_id() -> String:
+	var router := AutoloadAccessLib.get_autoload("ScreenRouter")
+	if router != null:
+		return str(router.get("current_screen_id"))
+	return ""
 
 
 func _effects_enabled() -> bool:
@@ -58,7 +79,7 @@ func _effects_enabled() -> bool:
 	return bool(enabled)
 
 
-func _setup_glow(dark: bool, theme_mgr: Node) -> void:
+func _setup_glow(dark: bool, theme_mgr: Node, use_visual_skin: bool) -> void:
 	if glow.texture == null:
 		var gradient := Gradient.new()
 		gradient.colors = PackedColorArray([Color(1, 1, 1, 1), Color(1, 1, 1, 0)])
@@ -73,19 +94,23 @@ func _setup_glow(dark: bool, theme_mgr: Node) -> void:
 		glow.texture = tex
 	var tint := ThemeTokensLib.MENU_TITLE_GLOW if dark else ThemeTokensLib.DAWN_COLOR_ACCENT
 	if theme_mgr != null and theme_mgr.has_method("get_palette"):
-		var palette: Dictionary = theme_mgr.call("get_palette")
+		var palette: Dictionary = theme_mgr.call("get_palette", use_visual_skin)
 		tint = palette.get("accent", tint)
-	var alpha := 0.16 * float(theme_mgr.call("get_glow_intensity") if theme_mgr != null and theme_mgr.has_method("get_glow_intensity") else 1.0) if _effects_enabled() else 0.08
+	var alpha := 0.16 * float(theme_mgr.call("get_glow_intensity", use_visual_skin) if theme_mgr != null and theme_mgr.has_method("get_glow_intensity") else 1.0) if _effects_enabled() else 0.08
 	glow.modulate = Color(tint.r, tint.g, tint.b, alpha)
 
 
-func _setup_effects() -> void:
+func _setup_effects(theme_mgr: Node, use_visual_skin: bool) -> void:
 	if not _effects_enabled():
 		if _particles != null:
 			_particles.queue_free()
 			_particles = null
 		return
+	var particle_color := ThemeTokensLib.ICON_PINK
+	if theme_mgr != null and theme_mgr.has_method("get_particle_color"):
+		particle_color = theme_mgr.call("get_particle_color", use_visual_skin)
 	if _particles != null:
+		_particles.color = Color(particle_color, 0.18)
 		return
 
 	# Slow floating neon dots (web .float-color parity), built only when enabled.
@@ -101,7 +126,7 @@ func _setup_effects() -> void:
 	_particles.initial_velocity_max = 16.0
 	_particles.scale_amount_min = 1.5
 	_particles.scale_amount_max = 4.0
-	_particles.color = Color(ThemeTokensLib.ICON_PINK, 0.18)
+	_particles.color = Color(particle_color, 0.18)
 	_on_resized()
 	effects_root.add_child(_particles)
 

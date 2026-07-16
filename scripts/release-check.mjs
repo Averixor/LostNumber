@@ -9,9 +9,7 @@ const steps = [
   ['node_modules/prettier/bin/prettier.cjs', ['--check', '.']],
   ['node_modules/eslint/bin/eslint.js', ['.']],
   ['node_modules/typescript/bin/tsc', ['--noEmit', '-p', 'tsconfig.json']],
-  ['scripts/verify-static-assets.mjs', []],
   ['scripts/verify-tagline.mjs', []],
-  ['scripts/verify-android-release.mjs', []],
   ['scripts/verify-godot-release.mjs', []],
   ['scripts/smoke-tests.mjs', []],
 ];

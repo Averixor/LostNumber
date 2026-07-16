@@ -31,6 +31,7 @@ const SCENES := [
 	"res://scenes/Stats.tscn",
 	"res://scenes/About.tscn",
 	"res://scenes/SkinPreview.tscn",
+	"res://scenes/BackgroundPreview.tscn",
 	"res://scenes/components/BackgroundLayer.tscn",
 	"res://scenes/components/NeonButton.tscn",
 	"res://scenes/components/MenuDockButton.tscn",
@@ -119,6 +120,7 @@ func _init() -> void:
 		push_error("Smoke tests failed: %s" % failed)
 		_cleanup()
 		quit(1)
+		return
 
 	print("Smoke tests passed")
 	_cleanup()
@@ -268,6 +270,7 @@ func _test_wheel_without_save_does_not_create_session() -> void:
 	var before_has_save := _save.has_save()
 	var wheel_scene: PackedScene = load("res://scenes/Wheel.tscn")
 	var wheel := wheel_scene.instantiate()
+	wheel.set_meta("suppress_invalid_session_navigation", true)
 	root.add_child(wheel)
 	await process_frame
 

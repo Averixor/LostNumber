@@ -4,10 +4,10 @@
     "checkJs": false,
     "noEmit": true,
     "target": "ES2022",
-    "lib": ["ES2022", "DOM"],
-    "moduleDetection": "legacy",
+    "lib": ["ES2022"],
+    "moduleDetection": "force",
     "strict": false,
     "skipLibCheck": true
   },
-  "include": ["js/**/*.js", "js/**/*.d.ts", "scripts/**/*.mjs"]
+  "include": ["scripts/**/*.mjs"]
 }

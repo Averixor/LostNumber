@@ -1,0 +1,49 @@
+Lost Number — єдиний проєкт (Godot-only)
+==========================================
+
+Це ОДИН канонічний репозиторій. Деталі консолідації: docs/archive/MERGE_NOTES.md
+
+Структура
+---------
+  godot/                   — Godot 4 → Android для Play Market (ЄДИНА ГРА)
+    Boot.tscn → App.tscn → екрани (ScreenRouter autoload, back-stack)
+  android/keystore/        — підпис release (gitignored)
+  store/                   — Play Console: іконки, описи, скріншоти
+  build/android/           — готові APK/AAB (якщо зібрані)
+  privacy.html             — Privacy Policy для Play Store (не гра)
+  docs/                    — документація (навігатор: docs/README.md)
+
+Швидкий старт
+-------------
+  npm ci
+  npm run godot:import
+  godot4 --path godot
+
+Godot на телефон
+----------------
+  npm run godot:android:debug
+  adb uninstall com.averixor.lostnumber.dev 2>/dev/null || true
+  adb install -r build/android/lost-number-debug.apk
+
+  Тести: npm run godot:test:all  (локально; CI — npm run release:check)
+
+Play Market (AAB)
+-----------------
+  npm run godot:android:release
+  # завантажити build/android/lost-number.aab у Play Console
+  # package: com.averixor.lostnumber, versionName 2.1.6 / versionCode 16
+
+Privacy URL
+-----------
+  npm run privacy:package   → privacy-host/ для Netlify Drop тощо
+  Деталі: docs/PRIVACY_HOSTING.md
+
+Чого немає в git (нормально)
+----------------------------
+  node_modules/          — npm ci
+  android/keystore*      — локальний підпис
+  godot/android/build/   — генерується при export
+  build/                 — збірки
+
+Запакувати для передачі: ./scripts/pack-unified.sh
+Повний production handoff: docs/HANDOFF-IDEAL.md

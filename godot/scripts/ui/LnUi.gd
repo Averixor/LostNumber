@@ -77,14 +77,14 @@ const _SCREEN_LIGHT_INDEX := {
 
 
 static func apply_screen_background(root: Control, screen: String, dim_alpha: float = 0.70) -> void:
-	set_background(root, screen_bg(screen), dim_alpha)
+	set_background(root, screen_bg(screen), dim_alpha, screen == "game")
 
 
-static func make_glass_panel(radius: int = ThemeTokensLib.RADIUS_PANEL, border_width: int = 1) -> StyleBoxFlat:
+static func make_glass_panel(radius: int = ThemeTokensLib.RADIUS_PANEL, border_width: int = 1) -> StyleBox:
 	return glass_box(radius, border_width, PANEL, BORDER, Color(ACCENT, ThemeTokensLib.GLOW_SOFT), ThemeTokensLib.SHADOW_MEDIUM)
 
 
-static func make_neon_panel(accent: Color = ACCENT, radius: int = ThemeTokensLib.RADIUS_PANEL) -> StyleBoxFlat:
+static func make_neon_panel(accent: Color = ACCENT, radius: int = ThemeTokensLib.RADIUS_PANEL) -> StyleBox:
 	var sb := glass_box(radius, 2, Color(BG_TERTIARY, 0.68), accent, Color(accent, ThemeTokensLib.GLOW_MEDIUM), ThemeTokensLib.SHADOW_STRONG)
 	sb.content_margin_left = ThemeTokensLib.SPACE_LG
 	sb.content_margin_right = ThemeTokensLib.SPACE_LG
@@ -93,15 +93,22 @@ static func make_neon_panel(accent: Color = ACCENT, radius: int = ThemeTokensLib
 	return sb
 
 
-static func make_primary_button() -> StyleBoxFlat:
-	return primary_button_normal()
+static func make_primary_button(use_visual_skin: bool = false) -> StyleBox:
+	return primary_button_normal(use_visual_skin)
 
 
-static func make_secondary_button() -> StyleBoxFlat:
-	return button_normal()
+static func make_secondary_button(use_visual_skin: bool = false) -> StyleBox:
+	return button_normal(use_visual_skin)
 
 
-static func make_icon_button() -> StyleBoxFlat:
+static func make_icon_button(use_visual_skin: bool = false) -> StyleBox:
+	var themed := _visual_style(&"button_normal") if use_visual_skin else null
+	if themed != null:
+		themed.content_margin_left = ThemeTokensLib.SPACE_SM
+		themed.content_margin_right = ThemeTokensLib.SPACE_SM
+		themed.content_margin_top = ThemeTokensLib.SPACE_SM
+		themed.content_margin_bottom = ThemeTokensLib.SPACE_SM
+		return themed
 	var sb := glass_box(ThemeTokensLib.RADIUS_BUTTON, 2, Color(ACCENT, 0.10), BORDER_ACTIVE, Color(ACCENT, 0.25), ThemeTokensLib.SHADOW_MEDIUM)
 	sb.content_margin_left = ThemeTokensLib.SPACE_SM
 	sb.content_margin_right = ThemeTokensLib.SPACE_SM
@@ -110,8 +117,22 @@ static func make_icon_button() -> StyleBoxFlat:
 	return sb
 
 
-static func make_booster_button(active: bool = false, available: bool = true) -> StyleBoxFlat:
+static func make_booster_button(active: bool = false, available: bool = true, use_visual_skin: bool = false) -> StyleBox:
 	var accent := VALID if active else ACCENT
+	var themed := _visual_style(&"button_normal" if available or active else &"button_disabled") if use_visual_skin else null
+	if themed != null:
+		themed.content_margin_left = ThemeTokensLib.SPACE_SM
+		themed.content_margin_right = ThemeTokensLib.SPACE_SM
+		themed.content_margin_top = ThemeTokensLib.SPACE_XS
+		themed.content_margin_bottom = ThemeTokensLib.SPACE_XS
+		if themed is StyleBoxFlat:
+			var flat := themed as StyleBoxFlat
+			flat.bg_color = Color("#17131b") if available or active else Color("#111015", 0.7)
+			flat.border_color = accent if active else Color("#76583d", 0.9 if available else 0.45)
+			flat.shadow_color = Color(accent, 0.24 if active and effects_enabled() else 0.0)
+			flat.shadow_size = 4 if active and effects_enabled() else 2
+			return flat
+		return _tint_texture_style(themed, Color(accent, 1.0 if active else 0.82))
 	var bg := Color(accent, 0.18 if active else 0.10)
 	var border := accent if available or active else Color(BORDER_LIGHT, 0.55)
 	var sb := glass_box(ThemeTokensLib.RADIUS_BUTTON, 2, bg, border, Color(accent, 0.32 if active else 0.18), ThemeTokensLib.SHADOW_MEDIUM)
@@ -122,7 +143,12 @@ static func make_booster_button(active: bool = false, available: bool = true) ->
 	return sb
 
 
-static func make_tile_style(value: int = 0, selected: bool = false) -> StyleBoxFlat:
+static func make_tile_style(value: int = 0, selected: bool = false, use_visual_skin: bool = false) -> StyleBox:
+	var theme_mgr := _theme_manager()
+	if use_visual_skin and theme_mgr != null and theme_mgr.has_method("get_tile_style_for_value"):
+		var themed := theme_mgr.call("get_tile_style_for_value", value, false) as StyleBox
+		if themed != null:
+			return _tint_texture_style(themed, Color(VALID, 1.0) if selected else Color.WHITE)
 	var face := ThemeTokensLib.COLOR_CELL
 	if value > 0 and ThemeTokensLib.TILE_COLORS.has(value):
 		face = ThemeTokensLib.TILE_COLORS[value]
@@ -273,12 +299,18 @@ static func progress_fill(color: Color, glow: bool = true) -> StyleBoxFlat:
 	return sb
 
 
-static func button_normal() -> StyleBoxFlat:
+static func button_normal(use_visual_skin: bool = false) -> StyleBox:
+	var themed := _visual_style(&"button_normal") if use_visual_skin else null
+	if themed != null:
+		return themed
 	return glass_box(8, 2, Color(ACCENT, 0.10), BORDER_ACTIVE, Color(ACCENT, 0.22), 12)
 
 
-static func button_hover() -> StyleBoxFlat:
-	var sb := button_normal()
+static func button_hover(use_visual_skin: bool = false) -> StyleBox:
+	var themed := _visual_style(&"button_hover") if use_visual_skin else null
+	if themed != null:
+		return themed
+	var sb := glass_box(8, 2, Color(ACCENT, 0.10), BORDER_ACTIVE, Color(ACCENT, 0.22), 12)
 	sb.bg_color = Color(ACCENT, 0.16)
 	sb.border_color = ACCENT_2
 	sb.shadow_color = Color(ACCENT, 0.35)
@@ -286,18 +318,27 @@ static func button_hover() -> StyleBoxFlat:
 	return sb
 
 
-static func button_pressed() -> StyleBoxFlat:
-	var sb := button_normal()
+static func button_pressed(use_visual_skin: bool = false) -> StyleBox:
+	var themed := _visual_style(&"button_pressed") if use_visual_skin else null
+	if themed != null:
+		return themed
+	var sb := glass_box(8, 2, Color(ACCENT, 0.10), BORDER_ACTIVE, Color(ACCENT, 0.22), 12)
 	sb.bg_color = Color(ACCENT, 0.22)
 	sb.border_color = ACCENT_2
 	return sb
 
 
-static func button_disabled() -> StyleBoxFlat:
+static func button_disabled(use_visual_skin: bool = false) -> StyleBox:
+	var themed := _visual_style(&"button_disabled") if use_visual_skin else null
+	if themed != null:
+		return themed
 	return glass_box(8, 1, Color(BG_TERTIARY, 0.45), Color(BORDER_LIGHT, 0.5), Color.TRANSPARENT, 0)
 
 
-static func primary_button_normal() -> StyleBoxFlat:
+static func primary_button_normal(use_visual_skin: bool = false) -> StyleBox:
+	var themed := _visual_style(&"button_normal") if use_visual_skin else null
+	if themed != null:
+		return _tint_texture_style(themed, Color(1.08, 0.92, 1.08, 1.0))
 	var sb := glass_box(8, 2, ACCENT.lerp(ACCENT_2, 0.35), BORDER_ACTIVE, Color(ACCENT, 0.40), 12)
 	sb.bg_color = Color(ACCENT, 0.15).lerp(Color(ACCENT_2, 0.10), 0.5)
 	sb.content_margin_top = 14
@@ -305,7 +346,10 @@ static func primary_button_normal() -> StyleBoxFlat:
 	return sb
 
 
-static func success_button_normal() -> StyleBoxFlat:
+static func success_button_normal(use_visual_skin: bool = false) -> StyleBox:
+	var themed := _visual_style(&"button_normal") if use_visual_skin else null
+	if themed != null:
+		return _tint_texture_style(themed, Color(0.58, 1.0, 0.7, 1.0))
 	var sb := glass_box(8, 2, Color(VALID, 0.14), VALID, Color(VALID, 0.35), 12)
 	sb.content_margin_top = 14
 	sb.content_margin_bottom = 14
@@ -321,11 +365,11 @@ static func small_pill(bg: Color = Color(0.14, 0.07, 0.19, 0.86), border: Color 
 	return sb
 
 
-static func apply_button(btn: Button, disabled: bool = false) -> void:
-	btn.add_theme_stylebox_override("normal", button_normal())
-	btn.add_theme_stylebox_override("hover", button_hover())
-	btn.add_theme_stylebox_override("pressed", button_pressed())
-	btn.add_theme_stylebox_override("disabled", button_disabled())
+static func apply_button(btn: Button, disabled: bool = false, use_visual_skin: bool = false) -> void:
+	btn.add_theme_stylebox_override("normal", button_normal(use_visual_skin))
+	btn.add_theme_stylebox_override("hover", button_hover(use_visual_skin))
+	btn.add_theme_stylebox_override("pressed", button_pressed(use_visual_skin))
+	btn.add_theme_stylebox_override("disabled", button_disabled(use_visual_skin))
 	btn.add_theme_color_override("font_color", TEXT)
 	btn.add_theme_color_override("font_hover_color", TEXT)
 	btn.add_theme_color_override("font_pressed_color", TEXT)
@@ -342,16 +386,17 @@ static func apply_button(btn: Button, disabled: bool = false) -> void:
 static func apply_compact_button(btn: Button, font_size: int = 15, min_height: float = 42.0, disabled: bool = false) -> void:
 	apply_button(btn, disabled)
 	btn.add_theme_font_size_override("font_size", font_size)
-	btn.custom_minimum_size.y = min_height
+	btn.custom_minimum_size.y = maxf(min_height, 48.0)
 	for state in ["normal", "hover", "pressed", "disabled"]:
 		var sb := btn.get_theme_stylebox(state)
-		if sb is StyleBoxFlat:
-			var compact := (sb as StyleBoxFlat).duplicate()
-			compact.content_margin_top = 6
-			compact.content_margin_bottom = 6
-			compact.content_margin_left = 10
-			compact.content_margin_right = 10
-			compact.set_corner_radius_all(14)
+		if sb != null:
+			var compact := sb.duplicate(true) as StyleBox
+			compact.content_margin_top = 6.0
+			compact.content_margin_bottom = 6.0
+			compact.content_margin_left = 10.0
+			compact.content_margin_right = 10.0
+			if compact is StyleBoxFlat:
+				(compact as StyleBoxFlat).set_corner_radius_all(14)
 			btn.add_theme_stylebox_override(state, compact)
 
 
@@ -404,6 +449,34 @@ static func _theme_manager() -> Node:
 	return (tree as SceneTree).root.get_node_or_null("/root/ThemeManager")
 
 
+static func _visual_style(kind: StringName, skin_id: String = "") -> StyleBox:
+	var theme_mgr := _theme_manager()
+	if theme_mgr == null or not theme_mgr.has_method("get_visual_style"):
+		return null
+	return theme_mgr.call("get_visual_style", kind, skin_id) as StyleBox
+
+
+static func _tint_texture_style(style: StyleBox, tint: Color) -> StyleBox:
+	if style == null:
+		return null
+	var result := style.duplicate(true) as StyleBox
+	if result is StyleBoxTexture:
+		var texture_style := result as StyleBoxTexture
+		texture_style.modulate_color = texture_style.modulate_color * tint
+	elif result is StyleBoxFlat:
+		var flat := result as StyleBoxFlat
+		flat.bg_color = flat.bg_color * tint
+		flat.border_color = flat.border_color * tint
+	return result
+
+
+static func effects_enabled() -> bool:
+	var theme_mgr := _theme_manager()
+	if theme_mgr != null and theme_mgr.has_method("effects_enabled"):
+		return bool(theme_mgr.call("effects_enabled"))
+	return true
+
+
 static func is_dark_theme() -> bool:
 	var theme_mgr := _theme_manager()
 	if theme_mgr != null and theme_mgr.has_method("is_dark"):
@@ -430,7 +503,7 @@ static func current_background_path(screen: String = "") -> String:
 		return BG_BOOT
 	var theme_mgr := _theme_manager()
 	if theme_mgr != null and theme_mgr.has_method("get_background_texture_path"):
-		var selected := str(theme_mgr.call("get_background_texture_path"))
+		var selected := str(theme_mgr.call("get_background_texture_path", screen))
 		if not selected.is_empty():
 			return selected
 	return _legacy_screen_bg(screen)
@@ -459,7 +532,14 @@ static func load_icon(name: String) -> Texture2D:
 	return null
 
 
-static func hud_panel() -> StyleBoxFlat:
+static func hud_panel(use_visual_skin: bool = false) -> StyleBox:
+	var themed := _visual_style(&"hud") if use_visual_skin else null
+	if themed != null:
+		themed.content_margin_left = 8
+		themed.content_margin_right = 8
+		themed.content_margin_top = 4
+		themed.content_margin_bottom = 4
+		return themed
 	var sb := glass_box(8, 1, Color(BG_TERTIARY, 0.55), BORDER_LIGHT, Color(ACCENT, 0.12), 10)
 	sb.content_margin_left = 10
 	sb.content_margin_right = 10
@@ -468,7 +548,11 @@ static func hud_panel() -> StyleBoxFlat:
 	return sb
 
 
-static func chain_sum_panel(valid: bool) -> StyleBoxFlat:
+static func chain_sum_panel(valid: bool) -> StyleBox:
+	var themed := _visual_style(&"hud")
+	if themed != null:
+		var accent := VALID if valid else CYAN
+		return _tint_texture_style(themed, Color(accent, 0.94))
 	var accent := VALID if valid else CYAN
 	var sb := glass_box(8, 2, Color(BG_DARK, 0.92), accent, Color(0, 0, 0, 0.45), 10)
 	sb.content_margin_left = 12
@@ -531,6 +615,7 @@ static func apply_settings_row(check: CheckButton, compact: bool = false) -> voi
 
 static func apply_option_row_style(option: OptionButton, compact: bool = false) -> void:
 	var option_style := option_glass_row(compact)
+	option.custom_minimum_size.y = maxf(option.custom_minimum_size.y, 48.0)
 	option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	option.add_theme_font_size_override("font_size", 14 if compact else 15)
 	option.add_theme_color_override("font_color", TEXT)
@@ -621,7 +706,23 @@ static func _center_texture_rect(rect: TextureRect, size: Vector2) -> void:
 	rect.custom_minimum_size = size
 
 
-static func set_background(root: Control, bg_path: String, dim_alpha: float = 0.70) -> void:
+static func set_background(root: Control, bg_path: String, dim_alpha: float = 0.70, use_visual_skin: bool = false) -> void:
+	if _uses_persistent_background(root):
+		var local_bg := root.get_node_or_null("LN_Background")
+		if local_bg != null:
+			local_bg.queue_free()
+		var local_dim := root.get_node_or_null("LN_BackdropDim")
+		if local_dim != null:
+			local_dim.queue_free()
+		var app := root.get_parent().get_parent()
+		var persistent := app.get_node_or_null("BackgroundLayer") as CanvasItem
+		if persistent != null:
+			persistent.visible = true
+		var legacy_background := root.get_node_or_null("Background") as ColorRect
+		if legacy_background != null:
+			legacy_background.visible = false
+		return
+
 	var texture := load_background_texture(bg_path)
 	if texture == null:
 		return
@@ -653,7 +754,11 @@ static func set_background(root: Control, bg_path: String, dim_alpha: float = 0.
 	dim.offset_top = 0
 	dim.offset_right = 0
 	dim.offset_bottom = 0
-	dim.color = Color(BG_DARK, dim_alpha)
+	var overlay := Color(BG_DARK, dim_alpha)
+	var theme_mgr := _theme_manager()
+	if theme_mgr != null and theme_mgr.has_method("get_overlay_color"):
+		overlay = theme_mgr.call("get_overlay_color", dim_alpha, use_visual_skin)
+	dim.color = overlay
 	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	# Hide legacy flat ColorRect backgrounds when LN layer is active.
@@ -662,11 +767,27 @@ static func set_background(root: Control, bg_path: String, dim_alpha: float = 0.
 		legacy.visible = false
 
 
+static func _uses_persistent_background(root: Control) -> bool:
+	if root == null:
+		return false
+	var screen_root := root.get_parent()
+	if screen_root == null or screen_root.name != "ScreenRoot":
+		return false
+	var app := screen_root.get_parent()
+	return app != null and app.name == "App" and app.get_node_or_null("BackgroundLayer") != null
+
+
 static func animate_entrance(items: Array, stagger: float = 0.05, duration: float = 0.24) -> void:
 	if items.is_empty():
 		return
 	var host := items[0] as Control
 	if host == null or not host.is_inside_tree():
+		return
+	if not effects_enabled():
+		for item in items:
+			var immediate := item as Control
+			if immediate != null:
+				immediate.modulate.a = 1.0
 		return
 	for item in items:
 		var ctrl := item as Control
@@ -698,6 +819,9 @@ static func hook_press_scale(button: BaseButton) -> void:
 
 static func _tween_button_scale(button: BaseButton, target: float) -> void:
 	if not button.is_inside_tree():
+		return
+	if not effects_enabled():
+		button.scale = Vector2.ONE
 		return
 	button.pivot_offset = button.size * 0.5
 	var tween := button.create_tween()

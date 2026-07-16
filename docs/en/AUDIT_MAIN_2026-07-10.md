@@ -155,16 +155,16 @@ Three JSON files: `godot/assets/i18n/{uk,ru,en}.json` — **285 keys** each (con
 
 ## 7. Android APK/AAB and versioning
 
-| Field       | Release                               | Debug                                       |
-| ----------- | ------------------------------------- | ------------------------------------------- |
-| Format      | AAB                                   | APK                                         |
-| Package     | `com.averixor.lostnumber`             | `com.averixor.lostnumber.dev`               |
-| versionCode | 16                                    | 16                                          |
-| versionName | 2.1.6                                 | 2.1.6-dev                                   |
-| minSdk      | 24                                    | 24                                          |
-| targetSdk   | 35                                    | 35                                          |
-| ABI         | arm64-v8a, x86_64                     | arm64-v8a, x86_64                           |
-| Output      | `build/godot/android/lost-number.aab` | `build/godot/android/lost-number-debug.apk` |
+| Field       | Release                         | Debug                                 |
+| ----------- | ------------------------------- | ------------------------------------- |
+| Format      | AAB                             | APK                                   |
+| Package     | `com.averixor.lostnumber`       | `com.averixor.lostnumber.dev`         |
+| versionCode | 16                              | 16                                    |
+| versionName | 2.1.6                           | 2.1.6-dev                             |
+| minSdk      | 24                              | 24                                    |
+| targetSdk   | 35                              | 35                                    |
+| ABI         | arm64-v8a, x86_64               | arm64-v8a, x86_64                     |
+| Output      | `build/android/lost-number.aab` | `build/android/lost-number-debug.apk` |
 
 Internet permission disabled. Vibration and image access enabled for custom backgrounds.
 

@@ -1,0 +1,47 @@
+{
+	"chain_cells": 40,
+	"cycles_per_mode": 4,
+	"limits": {
+		"frame_p95_ms": 34.0,
+		"memory_growth_bytes": 8388608
+	},
+	"modes": [
+		{
+			"effects": "full",
+			"frame_max_ms": 16.643,
+			"frame_p50_ms": 14.577,
+			"frame_p95_ms": 15.689,
+			"memory_by_cycle_bytes": [
+				54918581,
+				54921157,
+				54923413,
+				54926797
+			],
+			"memory_growth_bytes": 8216,
+			"reported_fps": 60.0,
+			"samples": 160,
+			"update_p95_ms": 6.788
+		},
+		{
+			"effects": "low",
+			"frame_max_ms": 17.119,
+			"frame_p50_ms": 14.596,
+			"frame_p95_ms": 16.393,
+			"memory_by_cycle_bytes": [
+				54902345,
+				54905513,
+				54907769,
+				54911153
+			],
+			"memory_growth_bytes": 8808,
+			"reported_fps": 60.0,
+			"samples": 160,
+			"update_p95_ms": 6.533
+		}
+	],
+	"status": "passed",
+	"viewport": [
+		420,
+		920
+	]
+}

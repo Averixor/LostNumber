@@ -15,11 +15,11 @@ status: canonical
 
 **Related docs:**
 
-| Doc                                                                  | Role                                |
-| -------------------------------------------------------------------- | ----------------------------------- |
-| [SOURCE_OF_TRUTH.md](./SOURCE_OF_TRUTH.md)                           | Version, ship decisions             |
-| [godot/docs/VISUAL_PORT_MAP.md](../../godot/docs/VISUAL_PORT_MAP.md) | Web → Godot port **status** tracker |
-| [WHEEL_ICON_PROMPTS.md](./WHEEL_ICON_PROMPTS.md)                     | AI prompts for wheel segment PNGs   |
+| Doc                                                              | Role                                             |
+| ---------------------------------------------------------------- | ------------------------------------------------ |
+| [SOURCE_OF_TRUTH.md](./SOURCE_OF_TRUTH.md)                       | Version, ship decisions                          |
+| [docs/archive/VISUAL_PORT_MAP.md](../archive/VISUAL_PORT_MAP.md) | Web → Godot port **status** tracker (historical) |
+| [WHEEL_ICON_PROMPTS.md](./WHEEL_ICON_PROMPTS.md)                 | AI prompts for wheel segment PNGs                |
 
 ---
 

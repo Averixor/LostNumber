@@ -104,9 +104,18 @@ text = "Скін"
 [node name="SkinPickButton" type="Button" parent="Scroll/VBox"]
 layout_mode = 2
 size_flags_horizontal = 3
+text = "Обрати оформлення"
+
+[node name="BackgroundLabel" type="Label" parent="Scroll/VBox"]
+layout_mode = 2
+text = "Фон"
+
+[node name="BackgroundPickButton" type="Button" parent="Scroll/VBox"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "Обрати фон"
 
-[node name="SkinAutoCheck" type="CheckButton" parent="Scroll/VBox"]
+[node name="BackgroundAutoCheck" type="CheckButton" parent="Scroll/VBox"]
 layout_mode = 2
 button_pressed = true
 

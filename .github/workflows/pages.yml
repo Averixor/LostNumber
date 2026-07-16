@@ -1,4 +1,4 @@
-name: Deploy static site to GitHub Pages
+name: Deploy privacy policy to GitHub Pages
 
 on:
   push:
@@ -20,28 +20,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-        with:
-          lfs: true
 
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
           node-version: 24
-          cache: npm
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Package privacy host
+        run: npm run privacy:package
 
-      - name: Build Pages artifact
-        run: npm run build:pages
-
-      - name: Verify Pages output
+      - name: Verify privacy artifact
         run: |
-          test -f _site/index.html
-          test -f _site/.nojekyll
-          find _site -type l -print -quit | (! read)
-          du -sh _site
-          find _site -type f | wc -l
+          touch privacy-host/.nojekyll
+          test -f privacy-host/privacy.html
+          test -f privacy-host/index.html
+          test -f privacy-host/.nojekyll
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
@@ -49,7 +42,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: _site
+          path: privacy-host
 
   deploy:
     permissions:

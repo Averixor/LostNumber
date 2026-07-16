@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-AAB="$ROOT/build/godot/android/lost-number.aab"
+AAB="$ROOT/build/android/lost-number.aab"
 BUNDLETOOL="${BUNDLETOOL_JAR:-$ROOT/bundletool.jar}"
 
 cd "$ROOT"
@@ -40,6 +40,12 @@ if unzip -l "$AAB" | grep -E 'assets/store/'; then
   exit 1
 fi
 echo "OK: assets/store/ excluded from AAB"
+
+if unzip -l "$AAB" | grep -E 'scripts/tests/'; then
+  echo "Test and capture scripts must not ship in AAB (scripts/tests/)" >&2
+  exit 1
+fi
+echo "OK: scripts/tests/ excluded from AAB"
 
 echo "== AAB size =="
 ls -lh "$AAB"

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Production release gate: web checks + Godot rules/save tests (if godot4 on PATH).
+ * Production release gate: repo checks + Godot rules/save tests (if godot4 on PATH).
  */
 import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
@@ -39,12 +39,12 @@ if (hasGodot) {
   console.warn('\n⚠ godot4 not found — skipping Godot tests (install Godot 4.3+ for full gate)');
 }
 
-const aab = join(root, 'build/godot/android/lost-number.aab');
+const aab = join(root, 'build/android/lost-number.aab');
 if (existsSync(aab)) {
   console.log(`\n✓ Godot AAB present: ${aab}`);
 } else {
   console.log(
-    '\nℹ No prebuilt AAB at build/godot/android/lost-number.aab (run npm run godot:android:release)',
+    '\nℹ No prebuilt AAB at build/android/lost-number.aab (run npm run godot:android:release)',
   );
 }
 

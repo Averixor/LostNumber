@@ -7,29 +7,27 @@ last_updated: 2026-07-10
 
 # Architecture & Repository Layout
 
-High-level technical architecture for Lost Number **2.1.6**. Godot 4.5 is the production runtime; the web stack is the visual reference.
+High-level technical architecture for Lost Number **2.1.6**. Godot 4.5 is the sole production runtime.
 
 ## System overview
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  Google Play  ←  lost-number.aab (Godot, recommended)   │
+│  Google Play  ←  lost-number.aab (Godot)                │
 ├─────────────────────────────────────────────────────────┤
 │  godot/          Boot→App shell, ScreenRouter, gameplay │
-│  js/ + _site/    Web parity reference (UI/i18n diff)    │
-│  android/        Capacitor shell (legacy WebView)       │
-│  assets/         Shared neon UI, icons, backgrounds     │
+│  android/        Release keystore only                  │
 │  store/          Play Console listing + graphics        │
+│  privacy.html    Play Store privacy policy (static)     │
 └─────────────────────────────────────────────────────────┘
 ```
 
-| Layer           | Stack                                        | Role                                         |
-| --------------- | -------------------------------------------- | -------------------------------------------- |
-| Gameplay (ship) | Godot 4.5 GDScript                           | Boot → App → screens; back-stack navigation  |
-| Web reference   | Vanilla JS + Capacitor 7                     | Parity reference for UI/i18n; legacy Android |
-| Save            | `user://` JSON (Godot), `localStorage` (web) | Checksum + `.bak` rollback (Godot)           |
-| Network         | None                                         | Offline-only; no PII                         |
-| CI              | GitHub Actions                               | `release:check` on push/PR                   |
+| Layer           | Stack                  | Role                                        |
+| --------------- | ---------------------- | ------------------------------------------- |
+| Gameplay (ship) | Godot 4.5 GDScript     | Boot → App → screens; back-stack navigation |
+| Save            | `user://` JSON (Godot) | Checksum + `.bak` rollback                  |
+| Network         | None                   | Offline-only; no PII                        |
+| CI              | GitHub Actions         | `release:check` on push/PR                  |
 
 ## Godot runtime architecture
 
@@ -109,18 +107,14 @@ LostNumber/                      ← canonical project root
 │   ├── assets/ui/               # In-game graphics (icons, backgrounds)
 │   ├── assets/i18n/             # uk.json, ru.json, en.json (285 keys)
 │   ├── themes/                  # lost_number_theme.tres
-│   ├── android/plugins/         # LostNumberMigration AAR + .gdap
-│   └── docs/                    # Godot-specific technical docs
-├── android/                     # Capacitor (legacy WebView shell)
-├── js/, css/, index.html        # Web game source
-├── assets/, public/audio/       # Shared media (ported into godot/assets/)
+│   └── android/plugins/         # LostNumberMigration AAR + .gdap
+├── android/keystore/            # Release signing (gitignored)
 ├── store/                       # Play Console listing assets (not in AAB)
-├── build/godot/android/         # Prebuilt APK/AAB (gitignored)
-├── docs/                        # Project docs (uk + docs/en/)
+├── build/android/               # Prebuilt APK/AAB (gitignored)
+├── docs/                        # Project docs (uk + docs/en/ + archive/)
 ├── scripts/                     # Build, verify, export npm scripts
 ├── privacy.html                 # Privacy policy
-├── HANDOFF-IDEAL.md             # Production handoff summary
-└── PROJECT_STRUCTURE.md         # Detailed folder map
+└── README.md                    # Quick start → docs/
 ```
 
 ## Key technical decisions (from engineering chats)
@@ -132,8 +126,8 @@ LostNumber/                      ← canonical project root
 | No encryption at rest | Checksum only                                                 | No secrets in save; offline game                                             |
 | ABI filter            | arm64-v8a + x86_64 only                                       | Drop legacy 32-bit (~8k devices)                                             |
 | Image picker          | `ImagePickerHelper.gd`                                        | Custom background without MobileImagePicker dependency                       |
-| Legacy migration      | Android plugin + file import                                  | Upgrade path from Capacitor WebView saves                                    |
-| Visual source         | Web CSS/JS (parity reference)                                 | `VISUAL_PORT_MAP.md` tracks port status; PO + Godot screenshots = acceptance |
+| Legacy migration      | Android plugin + file import                                  | Upgrade path from old Web/Capacitor saves                                    |
+| Visual source         | PO mockups + [VISUAL_TARGET.md](./VISUAL_TARGET.md)           | Gothic fantasy integration; archive map in `docs/archive/VISUAL_PORT_MAP.md` |
 | Low performance       | `bg_effects_enabled`                                          | Mirrors web `low-performance.css`; disables particles + slide                |
 | Floating numbers      | Removed (Phase 5.6)                                           | FPS regression on weak devices                                               |
 | Firebase / cloud      | Phase 6 — not started                                         | Blocked until Phase 5 performance closed                                     |
@@ -144,7 +138,7 @@ LostNumber/                      ← canonical project root
 
 Delivered: ThemeTokens, global theme, `assets/ui/`, BackgroundLayer, NeonButton, MainMenu (dock + quick-row + icons), Stats/About, FeatureStubOverlay, legacy save plugin AAR, `bg_effects_enabled` in Settings.
 
-Tracker: `godot/docs/VISUAL_PORT_MAP.md`.
+Tracker: [docs/archive/VISUAL_PORT_MAP.md](../archive/VISUAL_PORT_MAP.md) (historical).
 
 ### Phase 5 — performance (web; principles apply to Godot)
 
@@ -165,12 +159,11 @@ Tracker: `godot/docs/VISUAL_PORT_MAP.md`.
 
 ## CI / automation
 
-| Workflow                      | Purpose                                                        |
-| ----------------------------- | -------------------------------------------------------------- |
-| `.github/workflows/ci.yml`    | `npm run release:check` on push/PR (no `godot:test:all` in CI) |
-| `.github/workflows/pages.yml` | Deploy `_site/` to GitHub Pages                                |
+| Workflow                   | Purpose                                                        |
+| -------------------------- | -------------------------------------------------------------- |
+| `.github/workflows/ci.yml` | `npm run release:check` on push/PR (no `godot:test:all` in CI) |
 
-Local full gate: `npm run release:ideal` (format + lint + web checks + Godot rules/save; skips if no `godot4`). Pre-upload: `npm run godot:verify:aab`.
+Local full gate: `npm run release:ideal` (format + lint + repo checks + Godot rules/save; skips if no `godot4`). Pre-upload: `npm run godot:verify:aab`.
 
 ## Android plugin architecture
 
@@ -195,9 +188,9 @@ flowchart TD
     App -->|Android back| Router
 ```
 
-## Dual-stack risk
+## Ship target
 
-Godot is the **sole** Play upload path. The Capacitor/Web stack exists for visual parity reference and legacy save migration testing. Do not treat the WebView AAB as primary.
+Godot 4.5 AAB is the **sole** Play upload path. Web/JS/Capacitor stack removed from repo (July 2026). Legacy save import remains for users upgrading from old builds.
 
 ## Further reading
 

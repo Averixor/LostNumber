@@ -13,6 +13,7 @@ const BONUS_WHEEL_ICONS := {
 	"destroy": "wheel-break.png",
 }
 const BONUS_ICON_SIZE := 22
+const GOTHIC_ICON_DIR := "res://assets/ui/icons/gothic/"
 
 signal menu_pressed
 signal sound_pressed
@@ -44,10 +45,12 @@ var _xp_track: ColorRect
 var _xp_fill: ColorRect
 var _save_flash_tween: Tween = null
 var _i18n_t: Callable
+var _last_state: GameState = null
 
 func _ready() -> void:
 	bottom_strip.visible = false
 	message_label.visible = false
+	_center_level_label()
 	_ensure_progress_bars()
 	menu_button.pressed.connect(func(): menu_pressed.emit())
 	sound_button.pressed.connect(func(): sound_pressed.emit())
@@ -63,10 +66,25 @@ func _ready() -> void:
 		theme.theme_changed.connect(_apply_styles)
 
 
+func _center_level_label() -> void:
+	# The left and right button clusters have different widths. Keep the level
+	# title on the TopBar overlay so it is centered on the viewport, not the HBox.
+	var top_bar := $TopBar as Control
+	if level_label.get_parent() != top_bar:
+		level_label.reparent(top_bar)
+	level_label.set_anchors_preset(Control.PRESET_CENTER)
+	level_label.offset_left = -72.0
+	level_label.offset_top = -24.0
+	level_label.offset_right = 72.0
+	level_label.offset_bottom = 24.0
+	level_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	level_label.z_index = 2
+
+
 func _theme_color(method: String, fallback: Color) -> Color:
 	var theme := get_node_or_null("/root/ThemeManager")
 	if theme != null and theme.has_method(method):
-		return theme.call(method)
+		return theme.call(method, true)
 	return fallback
 
 
@@ -87,7 +105,7 @@ func _make_bar_track(parent: Control) -> ColorRect:
 	var track := ColorRect.new()
 	track.name = "ProgressTrack"
 	track.color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.10)
-	track.custom_minimum_size = Vector2(0, 8)
+	track.custom_minimum_size = Vector2(0, 6)
 	track.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	track.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	parent.add_child(track)
@@ -98,7 +116,7 @@ func _make_bar_fill(track: ColorRect, fill_color: Color) -> ColorRect:
 	var fill := ColorRect.new()
 	fill.name = "ProgressFill"
 	fill.color = fill_color
-	fill.custom_minimum_size = Vector2(0, 8)
+	fill.custom_minimum_size = Vector2(0, 6)
 	fill.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	track.add_child(fill)
@@ -118,13 +136,13 @@ func _set_bar_fill(fill: ColorRect, track: ColorRect, ratio: float) -> void:
 	fill.offset_bottom = 0.0
 	fill.offset_right = 0.0
 	if track != null:
-		track.custom_minimum_size.y = 8
+		track.custom_minimum_size.y = 6
 	if fill != null:
 		fill.color = fill.color if ratio > 0.001 else Color(fill.color, 0.0)
 
 
 func _apply_styles() -> void:
-	var hud_font := ThemeTokensLib.FONT_SIZE_HUD
+	var hud_font := 13
 	chain_sum_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_CHAIN_BUBBLE)
 	message_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_SMALL)
 	message_label.add_theme_color_override("font_color", ThemeTokensLib.COLOR_MUTED)
@@ -132,30 +150,48 @@ func _apply_styles() -> void:
 	for label in [goal_label, xp_label]:
 		label.add_theme_font_size_override("font_size", hud_font)
 		label.add_theme_color_override("font_color", _theme_color("get_text_color", ThemeTokensLib.COLOR_TEXT))
-		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		label.add_theme_constant_override("outline_size", 2)
+		label.add_theme_color_override("font_outline_color", Color(0.04, 0.03, 0.05, 0.72))
 
 	chain_sum_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	message_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	level_label.add_theme_font_size_override("font_size", hud_font)
-	level_label.add_theme_color_override("font_color", _theme_color("get_text_color", ThemeTokensLib.COLOR_TEXT))
+	level_label.add_theme_font_size_override("font_size", 15)
+	level_label.add_theme_color_override("font_color", _theme_color("get_secondary_color", Color("#c29a63")))
 	level_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
-	var panel_style := LnUiLib.hud_panel()
-	$GoalRow/GoalPanel.add_theme_stylebox_override("panel", panel_style)
-	$XpRow/XpPanel.add_theme_stylebox_override("panel", panel_style)
-	bottom_strip.add_theme_stylebox_override("panel", panel_style)
+	var panel_style := LnUiLib.hud_panel(true)
+	$GoalRow/GoalPanel.add_theme_stylebox_override("panel", panel_style.duplicate(true))
+	$XpRow/XpPanel.add_theme_stylebox_override("panel", panel_style.duplicate(true))
+	bottom_strip.add_theme_stylebox_override("panel", panel_style.duplicate(true))
+	if _goal_track != null:
+		_goal_track.color = Color(_theme_color("get_primary_color", ThemeTokensLib.COLOR_PRIMARY), 0.13)
+	if _goal_fill != null:
+		_goal_fill.color = _theme_color("get_secondary_color", Color("#c29a63"))
+	if _xp_track != null:
+		_xp_track.color = Color(_theme_color("get_primary_color", ThemeTokensLib.COLOR_PRIMARY), 0.13)
+	if _xp_fill != null:
+		_xp_fill.color = _theme_color("get_primary_color", ThemeTokensLib.COLOR_PRIMARY)
 
 	_style_icon_buttons()
 	_style_badges()
+	_load_icons()
+	if _last_state != null:
+		_style_all_badges(_last_state)
+		_style_bonus_button(shuffle_button, "shuffle", _last_state.get_bonus_count("shuffle"), _last_state.active_bonus)
+		_style_bonus_button(destroy_button, "destroy", _last_state.get_bonus_count("destroy"), _last_state.active_bonus)
+		_style_bonus_button(explosion_button, "explosion", _last_state.get_bonus_count("explosion"), _last_state.active_bonus)
 
 
 func _style_badge(badge: Label, count: int) -> void:
-	badge.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_XS)
+	badge.add_theme_font_size_override("font_size", 9)
 	badge.add_theme_color_override("font_color", Color.WHITE)
 	var badge_style := StyleBoxFlat.new()
-	badge_style.bg_color = ThemeTokensLib.COLOR_ACCENT_ORANGE if count > 0 else Color(ThemeTokensLib.COLOR_PREVIEW_INVALID, 0.65)
+	badge_style.bg_color = Color("#8a683e") if count > 0 else Color("#5c4450")
+	badge_style.border_color = Color("#d3ad70") if count > 0 else Color("#80626b")
+	badge_style.set_border_width_all(1)
 	badge_style.set_corner_radius_all(8)
-	badge_style.set_content_margin_all(2)
+	badge_style.set_content_margin_all(1)
 	badge.add_theme_stylebox_override("normal", badge_style)
 
 
@@ -171,33 +207,25 @@ func _panel_stylebox() -> StyleBoxFlat:
 
 func _style_icon_buttons() -> void:
 	for btn in [menu_button, save_button, sound_button, theme_button]:
-		btn.custom_minimum_size = Vector2(
-			float(ThemeTokensLib.TOUCH_TARGET_MIN),
-			float(ThemeTokensLib.TOUCH_TARGET_MIN)
-		)
+		btn.custom_minimum_size = Vector2.ONE * ThemeTokensLib.TOUCH_TARGET_MIN
 		btn.focus_mode = Control.FOCUS_NONE
 		btn.text = ""
 		btn.expand_icon = true
 		btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		btn.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
 		btn.alignment = HORIZONTAL_ALIGNMENT_CENTER
-		btn.add_theme_constant_override("icon_max_width", 26)
-		btn.add_theme_constant_override("icon_max_height", 26)
-		var normal := StyleBoxFlat.new()
-		normal.bg_color = Color(ThemeTokensLib.COLOR_BTN_BG)
-		normal.set_corner_radius_all(8)
-		normal.set_border_width_all(1)
-		normal.border_color = ThemeTokensLib.COLOR_BTN_BORDER
-		normal.shadow_color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.18)
-		normal.shadow_size = 6
-		normal.set_content_margin_all(10)
+		btn.add_theme_constant_override("icon_max_width", 22)
+		btn.add_theme_constant_override("icon_max_height", 22)
+		btn.add_theme_color_override("icon_normal_color", Color.WHITE)
+		btn.add_theme_color_override("icon_hover_color", Color(1.08, 1.08, 1.08, 1.0))
+		btn.add_theme_color_override("icon_pressed_color", Color(0.82, 0.82, 0.82, 1.0))
+		btn.add_theme_color_override("icon_disabled_color", Color(1, 1, 1, 0.42))
+		var normal := LnUiLib.make_icon_button(true)
 		btn.add_theme_stylebox_override("normal", normal)
-		var hover := normal.duplicate()
-		hover.bg_color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.16)
-		hover.border_color = ThemeTokensLib.COLOR_SECONDARY
-		btn.add_theme_stylebox_override("hover", hover)
-		btn.add_theme_stylebox_override("pressed", normal.duplicate())
-		btn.add_theme_stylebox_override("focus", normal.duplicate())
+		btn.add_theme_stylebox_override("hover", LnUiLib.button_hover(true))
+		btn.add_theme_stylebox_override("pressed", LnUiLib.button_pressed(true))
+		btn.add_theme_stylebox_override("disabled", LnUiLib.button_disabled(true))
+		btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 
 
 func _style_badges() -> void:
@@ -211,14 +239,23 @@ func _style_all_badges(state: GameState) -> void:
 
 
 func _load_icons() -> void:
-	_set_button_icon(menu_button, LnUiLib.icon_path("home.svg"), false)
-	_set_button_icon(save_button, LnUiLib.icon_path("save.svg"), false)
-	_set_button_icon(theme_button, LnUiLib.icon_path("theme.svg"), false)
-	_set_button_icon(sound_button, LnUiLib.icon_path("sound.svg"), false)
+	_set_button_icon(menu_button, _hud_icon_path("home.svg"), false)
+	_set_button_icon(save_button, _hud_icon_path("save.svg"), false)
+	_set_button_icon(theme_button, _hud_icon_path("theme.svg"), false)
+	_set_button_icon(sound_button, _hud_icon_path("sound.svg"), false)
 	for kind in BONUS_WHEEL_ICONS:
 		var btn := _bonus_button_for_type(kind)
 		if btn != null:
 			_apply_bonus_wheel_icon(btn, kind)
+
+
+func _hud_icon_path(file_name: String) -> String:
+	var theme := get_node_or_null("/root/ThemeManager")
+	if theme != null and str(theme.get("visual_skin_id")) == "gothic_crystal":
+		var gothic_path := GOTHIC_ICON_DIR + file_name
+		if ResourceLoader.exists(gothic_path):
+			return gothic_path
+	return LnUiLib.icon_path(file_name)
 
 
 func _configure_bonus_button(button: Button, kind: String) -> void:
@@ -237,7 +274,7 @@ func _apply_bonus_wheel_icon(button: Button, kind: String) -> void:
 		button.expand_icon = false
 		return
 	button.icon = tex
-	button.expand_icon = false
+	button.expand_icon = true
 	button.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
 	button.alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -260,6 +297,7 @@ func _set_button_icon(button: Button, path: String, clear_text: bool = true) -> 
 
 
 func refresh(state: GameState, i18n_t: Callable) -> void:
+	_last_state = state
 	_i18n_t = i18n_t
 	level_label.text = str(i18n_t.call("level_label", [state.current_level + 1]))
 
@@ -343,47 +381,26 @@ func _style_bonus_button(button: Button, kind: String, count: int, active_bonus:
 	var available := count > 0
 	button.disabled = not available and not is_active
 
-	var bg: Color
-	var border: Color
-	if is_active:
-		bg = Color(ThemeTokensLib.COLOR_PRIMARY, 0.22)
-		border = ThemeTokensLib.COLOR_SECONDARY
-	elif available:
-		bg = Color(ThemeTokensLib.COLOR_BTN_BG)
-		border = ThemeTokensLib.COLOR_BTN_BORDER
-	else:
-		bg = Color(ThemeTokensLib.COLOR_BG_TERTIARY, 0.45)
-		border = Color(ThemeTokensLib.COLOR_PANEL_BORDER, 0.35)
-
-	var normal := LnUiLib.glass_box(14, 2, bg, border)
-	normal.content_margin_left = 6
-	normal.content_margin_right = 8
-	normal.content_margin_top = 6
-	normal.content_margin_bottom = 6
-	if is_active:
-		normal.shadow_color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.45)
-		normal.shadow_size = 12
-	var hover := normal.duplicate()
-	if is_active:
-		hover.bg_color = normal.bg_color.lightened(0.08)
-	elif available:
-		hover.bg_color = LnUiLib.PANEL_HOVER
-		hover.border_color = LnUiLib.BORDER_ACTIVE
-	var pressed := normal.duplicate()
-	if is_active:
-		pressed.bg_color = normal.bg_color.darkened(0.08)
-	elif available:
-		pressed.bg_color = LnUiLib.PANEL_PRESSED
-	var disabled := normal.duplicate()
-	disabled.bg_color = Color(0.10, 0.07, 0.13, 0.58)
-	disabled.border_color = Color(0.35, 0.23, 0.39, 0.38)
-	disabled.shadow_size = 0
+	var normal := LnUiLib.make_booster_button(is_active, available, true)
+	normal.content_margin_left = 5
+	normal.content_margin_right = 6
+	normal.content_margin_top = 4
+	normal.content_margin_bottom = 4
+	var hover := LnUiLib.button_hover(true)
+	var pressed := LnUiLib.button_pressed(true)
+	var disabled := LnUiLib.button_disabled(true)
+	for style in [hover, pressed, disabled]:
+		style.content_margin_left = 5
+		style.content_margin_right = 6
+		style.content_margin_top = 4
+		style.content_margin_bottom = 4
 	button.add_theme_stylebox_override("normal", normal)
 	button.add_theme_stylebox_override("hover", hover)
 	button.add_theme_stylebox_override("pressed", pressed)
 	button.add_theme_stylebox_override("disabled", disabled)
 	button.add_theme_stylebox_override("focus", normal.duplicate() if is_active else StyleBoxEmpty.new())
-	button.add_theme_color_override("font_color", Color.WHITE if is_active else (LnUiLib.TEXT if available else LnUiLib.TEXT_DISABLED))
+	button.add_theme_font_size_override("font_size", 11)
+	button.add_theme_color_override("font_color", Color("#f4e7d3") if is_active or available else LnUiLib.TEXT_DISABLED)
 	button.add_theme_color_override("font_disabled_color", LnUiLib.TEXT_DISABLED)
 	button.modulate = Color.WHITE
 

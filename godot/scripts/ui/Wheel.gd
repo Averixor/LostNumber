@@ -67,7 +67,8 @@ func _ready() -> void:
 	if _state == null:
 		_invalid_session = true
 		_disable_invalid_session()
-		call_deferred("_leave_invalid_session")
+		if not bool(get_meta("suppress_invalid_session_navigation", false)):
+			call_deferred("_leave_invalid_session")
 		return
 	_wheel = WheelManager.new(_state)
 	_daily = DailyQuestManager.new(_state)

@@ -42,7 +42,7 @@ offset_top = 36.0
 offset_right = 180.0
 offset_bottom = 80.0
 grow_horizontal = 2
-text = "LOST NUMBER"
+text = ""
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -83,18 +83,18 @@ custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 15
-text = "Свій фон"
+text = ""
 
 [node name="CancelButton" type="Button" parent="BottomPanel/VBox/ButtonRow"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 15
-text = "Скасувати"
+text = ""
 
 [node name="ApplyButton" type="Button" parent="BottomPanel/VBox/ButtonRow"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 15
-text = "Застосувати"
+text = ""
