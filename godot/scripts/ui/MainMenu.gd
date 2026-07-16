@@ -41,15 +41,15 @@ const _FEATURE_STUBS := {
 @onready var play_button: NeonButton = $Layout/RootVBox/Actions/Buttons/PlayButton
 @onready var continue_button: NeonButton = $Layout/RootVBox/Actions/Buttons/ContinueButton
 @onready var wheel_button: NeonButton = $Layout/RootVBox/Actions/Buttons/WheelButton
-@onready var quick_settings: Button = $Layout/RootVBox/QuickRow/QuickSettings
+@onready var settings_button: NeonButton = $Layout/RootVBox/Actions/Buttons/SettingsButton
+@onready var exit_button: NeonButton = $Layout/RootVBox/Actions/Buttons/ExitButton
 @onready var quick_stats: Button = $Layout/RootVBox/QuickRow/QuickStats
 @onready var quick_about: Button = $Layout/RootVBox/QuickRow/QuickAbout
+@onready var quick_achievements: Button = $Layout/RootVBox/QuickRow/QuickAchievements
 @onready var dock_premium: Button = $Layout/RootVBox/DockRow/DockPremium
 @onready var dock_tournaments: Button = $Layout/RootVBox/DockRow/DockTournaments
-@onready var dock_achievements: Button = $Layout/RootVBox/DockRow/DockAchievements
 @onready var dock_daily: Button = $Layout/RootVBox/DockRow/DockDaily
 @onready var dock_bonuses: Button = $Layout/RootVBox/DockRow/DockBonuses
-@onready var exit_button: NeonButton = $Layout/RootVBox/ExitRow/ExitButton
 @onready var version_label: Label = $Layout/RootVBox/VersionLabel
 @onready var feature_dim: ColorRect = $FeatureDim
 @onready var feature_stub: FeatureStubOverlay = $FeatureStub
@@ -83,6 +83,7 @@ func _ready() -> void:
 	play_button.text = _i18n("menu_play")
 	continue_button.text = _i18n("menu_continue")
 	wheel_button.text = _i18n("menu_wheel")
+	settings_button.text = _i18n("btn_settings")
 	if exit_button != null:
 		exit_button.text = _i18n("btn_exit")
 	version_label.text = _i18n("version_label", [str(ProjectSettings.get_setting("application/config/version", ""))])
@@ -91,16 +92,16 @@ func _ready() -> void:
 	_set_button_icon(play_button, LnUiLib.icon_path("home.png"))
 	_set_button_icon(continue_button, LnUiLib.icon_path("save.png"))
 	_set_wheel_button_icon(wheel_button, "wheel-x2.png", 28)
+	_set_button_icon(settings_button, LnUiLib.icon_path("settings.png"))
 	if exit_button != null:
 		_set_button_icon(exit_button, LnUiLib.icon_path("back.png"))
 
-	quick_settings.call("setup", _i18n("btn_settings"), LnUiLib.icon_path("settings.png"))
 	quick_stats.call("setup", _i18n("btn_stats"), LnUiLib.icon_path("statistics.png"))
 	quick_about.call("setup", _i18n("btn_about"), LnUiLib.icon_path("about.png"))
+	quick_achievements.call("setup", _i18n("dock_achievements"), LnUiLib.icon_path("achievements.png"))
 
 	dock_premium.call("setup", _i18n("dock_premium"), LnUiLib.icon_path("premium.png"))
 	dock_tournaments.call("setup", _i18n("dock_tournaments"), LnUiLib.icon_path("tournaments.png"))
-	dock_achievements.call("setup", _i18n("dock_achievements"), LnUiLib.icon_path("achievements.png"))
 	dock_daily.call("setup", _i18n("dock_daily"), LnUiLib.icon_path("daily-tasks.png"))
 	dock_bonuses.call("setup", _i18n("dock_bonuses"), LnUiLib.icon_path("bonus.png"))
 
@@ -113,6 +114,7 @@ func _ready() -> void:
 	play_button.variant = "primary"
 	continue_button.variant = "success"
 	wheel_button.variant = "secondary"
+	settings_button.variant = "secondary"
 	if exit_button != null:
 		exit_button.variant = "secondary"
 
@@ -125,14 +127,14 @@ func _ready() -> void:
 	play_button.pressed.connect(_on_play)
 	continue_button.pressed.connect(_on_continue)
 	wheel_button.pressed.connect(_on_wheel)
+	settings_button.pressed.connect(_on_settings)
 	if exit_button != null:
 		exit_button.pressed.connect(_on_exit)
-	quick_settings.pressed.connect(_on_settings)
 	quick_stats.pressed.connect(_on_stats)
 	quick_about.pressed.connect(_on_about)
+	quick_achievements.pressed.connect(_on_achievements)
 	dock_premium.pressed.connect(_on_premium)
 	dock_tournaments.pressed.connect(_on_tournaments)
-	dock_achievements.pressed.connect(_on_achievements)
 	dock_daily.pressed.connect(_on_daily)
 	dock_bonuses.pressed.connect(_on_bonuses)
 	feature_stub.connect("closed", func(): feature_dim.visible = false)
@@ -213,12 +215,13 @@ func _animate_entrance() -> void:
 		items.append(continue_button)
 	items.append(play_button)
 	items.append(wheel_button)
-	for quick in [quick_settings, quick_stats, quick_about]:
-		items.append(quick)
-	for dock in [dock_premium, dock_tournaments, dock_achievements, dock_daily, dock_bonuses]:
-		items.append(dock)
+	items.append(settings_button)
 	if exit_button != null:
 		items.append(exit_button)
+	for quick in [quick_stats, quick_about, quick_achievements]:
+		items.append(quick)
+	for dock in [dock_premium, dock_tournaments, dock_daily, dock_bonuses]:
+		items.append(dock)
 	items.append(version_label)
 	for item in items:
 		item.modulate.a = 0.0
@@ -230,9 +233,6 @@ func _animate_entrance() -> void:
 		var tween := create_tween().set_parallel(true)
 		var delay := 0.035 * i
 		tween.tween_property(item, "modulate:a", 1.0, 0.24).set_delay(delay)
-		# Skip vertical slide on top exit — it overlaps Hero (later sibling) and steals taps.
-		if item == exit_button:
-			continue
 		var y := item.position.y
 		item.position.y = y + 14.0
 		tween.tween_property(item, "position:y", y, 0.24).set_delay(delay)

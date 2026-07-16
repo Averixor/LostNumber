@@ -47,19 +47,6 @@ layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="ExitRow" type="VBoxContainer" parent="Layout/RootVBox"]
-z_index = 10
-layout_mode = 2
-theme_override_constants/separation = 8
-alignment = 1
-
-[node name="ExitButton" parent="Layout/RootVBox/ExitRow" instance=ExtResource("3_neonbtn")]
-custom_minimum_size = Vector2(302, 52)
-layout_mode = 2
-size_flags_horizontal = 4
-variant = 1
-text = "Вийти"
-
 [node name="Hero" type="VBoxContainer" parent="Layout/RootVBox"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -114,20 +101,33 @@ custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 text = "Колесо фортуни"
 
+[node name="SettingsButton" parent="Layout/RootVBox/Actions/Buttons" instance=ExtResource("3_neonbtn")]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+variant = 1
+text = "Налаштування"
+
+[node name="ExitButton" parent="Layout/RootVBox/Actions/Buttons" instance=ExtResource("3_neonbtn")]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+size_flags_horizontal = 4
+variant = 1
+text = "Вийти"
+
 [node name="QuickRow" type="HBoxContainer" parent="Layout/RootVBox"]
 layout_mode = 2
 theme_override_constants/separation = 7
 alignment = 1
-
-[node name="QuickSettings" parent="Layout/RootVBox/QuickRow" instance=ExtResource("4_dock")]
-layout_mode = 2
-size_flags_horizontal = 3
 
 [node name="QuickStats" parent="Layout/RootVBox/QuickRow" instance=ExtResource("4_dock")]
 layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="QuickAbout" parent="Layout/RootVBox/QuickRow" instance=ExtResource("4_dock")]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="QuickAchievements" parent="Layout/RootVBox/QuickRow" instance=ExtResource("4_dock")]
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -141,10 +141,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="DockTournaments" parent="Layout/RootVBox/DockRow" instance=ExtResource("4_dock")]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="DockAchievements" parent="Layout/RootVBox/DockRow" instance=ExtResource("4_dock")]
 layout_mode = 2
 size_flags_horizontal = 3
 
