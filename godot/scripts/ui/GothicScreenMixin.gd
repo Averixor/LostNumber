@@ -63,6 +63,22 @@ static func style_button(host: Node, button: Button) -> void:
 	button.add_theme_color_override("font_disabled_color", GothicVisualsLib.TEXT_MUTED)
 
 
+static func style_cta_button(host: Node, button: Button) -> void:
+	if button == null:
+		return
+	var colors := palette(host)
+	button.add_theme_stylebox_override("normal", GothicVisualsLib.cta_button(colors, "normal"))
+	button.add_theme_stylebox_override("hover", GothicVisualsLib.cta_button(colors, "hover"))
+	button.add_theme_stylebox_override("pressed", GothicVisualsLib.cta_button(colors, "pressed"))
+	button.add_theme_stylebox_override("disabled", GothicVisualsLib.cta_button(colors, "disabled"))
+	button.add_theme_stylebox_override("focus", GothicVisualsLib.cta_button(colors, "hover"))
+	button.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
+	button.add_theme_color_override("font_hover_color", GothicVisualsLib.GOLD_LIGHT)
+	button.add_theme_color_override("font_pressed_color", GothicVisualsLib.TEXT_IVORY)
+	button.add_theme_color_override("font_disabled_color", GothicVisualsLib.TEXT_MUTED)
+	button.add_theme_font_size_override("font_size", 16)
+
+
 static func style_subtree(host: Node, root: Node) -> void:
 	if root == null:
 		return

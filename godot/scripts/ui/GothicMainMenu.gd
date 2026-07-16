@@ -20,7 +20,6 @@ func _apply_gothic_visuals() -> void:
 		GothicScreenMixinLib.style_button(self, button)
 	for button in [dock_premium, dock_tournaments, dock_bonuses, dock_stats]:
 		GothicScreenMixinLib.style_button(self, button)
-	# Large CTAs already share one NeonButton variant — only refresh, never recolor apart.
 	_refresh_cta_styles()
 
 	tagline_label.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
@@ -32,5 +31,5 @@ func _refresh_cta_styles() -> void:
 		if button == null:
 			continue
 		button.variant = "primary"
-		if button.has_method("_apply_styles"):
-			button.call("_apply_styles")
+		if button.has_method("set_gothic_cta"):
+			button.call("set_gothic_cta", true)

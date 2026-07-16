@@ -81,32 +81,55 @@ static func hud_panel(palette: Dictionary = {}) -> StyleBoxFlat:
 
 
 static func icon_button(palette: Dictionary = {}, state: String = "normal") -> StyleBoxFlat:
+	var style := _stone_button_base(palette, 9, 9)
+	_apply_stone_button_state(style, palette, state)
+	return style
+
+
+static func cta_button(palette: Dictionary = {}, state: String = "normal") -> StyleBoxFlat:
+	var style := _stone_button_base(palette, 10, 14)
+	style.content_margin_left = 16.0
+	style.content_margin_right = 16.0
+	_apply_stone_button_state(style, palette, state)
+	return style
+
+
+static func _stone_button_base(palette: Dictionary, radius: int, vertical_margin: float) -> StyleBoxFlat:
 	var rim: Color = palette.get("rim", GOLD)
 	var crystal: Color = palette.get("crystal", CRYSTAL)
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(STONE_MID, 0.86)
 	style.border_color = Color(rim, 0.72)
 	style.set_border_width_all(2)
-	style.set_corner_radius_all(9)
-	style.set_content_margin_all(9)
-	style.shadow_color = Color(crystal, 0.18)
-	style.shadow_size = 6
+	style.set_corner_radius_all(radius)
+	style.content_margin_top = vertical_margin
+	style.content_margin_bottom = vertical_margin
+	style.content_margin_left = 9.0
+	style.content_margin_right = 9.0
+	style.shadow_color = Color(crystal, 0.12)
+	style.shadow_size = 4
 	style.shadow_offset = Vector2(0, 2)
+	return style
 
+
+static func _apply_stone_button_state(style: StyleBoxFlat, palette: Dictionary, state: String) -> void:
+	var rim: Color = palette.get("rim", GOLD)
+	var crystal: Color = palette.get("crystal", CRYSTAL)
 	match state:
 		"hover":
 			style.bg_color = Color(STONE_MID.lightened(0.08), 0.94)
 			style.border_color = Color(crystal.lightened(0.18), 0.95)
-			style.shadow_color = Color(crystal, 0.34)
-			style.shadow_size = 10
+			style.shadow_color = Color(crystal, 0.20)
+			style.shadow_size = 6
 		"pressed":
 			style.bg_color = Color(STONE_BLACK, 0.96)
 			style.border_color = Color(rim.darkened(0.10), 0.90)
+			style.shadow_size = 2
 		"disabled":
 			style.bg_color = Color(STONE_BLACK, 0.55)
 			style.border_color = Color(IRON, 0.45)
+			style.shadow_color = Color.TRANSPARENT
 			style.shadow_size = 0
-	return style
 
 
 static func booster_button(palette: Dictionary, active: bool, available: bool) -> StyleBoxFlat:

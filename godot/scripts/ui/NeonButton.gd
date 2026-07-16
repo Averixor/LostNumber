@@ -5,6 +5,7 @@ class_name NeonButton
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 const LnUiLib := preload("res://scripts/ui/LnUi.gd")
+const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
 
 const PRESS_SCALE := 0.98
 const PRESS_TIME := 0.15
@@ -16,6 +17,13 @@ const PRESS_TIME := 0.15
 			_apply_styles()
 
 var _press_tween: Tween = null
+var _gothic_cta: bool = false
+
+
+func set_gothic_cta(value: bool) -> void:
+	_gothic_cta = value
+	if is_inside_tree():
+		_apply_styles()
 
 
 func _ready() -> void:
@@ -55,6 +63,9 @@ func _animate_scale(target: float) -> void:
 
 
 func _apply_styles() -> void:
+	if _gothic_cta:
+		_apply_gothic_cta()
+		return
 	match variant:
 		"primary":
 			_apply_primary()
@@ -76,15 +87,16 @@ func _base_stylebox(radius: int) -> StyleBoxFlat:
 	return style
 
 
-func _focus_ring(radius: int, color: Color) -> StyleBoxFlat:
+func _focus_ring(radius: int, color: Color, glow: bool = true) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.draw_center = false
 	style.set_corner_radius_all(radius)
 	style.set_border_width_all(2)
 	style.border_color = color
 	style.set_expand_margin_all(3.0)
-	style.shadow_color = Color(color, 0.35)
-	style.shadow_size = 8
+	if glow:
+		style.shadow_color = Color(color, 0.35)
+		style.shadow_size = 8
 	return style
 
 
@@ -96,7 +108,7 @@ func _apply_primary() -> void:
 		var hover := LnUiLib.button_hover(use_skin)
 		var pressed := LnUiLib.button_pressed(use_skin)
 		var disabled := LnUiLib.button_disabled(use_skin)
-		_set_styleboxes(themed, hover, pressed, disabled, _focus_ring(radius, _menu_primary_border()))
+		_set_styleboxes(themed, hover, pressed, disabled, _focus_ring(radius, _menu_primary_border(), false))
 		_set_font_colors(Color.WHITE, Color.WHITE)
 		add_theme_font_size_override("font_size", 16)
 		return
@@ -106,25 +118,54 @@ func _apply_primary() -> void:
 	normal.bg_color = bg_start.lerp(bg_end, 0.5)
 	normal.set_border_width_all(2)
 	normal.border_color = _menu_primary_border()
-	normal.shadow_color = _menu_primary_glow()
-	normal.shadow_size = 12
+	normal.shadow_color = Color(_menu_primary_border(), 0.12)
+	normal.shadow_size = 4
 
 	var hover: StyleBoxFlat = normal.duplicate()
 	hover.bg_color = normal.bg_color.lightened(0.08)
 	hover.border_color = ThemeTokensLib.COLOR_SECONDARY
-	hover.shadow_size = 18
+	hover.shadow_size = 6
 
 	var pressed: StyleBoxFlat = normal.duplicate()
 	pressed.bg_color = normal.bg_color.darkened(0.06)
-	pressed.shadow_size = 6
+	pressed.shadow_size = 2
 
-	var disabled: StyleBoxFlat = normal.duplicate()
-	disabled.bg_color = Color(normal.bg_color, 0.35)
-	disabled.shadow_size = 0
+	var disabled: StyleBoxFlat = _gothic_disabled_stylebox(radius)
 
-	_set_styleboxes(normal, hover, pressed, disabled, _focus_ring(radius, _menu_primary_border()))
+	_set_styleboxes(normal, hover, pressed, disabled, _focus_ring(radius, _menu_primary_border(), false))
 	_set_font_colors(Color.WHITE, Color.WHITE)
+	add_theme_color_override("font_disabled_color", GothicVisualsLib.TEXT_MUTED)
 	add_theme_font_size_override("font_size", 16)
+
+
+func _apply_gothic_cta() -> void:
+	var palette := _gothic_palette()
+	_set_styleboxes(
+		GothicVisualsLib.cta_button(palette, "normal"),
+		GothicVisualsLib.cta_button(palette, "hover"),
+		GothicVisualsLib.cta_button(palette, "pressed"),
+		GothicVisualsLib.cta_button(palette, "disabled"),
+		GothicVisualsLib.cta_button(palette, "hover")
+	)
+	_set_font_colors(GothicVisualsLib.TEXT_IVORY, GothicVisualsLib.GOLD_LIGHT)
+	add_theme_color_override("font_disabled_color", GothicVisualsLib.TEXT_MUTED)
+	add_theme_font_size_override("font_size", 16)
+
+
+func _gothic_palette() -> Dictionary:
+	var theme_mgr := get_node_or_null("/root/ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("get_palette"):
+		var use_skin := theme_mgr.has_method("get_visual_skin") and theme_mgr.call("get_visual_skin") != null
+		return theme_mgr.call("get_palette", use_skin)
+	return {}
+
+
+func _gothic_disabled_stylebox(radius: int) -> StyleBoxFlat:
+	var disabled := _base_stylebox(radius)
+	disabled.bg_color = Color(GothicVisualsLib.STONE_BLACK, 0.55)
+	disabled.border_color = Color(GothicVisualsLib.IRON, 0.45)
+	disabled.shadow_size = 0
+	return disabled
 
 
 func _apply_success() -> void:
