@@ -6,13 +6,13 @@ class_name GothicScreenMixin
 
 const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
-const DEFAULT_BACKDROP := "res://assets/ui/skins/gothic_crystal/game-backdrop.svg"
+const DEFAULT_BACKDROP := "res://assets/ui/skins/gothic_crystal/game-backdrop.png"
 
 
 static func apply_background(
 	host: Control,
 	backdrop_path: String = "",
-	dim_alpha: float = 0.34,
+	dim_alpha: float = 0.28,
 	screen_kind: StringName = &"menu"
 ) -> void:
 	if host == null:
@@ -25,7 +25,11 @@ static func apply_background(
 	if resolved_path.is_empty() or not ResourceLoader.exists(resolved_path):
 		resolved_path = DEFAULT_BACKDROP
 	if ResourceLoader.exists(resolved_path):
-		LnUiLib.set_background(host, resolved_path, dim_alpha)
+		var use_skin := false
+		var theme := host.get_node_or_null("/root/ThemeManager")
+		if theme != null and theme.has_method("get_visual_skin"):
+			use_skin = theme.call("get_visual_skin") != null
+		LnUiLib.set_background(host, resolved_path, dim_alpha, use_skin)
 
 
 static func palette(host: Node) -> Dictionary:
@@ -33,7 +37,8 @@ static func palette(host: Node) -> Dictionary:
 		return {}
 	var theme := host.get_node_or_null("/root/ThemeManager")
 	if theme != null and theme.has_method("get_palette"):
-		return theme.call("get_palette")
+		var use_skin := theme.has_method("get_visual_skin") and theme.call("get_visual_skin") != null
+		return theme.call("get_palette", use_skin)
 	return {}
 
 
@@ -56,6 +61,22 @@ static func style_button(host: Node, button: Button) -> void:
 	button.add_theme_color_override("font_hover_color", GothicVisualsLib.GOLD_LIGHT)
 	button.add_theme_color_override("font_pressed_color", GothicVisualsLib.TEXT_IVORY)
 	button.add_theme_color_override("font_disabled_color", GothicVisualsLib.TEXT_MUTED)
+
+
+static func style_cta_button(host: Node, button: Button) -> void:
+	if button == null:
+		return
+	var colors := palette(host)
+	button.add_theme_stylebox_override("normal", GothicVisualsLib.cta_button(colors, "normal"))
+	button.add_theme_stylebox_override("hover", GothicVisualsLib.cta_button(colors, "hover"))
+	button.add_theme_stylebox_override("pressed", GothicVisualsLib.cta_button(colors, "pressed"))
+	button.add_theme_stylebox_override("disabled", GothicVisualsLib.cta_button(colors, "disabled"))
+	button.add_theme_stylebox_override("focus", GothicVisualsLib.cta_button(colors, "hover"))
+	button.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
+	button.add_theme_color_override("font_hover_color", GothicVisualsLib.GOLD_LIGHT)
+	button.add_theme_color_override("font_pressed_color", GothicVisualsLib.TEXT_IVORY)
+	button.add_theme_color_override("font_disabled_color", GothicVisualsLib.TEXT_MUTED)
+	button.add_theme_font_size_override("font_size", 16)
 
 
 static func style_subtree(host: Node, root: Node) -> void:

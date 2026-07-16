@@ -46,8 +46,11 @@ func _style_gothic_frame() -> void:
 
 	var rim: Color = palette.get("rim", GothicVisualsLib.GOLD)
 	var crystal: Color = palette.get("crystal", GothicVisualsLib.CRYSTAL)
+	# Border-only shell: Board.gd already paints GothicFieldFill under the grid.
+	# A filled panel here stacked with FieldFrame looked like a dark lid.
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(GothicVisualsLib.STONE_BLACK, 0.94)
+	style.bg_color = Color(0, 0, 0, 0)
+	style.draw_center = false
 	style.border_color = Color(rim, 0.84)
 	style.set_border_width_all(3)
 	style.set_corner_radius_all(12)

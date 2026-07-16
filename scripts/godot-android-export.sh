@@ -14,6 +14,22 @@ MODE="${1:-debug}"
 
 mkdir -p "$BUILD_DIR"
 
+# Keep only the 3 newest APK and 3 newest AAB (by mtime) to limit disk use.
+_cleanup_android_artifacts() {
+  local ext f removed=0
+  for ext in apk aab; do
+    while IFS= read -r f; do
+      [[ -n "$f" ]] || continue
+      rm -f "$f"
+      echo "Removed old .$ext: $(basename "$f")"
+      removed=$((removed + 1))
+    done < <(ls -1t "$BUILD_DIR"/*."$ext" 2>/dev/null | tail -n +4)
+  done
+  if [[ "$removed" -eq 0 ]]; then
+    echo "Artifact retention: no old APK/AAB to remove (keeping up to 3 of each)."
+  fi
+}
+
 if ! command -v "$GODOT_BIN" >/dev/null 2>&1; then
   echo "Godot not found. Install Godot 4.7+ and set GODOT_BIN." >&2
   exit 1
@@ -209,6 +225,10 @@ fi
 
 echo "Done: $OUTPUT"
 ls -lh "$OUTPUT"
+
+_cleanup_android_artifacts
+echo "Remaining artifacts in $BUILD_DIR:"
+ls -lh "$BUILD_DIR"/*.{apk,aab} 2>/dev/null || echo "(none)"
 
 # Remove stray APK/AAB from Godot Gradle tree (canonical output is BUILD_DIR only).
 find "$GODOT_DIR/android/build" -type f \( -name '*.apk' -o -name '*.aab' \) -delete 2>/dev/null || true

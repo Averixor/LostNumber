@@ -42,7 +42,7 @@ func _ready() -> void:
 	back_button.text = _i18n("menu_back")
 	LnUiLib.apply_title(title_label, 26)
 	LnUiLib.apply_button(back_button)
-	LnUiLib.apply_button_icon(back_button, "back.svg")
+	LnUiLib.apply_button_icon(back_button, "back.png")
 	back_button.pressed.connect(_on_back)
 	_state = _load_state()
 	_render()

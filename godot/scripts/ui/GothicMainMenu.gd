@@ -15,12 +15,20 @@ func _ready() -> void:
 
 func _apply_gothic_visuals() -> void:
 	GothicScreenMixinLib.apply_background(self, "", 0.28, &"menu")
-	for button in [play_button, continue_button, wheel_button, exit_button]:
+	# Dock and quick-row buttons use stone-framed gothic chrome (same chrome/size).
+	for button in [quick_daily, quick_achievements, quick_about]:
 		GothicScreenMixinLib.style_button(self, button)
-	for button in [quick_settings, quick_stats, quick_about]:
+	for button in [dock_premium, dock_tournaments, dock_bonuses, dock_stats]:
 		GothicScreenMixinLib.style_button(self, button)
-	for button in [dock_premium, dock_tournaments, dock_achievements, dock_daily, dock_bonuses]:
-		GothicScreenMixinLib.style_button(self, button)
+	_refresh_cta_styles()
 
 	tagline_label.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
 	version_label.add_theme_color_override("font_color", GothicVisualsLib.TEXT_MUTED)
+
+
+func _refresh_cta_styles() -> void:
+	for button in [play_button, continue_button, wheel_button, settings_button, exit_button]:
+		if button == null:
+			continue
+		if button.has_method("set_gothic_cta"):
+			button.call("set_gothic_cta", true)

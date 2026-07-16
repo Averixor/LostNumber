@@ -23,7 +23,7 @@ config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.png"
 config/boot_splash/bg_color=Color(0.0392157, 0.054902, 0.152941, 1)
 config/boot_splash/fullsize=true
-config/boot_splash/image="res://icon.png"
+config/boot_splash/image="res://icon-1024.png"
 config/boot_splash/use_filter=true
 
 [autoload]

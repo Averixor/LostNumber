@@ -169,14 +169,15 @@ func get_tile_rarity(value: int) -> StringName:
 
 
 func get_tile_face_color(value: int) -> Color:
-	var skin := get_visual_skin()
-	if skin != null:
-		return skin.tile_face_color_for_value(value)
+	# Prefer the shared per-value palette so gothic skin frames do not flatten faces.
 	if ThemeTokensLib.TILE_COLORS.has(value):
 		return ThemeTokensLib.TILE_COLORS[value]
 	if ThemeTokensLib.TILE_GRADIENTS.has(value):
 		var pair: Array = ThemeTokensLib.TILE_GRADIENTS[value]
 		return pair[0].lerp(pair[1], 0.5)
+	var skin := get_visual_skin()
+	if skin != null:
+		return skin.tile_face_color_for_value(value)
 	return ThemeTokensLib.COLOR_CELL
 
 

@@ -91,8 +91,8 @@ npm run godot:verify:aab       # full pre-upload gate (tests + release:check + A
 
 ## Export filters
 
-- `exclude_filter=assets/store/*,assets/icons/neon/*` — Play listing art and unused neon icon set stay out of the AAB.
-- In-game graphics live under `godot/assets/ui/` only.
+- `exclude_filter=assets/store/*,scripts/tests/*` — Play listing art and headless tests stay out of the AAB.
+- In-game graphics live under `godot/assets/ui/` (gothic PNG icons, wheel PNGs, skins).
 
 ## Recent UI fixes (commits `bd9a026`, `457e31a` + локальні правки)
 

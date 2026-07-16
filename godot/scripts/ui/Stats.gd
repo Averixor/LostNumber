@@ -3,12 +3,12 @@ extends Control
 const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 
 const STAT_ICONS := {
-	"stat_games_played": "statistics.svg",
-	"stat_levels_completed": "level.svg",
+	"stat_games_played": "statistics.png",
+	"stat_levels_completed": "achievements.png",
 	"stat_highest_level": "tile-crown.png",
-	"stat_total_xp": "high-score.svg",
-	"stat_longest_chain": "chain.svg",
-	"stat_wheel_spins": "wheel.svg",
+	"stat_total_xp": "premium.png",
+	"stat_longest_chain": "bonus.png",
+	"stat_wheel_spins": "tournaments.png",
 }
 
 @onready var list: VBoxContainer = $Scroll/List
@@ -48,7 +48,7 @@ func _ready() -> void:
 	back_button.text = _i18n("menu_back")
 	LnUiLib.apply_title(title_label, 26)
 	LnUiLib.apply_button(back_button)
-	LnUiLib.apply_button_icon(back_button, "back.svg")
+	LnUiLib.apply_button_icon(back_button, "back.png")
 	back_button.pressed.connect(_on_back)
 	_render()
 	_animate_entrance()
@@ -83,7 +83,7 @@ func _render() -> void:
 		hbox.add_theme_constant_override("separation", 10)
 		var key: String = str(row[0])
 		var val: int = int(row[1])
-		var icon_name: String = STAT_ICONS.get(key, "statistics.svg")
+		var icon_name: String = STAT_ICONS.get(key, "statistics.png")
 		var icon_path := LnUiLib.icon_path(icon_name)
 		if ResourceLoader.exists(icon_path):
 			var icon := TextureRect.new()

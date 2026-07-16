@@ -13,8 +13,6 @@ const BONUS_WHEEL_ICONS := {
 	"destroy": "wheel-break.png",
 }
 const BONUS_ICON_SIZE := 22
-const GOTHIC_ICON_DIR := "res://assets/ui/icons/gothic/"
-
 signal menu_pressed
 signal sound_pressed
 signal save_pressed
@@ -239,23 +237,14 @@ func _style_all_badges(state: GameState) -> void:
 
 
 func _load_icons() -> void:
-	_set_button_icon(menu_button, _hud_icon_path("home.svg"), false)
-	_set_button_icon(save_button, _hud_icon_path("save.svg"), false)
-	_set_button_icon(theme_button, _hud_icon_path("theme.svg"), false)
-	_set_button_icon(sound_button, _hud_icon_path("sound.svg"), false)
+	LnUiLib.apply_button_icon(menu_button, "pause.png")
+	LnUiLib.apply_button_icon(save_button, "save.png")
+	LnUiLib.apply_button_icon(theme_button, "theme.png")
+	LnUiLib.apply_button_icon(sound_button, "sound.png")
 	for kind in BONUS_WHEEL_ICONS:
 		var btn := _bonus_button_for_type(kind)
 		if btn != null:
 			_apply_bonus_wheel_icon(btn, kind)
-
-
-func _hud_icon_path(file_name: String) -> String:
-	var theme := get_node_or_null("/root/ThemeManager")
-	if theme != null and str(theme.get("visual_skin_id")) == "gothic_crystal":
-		var gothic_path := GOTHIC_ICON_DIR + file_name
-		if ResourceLoader.exists(gothic_path):
-			return gothic_path
-	return LnUiLib.icon_path(file_name)
 
 
 func _configure_bonus_button(button: Button, kind: String) -> void:
@@ -280,20 +269,6 @@ func _apply_bonus_wheel_icon(button: Button, kind: String) -> void:
 	button.alignment = HORIZONTAL_ALIGNMENT_CENTER
 	button.add_theme_constant_override("icon_max_width", BONUS_ICON_SIZE)
 	button.add_theme_constant_override("icon_max_height", BONUS_ICON_SIZE)
-
-
-func _set_button_icon(button: Button, path: String, clear_text: bool = true) -> void:
-	if not ResourceLoader.exists(path):
-		return
-	var tex: Texture2D = load(path)
-	if tex != null:
-		button.icon = tex
-		button.expand_icon = true
-		button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
-		button.alignment = HORIZONTAL_ALIGNMENT_CENTER
-		if clear_text:
-			button.text = ""
 
 
 func refresh(state: GameState, i18n_t: Callable) -> void:

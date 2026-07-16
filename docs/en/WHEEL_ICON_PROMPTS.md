@@ -80,7 +80,7 @@ XP multiplier charm emblem, no literal text characters
 
 - Keep the subject **large in frame** (minimal empty margin) for legibility on dark wheel sectors.
 - Prefer **cool purple / bronze** over saturated rainbow or flat neon.
-- Finished PNGs live in `godot/assets/ui/icons/wheel/` (source masters in `assets/icons/neon/`).
+- Finished PNGs live in `godot/assets/ui/icons/wheel/`.
 - `WheelCanvas` loads them automatically at ~36px; XP sectors also show a compact `+N` caption.
 
 ## Sector → file mapping (wheel order, clockwise from top)

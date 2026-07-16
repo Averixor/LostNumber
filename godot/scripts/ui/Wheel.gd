@@ -60,8 +60,8 @@ func _ready() -> void:
 	result_close.pressed.connect(_hide_result)
 	wheel_canvas.spin_finished.connect(_on_spin_animation_done)
 	LnUiLib.apply_button(back_button)
-	LnUiLib.apply_button_icon(back_button, "back.svg")
-	LnUiLib.apply_button_icon(result_close, "close.svg")
+	LnUiLib.apply_button_icon(back_button, "back.png")
+	LnUiLib.apply_button_icon(result_close, "back.png")
 
 	_state = _load_state()
 	if _state == null:

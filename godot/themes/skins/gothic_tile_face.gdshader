@@ -24,7 +24,7 @@ void fragment() {
 	vec3 colour = face_color.rgb * vertical_light;
 	vec3 highlight = mix(face_color.rgb, vec3(1.0), 0.72);
 	colour += highlight * (center_glow * 0.12 + diagonal_sheen * 0.10 + top_glint * 0.15);
-	colour *= mix(0.54, 1.0, bevel);
+	colour *= mix(0.72, 1.0, bevel);
 
 	float inner_rim = smoothstep(0.01, 0.025, -distance_to_face) * (1.0 - smoothstep(0.04, 0.07, -distance_to_face));
 	colour += highlight * inner_rim * 0.18;

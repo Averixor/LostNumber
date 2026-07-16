@@ -17,3 +17,5 @@ npm run godot:android:adb-install
 Signing keystore stays in `android/keystore/` (never commit). This folder is gitignored except this README.
 
 Intermediate Gradle output under `godot/android/build/` is cleaned after each export.
+
+**Retention:** after each successful export, `scripts/godot-android-export.sh` keeps only the **3 newest** `*.apk` and **3 newest** `*.aab` in this folder (by modification time) and deletes older ones.

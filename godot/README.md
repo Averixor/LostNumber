@@ -80,7 +80,7 @@ themes/
   title_gradient.gdshader  menu/boot title gradient
 assets/
   ui/backgrounds/{dark,light}/   menu art (from web assets/)
-  ui/icons/                      neon SVG (UI copy; neon/ excluded from AAB export)
+  ui/icons/gothic/               gothic PNG HUD/dock icons; ui/icons/wheel/ for wheel art
   audio/{music,sfx}/             mp3 via git LFS
 docs/
   README.md              → docs/ (canonical documentation)
