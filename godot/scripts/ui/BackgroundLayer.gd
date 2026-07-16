@@ -54,10 +54,13 @@ func refresh() -> void:
 		var path := str(theme_mgr.call("get_background_texture_path", screen_id))
 		art.texture = LnUiLib.load_background_texture(path)
 
+	# Menu/meta screens keep a stronger scrim for text readability.
+	# Gameplay must stay open: skin overlay_color (~0.72) reads as a full-screen lid.
+	var dim_alpha := 0.28 if use_visual_skin else -1.0
 	if theme_mgr != null and theme_mgr.has_method("get_overlay_color"):
-		dim_overlay.color = theme_mgr.call("get_overlay_color", -1.0, use_visual_skin)
+		dim_overlay.color = theme_mgr.call("get_overlay_color", dim_alpha, use_visual_skin)
 	else:
-		dim_overlay.color = Color(0.03, 0.01, 0.07, 0.4) if dark else Color(Color("#ffe8f8"), 0.35)
+		dim_overlay.color = Color(0.03, 0.01, 0.07, 0.28 if use_visual_skin else 0.4) if dark else Color(Color("#ffe8f8"), 0.35)
 
 	_setup_glow(dark, theme_mgr, use_visual_skin)
 	_setup_effects(theme_mgr, use_visual_skin)

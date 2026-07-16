@@ -12,7 +12,7 @@ const DEFAULT_BACKDROP := "res://assets/ui/skins/gothic_crystal/game-backdrop.pn
 static func apply_background(
 	host: Control,
 	backdrop_path: String = "",
-	dim_alpha: float = 0.34,
+	dim_alpha: float = 0.28,
 	screen_kind: StringName = &"menu"
 ) -> void:
 	if host == null:

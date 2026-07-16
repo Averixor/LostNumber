@@ -111,6 +111,7 @@ func _ensure_field_frame() -> void:
 func _apply_field_style() -> void:
 	if _field_frame == null:
 		return
+	# Pedestal under the grid only — never a veil over tile faces.
 	var fill := StyleBoxFlat.new()
 	fill.bg_color = Color("#15101b")
 	fill.set_corner_radius_all(5)
@@ -121,16 +122,36 @@ func _apply_field_style() -> void:
 	var style: StyleBox = null
 	if theme_mgr != null and theme_mgr.has_method("get_visual_style"):
 		style = theme_mgr.call("get_visual_style", &"board") as StyleBox
-	if style == null:
-		var fallback := StyleBoxFlat.new()
-		fallback.bg_color = Color(0.03, 0.02, 0.05, 0.82)
-		fallback.border_color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.42)
-		fallback.set_border_width_all(2)
-		fallback.set_corner_radius_all(ThemeTokensLib.RADIUS_GRID)
-		fallback.shadow_color = Color(0, 0, 0, 0.48)
-		fallback.shadow_size = 12
-		style = fallback
+	# Perimeter chrome sits above faces (z_index=2) so it MUST be border-only.
+	# A filled StyleBox here reads as a dark "lid" over the whole board.
+	style = _border_only_field_frame(style)
 	_field_frame.add_theme_stylebox_override("panel", style)
+
+
+func _border_only_field_frame(style: StyleBox) -> StyleBox:
+	if style is StyleBoxFlat:
+		var flat := (style as StyleBoxFlat).duplicate() as StyleBoxFlat
+		flat.bg_color = Color(flat.bg_color, 0.0)
+		flat.draw_center = false
+		if flat.get_border_width_min() <= 0:
+			flat.border_color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.42)
+			flat.set_border_width_all(2)
+			flat.set_corner_radius_all(ThemeTokensLib.RADIUS_GRID)
+		return flat
+	if style is StyleBoxTexture:
+		var tex := (style as StyleBoxTexture).duplicate() as StyleBoxTexture
+		# Keep ornate rim; do not paint an opaque center over tiles.
+		tex.draw_center = false
+		return tex
+	var fallback := StyleBoxFlat.new()
+	fallback.bg_color = Color(0, 0, 0, 0)
+	fallback.draw_center = false
+	fallback.border_color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.42)
+	fallback.set_border_width_all(2)
+	fallback.set_corner_radius_all(ThemeTokensLib.RADIUS_GRID)
+	fallback.shadow_color = Color(0, 0, 0, 0.48)
+	fallback.shadow_size = 12
+	return fallback
 
 
 func _theme_rim_color() -> Color:
