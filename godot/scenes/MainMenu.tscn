@@ -88,29 +88,36 @@ size_flags_horizontal = 4
 theme_override_constants/separation = 10
 
 [node name="PlayButton" parent="Layout/RootVBox/Actions/Buttons" instance=ExtResource("3_neonbtn")]
-custom_minimum_size = Vector2(0, 68)
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
+size_flags_horizontal = 3
 variant = 0
 
 [node name="ContinueButton" parent="Layout/RootVBox/Actions/Buttons" instance=ExtResource("3_neonbtn")]
-custom_minimum_size = Vector2(0, 64)
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
+size_flags_horizontal = 3
+variant = 0
 
 [node name="WheelButton" parent="Layout/RootVBox/Actions/Buttons" instance=ExtResource("3_neonbtn")]
 custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
+size_flags_horizontal = 3
+variant = 0
 text = "Колесо фортуни"
 
 [node name="SettingsButton" parent="Layout/RootVBox/Actions/Buttons" instance=ExtResource("3_neonbtn")]
-custom_minimum_size = Vector2(0, 56)
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
-variant = 1
+size_flags_horizontal = 3
+variant = 0
 text = "Налаштування"
 
 [node name="ExitButton" parent="Layout/RootVBox/Actions/Buttons" instance=ExtResource("3_neonbtn")]
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
-variant = 1
+size_flags_horizontal = 3
+variant = 0
 text = "Вийти"
 
 [node name="QuickRow" type="HBoxContainer" parent="Layout/RootVBox"]
@@ -118,11 +125,11 @@ layout_mode = 2
 theme_override_constants/separation = 7
 alignment = 1
 
-[node name="QuickAchievements" parent="Layout/RootVBox/QuickRow" instance=ExtResource("4_dock")]
+[node name="QuickDaily" parent="Layout/RootVBox/QuickRow" instance=ExtResource("4_dock")]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="QuickDaily" parent="Layout/RootVBox/QuickRow" instance=ExtResource("4_dock")]
+[node name="QuickAchievements" parent="Layout/RootVBox/QuickRow" instance=ExtResource("4_dock")]
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -132,7 +139,7 @@ size_flags_horizontal = 3
 
 [node name="DockRow" type="HBoxContainer" parent="Layout/RootVBox"]
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 7
 alignment = 1
 
 [node name="DockPremium" parent="Layout/RootVBox/DockRow" instance=ExtResource("4_dock")]

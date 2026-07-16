@@ -96,12 +96,12 @@ func _ready() -> void:
 	if exit_button != null:
 		_set_button_icon(exit_button, LnUiLib.icon_path("back.png"))
 
-	# Top icon row: Achievements, Daily tasks, About
-	quick_achievements.call("setup", _i18n("dock_achievements"), LnUiLib.icon_path("achievements.png"))
+	# Row 1: Daily tasks, Achievements, About
 	quick_daily.call("setup", _i18n("dock_daily"), LnUiLib.icon_path("daily-tasks.png"))
+	quick_achievements.call("setup", _i18n("dock_achievements"), LnUiLib.icon_path("achievements.png"))
 	quick_about.call("setup", _i18n("btn_about"), LnUiLib.icon_path("about.png"))
 
-	# Bottom icon row: Premium, Tournaments, Bonus, Stats
+	# Row 2: Premium, Tournaments, Bonuses, Statistics
 	dock_premium.call("setup", _i18n("dock_premium"), LnUiLib.icon_path("premium.png"))
 	dock_tournaments.call("setup", _i18n("dock_tournaments"), LnUiLib.icon_path("tournaments.png"))
 	dock_bonuses.call("setup", _i18n("dock_bonuses"), LnUiLib.icon_path("bonus.png"))
@@ -113,12 +113,14 @@ func _ready() -> void:
 	continue_button.disabled = not has_save
 	play_button.text = _i18n("menu_new_game") if has_save else _i18n("menu_play")
 
-	play_button.variant = "primary"
-	continue_button.variant = "success"
-	wheel_button.variant = "secondary"
-	settings_button.variant = "secondary"
-	if exit_button != null:
-		exit_button.variant = "secondary"
+	# All large CTAs: same gothic-crystal accent + same strip size.
+	const CTA_HEIGHT := 60.0
+	for cta in [play_button, continue_button, wheel_button, settings_button, exit_button]:
+		if cta == null:
+			continue
+		cta.variant = "primary"
+		cta.custom_minimum_size = Vector2(0, CTA_HEIGHT)
+		cta.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	for btn in [play_button, continue_button, wheel_button]:
 		if btn == continue_button or btn == wheel_button:
@@ -220,7 +222,7 @@ func _animate_entrance() -> void:
 	items.append(settings_button)
 	if exit_button != null:
 		items.append(exit_button)
-	for quick in [quick_achievements, quick_daily, quick_about]:
+	for quick in [quick_daily, quick_achievements, quick_about]:
 		items.append(quick)
 	for dock in [dock_premium, dock_tournaments, dock_bonuses, dock_stats]:
 		items.append(dock)
