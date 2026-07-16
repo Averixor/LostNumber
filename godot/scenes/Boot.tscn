@@ -2,8 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bbrjx3rweevvc" path="res://scripts/ui/Boot.gd" id="1_boot"]
 [ext_resource type="Texture2D" uid="uid://cky3ydc2mtowq" path="res://assets/boot/boot-bg.png" id="3_bg"]
-[ext_resource type="Texture2D" uid="uid://b8av6ktuaxs51" path="res://icon-1024.png" id="4_logo"]
-[ext_resource type="Texture2D" uid="uid://civlmhm1uqu0o" path="res://assets/ui/logo/lost-number-logo-glow.png" id="5_glow"]
+[ext_resource type="Texture2D" uid="uid://um2pg1q2ccub" path="res://assets/boot/boot-logo.png" id="4_logo"]
 
 [sub_resource type="Animation" id="Animation_pulse"]
 resource_name = "pulse"
@@ -74,25 +73,6 @@ alignment = 1
 [node name="LogoStack" type="Control" parent="Center/VBox" unique_id=782025964]
 custom_minimum_size = Vector2(360, 160)
 layout_mode = 2
-
-[node name="LogoGlow" type="TextureRect" parent="Center/VBox/LogoStack" unique_id=465463906]
-visible = false
-modulate = Color(1, 1, 1, 0.55)
-layout_mode = 0
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -212.4
-offset_top = -94.4
-offset_right = 212.4
-offset_bottom = 94.4
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("5_glow")
-expand_mode = 3
-stretch_mode = 5
 
 [node name="LogoImage" type="TextureRect" parent="Center/VBox/LogoStack" unique_id=912819004]
 layout_mode = 0

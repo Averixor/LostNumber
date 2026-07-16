@@ -36,9 +36,9 @@ const BG_STATS := "res://assets/ui/backgrounds/dark/menu-bg-2.png"
 const BG_ABOUT := "res://assets/ui/backgrounds/dark/menu-bg-5.png"
 const BG_ACHIEVEMENTS := "res://assets/ui/backgrounds/dark/menu-bg-3.png"
 const BG_BOOT := "res://assets/boot/boot-bg.png"
-const BOOT_LOGO_PATH := "res://icon-1024.png"
-const LOGO_PATH := "res://assets/ui/logo/lost-number-logo.png"
-const LOGO_GLOW_PATH := "res://assets/ui/logo/lost-number-logo-glow.png"
+const BOOT_LOGO_PATH := "res://assets/boot/boot-logo.png"
+const LOGO_PATH := BOOT_LOGO_PATH
+const LOGO_GLOW_PATH := ""
 const GOTHIC_ICON_DIR := "res://assets/ui/icons/gothic/"
 const ICON_FALLBACK_DIR := "res://assets/ui/icons/"
 const WHEEL_ICON_DIR := "res://assets/ui/icons/wheel/"
@@ -667,7 +667,7 @@ static func wire_logo_glow(logo: TextureRect, main_path: String = LOGO_PATH) -> 
 		return
 	if ResourceLoader.exists(main_path):
 		logo.texture = load(main_path)
-	if not ResourceLoader.exists(LOGO_GLOW_PATH):
+	if LOGO_GLOW_PATH.is_empty() or not ResourceLoader.exists(LOGO_GLOW_PATH):
 		return
 
 	var host: Control = logo

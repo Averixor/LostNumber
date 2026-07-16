@@ -1,6 +1,6 @@
 extends Control
 
-## Boot/splash screen with fullscreen gothic art and logo pulse.
+## Boot loading screen: centered logo + progress (engine splash is separate).
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 const LnUiLib := preload("res://scripts/ui/LnUi.gd")
@@ -59,8 +59,9 @@ func _fit_boot_logo(tex: Texture2D) -> void:
 		return
 	var vp := get_viewport_rect().size
 	var aspect := tex_size.x / tex_size.y
-	var max_w := vp.x * 0.88
-	var max_h := vp.y * 0.68
+	# Logo mark (not full splash): keep readable, leave room for loading UI.
+	var max_w := vp.x * 0.82
+	var max_h := vp.y * 0.42
 	var w := max_w
 	var h := w / aspect
 	if h > max_h:

@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://neonbutton001" path="res://scenes/components/NeonButton.tscn" id="3_neonbtn"]
 [ext_resource type="PackedScene" uid="uid://menu_dock_btn" path="res://scenes/components/MenuDockButton.tscn" id="4_dock"]
 [ext_resource type="PackedScene" uid="uid://feature_stub_overlay" path="res://scenes/components/FeatureStubOverlay.tscn" id="5_stub"]
-[ext_resource type="Texture2D" path="res://assets/ui/logo/lost-number-logo.png" id="6_logo"]
+[ext_resource type="Texture2D" path="res://assets/boot/boot-logo.png" id="6_logo"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_menutitle"]
 shader = ExtResource("2_gradient")

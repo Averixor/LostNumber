@@ -299,27 +299,29 @@ const SKIN_PALETTES := [
 ]
 
 
-## Auto-fit tile number font: mirrors css/grid.css .cell-inner clamp ratios.
+## Auto-fit tile number font: size for REF_DIGITS to span inner face width; shrink for longer values.
 static func tile_font_size_for_cell(cell_size: Vector2, digit_count: int, user_scale: float = 1.0) -> int:
 	var min_dim := minf(cell_size.x, cell_size.y)
 	if min_dim < 1.0:
 		min_dim = 72.0
 
-	var digits := maxi(1, digit_count)
-	var height_ratio: float
-	if digits <= 2:
-		height_ratio = 0.24  # clamp(0.8rem, 2.4vw, 1rem) on ~72px cells
-	elif digits == 3:
-		height_ratio = 0.20  # .cell-value-compact upper range
-	else:
-		height_ratio = 0.17
+	const REF_DIGITS := 4
+	const FRAME_INSET := 10.0  # VIP max-tile ornate border (Tile.MAX_FRAME_INSET)
+	const LABEL_PAD := 3.0
+	const DIGIT_WIDTH_RATIO := 0.58  # average glyph width / font size
 
-	var by_height := min_dim * height_ratio
-	var by_width := min_dim / (float(digits) * 0.56)
-	var base := minf(by_height, by_width)
-	var rem_cap := FONT_SIZE_TILE * (min_dim / 72.0)
-	base = clampf(base, 8.0, minf(min_dim * 0.28, rem_cap))
-	return maxi(8, int(round(base * user_scale)))
+	var digits := maxi(1, digit_count)
+	var fit_digits := REF_DIGITS if digits <= REF_DIGITS else digits
+	var inner := min_dim - 2.0 * (FRAME_INSET + LABEL_PAD)
+	if inner < 8.0:
+		inner = min_dim * 0.55
+
+	var by_width := inner / (float(fit_digits) * DIGIT_WIDTH_RATIO)
+	var by_height := (min_dim - 2.0 * FRAME_INSET) * 0.72
+	var base := minf(by_width, by_height)
+	var rem_cap := FONT_SIZE_TILE * (min_dim / 72.0) * 1.2
+	base = clampf(base, 10.0, minf(min_dim * 0.38, rem_cap))
+	return maxi(10, int(round(base * user_scale)))
 
 
 static func is_legendary_tile_value(n: int) -> bool:

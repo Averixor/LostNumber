@@ -259,9 +259,8 @@ func refresh_all() -> void:
 		return
 
 	_clear_chain_highlights()
-	# Exactly one crown: the first tile whose value matches the carried number.
-	var carry_marked := false
-	var carry_val := state.carry_number
+	# Board-max tile gets VIP frame; no crown/badge chrome.
+	var board_max := _board_max_value()
 
 	for x in GRID_W:
 		for y in GRID_H:
@@ -271,14 +270,8 @@ func refresh_all() -> void:
 			tile.set_target_highlight(false)
 			tile.set_chain_selected(false)
 			tile.set_bonus_mode(bonus_pick_mode)
-			var is_carry := (
-				not carry_marked
-				and carry_val > 0
-				and value == carry_val
-			)
-			if is_carry:
-				carry_marked = true
-			tile.set_carry(is_carry)
+			tile.set_carry(false)
+			tile.set_board_max_highlight(value > 0 and board_max > 0 and value == board_max)
 	_update_chain_visual()
 	_hide_preview_bubble()
 
@@ -605,42 +598,36 @@ func _notification(what: int) -> void:
 
 func _collect_cells_along_pointer_path(local_pos: Vector2) -> Array[Vector2i]:
 	var cells: Array[Vector2i] = []
-	var target: Vector2i = _pick_cell_for_chain(local_pos)
-
-	if target.x < 0:
+	var raw_target: Vector2i = _cell_at_local(local_pos)
+	if raw_target.x < 0:
 		return cells
 
+	var cursor: Vector2i = _chain_cursor_cell()
+	if cursor.x < 0:
+		return [raw_target]
+
 	if not _last_pointer_local.is_finite():
-		return [target]
+		return _chain_step_cells(cursor, raw_target)
 
 	var dx: float = local_pos.x - _last_pointer_local.x
 	var dy: float = local_pos.y - _last_pointer_local.y
 	var distance: float = sqrt(dx * dx + dy * dy)
 	var min_side: float = minf(cell_size.x, cell_size.y)
 	var is_diagonal_move: bool = absf(dx) > 1.0 and absf(dy) > 1.0
-	var step: float = maxf(min_side * (0.2 if is_diagonal_move else 0.35), 8.0)
+	var step: float = maxf(min_side * (0.18 if is_diagonal_move else 0.35), 8.0)
 
 	if distance >= step * 0.45:
 		var count: int = maxi(1, int(ceil(distance / step)))
 		for i in range(1, count + 1):
 			var t: float = float(i) / float(count)
 			var sample: Vector2 = _last_pointer_local.lerp(local_pos, t)
-			var sample_cell: Vector2i = _pick_cell_for_chain(sample)
-			if sample_cell.x < 0:
+			var sample_cell: Vector2i = _pick_cell_for_chain(sample, cursor)
+			if sample_cell.x < 0 or sample_cell == cursor:
 				continue
-			if cells.is_empty() or cells.back() != sample_cell:
-				cells.append(sample_cell)
+			_append_unique_chain_cell(cells, sample_cell)
+			cursor = sample_cell
 
-	if state != null and not state.selected_path.is_empty():
-		var anchor: Vector2i = state.selected_path.back()
-		for line_cell in _cells_on_grid_line(anchor, target):
-			if line_cell == anchor:
-				continue
-			if cells.is_empty() or cells.back() != line_cell:
-				cells.append(line_cell)
-	elif cells.is_empty() or cells.back() != target:
-		cells.append(target)
-
+	_append_chain_line_cells(cells, cursor, raw_target)
 	return cells
 
 func _finish_drag(play_cancel_signal: bool = true) -> void:
@@ -704,21 +691,50 @@ func _cell_at_local(local_pos: Vector2) -> Vector2i:
 	return best
 
 
-func _pick_cell_for_chain(local_pos: Vector2) -> Vector2i:
+func _chain_cursor_cell() -> Vector2i:
+	if state == null or state.selected_path.is_empty():
+		return Vector2i(-1, -1)
+	return state.selected_path.back()
+
+
+func _append_unique_chain_cell(cells: Array[Vector2i], cell: Vector2i) -> void:
+	if cells.is_empty() or cells.back() != cell:
+		cells.append(cell)
+
+
+func _append_chain_line_cells(cells: Array[Vector2i], from_cell: Vector2i, to_cell: Vector2i) -> void:
+	for line_cell in _chain_step_cells(from_cell, to_cell):
+		_append_unique_chain_cell(cells, line_cell)
+
+
+func _chain_step_cells(from_cell: Vector2i, to_cell: Vector2i) -> Array[Vector2i]:
+	var steps: Array[Vector2i] = []
+	for line_cell in _cells_on_grid_line(from_cell, to_cell):
+		if line_cell == from_cell:
+			continue
+		steps.append(line_cell)
+	return steps
+
+
+func _pick_cell_for_chain(local_pos: Vector2, from_cell: Vector2i = Vector2i(-999999, -999999)) -> Vector2i:
 	var nearest: Vector2i = _cell_at_local(local_pos)
 	if nearest.x < 0:
 		return nearest
-	if state == null or state.selected_path.is_empty():
-		return nearest
 
-	var last: Vector2i = state.selected_path.back()
+	var last: Vector2i = from_cell
+	if last.x <= -999998:
+		if state == null or state.selected_path.is_empty():
+			return nearest
+		last = state.selected_path.back()
+
 	if nearest == last or Rules.is_adjacent(last, nearest):
 		return nearest
 
 	var min_side: float = minf(cell_size.x, cell_size.y)
-	var reach_sq: float = pow(min_side * 0.78 + cell_gap * 0.5, 2.0)
+	var reach_sq: float = pow(min_side * 0.82 + cell_gap * 0.5, 2.0)
 	var best_adj := Vector2i(-1, -1)
-	var best_dist_sq := INF
+	var best_score := -INF
+	var pointer_from_last := local_pos - _cell_center(last)
 
 	for dx in [-1, 0, 1]:
 		for dy in [-1, 0, 1]:
@@ -729,14 +745,24 @@ func _pick_cell_for_chain(local_pos: Vector2) -> Vector2i:
 				continue
 			var center := _cell_center(candidate)
 			var dist_sq := local_pos.distance_squared_to(center)
-			if dist_sq > reach_sq or dist_sq >= best_dist_sq:
+			if dist_sq > reach_sq:
 				continue
-			best_dist_sq = dist_sq
+			var score := -dist_sq + _chain_neighbor_pick_bias(last, candidate, pointer_from_last) * 0.35
+			if score <= best_score:
+				continue
+			best_score = score
 			best_adj = candidate
 
 	if best_adj.x >= 0:
 		return best_adj
 	return nearest
+
+
+func _chain_neighbor_pick_bias(from_cell: Vector2i, candidate: Vector2i, pointer_from_last: Vector2) -> float:
+	var step := Vector2(candidate - from_cell)
+	if step == Vector2.ZERO or pointer_from_last.length_squared() < 0.01:
+		return 0.0
+	return pointer_from_last.normalized().dot(step.normalized())
 
 
 func _cells_on_grid_line(from_cell: Vector2i, to_cell: Vector2i) -> Array[Vector2i]:

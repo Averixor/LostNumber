@@ -2,12 +2,10 @@
 node_modules/
 .git/
 
-# Local project/cache data
-.project/
+# Local
 .chrome-*/
 coverage/
 dist/
-build/
 
 # Local databases
 *.sqlite
@@ -21,5 +19,4 @@ build/
 
 # Large binary assets
 audio/
-*.mp3
 *.ico

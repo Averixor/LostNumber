@@ -13,6 +13,8 @@ const TILE_FRAME_PATH := "res://assets/ui/skins/gothic_crystal/tiles/stone_frame
 const TILE_FRAME_ATLAS_REGION := Rect2(140, 130, 1320, 1340)
 ## Full-frame concept art; not used on the live board (opaque crystal center).
 const TILE_FRAME_ART_PATH := "res://assets/ui/skins/gothic_crystal/tile-frame.png"
+## Ornate purple-gold VIP frame for the current board-max tile (transparent center).
+const MAX_TILE_FRAME_PATH := "res://assets/ui/skins/gothic_crystal/tiles/max_tile_frame.png"
 
 const STONE_BLACK := Color("#100d16")
 const STONE_DEEP := Color("#18131f")
