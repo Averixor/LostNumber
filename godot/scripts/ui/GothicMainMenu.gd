@@ -16,9 +16,9 @@ func _ready() -> void:
 func _apply_gothic_visuals() -> void:
 	GothicScreenMixinLib.apply_background(self, "", 0.28, &"menu")
 	# Dock and quick-row buttons use stone-framed gothic chrome.
-	for button in [quick_stats, quick_about, quick_achievements]:
+	for button in [quick_achievements, quick_daily, quick_about]:
 		GothicScreenMixinLib.style_button(self, button)
-	for button in [dock_premium, dock_tournaments, dock_daily, dock_bonuses]:
+	for button in [dock_premium, dock_tournaments, dock_bonuses, dock_stats]:
 		GothicScreenMixinLib.style_button(self, button)
 	# Primary CTAs keep NeonButton variant colors (green continue, purple play, etc.).
 	_refresh_cta_styles()

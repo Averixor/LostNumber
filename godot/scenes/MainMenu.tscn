@@ -110,7 +110,6 @@ text = "Налаштування"
 [node name="ExitButton" parent="Layout/RootVBox/Actions/Buttons" instance=ExtResource("3_neonbtn")]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
-size_flags_horizontal = 4
 variant = 1
 text = "Вийти"
 
@@ -119,15 +118,15 @@ layout_mode = 2
 theme_override_constants/separation = 7
 alignment = 1
 
-[node name="QuickStats" parent="Layout/RootVBox/QuickRow" instance=ExtResource("4_dock")]
+[node name="QuickAchievements" parent="Layout/RootVBox/QuickRow" instance=ExtResource("4_dock")]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="QuickDaily" parent="Layout/RootVBox/QuickRow" instance=ExtResource("4_dock")]
 layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="QuickAbout" parent="Layout/RootVBox/QuickRow" instance=ExtResource("4_dock")]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="QuickAchievements" parent="Layout/RootVBox/QuickRow" instance=ExtResource("4_dock")]
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -144,11 +143,11 @@ size_flags_horizontal = 3
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="DockDaily" parent="Layout/RootVBox/DockRow" instance=ExtResource("4_dock")]
+[node name="DockBonuses" parent="Layout/RootVBox/DockRow" instance=ExtResource("4_dock")]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="DockBonuses" parent="Layout/RootVBox/DockRow" instance=ExtResource("4_dock")]
+[node name="DockStats" parent="Layout/RootVBox/DockRow" instance=ExtResource("4_dock")]
 layout_mode = 2
 size_flags_horizontal = 3
 

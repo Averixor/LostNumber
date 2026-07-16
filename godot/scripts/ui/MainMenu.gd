@@ -43,13 +43,13 @@ const _FEATURE_STUBS := {
 @onready var wheel_button: NeonButton = $Layout/RootVBox/Actions/Buttons/WheelButton
 @onready var settings_button: NeonButton = $Layout/RootVBox/Actions/Buttons/SettingsButton
 @onready var exit_button: NeonButton = $Layout/RootVBox/Actions/Buttons/ExitButton
-@onready var quick_stats: Button = $Layout/RootVBox/QuickRow/QuickStats
-@onready var quick_about: Button = $Layout/RootVBox/QuickRow/QuickAbout
 @onready var quick_achievements: Button = $Layout/RootVBox/QuickRow/QuickAchievements
+@onready var quick_daily: Button = $Layout/RootVBox/QuickRow/QuickDaily
+@onready var quick_about: Button = $Layout/RootVBox/QuickRow/QuickAbout
 @onready var dock_premium: Button = $Layout/RootVBox/DockRow/DockPremium
 @onready var dock_tournaments: Button = $Layout/RootVBox/DockRow/DockTournaments
-@onready var dock_daily: Button = $Layout/RootVBox/DockRow/DockDaily
 @onready var dock_bonuses: Button = $Layout/RootVBox/DockRow/DockBonuses
+@onready var dock_stats: Button = $Layout/RootVBox/DockRow/DockStats
 @onready var version_label: Label = $Layout/RootVBox/VersionLabel
 @onready var feature_dim: ColorRect = $FeatureDim
 @onready var feature_stub: FeatureStubOverlay = $FeatureStub
@@ -96,14 +96,16 @@ func _ready() -> void:
 	if exit_button != null:
 		_set_button_icon(exit_button, LnUiLib.icon_path("back.png"))
 
-	quick_stats.call("setup", _i18n("btn_stats"), LnUiLib.icon_path("statistics.png"))
-	quick_about.call("setup", _i18n("btn_about"), LnUiLib.icon_path("about.png"))
+	# Top icon row: Achievements, Daily tasks, About
 	quick_achievements.call("setup", _i18n("dock_achievements"), LnUiLib.icon_path("achievements.png"))
+	quick_daily.call("setup", _i18n("dock_daily"), LnUiLib.icon_path("daily-tasks.png"))
+	quick_about.call("setup", _i18n("btn_about"), LnUiLib.icon_path("about.png"))
 
+	# Bottom icon row: Premium, Tournaments, Bonus, Stats
 	dock_premium.call("setup", _i18n("dock_premium"), LnUiLib.icon_path("premium.png"))
 	dock_tournaments.call("setup", _i18n("dock_tournaments"), LnUiLib.icon_path("tournaments.png"))
-	dock_daily.call("setup", _i18n("dock_daily"), LnUiLib.icon_path("daily-tasks.png"))
 	dock_bonuses.call("setup", _i18n("dock_bonuses"), LnUiLib.icon_path("bonus.png"))
+	dock_stats.call("setup", _i18n("btn_stats"), LnUiLib.icon_path("statistics.png"))
 
 	var save := _autoload("SaveManager")
 	var has_save: bool = save != null and save.has_method("has_save") and bool(save.call("has_save"))
@@ -130,13 +132,13 @@ func _ready() -> void:
 	settings_button.pressed.connect(_on_settings)
 	if exit_button != null:
 		exit_button.pressed.connect(_on_exit)
-	quick_stats.pressed.connect(_on_stats)
-	quick_about.pressed.connect(_on_about)
 	quick_achievements.pressed.connect(_on_achievements)
+	quick_daily.pressed.connect(_on_daily)
+	quick_about.pressed.connect(_on_about)
 	dock_premium.pressed.connect(_on_premium)
 	dock_tournaments.pressed.connect(_on_tournaments)
-	dock_daily.pressed.connect(_on_daily)
 	dock_bonuses.pressed.connect(_on_bonuses)
+	dock_stats.pressed.connect(_on_stats)
 	feature_stub.connect("closed", func(): feature_dim.visible = false)
 
 	feature_dim.visible = false
@@ -211,16 +213,16 @@ func _set_wheel_button_icon(button: Button, file_name: String, max_size: int = 2
 
 func _animate_entrance() -> void:
 	var items: Array[Control] = [logo_image, tagline_label]
+	items.append(play_button)
 	if continue_button.visible:
 		items.append(continue_button)
-	items.append(play_button)
 	items.append(wheel_button)
 	items.append(settings_button)
 	if exit_button != null:
 		items.append(exit_button)
-	for quick in [quick_stats, quick_about, quick_achievements]:
+	for quick in [quick_achievements, quick_daily, quick_about]:
 		items.append(quick)
-	for dock in [dock_premium, dock_tournaments, dock_daily, dock_bonuses]:
+	for dock in [dock_premium, dock_tournaments, dock_bonuses, dock_stats]:
 		items.append(dock)
 	items.append(version_label)
 	for item in items:
