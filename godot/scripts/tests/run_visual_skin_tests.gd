@@ -61,6 +61,10 @@ func _test_manager_api() -> void:
 		GothicVisualsLib.TILE_FRAME_PATH.ends_with("stone_frame.webp"),
 		"tile frame uses border-only asset with transparent center"
 	)
+	_assert_true(
+		ResourceLoader.exists(GothicVisualsLib.TILE_FRAME_ART_PATH),
+		"full-frame tile art asset exists on disk"
+	)
 	_assert_true(manager.get_palette(true).has("primary"), "manager resolves visual palette")
 	_assert_true(not manager.set_visual_skin(&"missing_skin"), "manager rejects unknown visual skin")
 	manager.free()

@@ -10,6 +10,8 @@ const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 
 ## Border-only frame: transparent center so per-value face colors show through.
 const TILE_FRAME_PATH := "res://assets/ui/skins/gothic_crystal/tiles/stone_frame.webp"
+## Full-frame tile art shipped alongside stone_frame; kept for skin previews / future rarity variants.
+const TILE_FRAME_ART_PATH := "res://assets/ui/skins/gothic_crystal/tile-frame.png"
 
 const STONE_BLACK := Color("#100d16")
 const STONE_DEEP := Color("#18131f")
