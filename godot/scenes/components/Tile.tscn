@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://tile_component"]
 
 [ext_resource type="Script" path="res://scripts/game/Tile.gd" id="1_tile"]
-[ext_resource type="Texture2D" path="res://assets/ui/skins/gothic_crystal/tile-frame.png" id="2_frame"]
+[ext_resource type="Texture2D" path="res://assets/ui/skins/gothic_crystal/tiles/stone_frame.webp" id="2_frame"]
 
 [node name="Tile" type="Control"]
 custom_minimum_size = Vector2(72, 72)

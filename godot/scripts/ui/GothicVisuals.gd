@@ -8,7 +8,8 @@ class_name GothicVisuals
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 
-const TILE_FRAME_PATH := "res://assets/ui/skins/gothic_crystal/tile-frame.png"
+## Border-only frame: transparent center so per-value face colors show through.
+const TILE_FRAME_PATH := "res://assets/ui/skins/gothic_crystal/tiles/stone_frame.webp"
 
 const STONE_BLACK := Color("#100d16")
 const STONE_DEEP := Color("#18131f")

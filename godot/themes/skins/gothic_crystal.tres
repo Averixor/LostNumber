@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/ui/VisualSkin.gd" id="1_skin"]
 [ext_resource type="Texture2D" path="res://assets/ui/skins/gothic_crystal/game-backdrop.png" id="2_background"]
-[ext_resource type="Texture2D" path="res://assets/ui/skins/gothic_crystal/tile-frame.png" id="3_tile"]
+[ext_resource type="Texture2D" path="res://assets/ui/skins/gothic_crystal/tiles/stone_frame.webp" id="3_tile"]
 
 [resource]
 script = ExtResource("1_skin")

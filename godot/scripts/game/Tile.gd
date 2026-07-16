@@ -5,6 +5,7 @@ class_name TileView
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
+const FACE_SHADER := preload("res://themes/skins/gothic_tile_face.gdshader")
 const PRESS_LIFT := 3.0
 const BEVEL_THICKNESS := 4.0
 const SIDE_BEVEL := 3.5
@@ -50,6 +51,7 @@ var _carry: bool = false
 var _target: bool = false
 var _pressed: bool = false
 var _lift_tween: Tween = null
+var _face_material: ShaderMaterial
 
 func _ready() -> void:
 	custom_minimum_size = cell_size
@@ -222,6 +224,22 @@ func set_carry(active: bool) -> void:
 	_refresh_visual()
 
 
+func _ensure_face_shader() -> void:
+	if _face_material != null:
+		return
+	_face_material = ShaderMaterial.new()
+	_face_material.shader = FACE_SHADER
+	_inner.material = _face_material
+
+
+func _apply_face_color(face_color: Color) -> void:
+	_ensure_face_shader()
+	var shaded := face_color.darkened(FACE_DARKEN)
+	_face_material.set_shader_parameter("face_color", shaded)
+	# Shader drives the fill; keep node tint neutral so colors are not double-darkened.
+	_inner.color = Color.WHITE
+
+
 func _apply_panel_style() -> void:
 	_shadow.color = Color(0, 0, 0, 0.64)
 	_shadow.offset_top = 8.0
@@ -275,8 +293,8 @@ func _refresh_visual() -> void:
 		# Value remains data-driven; the art frame never contains a baked number.
 		face_color = _color_for_value(value)
 
-	# Stone center with restrained bevel. The ornate SVG frame carries the material identity.
-	_inner.color = face_color.darkened(FACE_DARKEN)
+	# Per-value face sits under a border-only gothic frame (stone_frame.webp center is transparent).
+	_apply_face_color(face_color)
 	_top_edge.color = Color(face_color.lightened(0.16), 0.62)
 	_bottom_edge.color = Color(face_color.darkened(0.34), 0.88)
 	_left_edge.color = Color(face_color.lightened(0.08), 0.54)

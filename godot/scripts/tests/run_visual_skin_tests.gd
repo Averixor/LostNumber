@@ -3,6 +3,7 @@ extends SceneTree
 ## Verifies the data-driven visual skin resource and manager API.
 
 const VisualThemeManagerScript := preload("res://scripts/managers/VisualThemeManager.gd")
+const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
 const VISUAL_SKIN_PATH := "res://themes/skins/gothic_crystal.tres"
 
 var failed := 0
@@ -56,6 +57,10 @@ func _test_manager_api() -> void:
 	var face_16: Color = manager.get_tile_face_color(16)
 	_assert_true(face_2 != face_4 and face_4 != face_16, "manager resolves distinct per-value tile faces")
 	_assert_true(face_2.get_luminance() > 0.35, "tile 2 face stays bright (not muted stone)")
+	_assert_true(
+		GothicVisualsLib.TILE_FRAME_PATH.ends_with("stone_frame.webp"),
+		"tile frame uses border-only asset with transparent center"
+	)
 	_assert_true(manager.get_palette(true).has("primary"), "manager resolves visual palette")
 	_assert_true(not manager.set_visual_skin(&"missing_skin"), "manager rejects unknown visual skin")
 	manager.free()
