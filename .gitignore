@@ -120,9 +120,13 @@ godot/.godot/
 .gradle/
 **/.gradle/
 **/build/
+# Root /build: only android/README is meant to be added anew.
+# Already-tracked qa/ and visual-capture/ files stay in the index.
 !/build/
 !/build/android/
-/build/android/*
+!/build/android/README.md
+/build/**
+!/build/android/
 !/build/android/README.md
 **/intermediates/
 **/outputs/
