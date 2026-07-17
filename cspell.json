@@ -2,6 +2,19 @@
   "version": "0.2",
   "language": "en,uk,ru",
   "allowCompoundWords": true,
+  "dictionaryDefinitions": [
+    {
+      "name": "godot-gdscript",
+      "path": "./cspell/godot-gdscript.txt",
+      "addWords": true
+    }
+  ],
+  "overrides": [
+    {
+      "filename": ["godot/**/*.gd", "scripts/**/*.gd"],
+      "dictionaries": ["godot-gdscript"]
+    }
+  ],
   "ignoreRegExpList": ["/[\\u0400-\\u04FF\\u0500-\\u052F\\u2DE0-\\u2DFF\\uA640-\\uA69F]+/g"],
   "ignorePaths": [
     "node_modules/**",
@@ -9,6 +22,7 @@
     "coverage/**",
     ".git/**",
     ".idea/**",
+    "cspell/**",
     "current_manifest.xml",
     "old_manifest.xml",
     "bundletool.jar",
@@ -92,7 +106,9 @@
     "Якщо",
     "AppEnv",
     "androidx",
+    "anims",
     "apks",
+    "autoload",
     "averixor",
     "arithmon",
     "Burrito",
@@ -110,10 +126,13 @@
     "fmod",
     "GameCore",
     "GameState",
+    "gdap",
+    "gdscript",
     "gignōskomena",
     "GitHub",
     "GridManager",
     "i18n",
+    "IARC",
     "LCP",
     "LN_DEBUG",
     "localStorage",
@@ -126,10 +145,14 @@
     "Prettier",
     "Panta",
     "panta",
+    "PITR",
+    "prefs",
     "PWA",
     "SeededRandom",
     "splash",
     "tmpl",
+    "tscn",
+    "tweens",
     "WebP"
   ]
 }

@@ -4,22 +4,18 @@ class_name TileView
 ## Themed grid cell with 2.5D bevel, shadow, chain glow, and press lift.
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
+const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
 const GOTHIC_FACE_SHADER := preload("res://themes/skins/gothic_tile_face.gdshader")
 const PRESS_LIFT := 3.0
 const BEVEL_THICKNESS := 4.0
 const SIDE_BEVEL := 3.5
 const FACE_DARKEN := 0.30
 const Z_FACE := 0
-const Z_CROWN := 1
 const Z_SELECTION := 2
 const Z_LABEL := 3
-## Carry crown: ~30% of tile height, centered in the top band above the digit.
-const CROWN_SIZE_RATIO := 0.30
-const CROWN_TOP_BAND_RATIO := 0.34
-const CROWN_MIN_PX := 20.0
-const CROWN_MAX_PX := 56.0
-const CROWN_WATERMARK_ALPHA := 0.92
-const CROWN_LABEL_PUSH_RATIO := 0.16
+## Board-max VIP frame insets (thicker ornate border than stone_frame).
+const MAX_FRAME_INSET := 10.0
+const MAX_FRAME_MODULATE := Color(1.0, 0.96, 1.0, 1.0)
 
 @export var cell_size: Vector2 = Vector2(72, 72)
 
@@ -35,11 +31,10 @@ const CROWN_LABEL_PUSH_RATIO := 0.16
 @onready var _label: Label = $Bg/Label
 @onready var _chain_highlight: PanelContainer = $ChainHighlight
 @onready var _chain_fill: ColorRect = $ChainHighlight/Fill
-@onready var _carry_badge: Label = $CarryBadge
 
-var _crown_icon: TextureRect
 var _crystal_accents: Array[Polygon2D] = []
 var _face_material: ShaderMaterial
+var _max_frame_style: StyleBoxTexture = null
 
 var grid_pos: Vector2i = Vector2i.ZERO
 var value: int = 0
@@ -49,7 +44,7 @@ var _selected: bool = false
 var _chain_preview: String = ""
 var _frozen: bool = false
 var _bonus_mode: bool = false
-var _carry: bool = false
+var _board_max_highlight: bool = false
 var _target: bool = false
 var _pressed: bool = false
 var _lift_tween: Tween = null
@@ -58,9 +53,9 @@ func _ready() -> void:
 	custom_minimum_size = cell_size
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_base_position = position
+	_purge_crown_nodes()
 	_apply_bevelling()
 	_ensure_crystal_accents()
-	_ensure_crown_icon()
 	_apply_panel_style()
 	_apply_label_depth()
 	_stack_chain_highlight_under_label()
@@ -69,6 +64,19 @@ func _ready() -> void:
 	if theme_mgr != null and theme_mgr.has_signal("theme_changed"):
 		theme_mgr.theme_changed.connect(_refresh_visual)
 	_refresh_visual()
+
+
+func _purge_crown_nodes() -> void:
+	# Hard remove any leftover crown/badge chrome from older builds or scene leftovers.
+	var roots: Array[Node] = [self]
+	if _bg != null:
+		roots.append(_bg)
+	for root in roots:
+		for child in root.get_children():
+			var n := String(child.name).to_lower()
+			if "crown" in n or n == "carrybadge":
+				child.visible = false
+				child.queue_free()
 
 
 func _ensure_crystal_accents() -> void:
@@ -123,81 +131,10 @@ func _apply_label_depth() -> void:
 	_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.45))
 
 
-func _ensure_crown_icon() -> void:
-	if _crown_icon != null:
-		return
-
-	var crown_texture: Texture2D = _load_crown_texture()
-	if crown_texture == null:
-		return
-
-	_crown_icon = _make_crown_layer("CrownIcon", crown_texture)
-	_crown_icon.visible = false
-	_crown_icon.z_as_relative = false
-	_crown_icon.z_index = Z_CROWN
-	_crown_icon.modulate = Color(1.0, 1.0, 1.0, CROWN_WATERMARK_ALPHA)
-	_bg.add_child(_crown_icon)
-	_bg.move_child(_crown_icon, _label.get_index())
-	_label.z_as_relative = false
-	_label.z_index = Z_LABEL
-	_layout_crown_and_label()
-
-
-func _load_crown_texture() -> Texture2D:
-	var paths := [
-		"res://assets/ui/icons/neon/tile-crown.png",
-		"res://assets/ui/icons/tile-crown.png",
-		"res://assets/ui/icons/neon/tile-crown.svg",
-		"res://assets/ui/icons/tile-crown.svg",
-	]
-	for path in paths:
-		if ResourceLoader.exists(path):
-			return load(path)
-	return null
-
-
-func _make_crown_layer(layer_name: String, texture: Texture2D) -> TextureRect:
-	var layer := TextureRect.new()
-	layer.name = layer_name
-	layer.texture = texture
-	layer.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	layer.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	return layer
-
-
 func setup(pos: Vector2i, number: int) -> void:
 	grid_pos = pos
 	_layout_crystal_accents()
-	if _crown_icon != null:
-		_layout_crown_and_label()
 	set_value(number)
-
-
-func _layout_crown_and_label() -> void:
-	if _crown_icon == null:
-		return
-
-	var tile_side := minf(cell_size.x, cell_size.y)
-	var crown_side := clampf(tile_side * CROWN_SIZE_RATIO, CROWN_MIN_PX, CROWN_MAX_PX)
-	var top_band := tile_side * CROWN_TOP_BAND_RATIO
-	var crown_top := clampf((top_band - crown_side) * 0.5, 3.0, top_band - crown_side)
-	var crown_size := Vector2(crown_side, crown_side)
-
-	_crown_icon.custom_minimum_size = crown_size
-	_crown_icon.size = crown_size
-	_crown_icon.position = Vector2((cell_size.x - crown_side) * 0.5, crown_top)
-
-	# Push digit slightly down so layout reads as “crown above number”.
-	if _crown_icon.visible:
-		var push := clampf(tile_side * CROWN_LABEL_PUSH_RATIO, 8.0, crown_side * 0.7)
-		_label.offset_top = push
-		_label.offset_bottom = 0.0
-		_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	else:
-		_label.offset_top = 0.0
-		_label.offset_bottom = 0.0
-		_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
 
 func set_value(number: int) -> void:
@@ -247,9 +184,15 @@ func set_bonus_mode(active: bool) -> void:
 	_bonus_mode = active
 	_refresh_visual()
 
-func set_carry(active: bool) -> void:
-	_carry = active
-	_carry_badge.visible = false
+func set_carry(_active: bool) -> void:
+	# No visual: crown/badge removed. Keep method so Board/tests do not break.
+	pass
+
+
+func set_board_max_highlight(active: bool) -> void:
+	if _board_max_highlight == active:
+		return
+	_board_max_highlight = active
 	_refresh_visual()
 
 func _apply_panel_style() -> void:
@@ -265,7 +208,8 @@ func _apply_material_face(face_color: Color) -> void:
 		_face_material = ShaderMaterial.new()
 		_face_material.shader = GOTHIC_FACE_SHADER
 	_inner.material = _face_material
-	_face_material.set_shader_parameter("face_color", Color(face_color.lightened(0.08), 0.96))
+	# Light lift only — keep mid-luminosity jewel faces (avoid neon wash).
+	_face_material.set_shader_parameter("face_color", Color(face_color.lightened(0.04), 0.96))
 	_inner.color = Color.WHITE
 
 
@@ -284,7 +228,7 @@ func _draw() -> void:
 		# The authored forged frame already defines each cell. Extra neon outlines
 		# made the board read as a purple spreadsheet, so only rare tiers get a
 		# restrained metallic rarity rim.
-		if value >= 128:
+		if value >= 128 and not _board_max_highlight:
 			var rarity_rim := _get_rim_color()
 			var rim_alpha := 0.72 if ThemeTokensLib.is_legendary_tile_value(value) else 0.30
 			draw_rect(Rect2(Vector2(1, 1), size - Vector2(2, 6)), Color(rarity_rim, rim_alpha), false, 1.0)
@@ -318,8 +262,6 @@ func _refresh_visual() -> void:
 		_right_edge.color = Color.TRANSPARENT
 		_shadow.visible = false
 		_label.text = ""
-		if _crown_icon != null:
-			_crown_icon.visible = false
 		queue_redraw()
 		return
 
@@ -331,17 +273,19 @@ func _refresh_visual() -> void:
 		# Keep value palette; bonus pick uses outline only (no face recolor).
 		face_color = _color_for_value(value)
 
-	var material_style := _tile_material_style()
+	var use_max_frame := _board_max_highlight and not _frozen
+	var material_style := _max_tile_frame_style() if use_max_frame else _tile_material_style()
 	_material_background.visible = material_style != null
 	if material_style != null:
 		_material_background.add_theme_stylebox_override("panel", material_style)
 		# Keep the source frame neutral and wash only its calm inner face with the
 		# live value colour. This preserves a single scalable frame while making
 		# 2, 4, 8… immediately distinguishable.
-		_inner.offset_left = 6.0
-		_inner.offset_top = 6.0
-		_inner.offset_right = -6.0
-		_inner.offset_bottom = -6.0
+		var inset := MAX_FRAME_INSET if use_max_frame else 6.0
+		_inner.offset_left = inset
+		_inner.offset_top = inset
+		_inner.offset_right = -inset
+		_inner.offset_bottom = -inset
 		_apply_material_face(face_color)
 		_top_edge.color = Color.TRANSPARENT
 		_bottom_edge.color = Color.TRANSPARENT
@@ -367,14 +311,9 @@ func _refresh_visual() -> void:
 	_label.add_theme_color_override("font_outline_color", Color("#120d18"))
 	_label.add_theme_constant_override("shadow_offset_y", 2)
 	_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.62))
-
-	if _crown_icon != null:
-		# Crown marks the singular carry tile from the previous level — never board-max.
-		_crown_icon.visible = _carry and not _frozen
-		_layout_crown_and_label()
-	else:
-		_label.offset_top = 0.0
-		_label.offset_bottom = 0.0
+	_label.offset_top = 0.0
+	_label.offset_bottom = 0.0
+	_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
 	_refresh_crystal_accents()
 
@@ -426,34 +365,25 @@ func _tile_material_style() -> StyleBox:
 	return null
 
 
+func _max_tile_frame_style() -> StyleBox:
+	if _max_frame_style != null:
+		return _max_frame_style
+	if not ResourceLoader.exists(GothicVisualsLib.MAX_TILE_FRAME_PATH):
+		return _tile_material_style()
+	var texture: Texture2D = load(GothicVisualsLib.MAX_TILE_FRAME_PATH)
+	if texture == null:
+		return _tile_material_style()
+	_max_frame_style = StyleBoxTexture.new()
+	_max_frame_style.texture = texture
+	_max_frame_style.modulate_color = MAX_FRAME_MODULATE
+	_max_frame_style.set_content_margin_all(MAX_FRAME_INSET)
+	return _max_frame_style
+
+
 func _refresh_crystal_accents() -> void:
-	var rarity := &"common"
-	var theme_mgr := get_node_or_null("/root/ThemeManager")
-	if theme_mgr != null and theme_mgr.has_method("get_tile_rarity"):
-		rarity = theme_mgr.call("get_tile_rarity", value)
-	var count := 0
-	match rarity:
-		&"uncommon":
-			count = 1
-		&"rare":
-			count = 1
-		&"epic":
-			count = 2
-		&"legendary":
-			count = 3
-	if _frozen:
-		count = 1
-	_crystal_overlay.visible = _material_background.visible and count > 0
-	var crystal_color := Color("#a855f7")
-	if _frozen:
-		crystal_color = Color("#bcecff")
-	else:
-		crystal_color = _theme_palette_color("crystal", crystal_color)
-	for index in _crystal_accents.size():
-		var crystal := _crystal_accents[index]
-		crystal.visible = index < count
-		crystal.color = Color(crystal_color.lightened(float(index) * 0.08), 0.78 if _effects_enabled() else 0.55)
-		crystal.scale = Vector2.ONE * (0.72 + float(index) * 0.12)
+	# Authored stone/max frames already carry gem chrome; procedural purple
+	# polygons read as stray blotches on the coloured face (e.g. 16 tiles).
+	_crystal_overlay.visible = false
 
 
 func _theme_palette_color(key: String, fallback: Color) -> Color:

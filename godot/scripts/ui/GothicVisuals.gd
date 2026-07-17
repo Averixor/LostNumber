@@ -13,6 +13,8 @@ const TILE_FRAME_PATH := "res://assets/ui/skins/gothic_crystal/tiles/stone_frame
 const TILE_FRAME_ATLAS_REGION := Rect2(140, 130, 1320, 1340)
 ## Full-frame concept art; not used on the live board (opaque crystal center).
 const TILE_FRAME_ART_PATH := "res://assets/ui/skins/gothic_crystal/tile-frame.png"
+## Ornate purple-gold VIP frame for the current board-max tile (transparent center).
+const MAX_TILE_FRAME_PATH := "res://assets/ui/skins/gothic_crystal/tiles/max_tile_frame.png"
 
 const STONE_BLACK := Color("#100d16")
 const STONE_DEEP := Color("#18131f")
@@ -22,8 +24,8 @@ const BRONZE := Color("#8f6a36")
 const BRONZE_DARK := Color("#4d351f")
 const GOLD := Color("#d6ad58")
 const GOLD_LIGHT := Color("#f3d58b")
-const CRYSTAL := Color("#a85cff")
-const CRYSTAL_LIGHT := Color("#d8b4ff")
+const CRYSTAL := Color("#8F55D6")
+const CRYSTAL_LIGHT := Color("#C9A6F0")
 const TEXT_IVORY := Color("#f7ead5")
 const TEXT_MUTED := Color("#bbaec4")
 
@@ -47,12 +49,9 @@ static func tile_face_color(value: int) -> Color:
 	return Color.from_hsv(fmod(float(exponent) * 0.09 + 0.08, 1.0), 0.52, 0.78)
 
 
-static func tile_text_color(face: Color, value: int) -> Color:
-	if value >= 256:
-		return GOLD_LIGHT
-	if face.get_luminance() > 0.58:
-		return STONE_BLACK
-	return TEXT_IVORY
+static func tile_text_color(_face: Color, _value: int) -> Color:
+	# Match ThemeTokens jewel rule: dark digits on saturated faces.
+	return STONE_BLACK
 
 
 static func tile_frame_tint(value: int, frozen: bool, rim: Color) -> Color:

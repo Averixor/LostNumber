@@ -82,7 +82,7 @@ const SCENE_SCRIPTS := [
 
 const KEY_RESOURCES := [
 	"res://assets/icons/icon-1024.png",
-	"res://icon.svg",
+	"res://assets/icons/icon-1024.png",
 	"res://scripts/game/Board.gd",
 	"res://scripts/managers/SaveManager.gd",
 	"res://scripts/core/GameState.gd",

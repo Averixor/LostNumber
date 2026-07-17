@@ -9,7 +9,7 @@
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │  Google Play  ←  lost-number.aab (Godot)                │
 ├─────────────────────────────────────────────────────────┤
@@ -43,7 +43,7 @@
 
 ## Repository layout
 
-```
+```text
 LostNumber/                 ← canonical project (this repo)
 ├── godot/                  # Ship target for Play
 ├── android/                # Godot release keystore (gitignored secrets)
