@@ -15,7 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Lost Number"
-config/description="Offline number-chain puzzle. Godot 4.5 port (v2.1.6)."
+config/description="Offline number-chain puzzle. Godot 4.7 port (v2.1.6)."
 config/version="2.1.6"
 run/main_scene="res://scenes/Boot.tscn"
 config/quit_on_go_back=false

@@ -31,7 +31,7 @@ _cleanup_android_artifacts() {
 }
 
 if ! command -v "$GODOT_BIN" >/dev/null 2>&1; then
-  echo "Godot not found. Install Godot 4.3+ and set GODOT_BIN." >&2
+  echo "Godot not found. Install Godot 4.7+ and set GODOT_BIN." >&2
   exit 1
 fi
 
