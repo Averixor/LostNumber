@@ -2,10 +2,10 @@
 
 **Canonical output folder** for Godot Android packages. All release and debug builds write here only:
 
-| Artifact | Command |
-|----------|---------|
-| `lost-number-debug.apk` | `npm run godot:android:debug` |
-| `lost-number.aab` | `npm run godot:android:release` |
+| Artifact                | Command                         |
+| ----------------------- | ------------------------------- |
+| `lost-number-debug.apk` | `npm run godot:android:debug`   |
+| `lost-number.aab`       | `npm run godot:android:release` |
 
 Install debug build on a connected device:
 

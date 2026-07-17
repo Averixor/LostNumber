@@ -13,7 +13,7 @@ Record of decisions that govern implementation. Changes require explicit review 
 
 | Decision              | Choice                                                                   |
 | --------------------- | ------------------------------------------------------------------------ |
-| Primary Android build | **Godot 4.5** AAB (`build/android/lost-number.aab`)                      |
+| Primary Android build | **Godot 4.7** AAB (`build/android/lost-number.aab`)                      |
 | Visual authority      | PO mockups + [VISUAL_TARGET.md](./VISUAL_TARGET.md) — not legacy Web/CSS |
 | Legacy Android        | Removed (Capacitor/WebView stack deleted July 2026)                      |
 | Runtime network       | **None** — fully offline; GDPR-friendly (no tracking, no PII)            |

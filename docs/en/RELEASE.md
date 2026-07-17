@@ -35,7 +35,7 @@ ABI note: `armeabi-v7a` intentionally excluded (~8k 32-bit-only devices in catal
 | Tool             | Requirement                                               |
 | ---------------- | --------------------------------------------------------- |
 | Node.js          | ≥ 20.19                                                   |
-| Godot            | 4.3+ (4.5 tested; `godot4` on PATH)                       |
+| Godot            | 4.7+ (4.7 tested; `godot4` on PATH)                       |
 | JDK              | 17 at `~/Android/jbr` (snap Godot cannot read `/opt/...`) |
 | Android SDK      | `~/Android/Sdk` or `ANDROID_HOME`                         |
 | Export templates | Auto-downloaded on first export script run                |

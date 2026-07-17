@@ -3,13 +3,13 @@
 **Package:** `com.averixor.lostnumber`  
 **Version:** `2.1.6` (versionCode `16`)  
 **Audience:** Casual 3+, offline puzzle  
-**Primary Android:** Godot 4.5 native (`build/android/lost-number.aab`)
+**Primary Android:** Godot 4.7 native (`build/android/lost-number.aab`)
 
 ---
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │  Google Play  ←  lost-number.aab (Godot)                │
 ├─────────────────────────────────────────────────────────┤
@@ -22,7 +22,7 @@
 
 | Layer           | Stack                            | Notes                                   |
 | --------------- | -------------------------------- | --------------------------------------- |
-| Gameplay (ship) | Godot 4.5 GDScript               | Boot→App→screens; back-stack navigation |
+| Gameplay (ship) | Godot 4.7 GDScript               | Boot→App→screens; back-stack navigation |
 | Save            | `user://` JSON (Godot)           | Checksum + `.bak` rollback              |
 | Network         | None                             | GDPR-friendly: no tracking, no PII      |
 | Compliance      | `privacy.html`, Play Data Safety | Offline-only data                       |
@@ -43,7 +43,7 @@
 
 ## Repository layout
 
-```
+```text
 LostNumber/                 ← canonical project (this repo)
 ├── godot/                  # Ship target for Play
 ├── android/                # Godot release keystore (gitignored secrets)
@@ -63,7 +63,7 @@ LostNumber/                 ← canonical project (this repo)
 ### Prerequisites
 
 - Node.js ≥ 20.19
-- Godot 4.3+ (4.5 tested)
+- Godot 4.7+ (4.7 tested)
 - JDK 17+ at `~/Android/jbr` (snap Godot cannot use `/opt/...`)
 - Android SDK at `~/Android/Sdk`
 

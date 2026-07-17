@@ -5,13 +5,13 @@ version: 2.1.6
 last_updated: 2026-07-10
 ---
 
-# Architecture & Repository Layout
+## Architecture & Repository Layout
 
-High-level technical architecture for Lost Number **2.1.6**. Godot 4.5 is the sole production runtime.
+High-level technical architecture for Lost Number **2.1.6**. Godot 4.7 is the sole production runtime.
 
-## System overview
+### System overview
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │  Google Play  ←  lost-number.aab (Godot)                │
 ├─────────────────────────────────────────────────────────┤
@@ -24,14 +24,14 @@ High-level technical architecture for Lost Number **2.1.6**. Godot 4.5 is the so
 
 | Layer           | Stack                  | Role                                        |
 | --------------- | ---------------------- | ------------------------------------------- |
-| Gameplay (ship) | Godot 4.5 GDScript     | Boot → App → screens; back-stack navigation |
+| Gameplay (ship) | Godot 4.7 GDScript     | Boot → App → screens; back-stack navigation |
 | Save            | `user://` JSON (Godot) | Checksum + `.bak` rollback                  |
 | Network         | None                   | Offline-only; no PII                        |
 | CI              | GitHub Actions         | `release:check` on push/PR                  |
 
-## Godot runtime architecture
+### Godot runtime architecture
 
-### Autoloads (`project.godot`)
+#### Autoloads (`project.godot`)
 
 | Autoload              | Responsibility                                     |
 | --------------------- | -------------------------------------------------- |
@@ -44,9 +44,9 @@ High-level technical architecture for Lost Number **2.1.6**. Godot 4.5 is the so
 | `ScreenRouter`        | Screen navigation, back-stack, transitions         |
 | `LegacySaveMigration` | Capacitor → Godot save import                      |
 
-### Scene graph
+#### Scene graph
 
-```
+```text
 Boot.tscn (main_scene)
 └── preload → App.tscn
     ├── BackgroundLayer.tscn    global art + particles
@@ -57,7 +57,7 @@ Boot.tscn (main_scene)
 
 Registered screens (`ScreenRouter.SCREENS`): MainMenu, Game, Settings, Achievements, DailyQuests, Wheel, Stats, About, SkinPreview.
 
-### Core gameplay modules
+#### Core gameplay modules
 
 | Module          | Path                             | Role                                                                            |
 | --------------- | -------------------------------- | ------------------------------------------------------------------------------- |
@@ -71,7 +71,7 @@ Registered screens (`ScreenRouter.SCREENS`): MainMenu, Game, Settings, Achieveme
 | Game controller | `scripts/game/Game.gd`           | Orchestrates board + HUD + overlays                                             |
 | Bonuses         | `scripts/game/BonusManager.gd`   | Shuffle, destroy, explosion                                                     |
 
-### Meta / UI modules
+#### Meta / UI modules
 
 | Module            | Path                                | Role                                           |
 | ----------------- | ----------------------------------- | ---------------------------------------------- |
@@ -83,7 +83,7 @@ Registered screens (`ScreenRouter.SCREENS`): MainMenu, Game, Settings, Achieveme
 | DailyQuestManager | `scripts/meta/DailyQuestManager.gd` | Quest progress                                 |
 | Achievements      | `scripts/ui/Achievements.gd`        | Achievement grid                               |
 
-### Visual system (Dark Neon Fantasy)
+#### Visual system (Dark Neon Fantasy)
 
 Recent redesign centralizes tokens in `ThemeTokens.gd` (design spec v2) and applies them through:
 
@@ -96,9 +96,9 @@ Recent redesign centralizes tokens in `ThemeTokens.gd` (design spec v2) and appl
 
 `ThemeManager.gd` maps dawn/dusk/twilight to token sets and manages 6 background PNGs per bucket under `godot/assets/ui/backgrounds/`.
 
-## Repository layout
+### Repository layout
 
-```
+```text
 LostNumber/                      ← canonical project root
 ├── godot/                       # Ship target for Play
 │   ├── project.godot            # version 2.1.6, main_scene → Boot.tscn
@@ -117,7 +117,7 @@ LostNumber/                      ← canonical project root
 └── README.md                    # Quick start → docs/
 ```
 
-## Key technical decisions (from engineering chats)
+### Key technical decisions (from engineering chats)
 
 | Topic                 | Decision                                                      | Rationale                                                                    |
 | --------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------- |
@@ -132,15 +132,15 @@ LostNumber/                      ← canonical project root
 | Floating numbers      | Removed (Phase 5.6)                                           | FPS regression on weak devices                                               |
 | Firebase / cloud      | Phase 6 — not started                                         | Blocked until Phase 5 performance closed                                     |
 
-## Approved plans
+### Approved plans
 
-### Sprint: Godot visual parity (`godot-visual-parity` branch)
+#### Sprint: Godot visual parity (`godot-visual-parity` branch)
 
 Delivered: ThemeTokens, global theme, `assets/ui/`, BackgroundLayer, NeonButton, MainMenu (dock + quick-row + icons), Stats/About, FeatureStubOverlay, legacy save plugin AAR, `bg_effects_enabled` in Settings.
 
 Tracker: [docs/archive/VISUAL_PORT_MAP.md](../archive/VISUAL_PORT_MAP.md) (historical).
 
-### Phase 5 — performance (web; principles apply to Godot)
+#### Phase 5 — performance (web; principles apply to Godot)
 
 - FPS monitoring in dev tools
 - Grid sync after shuffle/gravity
@@ -148,7 +148,7 @@ Tracker: [docs/archive/VISUAL_PORT_MAP.md](../archive/VISUAL_PORT_MAP.md) (histo
 
 **Gate:** No noticeable UI regressions; grid stays in sync after long sessions. See `docs/PHASES.md`.
 
-### Phase 6 — Firebase (future)
+#### Phase 6 — Firebase (future)
 
 - Google Auth
 - Firestore `users/{uid}/save/current`
@@ -157,7 +157,7 @@ Tracker: [docs/archive/VISUAL_PORT_MAP.md](../archive/VISUAL_PORT_MAP.md) (histo
 
 **Not started** — do not implement until Phase 5 is closed.
 
-## CI / automation
+### CI / automation
 
 | Workflow                   | Purpose                                                        |
 | -------------------------- | -------------------------------------------------------------- |
@@ -165,7 +165,7 @@ Tracker: [docs/archive/VISUAL_PORT_MAP.md](../archive/VISUAL_PORT_MAP.md) (histo
 
 Local full gate: `npm run release:ideal` (format + lint + repo checks + Godot rules/save; skips if no `godot4`). Pre-upload: `npm run godot:verify:aab`.
 
-## Android plugin architecture
+### Android plugin architecture
 
 `LostNumberMigration` plugin (`godot/android/plugins/`):
 
@@ -174,7 +174,7 @@ Local full gate: `npm run release:ideal` (format + lint + repo checks + Godot ru
 - Caches export to `files/lostnumber_legacy_export.json`
 - Enabled in `export_presets.cfg`: `plugins/LostNumberMigration=true`
 
-## Navigation sequence (reference)
+### Navigation sequence (reference)
 
 ```mermaid
 flowchart TD
@@ -188,11 +188,11 @@ flowchart TD
     App -->|Android back| Router
 ```
 
-## Ship target
+### Ship target
 
-Godot 4.5 AAB is the **sole** Play upload path. Web/JS/Capacitor stack removed from repo (July 2026). Legacy save import remains for users upgrading from old builds.
+Godot 4.7 AAB is the **sole** Play upload path. Web/JS/Capacitor stack removed from repo (July 2026). Legacy save import remains for users upgrading from old builds.
 
-## Further reading
+### Further reading
 
 - [SOURCE_OF_TRUTH.md](./SOURCE_OF_TRUTH.md) — canonical decisions and version snapshot
 - [DECISIONS.md](./DECISIONS.md) — save, i18n, screens, compliance

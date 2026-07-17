@@ -36,8 +36,8 @@ const COLOR_TEXT := Color("#ffffff")
 const COLOR_MUTED := Color("#c0b8d8")
 const COLOR_TERTIARY := Color("#8a7a9e")
 const COLOR_CELL_NUMBER := Color("#0a0e27")
-const COLOR_PREVIEW_VALID := Color("#00ff6b")
-const COLOR_PREVIEW_INVALID := Color("#ff3366")
+const COLOR_PREVIEW_VALID := Color("#6FD94A")
+const COLOR_PREVIEW_INVALID := Color("#E04858")
 const COLOR_OVERLAY_BG := Color(Color("#0a0e27"), 0.88)
 const COLOR_OUTLINE_GLASS := Color(Color("#ffffff"), 0.10)
 const COLOR_DIVIDER := Color(Color("#b83dff"), 0.15)
@@ -69,18 +69,19 @@ const DUSK_COLOR_SECONDARY := Color("#ff1b9e")
 const DUSK_COLOR_ACCENT := Color("#00ff6b")
 const DUSK_COLOR_TEXT := Color("#ffffff")
 const DUSK_COLOR_MUTED := Color("#c0b8d8")
-const DUSK_COLOR_PREVIEW_VALID := Color("#00ff6b")
-const DUSK_COLOR_PREVIEW_INVALID := Color("#ff3366")
+const DUSK_COLOR_PREVIEW_VALID := Color("#6FD94A")
+const DUSK_COLOR_PREVIEW_INVALID := Color("#E04858")
 
-const COLOR_CHAIN_VALID := Color("#00ff6b")
-const COLOR_CHAIN_INVALID := Color("#ff3366")
-const COLOR_CHAIN_CONTINUE := Color("#b83dff")
+## Chain accent — bright lime (functional highlight; tiles stay jewel family).
+const COLOR_CHAIN_VALID := Color("#6FD94A")
+const COLOR_CHAIN_INVALID := Color("#E04858")
+const COLOR_CHAIN_CONTINUE := Color("#8F55D6")
 const DAWN_COLOR_CHAIN_VALID := Color("#2E7D32")
 const DAWN_COLOR_CHAIN_INVALID := Color("#C62828")
 const DAWN_COLOR_CHAIN_CONTINUE := Color("#7B4DFF")
-const DUSK_COLOR_CHAIN_VALID := Color("#00ff6b")
-const DUSK_COLOR_CHAIN_INVALID := Color("#ff3366")
-const DUSK_COLOR_CHAIN_CONTINUE := Color("#b83dff")
+const DUSK_COLOR_CHAIN_VALID := Color("#6FD94A")
+const DUSK_COLOR_CHAIN_INVALID := Color("#E04858")
+const DUSK_COLOR_CHAIN_CONTINUE := Color("#8F55D6")
 
 const MENU_TITLE_GRADIENT_START := Color("#ffffff")
 const MENU_TITLE_GRADIENT_MID := Color("#ff1b9e")
@@ -104,8 +105,8 @@ const ICON_SOFT := Color("#c0b8d8")
 const ICON_GREEN := Color("#00ff6b")
 const ICON_GOLD := Color("#ffb800")
 
-const COLOR_CHAIN_GLOW := Color(Color("#00ff6b"), 0.35)
-const COLOR_CHAIN_BRIGHT := Color("#00ff6b")
+const COLOR_CHAIN_GLOW := Color(Color("#6FD94A"), 0.35)
+const COLOR_CHAIN_BRIGHT := Color("#6FD94A")
 
 const WHEEL_SECTOR_COLORS := [
 	Color("#3d6b4a"), Color("#6b3a58"), Color("#3a5a6b"), Color("#4a3a6b"),
@@ -119,20 +120,21 @@ const WHEEL_RIM_ORANGE := Color("#a86b2e")
 const SPINNER_COLOR := Color("#00ff6b")
 const LOADING_TEXT_COLOR := Color("#c0b8d8")
 
-# --- Tile palette by value — v13 gameplay hues (muted gothic crystal, still distinct) ---
+# --- Tile palette by value — jewel tones (high chroma, mid luminosity; from v13 refs) ---
+# Family: emerald / berry / amber / teal / violet / terracotta / sapphire — not neon, not pastel.
 const TILE_COLORS := {
-	2: Color("#3c8c52"),
-	4: Color("#a83d6c"),
-	8: Color("#c98219"),
-	16: Color("#237e90"),
-	32: Color("#734fb2"),
-	64: Color("#b13d45"),
-	128: Color("#3d64ae"),
-	256: Color("#704080"),
-	512: Color("#89512c"),
-	1024: Color("#e65c00"),
-	2048: Color("#b8862d"),
-	4096: Color("#f2f2f2"),
+	2: Color("#3A9152"),
+	4: Color("#9E3662"),
+	8: Color("#D08216"),
+	16: Color("#1E7888"),
+	32: Color("#6A48A6"),
+	64: Color("#A83A42"),
+	128: Color("#3E62A8"),
+	256: Color("#6E3E7A"),
+	512: Color("#8A5528"),
+	1024: Color("#C45A18"),
+	2048: Color("#A87A28"),
+	4096: Color("#C8C0B8"),
 }
 
 const TILE_COMMON_MAX := 8
@@ -146,22 +148,22 @@ const TILE_LEGENDARY_MIN := 8192
 const TILE_GOLD_RIM := Color("#ffb800")
 const TILE_TEXT_LIGHT := Color("#f6e8de")
 
-## 8192+ in web are gradients; [start, end] pairs (145deg linear-gradient).
+## 8192+ gradients — same jewel family (rich midtones, no pastel/neon ends).
 const TILE_GRADIENTS := {
-	8192: [Color("#D8B6FF"), Color("#6B4FD9")],
-	16384: [Color("#FF9ECF"), Color("#AD1457")],
-	32768: [Color("#8EECFF"), Color("#0277BD")],
-	65536: [Color("#C8FF9E"), Color("#2E7D32")],
-	131072: [Color("#FFE082"), Color("#F57C00")],
-	262144: [Color("#E1BEE7"), Color("#6A1B9A")],
-	524288: [Color("#FFCCBC"), Color("#D84315")],
-	1048576: [Color("#B2EBF2"), Color("#00838F")],
-	2097152: [Color("#F8BBD0"), Color("#880E4F")],
+	8192: [Color("#9B6AD4"), Color("#5A3AA8")],
+	16384: [Color("#C45A8A"), Color("#8A2048")],
+	32768: [Color("#4A9BB8"), Color("#1E5A78")],
+	65536: [Color("#5A9E4A"), Color("#2E6A28")],
+	131072: [Color("#D4A040"), Color("#A06018")],
+	262144: [Color("#8A5AAA"), Color("#4A2878")],
+	524288: [Color("#C46A48"), Color("#8A3018")],
+	1048576: [Color("#3A8A98"), Color("#186068")],
+	2097152: [Color("#A84870"), Color("#681030")],
 }
 
 const TILE_SELECTED_BG := Color(Color("#FF5FB3"), 0.0)
-const TILE_VALID_GRADIENT := [Color("#00ff6b"), Color("#00d4ff")]
-const TILE_INVALID_GRADIENT := [Color("#ff3366"), Color("#8B1025")]
+const TILE_VALID_GRADIENT := [Color("#6FD94A"), Color("#3A9E88")]
+const TILE_INVALID_GRADIENT := [Color("#E04858"), Color("#8B1025")]
 const TILE_FROZEN_BG := Color("#BDC3C7")
 
 const RADIUS_OVERLAY := 12
@@ -328,16 +330,11 @@ static func is_legendary_tile_value(n: int) -> bool:
 	return n >= TILE_LEGENDARY_MIN
 
 
-static func tile_text_color_for(face: Color, value: int) -> Color:
+static func tile_text_color_for(_face: Color, value: int) -> Color:
 	if value <= 0:
 		return COLOR_TEXT
-	if value <= 8 or value in [256, 512, 1024, 2048]:
-		return COLOR_CELL_NUMBER
-	if value >= 8192:
-		return COLOR_CELL_NUMBER
-	if face.get_luminance() < 0.42:
-		return TILE_TEXT_LIGHT
-	return COLOR_TEXT
+	# Jewel faces: dark digits for contrast (v13 refs).
+	return COLOR_CELL_NUMBER
 
 
 static func get_skin_palette(index: int, dark: bool) -> Dictionary:

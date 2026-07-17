@@ -208,7 +208,8 @@ func _apply_material_face(face_color: Color) -> void:
 		_face_material = ShaderMaterial.new()
 		_face_material.shader = GOTHIC_FACE_SHADER
 	_inner.material = _face_material
-	_face_material.set_shader_parameter("face_color", Color(face_color.lightened(0.08), 0.96))
+	# Light lift only — keep mid-luminosity jewel faces (avoid neon wash).
+	_face_material.set_shader_parameter("face_color", Color(face_color.lightened(0.04), 0.96))
 	_inner.color = Color.WHITE
 
 
