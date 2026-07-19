@@ -13,7 +13,17 @@ DENYLIST_GREP='(^|/)(\.git|\.project|\.gradle|node_modules|dist|build)/|\.bak$|\
 REQUIRED_PATHS=(
   package.json
   godot/project.godot
+  godot/export_presets.cfg
+  godot/scenes/App.tscn
+
   docs/HANDOFF.txt
+  docs/archive/MERGE_NOTES.md
+
+  godot/android/plugins/LostNumberMigration.gdap
+  godot/android/plugins/LostNumberMigrationPlugin/LostNumberMigrationPlugin-release.aar
+
+  store/play-high-res-icon-512.png
+  store/feature-graphic-1024x500.png
 )
 
 # Tracked in git but never shipped in unified handoff (parity with former zip -x rules).
