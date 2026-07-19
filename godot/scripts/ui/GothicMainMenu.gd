@@ -15,10 +15,8 @@ func _ready() -> void:
 
 func _apply_gothic_visuals() -> void:
 	GothicScreenMixinLib.apply_background(self, "", 0.28, &"menu")
-	# Dock and quick-row buttons use stone-framed gothic chrome (same chrome/size).
-	for button in [quick_daily, quick_achievements, quick_about]:
-		GothicScreenMixinLib.style_button(self, button)
-	for button in [dock_premium, dock_tournaments, dock_bonuses, dock_stats]:
+	# Pedestal dock uses stone-framed gothic chrome (same chrome/size).
+	for button in _dock_buttons():
 		GothicScreenMixinLib.style_button(self, button)
 	_refresh_cta_styles()
 
@@ -27,8 +25,11 @@ func _apply_gothic_visuals() -> void:
 
 
 func _refresh_cta_styles() -> void:
-	for button in [play_button, continue_button, wheel_button, settings_button, exit_button]:
-		if button == null:
+	for button in [play_button, continue_button]:
+		if button == null or not button.visible:
 			continue
 		if button.has_method("set_gothic_cta"):
 			button.call("set_gothic_cta", true)
+	if exit_button != null and exit_button.has_method("set_gothic_cta"):
+		# Compact chrome control — not a primary CTA strip.
+		exit_button.call("set_gothic_cta", false)
