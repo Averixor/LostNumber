@@ -41,13 +41,14 @@ alignment = 1
 
 [node name="Title" type="Label" parent="Layout/VBox"]
 layout_mode = 2
-text = "Колесо фортуни"
+text = ""
 horizontal_alignment = 1
 
 [node name="WheelCanvas" type="Control" parent="Layout/VBox"]
-custom_minimum_size = Vector2(300, 300)
+custom_minimum_size = Vector2(320, 320)
 layout_mode = 2
 size_flags_horizontal = 4
+size_flags_vertical = 3
 script = ExtResource("2_canvas")
 
 [node name="CostLabel" type="Label" parent="Layout/VBox"]
@@ -55,17 +56,17 @@ layout_mode = 2
 horizontal_alignment = 1
 
 [node name="SpinButton" parent="Layout/VBox" instance=ExtResource("3_neon")]
-custom_minimum_size = Vector2(220, 48)
+custom_minimum_size = Vector2(240, 52)
 layout_mode = 2
 size_flags_horizontal = 4
 variant = 1
-text = "Обернути"
+text = ""
 
 [node name="BackButton" parent="Layout/VBox" instance=ExtResource("3_neon")]
-custom_minimum_size = Vector2(220, 44)
+custom_minimum_size = Vector2(220, 48)
 layout_mode = 2
 size_flags_horizontal = 4
-text = "Назад"
+text = ""
 
 [node name="ResultModal" type="PanelContainer" parent="."]
 visible = false
@@ -100,4 +101,4 @@ autowrap_mode = 3
 
 [node name="CloseButton" parent="ResultModal/Center/ResultCard/VBox" instance=ExtResource("3_neon")]
 layout_mode = 2
-text = "Закрити"
+text = ""

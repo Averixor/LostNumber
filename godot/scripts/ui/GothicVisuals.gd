@@ -199,3 +199,14 @@ static func booster_button(palette: Dictionary, active: bool, available: bool) -
 	style.shadow_size = 11 if active else 5
 	style.shadow_offset = Vector2(0, 2)
 	return style
+
+
+static func wheel_rim_colors(palette: Dictionary = {}) -> Dictionary:
+	var rim: Color = palette.get("rim", GOLD)
+	var crystal: Color = palette.get("crystal", CRYSTAL)
+	return {
+		"bronze": BRONZE.lerp(rim.darkened(0.25), 0.35),
+		"gold": GOLD.lerp(rim.lightened(0.05), 0.40),
+		"crystal": crystal,
+		"stone": STONE_DEEP,
+	}
