@@ -55,7 +55,7 @@ custom_minimum_size = Vector2(52, 44)
 layout_mode = 2
 size_flags_horizontal = 0
 variant = 2
-text = "Вийти"
+text = ""
 
 [node name="TopSpacer" type="Control" parent="Layout/RootVBox"]
 custom_minimum_size = Vector2(0, 4)
