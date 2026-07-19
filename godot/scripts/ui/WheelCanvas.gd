@@ -1,7 +1,7 @@
 extends Control
 class_name WheelCanvas
 
-## Unified gothic fortune wheel — ornate rim, jewel sectors, large sector icons + i18n labels.
+## Unified gothic fortune wheel — ornate rim, jewel sectors, icon-zone + short disk labels.
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 const LnUiLib := preload("res://scripts/ui/LnUi.gd")
@@ -9,8 +9,13 @@ const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
 const WheelManagerLib := preload("res://scripts/meta/WheelManager.gd")
 
 const WHEEL_ICON_DIR := "res://assets/ui/icons/wheel/"
-const ICON_SIZE_MIN := 48.0
-const ICON_SIZE_MAX := 64.0
+## Slightly smaller than prior 48–64 so icons clear labels/hub on 420×920.
+const ICON_SIZE_MIN := 36.0
+const ICON_SIZE_MAX := 48.0
+## Radial layout: icon mid-inner band, short caption toward rim (never stacked on icon).
+const ICON_RADIUS_FACTOR := 0.44
+const ICON_ONLY_RADIUS_FACTOR := 0.56
+const LABEL_RADIUS_FACTOR := 0.84
 
 const SECTOR_ICON_FILES := {
 	"xp25": "wheel-xp-25.png",
@@ -120,13 +125,18 @@ func _draw() -> void:
 		draw_line(inner, outer, Color(gold, 0.12), 0.7)
 
 	# Sector icons + labels (after wedges, under rim/hub).
+	# Separate radial zones so rotated text never sits on the icon.
 	var icon_size := _icon_size_for_radius(radius)
 	for i in count:
 		var start := rotation_angle + slice * float(i) - PI * 0.5
 		var end := start + slice
 		var mid := (start + end) * 0.5
-		var label_pos := center + Vector2(cos(mid), sin(mid)) * radius * 0.62
-		_draw_sector_content(label_pos, sectors[i], mid, i == pointer_index, icon_size)
+		var dir := Vector2(cos(mid), sin(mid))
+		var disk_label := _sector_label(sectors[i])
+		var icon_r := radius * (ICON_ONLY_RADIUS_FACTOR if disk_label.is_empty() else ICON_RADIUS_FACTOR)
+		var icon_pos := center + dir * icon_r
+		var label_pos := center + dir * (radius * LABEL_RADIUS_FACTOR)
+		_draw_sector_content(icon_pos, label_pos, sectors[i], disk_label, mid, i == pointer_index, icon_size)
 
 	# Ornate outer rim (spikes + bronze/gold bands) — frames the whole wheel.
 	_draw_ornate_rim(center, radius, bronze, gold, crystal, effects)
@@ -138,7 +148,7 @@ func _draw() -> void:
 
 
 func _icon_size_for_radius(radius: float) -> float:
-	return clampf(radius * 0.40, ICON_SIZE_MIN, ICON_SIZE_MAX)
+	return clampf(radius * 0.28, ICON_SIZE_MIN, ICON_SIZE_MAX)
 
 
 func _palette() -> Dictionary:
@@ -211,43 +221,21 @@ func _draw_hub(
 
 
 func _sector_label(sector: Dictionary) -> String:
-	var key := str(sector.get("label_key", sector.get("message_key", "")))
-	if not key.is_empty():
-		var i18n := get_node_or_null("/root/I18nManager")
-		if i18n != null and i18n.has_method("t"):
-			var text := str(i18n.call("t", key))
-			if text != key:
-				return _compact_wheel_label(text, sector)
-	return str(sector.get("label", ""))
+	## Disk-only caption (short tokens). Full localized names stay in the result modal.
+	return _compact_wheel_label("", sector)
 
 
-func _compact_wheel_label(text: String, sector: Dictionary) -> String:
+func _compact_wheel_label(_text: String, sector: Dictionary) -> String:
+	## Compact on-disk labels. Long localized names are result-modal only (Wheel.gd).
 	var effect := str(sector.get("effect", ""))
 	if effect == "xp":
-		var digits := ""
-		for ch in text:
-			if ch.is_valid_int() or ch == "+":
-				digits += ch
-		return digits if not digits.is_empty() else text
+		return "+%d" % int(sector.get("value", 0))
 	if effect == "multiplier":
-		var i18n := get_node_or_null("/root/I18nManager")
-		if i18n != null and i18n.has_method("t"):
-			var compact := str(i18n.call("t", "wheel_sector_xp_multiplier"))
-			if compact != "wheel_sector_xp_multiplier":
-				return compact
-		return text
+		return "2× XP"
 	if effect == "bonus":
-		match str(sector.get("value", "")):
-			"explosion":
-				var i18n := get_node_or_null("/root/I18nManager")
-				if i18n != null and i18n.has_method("t"):
-					var compact := str(i18n.call("t", "wheel_sector_explosion"))
-					if compact != "wheel_sector_explosion":
-						return compact
-				return text
-			"destroy", "shuffle":
-				return text
-	return text
+		# Shuffle / Destroy / Explosion: icons only — no long words on the disk.
+		return ""
+	return ""
 
 
 func _load_sector_icons() -> void:
@@ -277,23 +265,21 @@ func set_sector_icon_slot(sector_type: String, texture: Texture2D) -> void:
 
 
 func _draw_sector_content(
-	pos: Vector2,
+	icon_pos: Vector2,
+	label_pos: Vector2,
 	sector: Dictionary,
+	label: String,
 	angle: float,
 	highlighted: bool,
 	icon_size: float
 ) -> void:
 	var sector_type := str(sector.get("type", ""))
 	var tex: Texture2D = _sector_textures.get(sector_type)
-	var label := _sector_label(sector)
 	if tex != null:
-		_draw_sector_icon(pos, tex, angle, highlighted, icon_size)
-		if not label.is_empty():
-			var caption_pos := pos + Vector2(0.0, icon_size * 0.42)
-			var font_size := 11 if label.length() > 8 else 12
-			_draw_sector_label(caption_pos, label, angle, highlighted, font_size)
-		return
-	_draw_sector_label(pos, label, angle, highlighted)
+		_draw_sector_icon(icon_pos, tex, angle, highlighted, icon_size)
+	if not label.is_empty():
+		var font_size := 12 if label.length() > 4 else 13
+		_draw_sector_label(label_pos if tex != null else icon_pos, label, angle, highlighted, font_size)
 
 
 func _draw_sector_icon(
@@ -309,8 +295,8 @@ func _draw_sector_icon(
 	var half := icon_size * 0.5
 	var rect := Rect2(-half, -half, icon_size, icon_size)
 	draw_set_transform(pos, readable_angle, Vector2.ONE)
-	# Subtle pedestal under icon so it sits in the segment, not pasted on.
-	draw_circle(Vector2.ZERO, half * 0.92, Color(0, 0, 0, 0.28 if highlighted else 0.20))
+	# Compact pedestal — keeps recognition without crowding the label zone.
+	draw_circle(Vector2.ZERO, half * 0.82, Color(0, 0, 0, 0.24 if highlighted else 0.16))
 	var modulate := Color(1.0, 1.0, 1.0, 1.0 if highlighted else 0.92)
 	draw_texture_rect(tex, rect, false, modulate)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
