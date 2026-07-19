@@ -142,14 +142,9 @@ func _wire_static_logo() -> void:
 func _refresh_logo_visibility() -> void:
 	if logo_image == null:
 		return
-	# Prefer the visual-skin menu backdrop when present (gothic art embeds LOST NUMBER).
-	var path := ""
-	var theme_mgr := _autoload("ThemeManager")
-	if theme_mgr != null and theme_mgr.has_method("get_visual_skin") and theme_mgr.call("get_visual_skin") != null:
-		if theme_mgr.has_method("get_visual_background_path"):
-			path = str(theme_mgr.call("get_visual_background_path", &"menu"))
-	if path.is_empty():
-		path = LnUiLib.current_background_path("main_menu")
+	# Use the background actually shown (App BackgroundLayer / ThemeManager path),
+	# not the gothic VisualSkin menu asset — that art is game-only under App.tscn.
+	var path := LnUiLib.current_background_path("main_menu")
 	# Exactly one logo: baked-in art XOR overlay — never both, never neither.
 	logo_image.visible = not LnUiLib.background_has_embedded_logo(path)
 

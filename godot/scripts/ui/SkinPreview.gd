@@ -26,10 +26,10 @@ func _autoload(name: String) -> Node:
 
 
 func _ready() -> void:
+	# Dark-only release: never offer a light preview that cannot stick on apply.
+	_dark_mode = true
 	var theme := _autoload("ThemeManager")
 	if theme != null:
-		if theme.has_method("is_dark"):
-			_dark_mode = bool(theme.call("is_dark"))
 		if theme.has_method("get_visual_skin_ids"):
 			_skin_ids = theme.call("get_visual_skin_ids") as PackedStringArray
 		var active_id = theme.get("visual_skin_id")
@@ -49,7 +49,9 @@ func _ready() -> void:
 		LnUiLib.apply_title(title_label, 26)
 
 	if mode_button != null:
-		mode_button.pressed.connect(_on_mode_toggle)
+		mode_button.visible = false
+		mode_button.disabled = true
+		mode_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if cancel_button != null:
 		cancel_button.pressed.connect(_on_cancel)
 	if apply_button != null:
@@ -76,9 +78,10 @@ func _refresh_localized_text() -> void:
 	if title_label != null:
 		title_label.text = _t("skin_preview_title")
 	if mode_button != null:
-		var dark_only := not _skin_supports_light_mode(_selected_skin_id)
-		mode_button.text = _t("skin_preview_dark_only") if dark_only else _t("skin_preview_mode_dark" if _dark_mode else "skin_preview_mode_light")
-		mode_button.disabled = dark_only
+		mode_button.visible = false
+		mode_button.disabled = true
+		mode_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		mode_button.text = ""
 	if cancel_button != null:
 		cancel_button.text = _t("skin_cancel")
 	if apply_button != null:
@@ -176,11 +179,15 @@ func _style_ui() -> void:
 	if title_label != null:
 		title_label.add_theme_color_override("font_color", text_color)
 
-	for button in [mode_button, cancel_button, apply_button]:
+	for button in [cancel_button, apply_button]:
 		if button == null:
 			continue
 		LnUiLib.apply_compact_button(button, 15, 42)
 		_apply_button_kit(button, _selected_skin_id, text_color)
+	if mode_button != null:
+		mode_button.visible = false
+		mode_button.disabled = true
+		mode_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 
 func _apply_button_kit(button: Button, skin_id: String, text_color: Color) -> void:
@@ -361,8 +368,7 @@ func _select_skin(skin_id: String) -> void:
 	if not _skin_ids.has(skin_id):
 		return
 	_selected_skin_id = skin_id
-	if not _skin_supports_light_mode(skin_id):
-		_dark_mode = true
+	_dark_mode = true
 	_refresh_localized_text()
 	_apply_preview()
 	_refresh_cards()
@@ -417,9 +423,8 @@ func _refresh_cards() -> void:
 
 
 func _on_mode_toggle() -> void:
-	if not _skin_supports_light_mode(_selected_skin_id):
-		return
-	_dark_mode = not _dark_mode
+	# Dark-only release: light preview is a false affordance — keep dusk.
+	_dark_mode = true
 	_refresh_localized_text()
 	_apply_preview()
 	_build_cards()

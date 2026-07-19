@@ -58,11 +58,14 @@ func _capture() -> void:
 		if base_mode in ["menu", "settings"] and with_save:
 			_seed_menu_save(save)
 	var scene_path := "res://scenes/Game.tscn"
+	var navigate_to := ""
 	match base_mode:
 		"skin":
 			scene_path = "res://scenes/SkinPreview.tscn"
 		"menu":
-			scene_path = "res://scenes/MainMenu.tscn"
+			# Production path: App shell owns BackgroundLayer (not standalone MainMenu).
+			scene_path = "res://scenes/App.tscn"
+			navigate_to = "main_menu"
 		"settings":
 			scene_path = "res://scenes/Settings.tscn"
 		"background":
@@ -79,6 +82,15 @@ func _capture() -> void:
 	root.add_child(game)
 	for _frame in 12:
 		await process_frame
+	if navigate_to != "" and base_mode == "menu":
+		# App._ready already replace()'s main_menu; wait until ScreenRouter mounts it.
+		var router := root.get_node_or_null("ScreenRouter")
+		for _wait in 30:
+			if router != null and str(router.get("current_screen_id")) == navigate_to:
+				break
+			await process_frame
+		for _settle in 8:
+			await process_frame
 	if base_mode in ["game", "chain", "long_chain", "low_effects", "states", "pause", "complete"]:
 		_apply_game_fixture(game)
 		await process_frame

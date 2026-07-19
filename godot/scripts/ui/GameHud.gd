@@ -53,7 +53,11 @@ func _ready() -> void:
 	menu_button.pressed.connect(func(): menu_pressed.emit())
 	sound_button.pressed.connect(func(): sound_pressed.emit())
 	save_button.pressed.connect(func(): save_pressed.emit())
-	theme_button.pressed.connect(func(): theme_pressed.emit())
+	# Dark-only release: hide brightness cycle (cycle_theme is a dusk no-op).
+	if theme_button != null:
+		theme_button.visible = false
+		theme_button.disabled = true
+		theme_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	shuffle_button.pressed.connect(func(): bonus_pressed.emit("shuffle"))
 	destroy_button.pressed.connect(func(): bonus_pressed.emit("destroy"))
 	explosion_button.pressed.connect(func(): bonus_pressed.emit("explosion"))
@@ -204,7 +208,7 @@ func _panel_stylebox() -> StyleBoxFlat:
 
 
 func _style_icon_buttons() -> void:
-	for btn in [menu_button, save_button, sound_button, theme_button]:
+	for btn in [menu_button, save_button, sound_button]:
 		btn.custom_minimum_size = Vector2.ONE * ThemeTokensLib.TOUCH_TARGET_MIN
 		btn.focus_mode = Control.FOCUS_NONE
 		btn.text = ""
@@ -224,6 +228,12 @@ func _style_icon_buttons() -> void:
 		btn.add_theme_stylebox_override("pressed", LnUiLib.button_pressed(true))
 		btn.add_theme_stylebox_override("disabled", LnUiLib.button_disabled(true))
 		btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	if theme_button != null:
+		theme_button.visible = false
+		theme_button.disabled = true
+		theme_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		theme_button.icon = null
+		theme_button.text = ""
 
 
 func _style_badges() -> void:
@@ -239,7 +249,6 @@ func _style_all_badges(state: GameState) -> void:
 func _load_icons() -> void:
 	LnUiLib.apply_button_icon(menu_button, "pause.png")
 	LnUiLib.apply_button_icon(save_button, "save.png")
-	LnUiLib.apply_button_icon(theme_button, "theme.png")
 	LnUiLib.apply_button_icon(sound_button, "sound.png")
 	for kind in BONUS_WHEEL_ICONS:
 		var btn := _bonus_button_for_type(kind)
