@@ -21,6 +21,9 @@ func _init() -> void:
 
 	_test_roundtrip()
 	_test_corrupt_primary_recovers_from_backup()
+	_test_backup_only_valid_has_save()
+	_test_backup_only_corrupt_no_has_save()
+	_test_corrupt_primary_valid_backup_has_save()
 	_test_legacy_flat_save()
 	_test_stale_pending_transition_resets_to_playing()
 	_test_both_corrupt_returns_null()
@@ -69,6 +72,58 @@ func _test_corrupt_primary_recovers_from_backup() -> void:
 	var loaded = _save.load_game()
 	_assert_true(loaded != null, "recover from backup after corrupt primary")
 	_assert_eq(int(loaded.current_level), 1, "backup level preserved (first save)")
+
+
+func _test_backup_only_valid_has_save() -> void:
+	_save.delete_save()
+	var state := GameStateScript.new()
+	state.start_new_game(11)
+	state.xp = 77
+	_assert_true(_save.save_game(state), "backup-only: write primary")
+
+	var primary := "%s/lost_number_save.json" % _test_dir
+	var backup := "%s/lost_number_save.bak.json" % _test_dir
+	var text := FileAccess.get_file_as_string(primary)
+	_write_file(backup, text)
+	DirAccess.remove_absolute(primary)
+
+	_assert_false(FileAccess.file_exists(primary), "backup-only: primary removed")
+	_assert_true(FileAccess.file_exists(backup), "backup-only: backup present")
+	_assert_true(_save.has_save(), "backup-only valid: has_save true")
+
+	var loaded = _save.load_game()
+	_assert_true(loaded != null, "backup-only valid: load_game restores")
+	_assert_eq(int(loaded.xp), 77, "backup-only valid: xp preserved")
+
+
+func _test_backup_only_corrupt_no_has_save() -> void:
+	_save.delete_save()
+	var primary := "%s/lost_number_save.json" % _test_dir
+	var backup := "%s/lost_number_save.bak.json" % _test_dir
+	_write_file(backup, "{not json")
+
+	_assert_false(FileAccess.file_exists(primary), "corrupt backup-only: no primary")
+	_assert_false(_save.has_save(), "corrupt backup-only: has_save false")
+	_assert_true(_save.load_game() == null, "corrupt backup-only: load_game null")
+
+
+func _test_corrupt_primary_valid_backup_has_save() -> void:
+	_save.delete_save()
+	var state := GameStateScript.new()
+	state.start_new_game(19)
+	state.current_level = 2
+	_assert_true(_save.save_game(state), "corrupt+backup: first save")
+
+	state.current_level = 5
+	_assert_true(_save.save_game(state), "corrupt+backup: second save creates backup")
+
+	var primary := "%s/lost_number_save.json" % _test_dir
+	_write_file(primary, "{not json")
+
+	_assert_true(_save.has_save(), "corrupt primary + valid backup: has_save true")
+	var loaded = _save.load_game()
+	_assert_true(loaded != null, "corrupt primary + valid backup: load recovers")
+	_assert_eq(int(loaded.current_level), 2, "corrupt primary + valid backup: level from backup")
 
 
 func _test_legacy_flat_save() -> void:

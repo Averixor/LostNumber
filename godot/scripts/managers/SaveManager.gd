@@ -27,7 +27,16 @@ func disable_test_root() -> void:
 
 
 func has_save() -> bool:
-	return FileAccess.file_exists(_save_path(SAVE_FILE))
+	## True when primary or backup can be restored (same candidates as load_game).
+	## File presence alone is not enough — corrupt-only must not show Continue.
+	return _is_valid_save_path(_save_path(SAVE_FILE)) or _is_valid_save_path(_save_path(BACKUP_FILE))
+
+
+func _is_valid_save_path(path: String) -> bool:
+	var payload := _quiet_load(path)
+	if payload.is_empty():
+		return false
+	return not _extract_and_verify_payload(payload, path).is_empty()
 
 
 func save_game(state) -> bool:
