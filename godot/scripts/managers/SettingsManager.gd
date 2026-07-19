@@ -185,7 +185,11 @@ func sync_active_theme_from_manager() -> void:
 	var theme_mgr := get_node_or_null("/root/ThemeManager")
 	if theme_mgr == null:
 		return
-	active_theme = str(theme_mgr.get("theme_id"))
+	var raw := str(theme_mgr.get("theme_id"))
+	if theme_mgr.has_method("normalize_release_theme_id"):
+		active_theme = str(theme_mgr.call("normalize_release_theme_id", raw))
+	else:
+		active_theme = raw
 
 
 func load_settings() -> void:
@@ -209,6 +213,11 @@ func load_settings() -> void:
 	bg_effects_enabled = bool(data.get("bg_effects_enabled", true))
 	tile_font_scale = normalize_tile_font_scale(data.get("tile_font_scale", 1.0))
 	active_theme = str(data.get("active_theme", "dusk"))
+	var theme_mgr := get_node_or_null("/root/ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("normalize_release_theme_id"):
+		active_theme = str(theme_mgr.call("normalize_release_theme_id", active_theme))
+	elif active_theme != "dusk":
+		active_theme = "dusk"
 	selected_background_dark = str(data.get("selected_background_dark", ""))
 	selected_background_light = str(data.get("selected_background_light", ""))
 	selected_background_twilight = str(data.get("selected_background_twilight", ""))

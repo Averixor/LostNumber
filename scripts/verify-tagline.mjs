@@ -82,6 +82,17 @@ function verifyMainSubtitlePresent() {
     if (typeof data.main_subtitle !== 'string' || !data.main_subtitle.trim()) {
       fail(`godot/assets/i18n/${lang}.json must define non-empty main_subtitle`);
     }
+    // Require a space after sentence-ending periods (e.g. EN: "numbers. Become").
+    if (/\.[^\s."']/.test(data.main_subtitle)) {
+      fail(`godot/assets/i18n/${lang}.json main_subtitle must space after period`);
+    }
+  }
+  const enPath = join(root, 'godot/assets/i18n', 'en.json');
+  if (existsSync(enPath)) {
+    const en = JSON.parse(readFileSync(enPath, 'utf8'));
+    if (en.main_subtitle !== 'Connect numbers. Become stronger.') {
+      fail('en.json main_subtitle must be exactly "Connect numbers. Become stronger."');
+    }
   }
 }
 

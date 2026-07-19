@@ -2,7 +2,6 @@ extends "res://scripts/ui/MainMenu.gd"
 class_name GothicMainMenu
 
 const GothicScreenMixinLib := preload("res://scripts/ui/GothicScreenMixin.gd")
-const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
 
 
 func _ready() -> void:
@@ -18,10 +17,11 @@ func _apply_gothic_visuals() -> void:
 	# Pedestal dock uses stone-framed gothic chrome (same chrome/size).
 	for button in _dock_buttons():
 		GothicScreenMixinLib.style_button(self, button)
+		if button.has_method("refresh_enabled_visual"):
+			button.call("refresh_enabled_visual")
 	_refresh_cta_styles()
-
-	tagline_label.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
-	version_label.add_theme_color_override("font_color", GothicVisualsLib.TEXT_MUTED)
+	_refresh_logo_visibility()
+	_apply_title_style()
 
 
 func _refresh_cta_styles() -> void:

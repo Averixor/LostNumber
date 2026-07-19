@@ -33,13 +33,17 @@ func _capture() -> void:
 		push_error("Unsupported visual-capture locale: %s" % locale)
 		quit(2)
 		return
+	var with_save := mode == "menu_save"
+	var base_mode := mode
+	if mode == "menu_save" or mode == "menu_no_save":
+		base_mode = "menu"
 	var settings := root.get_node_or_null("SettingsManager")
 	if settings != null:
 		settings.set("language", locale)
 		# Captures do not need playback; suppressing music keeps the test process
 		# free of decoder resources while the HUD still reads sound as enabled.
 		settings.set("music_enabled", false)
-		if mode == "low_effects":
+		if base_mode == "low_effects":
 			settings.set("bg_effects_enabled", false)
 	var theme := root.get_node_or_null("ThemeManager")
 	if theme != null:
@@ -51,12 +55,17 @@ func _capture() -> void:
 		var capture_save_dir := ProjectSettings.globalize_path("user://capture-save")
 		DirAccess.make_dir_recursive_absolute(capture_save_dir)
 		save.call("enable_test_root", capture_save_dir)
+		if base_mode in ["menu", "settings"] and with_save:
+			_seed_menu_save(save)
 	var scene_path := "res://scenes/Game.tscn"
-	match mode:
+	var navigate_to := ""
+	match base_mode:
 		"skin":
 			scene_path = "res://scenes/SkinPreview.tscn"
 		"menu":
-			scene_path = "res://scenes/MainMenu.tscn"
+			# Production path: App shell owns BackgroundLayer (not standalone MainMenu).
+			scene_path = "res://scenes/App.tscn"
+			navigate_to = "main_menu"
 		"settings":
 			scene_path = "res://scenes/Settings.tscn"
 		"background":
@@ -68,16 +77,25 @@ func _capture() -> void:
 		return
 
 	var game := packed.instantiate()
-	if mode in ["game", "chain", "long_chain", "low_effects", "states", "pause", "complete"]:
+	if base_mode in ["game", "chain", "long_chain", "low_effects", "states", "pause", "complete"]:
 		game.set_meta("visual_capture_no_persistence", true)
 	root.add_child(game)
 	for _frame in 12:
 		await process_frame
-	if mode in ["game", "chain", "long_chain", "low_effects", "states", "pause", "complete"]:
+	if navigate_to != "" and base_mode == "menu":
+		# App._ready already replace()'s main_menu; wait until ScreenRouter mounts it.
+		var router := root.get_node_or_null("ScreenRouter")
+		for _wait in 30:
+			if router != null and str(router.get("current_screen_id")) == navigate_to:
+				break
+			await process_frame
+		for _settle in 8:
+			await process_frame
+	if base_mode in ["game", "chain", "long_chain", "low_effects", "states", "pause", "complete"]:
 		_apply_game_fixture(game)
 		await process_frame
 
-	if mode in ["chain", "low_effects"]:
+	if base_mode in ["chain", "low_effects"]:
 		var state = game.get("state")
 		var board = game.get_node_or_null("VBox/BoardView")
 		if state != null and board != null:
@@ -93,10 +111,10 @@ func _capture() -> void:
 			var can_finish := bool(state.call("can_finish_current_chain"))
 			board.call("update_preview_bubble", can_finish, board.call("get_cell_center_local", chain_cells.back()))
 			await process_frame
-	elif mode == "pause":
+	elif base_mode == "pause":
 		game.call("_show_pause")
 		await process_frame
-	elif mode == "complete":
+	elif base_mode == "complete":
 		var complete_overlay := game.get_node_or_null("LevelCompleteOverlay") as CanvasItem
 		if complete_overlay == null:
 			push_error("Game capture has no level-complete overlay")
@@ -104,7 +122,7 @@ func _capture() -> void:
 			return
 		complete_overlay.visible = true
 		await process_frame
-	elif mode == "long_chain":
+	elif base_mode == "long_chain":
 		var state = game.get("state")
 		var board = game.get_node_or_null("VBox/BoardView")
 		if state != null and board != null:
@@ -131,7 +149,7 @@ func _capture() -> void:
 			board.call("_update_chain_visual")
 			board.call("update_preview_bubble", false, board.call("get_cell_center_local", chain_cells.back()))
 			await process_frame
-	elif mode == "states":
+	elif base_mode == "states":
 		var board = game.get_node_or_null("VBox/BoardView")
 		var columns: Array = board.get("_tiles") if board != null else []
 		if columns.size() != 5:
@@ -162,6 +180,15 @@ func _capture() -> void:
 	if save != null and save.has_method("disable_test_root"):
 		save.call("disable_test_root")
 	quit(0)
+
+
+func _seed_menu_save(save: Node) -> void:
+	var state := GameState.new()
+	state.set("current_level", 2)
+	state.set("xp", 128)
+	state.set("max_reached_number", 64)
+	if not bool(save.call("save_game", state)):
+		push_error("Visual capture could not seed menu save fixture")
 
 
 func _apply_game_fixture(game: Node) -> void:

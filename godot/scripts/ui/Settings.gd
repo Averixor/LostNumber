@@ -39,6 +39,8 @@ func _ready() -> void:
 	_load_settings()
 	_style_controls()
 	_connect_signals()
+	if theme_button != null:
+		theme_button.visible = false
 	call_deferred("_adapt_layout")
 
 
@@ -357,18 +359,9 @@ func _scale_to_index(scale: float) -> int:
 func _refresh_theme_button() -> void:
 	if theme_button == null:
 		return
-	var theme_mgr = _theme()
-	var theme_id := "dusk"
-	if theme_mgr != null:
-		theme_id = str(_get_value(theme_mgr, "theme_id", "dusk"))
-	var theme_key := "settings_theme_%s" % theme_id
-	var theme_name := _i18n(theme_key)
-	if theme_name == theme_key:
-		theme_name = theme_id
-	theme_button.text = "%s: %s" % [_i18n("settings_theme_label").trim_suffix(":"), theme_name]
-	# Global brightness belongs to meta screens and remains independent from a
-	# dark-only gameplay art kit.
-	theme_button.disabled = false
+	# Dark-only release: hide brightness cycle entirely (do not leave a dead control).
+	theme_button.visible = false
+	theme_button.disabled = true
 	theme_button.tooltip_text = ""
 
 

@@ -43,6 +43,12 @@ const GOTHIC_ICON_DIR := "res://assets/ui/icons/gothic/"
 const ICON_FALLBACK_DIR := "res://assets/ui/icons/"
 const WHEEL_ICON_DIR := "res://assets/ui/icons/wheel/"
 
+## Backgrounds that already paint a two-line LOST NUMBER title into the art.
+## Overlay LogoImage must stay hidden for these paths (never double logo).
+const EMBEDDED_LOGO_BACKGROUNDS := {
+	"res://assets/ui/skins/gothic_crystal/game-backdrop.png": true,
+}
+
 const LIGHT_BACKGROUNDS := [
 	"res://assets/ui/backgrounds/light/bg-light-01.png",
 	"res://assets/ui/backgrounds/light/bg-light-02.png",
@@ -503,6 +509,10 @@ static func load_background_texture(path: String) -> Texture2D:
 	if ResourceLoader.exists(path):
 		return load(path) as Texture2D
 	return null
+
+
+static func background_has_embedded_logo(path: String) -> bool:
+	return EMBEDDED_LOGO_BACKGROUNDS.has(str(path))
 
 
 static func current_background_path(screen: String = "") -> String:

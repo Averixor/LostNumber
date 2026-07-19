@@ -39,6 +39,9 @@ func _ready() -> void:
 
 
 func _apply_fullscreen() -> void:
+	# Visual captures run headless at a fixed portrait size; do not force fullscreen.
+	if OS.get_environment("LOSTNUMBER_CAPTURE_ISOLATED") == "1":
+		return
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 
 

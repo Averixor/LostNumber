@@ -70,13 +70,14 @@ func _ready() -> void:
 
 	# VISUAL_TARGET pedestal row: wheel · settings · stats · about (+ working daily/achievements).
 	dock_wheel.call("setup", _i18n("dock_wheel"), LnUiLib.wheel_icon_path("wheel-x2.png"))
-	dock_settings.call("setup", _i18n("btn_settings"), LnUiLib.icon_path("settings.png"))
+	dock_settings.call("setup", _i18n("dock_settings"), LnUiLib.icon_path("settings.png"))
 	dock_stats.call("setup", _i18n("btn_stats"), LnUiLib.icon_path("statistics.png"))
 	dock_about.call("setup", _i18n("btn_about"), LnUiLib.icon_path("about.png"))
 	dock_daily.call("setup", _i18n("dock_daily"), LnUiLib.icon_path("daily-tasks.png"))
 	dock_achievements.call("setup", _i18n("dock_achievements"), LnUiLib.icon_path("achievements.png"))
 	dock_wheel.disabled = not has_save
-
+	if dock_wheel.has_method("refresh_enabled_visual"):
+		dock_wheel.call("refresh_enabled_visual")
 	const CTA_HEIGHT := 60.0
 	for cta in [play_button, continue_button]:
 		cta.variant = "primary"
@@ -135,15 +136,36 @@ func _wire_static_logo() -> void:
 	logo_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	logo_image.modulate = Color.WHITE
 	logo_image.scale = Vector2.ONE
+	_refresh_logo_visibility()
+
+
+func _refresh_logo_visibility() -> void:
+	if logo_image == null:
+		return
+	# Use the background actually shown (App BackgroundLayer / ThemeManager path),
+	# not the gothic VisualSkin menu asset — that art is game-only under App.tscn.
+	var path := LnUiLib.current_background_path("main_menu")
+	# Exactly one logo: baked-in art XOR overlay — never both, never neither.
+	logo_image.visible = not LnUiLib.background_has_embedded_logo(path)
 
 
 func _apply_title_style() -> void:
 	var theme_mgr := _autoload("ThemeManager")
-	tagline_label.add_theme_color_override("font_color", Color(ThemeTokensLib.COLOR_TEXT, 0.9))
-	version_label.add_theme_color_override("font_color", Color(ThemeTokensLib.COLOR_MUTED, 0.8))
+	var is_dark := true
+	if theme_mgr != null and theme_mgr.has_method("is_dark"):
+		is_dark = bool(theme_mgr.call("is_dark"))
+	var tagline_color := ThemeTokensLib.COLOR_TEXT if is_dark else ThemeTokensLib.DAWN_COLOR_TEXT
+	var version_color := ThemeTokensLib.COLOR_MUTED if is_dark else ThemeTokensLib.DAWN_COLOR_MUTED
 	if theme_mgr != null and theme_mgr.has_method("get_text_color"):
-		tagline_label.add_theme_color_override("font_color", Color(theme_mgr.call("get_text_color"), 0.9))
-
+		tagline_color = theme_mgr.call("get_text_color")
+	tagline_label.add_theme_color_override("font_color", Color(tagline_color, 0.92 if is_dark else 1.0))
+	version_label.add_theme_color_override("font_color", Color(version_color, 0.85 if is_dark else 0.92))
+	if exit_button != null:
+		var exit_color := tagline_color if is_dark else ThemeTokensLib.DAWN_COLOR_TEXT
+		exit_button.add_theme_color_override("font_color", exit_color)
+		exit_button.add_theme_color_override("icon_normal_color", exit_color)
+		exit_button.add_theme_color_override("icon_hover_color", exit_color)
+		exit_button.add_theme_color_override("icon_pressed_color", exit_color)
 
 func _set_button_icon(button: Button, path: String) -> void:
 	if not ResourceLoader.exists(path):
@@ -173,7 +195,10 @@ func _animate_entrance() -> void:
 		var item := items[i]
 		var tween := create_tween().set_parallel(true)
 		var delay := 0.035 * i
-		tween.tween_property(item, "modulate:a", 1.0, 0.24).set_delay(delay)
+		var target_a := 1.0
+		if item is BaseButton and (item as BaseButton).disabled:
+			target_a = 0.38
+		tween.tween_property(item, "modulate:a", target_a, 0.24).set_delay(delay)
 		var y := item.position.y
 		item.position.y = y + 14.0
 		tween.tween_property(item, "position:y", y, 0.24).set_delay(delay)

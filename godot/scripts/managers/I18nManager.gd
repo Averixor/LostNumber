@@ -74,6 +74,7 @@ const KEY_ALIASES := {
 	"dock_daily": "dock_daily",
 	"dock_bonuses": "dock_bonuses",
 	"dock_wheel": "dock_wheel",
+	"dock_settings": "dock_settings",
 	"menu_dock_aria": "menu_dock_aria",
 	"feature_stub_ok": "feature_stub_ok",
 	"feature_premium_title": "feature_premium_title",
