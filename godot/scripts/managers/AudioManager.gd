@@ -243,6 +243,7 @@ func play_settings_music(force_restart: bool = false) -> void:
 
 func stop_music() -> void:
 	_music_player.stop()
+	_music_player.stream = null
 	_current_music_track = ""
 
 

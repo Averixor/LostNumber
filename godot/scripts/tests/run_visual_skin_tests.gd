@@ -24,6 +24,8 @@ func _run() -> void:
 	await _test_app_shell_single_logo()
 	await _test_dark_only_theme_controls_hidden()
 
+	await _cleanup_test_runtime()
+
 	if failed > 0:
 		push_error("visual skin tests failed: %s" % failed)
 		quit(1)
@@ -31,6 +33,18 @@ func _run() -> void:
 
 	print("visual skin tests passed")
 	quit(0)
+
+
+func _cleanup_test_runtime() -> void:
+	var audio := root.get_node_or_null("AudioManager")
+	if audio != null and audio.has_method("stop_music"):
+		audio.call("stop_music")
+		var player: AudioStreamPlayer = audio.get("_music_player")
+		if player != null:
+			_assert_true(not player.playing, "music player stopped after stop_music")
+			_assert_true(player.stream == null, "music stream cleared after stop_music")
+	for _i in 8:
+		await process_frame
 
 
 func _test_resource() -> void:
