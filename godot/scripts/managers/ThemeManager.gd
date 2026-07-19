@@ -9,8 +9,9 @@ const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 const VisualSkinLib := preload("res://scripts/ui/VisualSkin.gd")
 
 const THEMES := ["dawn", "dusk", "twilight"]
-## User-facing theme toggle (twilight hidden until art ships).
-const UI_CYCLE_THEMES := ["dawn", "dusk"]
+## Release lock: only dusk is user-facing. dawn/twilight assets stay in repo.
+const RELEASE_THEME_ID := "dusk"
+const UI_CYCLE_THEMES := ["dusk"]
 const BACKGROUND_COUNT := 6
 
 const DEFAULT_VISUAL_SKIN_ID := "gothic_crystal"
@@ -401,12 +402,19 @@ func path_to_index(path: String, bucket: String = theme_bucket()) -> int:
 	return -1
 
 
+func normalize_release_theme_id(raw: String) -> String:
+	## Map legacy dawn/twilight (and unknown ids) onto the release-locked dusk theme.
+	var requested := str(raw)
+	if requested == RELEASE_THEME_ID:
+		return RELEASE_THEME_ID
+	if requested in THEMES:
+		return RELEASE_THEME_ID
+	return RELEASE_THEME_ID
+
+
 func cycle_theme() -> void:
-	var idx := UI_CYCLE_THEMES.find(theme_id)
-	if idx < 0:
-		theme_id = UI_CYCLE_THEMES[0]
-	else:
-		theme_id = UI_CYCLE_THEMES[(idx + 1) % UI_CYCLE_THEMES.size()]
+	## Dark-only release: cycling is a no-op that re-asserts dusk.
+	theme_id = RELEASE_THEME_ID
 	if skin_auto:
 		background_index = get_daily_index()
 	_sync_settings_theme()
@@ -464,9 +472,7 @@ func load_settings() -> void:
 	if typeof(data) != TYPE_DICTIONARY:
 		_migrate_from_settings_manager()
 		return
-	theme_id = str(data.get("theme_id", "dusk"))
-	if theme_id not in THEMES:
-		theme_id = "dusk" if theme_id != "dawn" else "dawn"
+	theme_id = normalize_release_theme_id(str(data.get("theme_id", RELEASE_THEME_ID)))
 	background_index = int(data.get("background_index", 0))
 	skin_auto = bool(data.get("skin_auto", true))
 	# Theme files written before VisualSkin existed must keep their old look.
@@ -519,9 +525,7 @@ func _migrate_from_settings_manager() -> void:
 	visual_skin_id = _default_visual_skin_for_install()
 	var settings := get_node_or_null("/root/SettingsManager")
 	if settings != null:
-		theme_id = str(settings.get("active_theme"))
-		if theme_id not in THEMES:
-			theme_id = "dusk"
+		theme_id = normalize_release_theme_id(str(settings.get("active_theme")))
 	_save()
 
 
@@ -561,15 +565,16 @@ func _normalize_index(index: int) -> int:
 
 
 
-func set_theme_mode(dark_mode: bool) -> void:
-	theme_id = "dusk" if dark_mode else "dawn"
+func set_theme_mode(_dark_mode: bool) -> void:
+	## Dark-only release: ignore light requests and keep dusk.
+	theme_id = RELEASE_THEME_ID
 	_sync_settings_theme()
 	_save()
 	theme_changed.emit()
 
 
-func set_skin_profile(index: int, dark_mode: bool) -> void:
-	theme_id = "dusk" if dark_mode else "dawn"
+func set_skin_profile(index: int, _dark_mode: bool) -> void:
+	theme_id = RELEASE_THEME_ID
 	skin_auto = false
 	background_index = _normalize_index(index)
 	_sync_settings_theme()
