@@ -1,58 +1,22 @@
 extends Control
 
-## Main menu: logo hero, primary actions, circular dock row.
+## Main menu: logo hero, ≤2 primary CTAs, single pedestal dock row.
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 const LnUiLib := preload("res://scripts/ui/LnUi.gd")
-
-const _FEATURE_STUBS := {
-	"premium": {
-		"title": "feature_premium_title",
-		"intro": "feature_premium_intro",
-		"bullets": [
-			"feature_premium_bullet_ad",
-			"feature_premium_bullet_themes",
-			"feature_premium_bullet_tournaments",
-			"feature_premium_bullet_bonuses",
-			"feature_premium_bullet_stats",
-		],
-		"note": "feature_premium_note",
-	},
-	"tournaments": {
-		"title": "feature_tournaments_title",
-		"intro": "feature_tournaments_intro",
-		"bullets": [
-			"feature_tournaments_bullet_weekly",
-			"feature_tournaments_bullet_records",
-			"feature_tournaments_bullet_rewards",
-		],
-		"note": "feature_tournaments_note",
-	},
-	"bonuses": {
-		"title": "feature_bonuses_title",
-		"intro": "feature_bonuses_text",
-		"bullets": [],
-		"note": "",
-	},
-}
 
 @onready var logo_image: TextureRect = $Layout/RootVBox/Hero/LogoImage
 @onready var tagline_label: Label = $Layout/RootVBox/Hero/Tagline
 @onready var play_button: NeonButton = $Layout/RootVBox/Actions/Buttons/PlayButton
 @onready var continue_button: NeonButton = $Layout/RootVBox/Actions/Buttons/ContinueButton
-@onready var wheel_button: NeonButton = $Layout/RootVBox/Actions/Buttons/WheelButton
-@onready var settings_button: NeonButton = $Layout/RootVBox/Actions/Buttons/SettingsButton
-@onready var exit_button: NeonButton = $Layout/RootVBox/Actions/Buttons/ExitButton
-@onready var quick_achievements: Button = $Layout/RootVBox/QuickRow/QuickAchievements
-@onready var quick_daily: Button = $Layout/RootVBox/QuickRow/QuickDaily
-@onready var quick_about: Button = $Layout/RootVBox/QuickRow/QuickAbout
-@onready var dock_premium: Button = $Layout/RootVBox/DockRow/DockPremium
-@onready var dock_tournaments: Button = $Layout/RootVBox/DockRow/DockTournaments
-@onready var dock_bonuses: Button = $Layout/RootVBox/DockRow/DockBonuses
-@onready var dock_stats: Button = $Layout/RootVBox/DockRow/DockStats
+@onready var exit_button: NeonButton = $Layout/RootVBox/TopBar/ExitButton
+@onready var dock_wheel: Button = $Layout/RootVBox/DockRows/DockRow/DockWheel
+@onready var dock_settings: Button = $Layout/RootVBox/DockRows/DockRow/DockSettings
+@onready var dock_stats: Button = $Layout/RootVBox/DockRows/DockRow/DockStats
+@onready var dock_about: Button = $Layout/RootVBox/DockRows/DockRow/DockAbout
+@onready var dock_daily: Button = $Layout/RootVBox/DockRows/DockRowSecondary/DockDaily
+@onready var dock_achievements: Button = $Layout/RootVBox/DockRows/DockRowSecondary/DockAchievements
 @onready var version_label: Label = $Layout/RootVBox/VersionLabel
-@onready var feature_dim: ColorRect = $FeatureDim
-@onready var feature_stub: FeatureStubOverlay = $FeatureStub
 
 
 func _autoload(name: String) -> Node:
@@ -72,6 +36,10 @@ func _i18n(key: String, args: Array = []) -> String:
 	return key
 
 
+func _dock_buttons() -> Array:
+	return [dock_wheel, dock_settings, dock_stats, dock_about, dock_daily, dock_achievements]
+
+
 func _ready() -> void:
 	LnUiLib.set_background(self, LnUiLib.screen_bg("main_menu"))
 	_apply_safe_area_top()
@@ -80,71 +48,54 @@ func _ready() -> void:
 	tagline_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_SMALL)
 	tagline_label.gui_input.connect(_on_tagline_input)
 
-	play_button.text = _i18n("menu_play")
+	var save := _autoload("SaveManager")
+	var has_save: bool = save != null and save.has_method("has_save") and bool(save.call("has_save"))
+
+	play_button.text = _i18n("menu_new_game") if has_save else _i18n("menu_play")
 	continue_button.text = _i18n("menu_continue")
-	wheel_button.text = _i18n("menu_wheel")
-	settings_button.text = _i18n("btn_settings")
+	continue_button.visible = has_save
+	continue_button.disabled = not has_save
 	if exit_button != null:
-		exit_button.text = _i18n("btn_exit")
+		# Compact chrome control (VISUAL_TARGET: corner sigil, not a primary CTA).
+		exit_button.text = ""
+		exit_button.tooltip_text = _i18n("btn_exit")
+		exit_button.variant = "ghost"
 	version_label.text = _i18n("version_label", [str(ProjectSettings.get_setting("application/config/version", ""))])
 	version_label.add_theme_font_size_override("font_size", 11)
 
 	_set_button_icon(play_button, LnUiLib.icon_path("home.png"))
 	_set_button_icon(continue_button, LnUiLib.icon_path("save.png"))
-	_set_wheel_button_icon(wheel_button, "wheel-x2.png", 28)
-	_set_button_icon(settings_button, LnUiLib.icon_path("settings.png"))
 	if exit_button != null:
 		_set_button_icon(exit_button, LnUiLib.icon_path("exit.png"))
 
-	# Row 1: Daily tasks, Achievements, About
-	quick_daily.call("setup", _i18n("dock_daily"), LnUiLib.icon_path("daily-tasks.png"))
-	quick_achievements.call("setup", _i18n("dock_achievements"), LnUiLib.icon_path("achievements.png"))
-	quick_about.call("setup", _i18n("btn_about"), LnUiLib.icon_path("about.png"))
-
-	# Row 2: Premium, Tournaments, Bonuses, Statistics
-	dock_premium.call("setup", _i18n("dock_premium"), LnUiLib.icon_path("premium.png"))
-	dock_tournaments.call("setup", _i18n("dock_tournaments"), LnUiLib.icon_path("tournaments.png"))
-	dock_bonuses.call("setup", _i18n("dock_bonuses"), LnUiLib.icon_path("bonus.png"))
+	# VISUAL_TARGET pedestal row: wheel · settings · stats · about (+ working daily/achievements).
+	dock_wheel.call("setup", _i18n("dock_wheel"), LnUiLib.wheel_icon_path("wheel-x2.png"))
+	dock_settings.call("setup", _i18n("btn_settings"), LnUiLib.icon_path("settings.png"))
 	dock_stats.call("setup", _i18n("btn_stats"), LnUiLib.icon_path("statistics.png"))
+	dock_about.call("setup", _i18n("btn_about"), LnUiLib.icon_path("about.png"))
+	dock_daily.call("setup", _i18n("dock_daily"), LnUiLib.icon_path("daily-tasks.png"))
+	dock_achievements.call("setup", _i18n("dock_achievements"), LnUiLib.icon_path("achievements.png"))
+	dock_wheel.disabled = not has_save
 
-	var save := _autoload("SaveManager")
-	var has_save: bool = save != null and save.has_method("has_save") and bool(save.call("has_save"))
-	continue_button.visible = true
-	continue_button.disabled = not has_save
-	play_button.text = _i18n("menu_new_game") if has_save else _i18n("menu_play")
-
-	# All large CTAs: same gothic-crystal accent + same strip size.
 	const CTA_HEIGHT := 60.0
-	for cta in [play_button, continue_button, wheel_button, settings_button, exit_button]:
-		if cta == null:
-			continue
+	for cta in [play_button, continue_button]:
 		cta.variant = "primary"
 		cta.custom_minimum_size = Vector2(0, CTA_HEIGHT)
 		cta.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-
-	for btn in [play_button, continue_button, wheel_button]:
-		if btn == continue_button or btn == wheel_button:
-			btn.disabled = not has_save
-		else:
-			btn.disabled = false
+	if exit_button != null:
+		exit_button.custom_minimum_size = Vector2(52, 44)
+		exit_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 
 	play_button.pressed.connect(_on_play)
 	continue_button.pressed.connect(_on_continue)
-	wheel_button.pressed.connect(_on_wheel)
-	settings_button.pressed.connect(_on_settings)
 	if exit_button != null:
 		exit_button.pressed.connect(_on_exit)
-	quick_achievements.pressed.connect(_on_achievements)
-	quick_daily.pressed.connect(_on_daily)
-	quick_about.pressed.connect(_on_about)
-	dock_premium.pressed.connect(_on_premium)
-	dock_tournaments.pressed.connect(_on_tournaments)
-	dock_bonuses.pressed.connect(_on_bonuses)
+	dock_wheel.pressed.connect(_on_wheel)
+	dock_settings.pressed.connect(_on_settings)
 	dock_stats.pressed.connect(_on_stats)
-	feature_stub.connect("closed", func(): feature_dim.visible = false)
-
-	feature_dim.visible = false
-	feature_stub.visible = false
+	dock_about.pressed.connect(_on_about)
+	dock_daily.pressed.connect(_on_daily)
+	dock_achievements.pressed.connect(_on_achievements)
 
 	var theme_mgr := _autoload("ThemeManager")
 	if theme_mgr != null and theme_mgr.has_signal("theme_changed"):
@@ -203,29 +154,15 @@ func _set_button_icon(button: Button, path: String) -> void:
 		button.expand_icon = true
 
 
-func _set_wheel_button_icon(button: Button, file_name: String, max_size: int = 28) -> void:
-	var tex := LnUiLib.load_wheel_icon(file_name)
-	if tex == null:
-		return
-	button.icon = tex
-	button.expand_icon = true
-	button.add_theme_constant_override("icon_max_width", max_size)
-	button.add_theme_constant_override("icon_max_height", max_size)
-
-
 func _animate_entrance() -> void:
 	var items: Array[Control] = [logo_image, tagline_label]
 	items.append(play_button)
 	if continue_button.visible:
 		items.append(continue_button)
-	items.append(wheel_button)
-	items.append(settings_button)
+	for dock in _dock_buttons():
+		items.append(dock)
 	if exit_button != null:
 		items.append(exit_button)
-	for quick in [quick_daily, quick_achievements, quick_about]:
-		items.append(quick)
-	for dock in [dock_premium, dock_tournaments, dock_bonuses, dock_stats]:
-		items.append(dock)
 	items.append(version_label)
 	for item in items:
 		item.modulate.a = 0.0
@@ -246,31 +183,6 @@ func _play_button_sfx() -> void:
 	var audio := _autoload("AudioManager")
 	if audio != null and audio.has_method("play_sfx"):
 		audio.call("play_sfx", "button_click")
-
-
-func _stub_body(stub_id: String) -> String:
-	var spec: Dictionary = _FEATURE_STUBS.get(stub_id, {})
-	if spec.is_empty():
-		return ""
-	var lines: PackedStringArray = PackedStringArray([_i18n(str(spec.get("intro", "")))])
-	for key in spec.get("bullets", []):
-		lines.append("• %s" % _i18n(str(key)))
-	var note := str(spec.get("note", ""))
-	if not note.is_empty():
-		lines.append(_i18n(note))
-	return "\n\n".join(lines)
-
-
-func _show_feature_stub(stub_id: String) -> void:
-	var spec: Dictionary = _FEATURE_STUBS.get(stub_id, {})
-	if spec.is_empty():
-		return
-	feature_dim.visible = true
-	feature_stub.show_stub(
-		_i18n(str(spec.get("title", ""))),
-		_stub_body(stub_id),
-		_i18n("feature_stub_ok")
-	)
 
 
 func _on_tagline_input(event: InputEvent) -> void:
@@ -329,16 +241,6 @@ func _on_about() -> void:
 	_navigate("about")
 
 
-func _on_premium() -> void:
-	_play_button_sfx()
-	_show_feature_stub("premium")
-
-
-func _on_tournaments() -> void:
-	_play_button_sfx()
-	_show_feature_stub("tournaments")
-
-
 func _on_achievements() -> void:
 	_play_button_sfx()
 	_navigate("achievements")
@@ -347,8 +249,3 @@ func _on_achievements() -> void:
 func _on_daily() -> void:
 	_play_button_sfx()
 	_navigate("daily")
-
-
-func _on_bonuses() -> void:
-	_play_button_sfx()
-	_show_feature_stub("bonuses")

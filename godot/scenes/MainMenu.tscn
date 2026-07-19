@@ -4,7 +4,6 @@
 [ext_resource type="Shader" path="res://themes/title_gradient.gdshader" id="2_gradient"]
 [ext_resource type="PackedScene" uid="uid://neonbutton001" path="res://scenes/components/NeonButton.tscn" id="3_neonbtn"]
 [ext_resource type="PackedScene" uid="uid://menu_dock_btn" path="res://scenes/components/MenuDockButton.tscn" id="4_dock"]
-[ext_resource type="PackedScene" uid="uid://feature_stub_overlay" path="res://scenes/components/FeatureStubOverlay.tscn" id="5_stub"]
 [ext_resource type="Texture2D" path="res://assets/boot/boot-logo.png" id="6_logo"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_menutitle"]
@@ -41,8 +40,25 @@ layout_mode = 2
 theme_override_constants/separation = 14
 alignment = 1
 
+[node name="TopBar" type="HBoxContainer" parent="Layout/RootVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 2
+
+[node name="TopBarSpacer" type="Control" parent="Layout/RootVBox/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="ExitButton" parent="Layout/RootVBox/TopBar" instance=ExtResource("3_neonbtn")]
+custom_minimum_size = Vector2(52, 44)
+layout_mode = 2
+size_flags_horizontal = 0
+variant = 2
+text = "Вийти"
+
 [node name="TopSpacer" type="Control" parent="Layout/RootVBox"]
-custom_minimum_size = Vector2(0, 8)
+custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
@@ -99,62 +115,41 @@ layout_mode = 2
 size_flags_horizontal = 3
 variant = 0
 
-[node name="WheelButton" parent="Layout/RootVBox/Actions/Buttons" instance=ExtResource("3_neonbtn")]
-custom_minimum_size = Vector2(0, 60)
+[node name="DockRows" type="VBoxContainer" parent="Layout/RootVBox"]
 layout_mode = 2
-size_flags_horizontal = 3
-variant = 0
-text = "Колесо фортуни"
+theme_override_constants/separation = 8
 
-[node name="SettingsButton" parent="Layout/RootVBox/Actions/Buttons" instance=ExtResource("3_neonbtn")]
-custom_minimum_size = Vector2(0, 60)
+[node name="DockRow" type="HBoxContainer" parent="Layout/RootVBox/DockRows"]
 layout_mode = 2
-size_flags_horizontal = 3
-variant = 0
-text = "Налаштування"
-
-[node name="ExitButton" parent="Layout/RootVBox/Actions/Buttons" instance=ExtResource("3_neonbtn")]
-custom_minimum_size = Vector2(0, 60)
-layout_mode = 2
-size_flags_horizontal = 3
-variant = 0
-text = "Вийти"
-
-[node name="QuickRow" type="HBoxContainer" parent="Layout/RootVBox"]
-layout_mode = 2
-theme_override_constants/separation = 7
+theme_override_constants/separation = 8
 alignment = 1
 
-[node name="QuickDaily" parent="Layout/RootVBox/QuickRow" instance=ExtResource("4_dock")]
+[node name="DockWheel" parent="Layout/RootVBox/DockRows/DockRow" instance=ExtResource("4_dock")]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="QuickAchievements" parent="Layout/RootVBox/QuickRow" instance=ExtResource("4_dock")]
+[node name="DockSettings" parent="Layout/RootVBox/DockRows/DockRow" instance=ExtResource("4_dock")]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="QuickAbout" parent="Layout/RootVBox/QuickRow" instance=ExtResource("4_dock")]
+[node name="DockStats" parent="Layout/RootVBox/DockRows/DockRow" instance=ExtResource("4_dock")]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="DockRow" type="HBoxContainer" parent="Layout/RootVBox"]
+[node name="DockAbout" parent="Layout/RootVBox/DockRows/DockRow" instance=ExtResource("4_dock")]
 layout_mode = 2
-theme_override_constants/separation = 7
+size_flags_horizontal = 3
+
+[node name="DockRowSecondary" type="HBoxContainer" parent="Layout/RootVBox/DockRows"]
+layout_mode = 2
+theme_override_constants/separation = 8
 alignment = 1
 
-[node name="DockPremium" parent="Layout/RootVBox/DockRow" instance=ExtResource("4_dock")]
+[node name="DockDaily" parent="Layout/RootVBox/DockRows/DockRowSecondary" instance=ExtResource("4_dock")]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="DockTournaments" parent="Layout/RootVBox/DockRow" instance=ExtResource("4_dock")]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="DockBonuses" parent="Layout/RootVBox/DockRow" instance=ExtResource("4_dock")]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="DockStats" parent="Layout/RootVBox/DockRow" instance=ExtResource("4_dock")]
+[node name="DockAchievements" parent="Layout/RootVBox/DockRows/DockRowSecondary" instance=ExtResource("4_dock")]
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -163,28 +158,3 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 11
 text = "v0.0.0"
 horizontal_alignment = 1
-
-[node name="FeatureDim" type="ColorRect" parent="."]
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 0
-color = Color(0, 0, 0, 0.55)
-
-[node name="FeatureStub" parent="." instance=ExtResource("5_stub")]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -170.0
-offset_top = -130.0
-offset_right = 170.0
-offset_bottom = 130.0
-grow_horizontal = 2
-grow_vertical = 2
