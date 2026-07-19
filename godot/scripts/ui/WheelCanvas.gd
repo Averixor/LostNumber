@@ -1,14 +1,16 @@
 extends Control
 class_name WheelCanvas
 
-## Dark-fantasy fortune wheel — muted jewel sectors, bronze/gold rim, gothic sector icons.
+## Unified gothic fortune wheel — ornate rim, jewel sectors, large sector icons + i18n labels.
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 const LnUiLib := preload("res://scripts/ui/LnUi.gd")
+const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
 const WheelManagerLib := preload("res://scripts/meta/WheelManager.gd")
 
 const WHEEL_ICON_DIR := "res://assets/ui/icons/wheel/"
-const WHEEL_ICON_SIZE := 44.0
+const ICON_SIZE_MIN := 48.0
+const ICON_SIZE_MAX := 64.0
 
 const SECTOR_ICON_FILES := {
 	"xp25": "wheel-xp-25.png",
@@ -34,16 +36,23 @@ var _sector_icon_slots: Dictionary = {}
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	custom_minimum_size = Vector2(300, 300)
+	custom_minimum_size = Vector2(320, 320)
 	_refresh_theme_colors()
 	_load_sector_icons()
 	set_process(true)
 
 
 func _process(delta: float) -> void:
-	if _spinning or _wheel_colors.is_empty():
-		_hub_pulse += delta * 2.2
-		queue_redraw()
+	if _spinning:
+		return
+	if not _effects_enabled():
+		return
+	_hub_pulse += delta * 2.2
+	queue_redraw()
+
+
+func _effects_enabled() -> bool:
+	return LnUiLib.effects_enabled()
 
 
 func _refresh_theme_colors() -> void:
@@ -52,73 +61,153 @@ func _refresh_theme_colors() -> void:
 	if theme != null and theme.has_method("get_wheel_colors"):
 		for c in theme.call("get_wheel_colors"):
 			var sector := Color(c)
-			sector = sector.darkened(0.42)
-			sector.s = clampf(sector.s * 0.55, 0.18, 0.55)
+			# Cohesive jewel wedges — muted, scene-matched (not flat MS-paint greens).
+			sector = sector.darkened(0.28)
+			sector.s = clampf(sector.s * 0.62, 0.22, 0.58)
+			sector.v = clampf(sector.v * 0.92, 0.28, 0.62)
 			_wheel_colors.append(sector)
 	if _wheel_colors.is_empty():
 		for c in ThemeTokensLib.WHEEL_SECTOR_COLORS:
 			var sector := Color(c)
-			sector.s = clampf(sector.s * 0.7, 0.2, 0.5)
+			sector.s = clampf(sector.s * 0.75, 0.22, 0.55)
 			_wheel_colors.append(sector)
 
 
 func _draw() -> void:
 	_refresh_theme_colors()
 	var center := size * 0.5
-	var radius := minf(size.x, size.y) * 0.42
+	var radius := minf(size.x, size.y) * 0.40
 	var sectors: Array = WheelManagerLib.SECTORS
 	var count := sectors.size()
 	if count == 0:
 		return
 	var slice := TAU / float(count)
 	var pointer_index := _sector_under_pointer(count, slice)
-	var glass := Color(0.08, 0.05, 0.12, 0.96)
+	var effects := _effects_enabled()
+	var rim_colors := GothicVisualsLib.wheel_rim_colors(_palette())
+	var bronze: Color = rim_colors["bronze"]
+	var gold: Color = rim_colors["gold"]
+	var crystal: Color = rim_colors["crystal"]
 
-	# Drop shadow under wheel
-	draw_circle(center + Vector2(0, 8), radius + 10.0, Color(0, 0, 0, 0.55))
+	# Soft ground shadow (ties wheel into the scene).
+	var shadow_a := 0.58 if effects else 0.40
+	draw_circle(center + Vector2(0, 10), radius + 18.0, Color(0, 0, 0, shadow_a))
 
-	# Dark backing disc
-	draw_circle(center, radius + 6.0, glass)
-	draw_arc(center, radius + 6.0, 0.0, TAU, 64, Color(0.22, 0.14, 0.28, 0.7), 2.0, true)
+	# Outer metal backing disc — one plate under sectors + rim.
+	draw_circle(center, radius + 18.0, Color(GothicVisualsLib.STONE_BLACK, 0.96))
+	draw_circle(center, radius + 14.0, Color(rim_colors["stone"], 0.98))
+	draw_arc(center, radius + 14.0, 0.0, TAU, 72, Color(bronze.darkened(0.35), 0.75), 2.4, true)
 
-	# Bronze / antique-gold rim (dark fantasy, not neon)
-	var bronze := ThemeTokensLib.WHEEL_RIM_BRONZE
-	var gold := ThemeTokensLib.WHEEL_RIM_GOLD
-	draw_arc(center, radius + 15.0, 0.0, TAU, 72, Color(bronze, 0.35), 9.0, true)
-	draw_arc(center, radius + 12.0, 0.0, TAU, 64, Color(gold, 0.78), 3.2, true)
-	draw_arc(center, radius + 9.5, 0.0, TAU, 48, Color(bronze.darkened(0.25), 0.7), 1.8, true)
-	draw_arc(center, radius + 2.0, 0.0, TAU, 48, Color(0, 0, 0, 0.5), 2.0, true)
-
+	# Sector wedges on the shared disc.
 	for i in count:
 		var start := rotation_angle + slice * float(i) - PI * 0.5
 		var end := start + slice
 		var base: Color = _wheel_colors[i % _wheel_colors.size()]
 		if i == pointer_index:
-			base = base.lightened(0.1)
-		_draw_sector_wedge(center, radius, start, end, base, i == pointer_index)
+			base = base.lightened(0.12)
+		_draw_sector_wedge(center, radius, start, end, base, i == pointer_index, crystal)
 
-		var div_end := center + Vector2(cos(end), sin(end)) * (radius + 2.0)
-		draw_line(center, div_end, Color(0.12, 0.08, 0.06, 0.85), 1.6)
+	# Shared outer vignette — blends wedges into one painted disc.
+	draw_arc(center, radius * 0.97, 0.0, TAU, 64, Color(0, 0, 0, 0.42), radius * 0.10, true)
+	draw_arc(center, radius * 0.55, 0.0, TAU, 48, Color(0, 0, 0, 0.18), radius * 0.08, true)
 
+	# Engraved dividers (grooves, not hard segment cuts).
+	for i in count:
+		var end := rotation_angle + slice * float(i + 1) - PI * 0.5
+		var outer := center + Vector2(cos(end), sin(end)) * (radius - 1.0)
+		var inner := center + Vector2(cos(end), sin(end)) * (radius * 0.22)
+		draw_line(inner, outer, Color(0.06, 0.04, 0.05, 0.72), 1.8)
+		draw_line(inner, outer, Color(gold, 0.12), 0.7)
+
+	# Sector icons + labels (after wedges, under rim/hub).
+	var icon_size := _icon_size_for_radius(radius)
+	for i in count:
+		var start := rotation_angle + slice * float(i) - PI * 0.5
+		var end := start + slice
 		var mid := (start + end) * 0.5
-		var label_pos := center + Vector2(cos(mid), sin(mid)) * radius * 0.66
-		var sector: Dictionary = sectors[i]
-		_draw_sector_content(label_pos, sector, mid, i == pointer_index)
+		var label_pos := center + Vector2(cos(mid), sin(mid)) * radius * 0.62
+		_draw_sector_content(label_pos, sectors[i], mid, i == pointer_index, icon_size)
 
-	# Inner vignette
-	draw_arc(center, radius * 0.94, 0.0, TAU, 48, Color(0, 0, 0, 0.38), radius * 0.07, true)
+	# Ornate outer rim (spikes + bronze/gold bands) — frames the whole wheel.
+	_draw_ornate_rim(center, radius, bronze, gold, crystal, effects)
 
-	# Metal hub with soft pulse
-	var crystal := _crystal_color()
-	var pulse := 0.85 + sin(_hub_pulse) * 0.12
-	draw_circle(center, radius * 0.2, Color(0.05, 0.03, 0.07, 0.98))
-	draw_circle(center, radius * 0.16, Color(0.14, 0.09, 0.12, 0.96))
-	draw_circle(center, radius * 0.11, Color(bronze.darkened(0.35), 0.92))
-	draw_circle(center, radius * 0.07 * pulse, Color(gold.darkened(0.15), 0.9))
-	draw_circle(center, radius * 0.035, Color(gold.lightened(0.2), 0.88))
-	draw_arc(center, radius * 0.1, 0.0, TAU, 32, Color(bronze, 0.45), 2.0, true)
+	# Crystal / metal hub.
+	_draw_hub(center, radius, bronze, gold, crystal, effects)
 
-	_draw_pointer(center, radius)
+	_draw_pointer(center, radius, bronze, gold, crystal, effects)
+
+
+func _icon_size_for_radius(radius: float) -> float:
+	return clampf(radius * 0.40, ICON_SIZE_MIN, ICON_SIZE_MAX)
+
+
+func _palette() -> Dictionary:
+	var theme := get_node_or_null("/root/ThemeManager")
+	if theme != null and theme.has_method("get_palette"):
+		var use_skin := theme.has_method("get_visual_skin") and theme.call("get_visual_skin") != null
+		return theme.call("get_palette", use_skin)
+	return {}
+
+
+func _draw_ornate_rim(
+	center: Vector2,
+	radius: float,
+	bronze: Color,
+	gold: Color,
+	crystal: Color,
+	effects: bool
+) -> void:
+	var outer_r := radius + 16.0
+	# Spike ring
+	var spike_count := 24
+	for s in spike_count:
+		var ang := TAU * float(s) / float(spike_count) - PI * 0.5
+		var tip := center + Vector2(cos(ang), sin(ang)) * (outer_r + 7.0)
+		var a1 := ang - 0.055
+		var a2 := ang + 0.055
+		var base_l := center + Vector2(cos(a1), sin(a1)) * (outer_r - 1.0)
+		var base_r := center + Vector2(cos(a2), sin(a2)) * (outer_r - 1.0)
+		var spike := PackedVector2Array([tip, base_l, base_r])
+		draw_colored_polygon(spike, Color(bronze.darkened(0.05), 0.95))
+		draw_polyline(spike, Color(gold, 0.55), 1.0, true)
+
+	# Layered metal bands
+	draw_arc(center, outer_r, 0.0, TAU, 80, Color(bronze.darkened(0.25), 0.92), 7.0, true)
+	draw_arc(center, radius + 12.5, 0.0, TAU, 72, Color(gold, 0.82), 3.4, true)
+	draw_arc(center, radius + 9.0, 0.0, TAU, 64, Color(bronze, 0.70), 2.0, true)
+	draw_arc(center, radius + 2.5, 0.0, TAU, 56, Color(0, 0, 0, 0.55), 2.2, true)
+	if effects:
+		draw_arc(center, radius + 13.0, 0.0, TAU, 48, Color(crystal, 0.16), 1.4, true)
+
+	# Rivets / studs on the rim
+	var stud_count := 16
+	for s in stud_count:
+		var ang := TAU * float(s) / float(stud_count) - PI * 0.5 + (TAU / float(stud_count)) * 0.5
+		var p := center + Vector2(cos(ang), sin(ang)) * (radius + 12.5)
+		draw_circle(p, 2.4, Color(bronze.darkened(0.2), 0.95))
+		draw_circle(p, 1.2, Color(gold.lightened(0.15), 0.9))
+
+
+func _draw_hub(
+	center: Vector2,
+	radius: float,
+	bronze: Color,
+	gold: Color,
+	crystal: Color,
+	effects: bool
+) -> void:
+	var pulse := 1.0
+	if effects:
+		pulse = 0.88 + sin(_hub_pulse) * 0.10
+	draw_circle(center, radius * 0.22, Color(GothicVisualsLib.STONE_BLACK, 0.98))
+	draw_circle(center, radius * 0.185, Color(GothicVisualsLib.STONE_DEEP, 0.96))
+	draw_arc(center, radius * 0.185, 0.0, TAU, 40, Color(bronze, 0.65), 2.2, true)
+	draw_circle(center, radius * 0.13, Color(bronze.darkened(0.30), 0.95))
+	draw_circle(center, radius * 0.09 * pulse, Color(crystal.darkened(0.15), 0.92 if effects else 0.82))
+	draw_circle(center, radius * 0.055, Color(gold.lightened(0.12), 0.90))
+	draw_circle(center, radius * 0.022, Color(GothicVisualsLib.TEXT_IVORY, 0.85))
+	if effects:
+		draw_arc(center, radius * 0.11, 0.0, TAU, 32, Color(crystal, 0.35), 1.6, true)
 
 
 func _sector_label(sector: Dictionary) -> String:
@@ -141,11 +230,21 @@ func _compact_wheel_label(text: String, sector: Dictionary) -> String:
 				digits += ch
 		return digits if not digits.is_empty() else text
 	if effect == "multiplier":
-		return "×2 XP"
+		var i18n := get_node_or_null("/root/I18nManager")
+		if i18n != null and i18n.has_method("t"):
+			var compact := str(i18n.call("t", "wheel_sector_xp_multiplier"))
+			if compact != "wheel_sector_xp_multiplier":
+				return compact
+		return text
 	if effect == "bonus":
 		match str(sector.get("value", "")):
 			"explosion":
-				return "3×3"
+				var i18n := get_node_or_null("/root/I18nManager")
+				if i18n != null and i18n.has_method("t"):
+					var compact := str(i18n.call("t", "wheel_sector_explosion"))
+					if compact != "wheel_sector_explosion":
+						return compact
+				return text
 			"destroy", "shuffle":
 				return text
 	return text
@@ -177,38 +276,59 @@ func set_sector_icon_slot(sector_type: String, texture: Texture2D) -> void:
 	queue_redraw()
 
 
-func _draw_sector_content(pos: Vector2, sector: Dictionary, angle: float, highlighted: bool) -> void:
+func _draw_sector_content(
+	pos: Vector2,
+	sector: Dictionary,
+	angle: float,
+	highlighted: bool,
+	icon_size: float
+) -> void:
 	var sector_type := str(sector.get("type", ""))
 	var tex: Texture2D = _sector_textures.get(sector_type)
-	if tex != null:
-		_draw_sector_icon(pos, tex, angle, highlighted)
-		var effect := str(sector.get("effect", ""))
-		if effect == "xp":
-			var caption := _compact_wheel_label(_sector_label(sector), sector)
-			var caption_pos := pos + Vector2(0.0, WHEEL_ICON_SIZE * 0.34)
-			_draw_sector_label(caption_pos, caption, angle, highlighted, 10)
-		return
 	var label := _sector_label(sector)
+	if tex != null:
+		_draw_sector_icon(pos, tex, angle, highlighted, icon_size)
+		if not label.is_empty():
+			var caption_pos := pos + Vector2(0.0, icon_size * 0.42)
+			var font_size := 11 if label.length() > 8 else 12
+			_draw_sector_label(caption_pos, label, angle, highlighted, font_size)
+		return
 	_draw_sector_label(pos, label, angle, highlighted)
 
 
-func _draw_sector_icon(pos: Vector2, tex: Texture2D, angle: float, highlighted: bool) -> void:
+func _draw_sector_icon(
+	pos: Vector2,
+	tex: Texture2D,
+	angle: float,
+	highlighted: bool,
+	icon_size: float
+) -> void:
 	var readable_angle := angle + PI * 0.5
 	if cos(readable_angle) < 0.0:
 		readable_angle += PI
-	var half := WHEEL_ICON_SIZE * 0.5
-	var rect := Rect2(-half, -half, WHEEL_ICON_SIZE, WHEEL_ICON_SIZE)
+	var half := icon_size * 0.5
+	var rect := Rect2(-half, -half, icon_size, icon_size)
 	draw_set_transform(pos, readable_angle, Vector2.ONE)
-	var modulate := Color(1.0, 1.0, 1.0, 0.98 if highlighted else 0.9)
+	# Subtle pedestal under icon so it sits in the segment, not pasted on.
+	draw_circle(Vector2.ZERO, half * 0.92, Color(0, 0, 0, 0.28 if highlighted else 0.20))
+	var modulate := Color(1.0, 1.0, 1.0, 1.0 if highlighted else 0.92)
 	draw_texture_rect(tex, rect, false, modulate)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
-func _draw_sector_label(pos: Vector2, text: String, angle: float, highlighted: bool, font_size_override: int = -1) -> void:
+func _draw_sector_label(
+	pos: Vector2,
+	text: String,
+	angle: float,
+	highlighted: bool,
+	font_size_override: int = -1
+) -> void:
+	if text.is_empty():
+		return
 	var font := ThemeDB.fallback_font
-	var font_size := font_size_override if font_size_override > 0 else (12 if text.length() > 4 else 15)
-	var text_color := Color(0.96, 0.92, 0.82, 0.98 if highlighted else 0.88)
-	var shadow := Color(0, 0, 0, 0.85)
+	var font_size := font_size_override if font_size_override > 0 else (12 if text.length() > 6 else 14)
+	var text_color := Color(GothicVisualsLib.TEXT_IVORY, 0.98 if highlighted else 0.90)
+	var shadow := Color(0, 0, 0, 0.88)
 	var readable_angle := angle + PI * 0.5
 	if cos(readable_angle) < 0.0:
 		readable_angle += PI
@@ -220,41 +340,52 @@ func _draw_sector_label(pos: Vector2, text: String, angle: float, highlighted: b
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
-func _rim_color() -> Color:
-	return ThemeTokensLib.WHEEL_RIM_BRONZE
-
-
-func _crystal_color() -> Color:
-	var theme := get_node_or_null("/root/ThemeManager")
-	if theme != null and theme.has_method("get_palette"):
-		var p: Dictionary = theme.call("get_palette")
-		return p.get("crystal", ThemeTokensLib.COLOR_PRIMARY)
-	return ThemeTokensLib.COLOR_PRIMARY
-
-
-func _draw_sector_wedge(center: Vector2, radius: float, start: float, end: float, color: Color, highlighted: bool) -> void:
-	var pts := _arc_points(center, radius, start, end, 24)
-	var fill := color.darkened(0.08 if highlighted else 0.18)
-	fill.a = 0.94
+func _draw_sector_wedge(
+	center: Vector2,
+	radius: float,
+	start: float,
+	end: float,
+	color: Color,
+	highlighted: bool,
+	crystal: Color
+) -> void:
+	var pts := _arc_points(center, radius, start, end, 28)
+	var fill := color.darkened(0.06 if highlighted else 0.14)
+	fill.a = 0.96
 	draw_colored_polygon(pts, fill)
-	var inner_pts := _arc_points(center, radius * 0.38, start, end, 12)
-	draw_colored_polygon(inner_pts, Color(0, 0, 0, 0.28))
-	var edge := Color(color.lightened(0.08 if highlighted else 0.02), 0.5 if highlighted else 0.32)
-	draw_polyline(pts, edge, 1.0, true)
+	# Soft radial depth toward hub (shared look across wedges).
+	var mid_pts := _arc_points(center, radius * 0.72, start, end, 16)
+	draw_colored_polygon(mid_pts, Color(0, 0, 0, 0.10))
+	var inner_pts := _arc_points(center, radius * 0.36, start, end, 12)
+	draw_colored_polygon(inner_pts, Color(0, 0, 0, 0.22))
+	if highlighted and _effects_enabled():
+		draw_polyline(pts, Color(crystal, 0.28), 1.4, true)
+	else:
+		var edge := Color(color.lightened(0.10), 0.28)
+		draw_polyline(pts, edge, 1.0, true)
 
 
-func _draw_pointer(center: Vector2, radius: float) -> void:
-	var gold := ThemeTokensLib.WHEEL_RIM_GOLD
-	var bronze := ThemeTokensLib.WHEEL_RIM_BRONZE
-	var tip := center + Vector2(0, -radius - 14)
+func _draw_pointer(
+	center: Vector2,
+	radius: float,
+	bronze: Color,
+	gold: Color,
+	crystal: Color,
+	effects: bool
+) -> void:
+	var tip := center + Vector2(0, -radius - 18)
 	var pointer := PackedVector2Array([
 		tip,
-		center + Vector2(-10, -radius + 6),
-		center + Vector2(10, -radius + 6),
+		center + Vector2(-11, -radius + 4),
+		center + Vector2(0, -radius + 14),
+		center + Vector2(11, -radius + 4),
 	])
-	draw_colored_polygon(pointer, Color(bronze.darkened(0.1), 0.95))
-	draw_polyline(pointer, Color(gold, 0.9), 1.6, true)
-	draw_circle(tip + Vector2(0, 3), 3.5, Color(gold, 0.85))
+	draw_colored_polygon(pointer, Color(bronze.darkened(0.08), 0.97))
+	draw_polyline(pointer, Color(gold, 0.92), 1.8, true)
+	draw_circle(tip + Vector2(0, 5), 4.0, Color(gold, 0.9))
+	draw_circle(tip + Vector2(0, 5), 1.8, Color(GothicVisualsLib.TEXT_IVORY, 0.85))
+	if effects:
+		draw_circle(tip + Vector2(0, 5), 6.0, Color(crystal, 0.18))
 
 
 func _sector_under_pointer(count: int, slice: float) -> int:

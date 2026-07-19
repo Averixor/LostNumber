@@ -94,10 +94,14 @@ func _refresh_ui() -> void:
 		spin_button.text = _wheel_error_text(str(check.get("reason", "")))
 	else:
 		spin_button.text = _i18n("btn_spin_wheel", [cost])
-	LnUiLib.apply_wheel_button_icon(spin_button, "wheel-xp-25.png", 26)
+	LnUiLib.apply_wheel_button_icon(spin_button, "wheel-xp-25.png", 32)
 	LnUiLib.apply_button(spin_button, spin_button.disabled)
-	var remaining := WheelManager.MAX_DAILY_SPINS - _state.wheel_spins_today
-	cost_label.text = "%s: %d/%d" % [_i18n("wheel_title"), _state.wheel_spins_today, WheelManager.MAX_DAILY_SPINS]
+	_style_action_buttons()
+	cost_label.text = _i18n("wheel_daily_limit", [_state.wheel_spins_today, WheelManager.MAX_DAILY_SPINS])
+
+
+func _style_action_buttons() -> void:
+	pass
 
 
 func _on_spin() -> void:
@@ -114,6 +118,7 @@ func _on_spin() -> void:
 	spin_button.disabled = true
 	spin_button.text = _i18n("wheel_spinning")
 	LnUiLib.apply_button(spin_button, true)
+	_style_action_buttons()
 	await wheel_canvas.animate_to_sector(int(prep.index), WheelManager.SPIN_DURATION_SEC)
 
 func _on_spin_animation_done(sector: Dictionary, _index: int) -> void:
@@ -147,10 +152,13 @@ func _style_result_modal() -> void:
 
 func _show_result(text: String) -> void:
 	var prize := text.strip_edges()
-	if prize.begins_with("Бонус:"):
-		prize = prize.substr(7).strip_edges()
-	var win_prefix := _i18n("wheel_win_prefix") if _i18n("wheel_win_prefix") != "wheel_win_prefix" else "Виграш:"
-	result_label.text = "%s %s" % [win_prefix, prize] if not prize.is_empty() else text
+	var bonus_prefix := _i18n("wheel_result_bonus_prefix")
+	if bonus_prefix != "wheel_result_bonus_prefix" and prize.begins_with(bonus_prefix):
+		prize = prize.substr(bonus_prefix.length()).strip_edges()
+	var win_prefix := _i18n("wheel_win_prefix")
+	if win_prefix == "wheel_win_prefix":
+		win_prefix = ""
+	result_label.text = ("%s %s" % [win_prefix, prize]).strip_edges() if not prize.is_empty() else text
 	result_label.add_theme_color_override("font_color", LnUiLib.ACCENT if not prize.is_empty() else LnUiLib.TEXT)
 	result_panel.visible = true
 	result_card.scale = Vector2(0.92, 0.92)
@@ -186,6 +194,7 @@ func _disable_invalid_session() -> void:
 		spin_button.disabled = true
 		spin_button.text = _i18n("wheel_no_save")
 		LnUiLib.apply_button(spin_button, true)
+		_style_action_buttons()
 	if cost_label != null:
 		cost_label.text = _i18n("wheel_no_save_hint")
 
