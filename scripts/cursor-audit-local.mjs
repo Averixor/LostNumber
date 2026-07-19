@@ -59,7 +59,7 @@ if (!apiKey) {
  * @returns {Promise<{ status: string, result?: unknown }>}
  */
 async function runAuditStreaming() {
-  const agent = Agent.create(agentOptions);
+  const agent = await Agent.create(agentOptions);
   try {
     const run = await agent.send(prompt);
     console.error('[cursor-sdk]', 'agentId=', agent.agentId, 'runId=', run.id);
