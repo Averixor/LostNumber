@@ -35,7 +35,11 @@ if [[ -n "$GODOT_BINARY" ]] \
   && grep -q "org.godotengine.Godot" "$GODOT_BINARY"; then
   # Flatpak rewrites reserved XDG variables after processing --env options.
   # Launch through env *inside* the sandbox so Godot sees the test paths.
-  flatpak run \
+  # Keep the host launcher on its normal XDG paths so it can resolve
+  # user-installed Flatpak applications. The isolated paths are still passed
+  # to Godot by the `env` command inside the sandbox below.
+  env -u XDG_DATA_HOME -u XDG_CONFIG_HOME -u XDG_CACHE_HOME \
+    flatpak run \
     --filesystem=home \
     --command=env \
     org.godotengine.Godot \
