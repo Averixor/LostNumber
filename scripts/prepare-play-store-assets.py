@@ -24,11 +24,11 @@ SCREENSHOT_SPECS = [
         (255, 107, 157),
     ),
     (
-        "02-menu-light.png",
-        GODOT / "assets/ui/backgrounds/light/bg-light-01.png",
-        "Дві теми",
-        "Темна та світла",
-        ["Неон і світанок", "Зручно вдень і ввечері"],
+        "02-gothic-style.png",
+        GODOT / "assets/ui/backgrounds/dark/menu-bg-2.png",
+        "Готичний стиль",
+        "Кришталь і неон",
+        ["Темне оформлення", "Кілька фонів меню"],
         (120, 90, 200),
     ),
     (

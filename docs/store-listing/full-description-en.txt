@@ -7,7 +7,7 @@ Features:
 • Bonuses: explosion, shuffle, destroy tile
 • Fortune wheel for XP rewards
 • Daily quests and achievements
-• Two visual themes and multiple menu backgrounds
+• Gothic visual style and multiple menu backgrounds
 • Progress saved locally on your device (offline)
 • Ukrainian, Russian, and English UI
 
