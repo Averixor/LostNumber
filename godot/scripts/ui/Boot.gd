@@ -47,7 +47,6 @@ func _wire_static_boot_logo() -> void:
 	var anim := get_node_or_null("AnimationPlayer") as AnimationPlayer
 	if anim != null:
 		anim.stop()
-		anim.autoplay = ""
 
 
 func _fit_boot_logo(tex: Texture2D) -> void:
