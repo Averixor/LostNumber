@@ -11,6 +11,7 @@ const steps = [
   ['node_modules/typescript/bin/tsc', ['--noEmit', '-p', 'tsconfig.json']],
   ['scripts/verify-tagline.mjs', []],
   ['scripts/verify-godot-release.mjs', []],
+  ['scripts/verify-play-store.mjs', []],
   ['scripts/smoke-tests.mjs', []],
 ];
 

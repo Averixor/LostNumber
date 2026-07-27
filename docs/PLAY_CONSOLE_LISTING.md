@@ -64,7 +64,7 @@ Lost Number — логічна головоломка з числами у зр�
 • Бонуси: вибух, перемішування, знищення клітинки
 • Колесо фортуни за очки XP
 • Щоденні завдання та досягнення
-• Дві візуальні теми та кілька фонів меню
+• Готичне оформлення та кілька фонів меню
 • Збереження прогресу на пристрої (офлайн)
 • Українська, російська та англійська мови
 
@@ -76,14 +76,14 @@ Lost Number — логічна головоломка з числами у зр�
 ```
 Lost Number is a relaxed number grid puzzle you can enjoy on your schedule.
 
-Connect neighboring tiles, build valid chains, and unlock new levels. Play when it suits you.
+Connect neighboring tiles, build valid chains, and unlock new levels. No rush — play when it suits you.
 
 Features:
 • 5×8 grid with growing difficulty
 • Bonuses: explosion, shuffle, destroy tile
 • Fortune wheel for XP rewards
 • Daily quests and achievements
-• Two visual themes and multiple menu backgrounds
+• Gothic visual style and multiple menu backgrounds
 • Progress saved locally on your device (offline)
 • Ukrainian, Russian, and English UI
 
@@ -102,7 +102,7 @@ Lost Number — логическая головоломка с числами в
 • Бонусы: взрыв, перемешивание, уничтожение клетки
 • Колесо фортуны за очки XP
 • Ежедневные задания и достижения
-• Две темы оформления и несколько фонов меню
+• Готическое оформление и несколько фонов меню
 • Сохранение прогресса на устройстве (офлайн)
 • Украинский, русский и английский языки
 
@@ -122,6 +122,17 @@ Lost Number — логическая головоломка с числами в
 | **Скріншоти**       | `store/screenshots/phone/01-*.png` … `04-*.png` | 1080×1920 PNG (портрет) |
 
 Мінімум **2** скріншоти. Рекомендовано 4–8. Перед публічним релізом замініть чернетки на знімки з реального APK (меню, гра, налаштування). Див. `store/screenshots/phone/README.md`.
+
+### Alt text для графіки (до 140 символів)
+
+| Asset             | Alt text (UK)                                                                 |
+| ----------------- | ----------------------------------------------------------------------------- |
+| App icon          | Золотий монограмний знак Lost Number на темному готичному тлі.                |
+| Feature graphic   | Логотип Lost Number і напис про числову головоломку на фіолетовому градієнті. |
+| 01-menu-dark      | Темне меню Lost Number з описом рівнів, бонусів і офлайн-гри.                 |
+| 02-gothic-style   | Фіолетовий кришталевий ліс і картка про готичне оформлення Lost Number.       |
+| 03-levels-bonuses | Промокартка Lost Number про сітку 5×8, рівні, бонуси й щоденні завдання.      |
+| 04-offline-calm   | Промокартка Lost Number про гру без реклами та локальне збереження прогресу.  |
 
 ---
 
@@ -146,7 +157,7 @@ Lost Number — логическая головоломка с числами в
 
 - IARC — чесно: головоломка, без насильства / реклами / IAP
 - Target audience — **не** «переважно для дітей»
-- Data safety — **дані не збираються** (лише `localStorage` на пристрої)
+- Data safety — **дані не збираються** (лише локальні файли застосунку на пристрої)
 - Ads, IAP, Financial features — **No**
 
 ---

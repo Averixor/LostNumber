@@ -141,7 +141,10 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 | Видалення даних                               | Користувач очищає дані застосунку в Android          |
 | Privacy policy URL                            | `https://averixor.github.io/LostNumber/privacy.html` |
 
-Локальний прогрес у `localStorage` **не передається** на сервери розробника — у формі це «дані не збираються».
+Локальний прогрес у файлах Godot `user://` **не передається** на сервери розробника — у формі це «дані не збираються».
+Власний фон, який користувач добровільно обирає через системний image picker,
+копіюється в приватний `user://custom_backgrounds/` і також не передається.
+Поточний Android manifest не містить `android.permission.INTERNET`.
 
 Додатково в **App content**: Ads — No; In-app purchases — No.
 
