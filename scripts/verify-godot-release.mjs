@@ -19,6 +19,23 @@ function ok(msg) {
   console.log(`ok: ${msg}`);
 }
 
+function readPresetOptions(content, index) {
+  const marker = `[preset.${index}.options]`;
+  const start = content.indexOf(marker);
+  if (start < 0) {
+    fail(`${marker} missing`);
+    return '';
+  }
+  const nextPreset = content.indexOf(`\n[preset.${index + 1}]`, start);
+  return content.slice(start + marker.length, nextPreset < 0 ? undefined : nextPreset);
+}
+
+function readOption(options, key) {
+  const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const match = options.match(new RegExp(`^${escapedKey}=(.+)$`, 'm'));
+  return match ? match[1].trim().replace(/^"|"$/g, '') : null;
+}
+
 function verifyExportPresetsNoSecrets() {
   const cfgPath = join(root, 'godot/export_presets.cfg');
   if (!existsSync(cfgPath)) {
@@ -41,6 +58,58 @@ function verifyExportPresetsNoSecrets() {
       fail(`godot/export_presets.cfg contains forbidden secret pattern: ${pattern}`);
     }
   }
+
+  const packageJson = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
+  const releaseOptions = readPresetOptions(content, 0);
+  const debugOptions = readPresetOptions(content, 1);
+  const releaseCode = readOption(releaseOptions, 'version/code');
+  const debugCode = readOption(debugOptions, 'version/code');
+
+  const expectedOptions = [
+    [releaseOptions, 'package/unique_name', 'com.averixor.lostnumber', 'release package'],
+    [debugOptions, 'package/unique_name', 'com.averixor.lostnumber.dev', 'debug package'],
+    [releaseOptions, 'version/name', packageJson.version, 'release versionName'],
+    [debugOptions, 'version/name', `${packageJson.version}-dev`, 'debug versionName'],
+    [releaseOptions, 'gradle_build/export_format', '1', 'release AAB format'],
+    [debugOptions, 'gradle_build/export_format', '0', 'debug APK format'],
+    [releaseOptions, 'package/signed', 'true', 'release signing enabled'],
+  ];
+  for (const [options, key, expected, label] of expectedOptions) {
+    const actual = readOption(options, key);
+    if (actual !== expected) {
+      fail(`${label} must be ${expected}, got ${actual ?? 'missing'}`);
+    }
+  }
+
+  if (!releaseCode || releaseCode !== debugCode || !/^[1-9]\d*$/.test(releaseCode)) {
+    fail(
+      `release/debug versionCode must be the same positive integer, got ${releaseCode}/${debugCode}`,
+    );
+  } else {
+    ok(`Android identity: VC ${releaseCode}, ${packageJson.version}, release/debug package IDs`);
+  }
+
+  for (const [index, options] of [
+    [0, releaseOptions],
+    [1, debugOptions],
+  ]) {
+    const expectedArchitectureOptions = [
+      ['architectures/armeabi-v7a', 'false'],
+      ['architectures/arm64-v8a', 'true'],
+      ['architectures/x86', 'false'],
+      ['architectures/x86_64', 'true'],
+    ];
+    for (const [key, expected] of expectedArchitectureOptions) {
+      const actual = readOption(options, key);
+      if (actual !== expected) {
+        fail(`preset.${index} ${key} must be ${expected}, got ${actual ?? 'missing'}`);
+      }
+    }
+    if (readOption(options, 'permissions/internet') !== 'false') {
+      fail(`preset.${index} must set permissions/internet=false for offline release`);
+    }
+  }
+  ok('Android presets are offline and limited to arm64-v8a/x86_64');
 
   if (!/gradle_build\/target_sdk="35"/.test(content)) {
     fail('godot/export_presets.cfg must set gradle_build/target_sdk="35" on all Android presets');
@@ -66,6 +135,31 @@ function verifyExportPresetsNoSecrets() {
   }
 
   ok('export_presets.cfg has no keystore passwords');
+}
+
+function verifyPrivacyPolicyMatchesOfflineBuild() {
+  const privacyPath = join(root, 'privacy.html');
+  if (!existsSync(privacyPath)) {
+    fail('privacy.html missing');
+    return;
+  }
+  const privacy = readFileSync(privacyPath, 'utf8');
+  const contradictoryInternetClaims = [
+    /may\s+(request|declare)[^<]{0,160}<code>INTERNET<\/code>/is,
+    /може\s+оголошувати[^<]{0,160}<code>INTERNET<\/code>/is,
+  ];
+  for (const pattern of contradictoryInternetClaims) {
+    if (pattern.test(privacy)) {
+      fail(`privacy.html contradicts offline manifest: ${pattern}`);
+    }
+  }
+  if (!privacy.includes('<code>user://</code>')) {
+    fail('privacy.html must describe local Godot user:// storage');
+  }
+  if (!/does\s+not\s+request\s+the\s*<code>INTERNET<\/code>\s*permission/i.test(privacy)) {
+    fail('privacy.html English summary must state that INTERNET is not requested');
+  }
+  ok('privacy policy matches offline manifest and local user:// storage');
 }
 
 function resolveAapt2() {
@@ -224,6 +318,7 @@ function verifyAab(aabPath) {
 }
 
 verifyExportPresetsNoSecrets();
+verifyPrivacyPolicyMatchesOfflineBuild();
 verifyAab(join(root, 'build/android/lost-number.aab'));
 
 if (failures.length) {
