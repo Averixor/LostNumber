@@ -36,8 +36,9 @@ if ! command -v "$GODOT_BIN" >/dev/null 2>&1; then
 fi
 
 GODOT_VERSION="$("$GODOT_BIN" --version | head -1 | awk '{print $1}')"
-# Snap reports e.g. 4.5.stable.official.876b29033 — templates use 4.5-stable
-TEMPLATE_VERSION="$(echo "$GODOT_VERSION" | sed -E 's/^([0-9]+\.[0-9]+)\..*/\1-stable/')"
+# Builds report e.g. 4.7.1.stable.flathub.* or 4.7.stable.official.*;
+# release tags/templates use 4.7.1-stable and 4.7-stable respectively.
+TEMPLATE_VERSION="$(echo "$GODOT_VERSION" | sed -E 's/^([0-9]+\.[0-9]+(\.[0-9]+)?)\..*/\1-stable/')"
 
 # Godot export compares android/.build_version to GODOT_VERSION_FULL_CONFIG
 # (e.g. 4.7.stable), not the --version FULL_BUILD string (e.g. .official.* / .flathub.*).
@@ -242,7 +243,14 @@ ls -lh "$OUTPUT"
 
 _cleanup_android_artifacts
 echo "Remaining artifacts in $BUILD_DIR:"
-ls -lh "$BUILD_DIR"/*.{apk,aab} 2>/dev/null || echo "(none)"
+shopt -s nullglob
+remaining_artifacts=("$BUILD_DIR"/*.apk "$BUILD_DIR"/*.aab)
+shopt -u nullglob
+if [[ "${#remaining_artifacts[@]}" -gt 0 ]]; then
+  ls -lh "${remaining_artifacts[@]}"
+else
+  echo "(none)"
+fi
 
 # Remove stray APK/AAB from Godot Gradle tree (canonical output is BUILD_DIR only).
 find "$GODOT_DIR/android/build" -type f \( -name '*.apk' -o -name '*.aab' \) -delete 2>/dev/null || true
