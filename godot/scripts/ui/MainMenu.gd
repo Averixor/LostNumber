@@ -254,6 +254,14 @@ func _confirm_new_game() -> void:
 	_navigate("game")
 
 
+func handle_back() -> bool:
+	if _new_game_dialog == null or not is_instance_valid(_new_game_dialog) or not _new_game_dialog.visible:
+		return false
+	_new_game_dialog.hide()
+	_new_game_dialog.canceled.emit()
+	return true
+
+
 func _on_continue() -> void:
 	_play_button_sfx()
 	_navigate("game")

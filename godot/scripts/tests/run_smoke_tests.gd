@@ -91,10 +91,15 @@ const KEY_RESOURCES := [
 
 class NavigationProbe:
 	extends Node
+	var current_screen_id := "main_menu"
+	var current_screen: Node = null
 	var pushed_screen := ""
 
 	func push(screen_id: String) -> void:
 		pushed_screen = screen_id
+
+	func get_current_screen() -> Node:
+		return current_screen
 
 var failed := 0
 var _save: SaveManagerScript
@@ -279,7 +284,7 @@ func _test_safe_new_game_confirmation() -> void:
 	# the real menu so its music request cannot race AudioManager initialization.
 	await process_frame
 	var audio := root.get_node_or_null("AudioManager")
-	var audio_ready := audio == null or audio.get("_music_player") != null
+	var audio_ready: bool = audio == null or audio.get("_music_player") != null
 	_assert_true(
 		audio_ready,
 		"new-game menu test waits for AudioManager readiness"
@@ -313,6 +318,11 @@ func _test_safe_new_game_confirmation() -> void:
 	var menu := menu_scene.instantiate()
 	root.add_child(menu)
 	await process_frame
+	navigation.current_screen = menu
+	var app_scene: PackedScene = load("res://scenes/App.tscn")
+	var app := app_scene.instantiate()
+	root.add_child(app)
+	await process_frame
 	menu.call("_on_play")
 	await process_frame
 
@@ -338,9 +348,15 @@ func _test_safe_new_game_confirmation() -> void:
 	_assert_true(_read_file(backup) == backup_before, "backup bytes unchanged before confirmation")
 	_assert_true(navigation.pushed_screen.is_empty(), "new game does not navigate before confirmation")
 
-	if dialog is ConfirmationDialog:
-		(dialog as ConfirmationDialog).canceled.emit()
+	app.notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
 	await process_frame
+	await process_frame
+	if dialog is ConfirmationDialog:
+		_assert_true(not (dialog as ConfirmationDialog).visible, "Android Back dismisses new-game confirmation")
+	var exit_dialog: ConfirmationDialog = app.get("_exit_dialog") as ConfirmationDialog
+	var exit_visible: bool = exit_dialog != null and exit_dialog.visible
+	_assert_false(exit_visible, "Android Back does not stack App exit confirmation over new-game modal")
+	_assert_false(bool(app.get("_back_busy")), "Android Back delegation completes")
 	_assert_true(_read_file(primary) == primary_before, "cancel leaves primary untouched")
 	_assert_true(_read_file(backup) == backup_before, "cancel leaves backup untouched")
 	_assert_true(navigation.pushed_screen.is_empty(), "cancel does not start a new game")
@@ -354,12 +370,33 @@ func _test_safe_new_game_confirmation() -> void:
 	_assert_false(FileAccess.file_exists(backup), "confirmation deletes backup save")
 	_assert_true(navigation.pushed_screen == "game", "confirmation starts a clean game")
 
-	root.remove_child(menu)
-	menu.free()
+	if audio != null and audio.has_method("stop_music"):
+		audio.call("stop_music")
+		var music_player: AudioStreamPlayer = audio.get("_music_player") as AudioStreamPlayer
+		_assert_true(music_player.stream == null, "new-game smoke releases settings music stream")
+		for sfx_player in audio.get("_sfx_players"):
+			sfx_player.stop()
+			sfx_player.stream = null
+		audio.set("_streams", {})
+
+	var menu_ref: WeakRef = weakref(menu)
+	var app_ref: WeakRef = weakref(app)
+	var dialog_ref: WeakRef = weakref(dialog) if dialog is Object else null
+	menu.queue_free()
+	app.queue_free()
+	await process_frame
+	await process_frame
+	_assert_true(menu_ref.get_ref() == null, "new-game smoke frees MainMenu")
+	_assert_true(app_ref.get_ref() == null, "new-game smoke frees App shell")
+	if dialog_ref != null:
+		_assert_true(dialog_ref.get_ref() == null, "new-game smoke frees confirmation dialog")
+
+	navigation.current_screen = null
 	root.remove_child(navigation)
 	navigation.free()
 	if original_router != null:
 		root.add_child(original_router)
+	await process_frame
 
 
 func _test_wheel_without_save_does_not_create_session() -> void:

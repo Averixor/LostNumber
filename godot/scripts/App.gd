@@ -98,6 +98,9 @@ func _handle_android_back() -> void:
 		return
 
 	var screen_id: String = str(router.get("current_screen_id"))
+	if _delegate_back_to_current_screen(router):
+		get_viewport().set_input_as_handled()
+		return
 
 	if screen_id == "main_menu":
 		_show_exit_confirm()
@@ -105,9 +108,6 @@ func _handle_android_back() -> void:
 		return
 
 	if screen_id == "game":
-		var screen: Node = router.get_current_screen()
-		if screen != null and screen.has_method("handle_back"):
-			screen.call("handle_back")
 		get_viewport().set_input_as_handled()
 		return
 
@@ -115,6 +115,15 @@ func _handle_android_back() -> void:
 	if not handled:
 		await router.replace("main_menu")
 	get_viewport().set_input_as_handled()
+
+
+func _delegate_back_to_current_screen(router: Node) -> bool:
+	if not router.has_method("get_current_screen"):
+		return false
+	var screen = router.call("get_current_screen")
+	if screen == null or not screen.has_method("handle_back"):
+		return false
+	return bool(screen.call("handle_back"))
 
 
 func _show_exit_confirm() -> void:
