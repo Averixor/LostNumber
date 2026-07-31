@@ -32,6 +32,7 @@ GODOT_BINARY="$(command -v "$GODOT_COMMAND" || true)"
 # so pass the isolated directories into the sandbox explicitly.
 if [[ -n "$GODOT_BINARY" ]] \
   && command -v flatpak >/dev/null 2>&1 \
+  && [[ "$(head -c 2 "$GODOT_BINARY" 2>/dev/null)" == "#!" ]] \
   && grep -q "org.godotengine.Godot" "$GODOT_BINARY"; then
   # Flatpak rewrites reserved XDG variables after processing --env options.
   # Launch through env *inside* the sandbox so Godot sees the test paths.
