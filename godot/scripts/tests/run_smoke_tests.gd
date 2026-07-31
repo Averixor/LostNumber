@@ -88,6 +88,14 @@ const KEY_RESOURCES := [
 	"res://scripts/core/GameState.gd",
 ]
 
+
+class NavigationProbe:
+	extends Node
+	var pushed_screen := ""
+
+	func push(screen_id: String) -> void:
+		pushed_screen = screen_id
+
 var failed := 0
 var _save: SaveManagerScript
 var _test_dir := ""
@@ -109,6 +117,7 @@ func _init() -> void:
 	_test_bonuses()
 	_test_carry_unique_singular()
 	_test_meta_managers()
+	await _test_safe_new_game_confirmation()
 	await _test_wheel_without_save_does_not_create_session()
 	_test_old_save_defaults()
 	_test_minimal_legacy_save()
@@ -265,6 +274,94 @@ func _test_meta_managers() -> void:
 	_assert_true(spin.ok, "wheel spin ok")
 
 
+func _test_safe_new_game_confirmation() -> void:
+	# SceneTree._init runs before autoload _ready callbacks. Yield before constructing
+	# the real menu so its music request cannot race AudioManager initialization.
+	await process_frame
+	var audio := root.get_node_or_null("AudioManager")
+	var audio_ready := audio == null or audio.get("_music_player") != null
+	_assert_true(
+		audio_ready,
+		"new-game menu test waits for AudioManager readiness"
+	)
+	if not audio_ready:
+		return
+
+	_save.delete_save()
+	var state = GameStateScript.new()
+	state.start_new_game(20260731)
+	state.xp = 17
+	_assert_true(_save.save_game(state), "new-game confirmation setup writes primary save")
+	state.xp = 29
+	_assert_true(_save.save_game(state), "new-game confirmation setup writes backup save")
+
+	var primary := "%s/lost_number_save.json" % _test_dir
+	var backup := "%s/lost_number_save.bak.json" % _test_dir
+	var primary_before := _read_file(primary)
+	var backup_before := _read_file(backup)
+	_assert_true(not primary_before.is_empty(), "new-game confirmation setup has primary bytes")
+	_assert_true(not backup_before.is_empty(), "new-game confirmation setup has backup bytes")
+
+	var original_router := root.get_node_or_null("ScreenRouter")
+	if original_router != null:
+		root.remove_child(original_router)
+	var navigation := NavigationProbe.new()
+	navigation.name = "ScreenRouter"
+	root.add_child(navigation)
+
+	var menu_scene: PackedScene = load("res://scenes/MainMenu.tscn")
+	var menu := menu_scene.instantiate()
+	root.add_child(menu)
+	await process_frame
+	menu.call("_on_play")
+	await process_frame
+
+	var dialog = menu.get("_new_game_dialog")
+	_assert_true(dialog is ConfirmationDialog, "new game with save opens native confirmation")
+	var i18n := root.get_node_or_null("I18nManager")
+	if dialog is ConfirmationDialog and i18n != null:
+		_assert_true(
+			(dialog as ConfirmationDialog).dialog_text == str(i18n.call("t", "confirm_new_game_text")),
+			"new-game confirmation uses localized warning text"
+		)
+		_assert_true(
+			(dialog as ConfirmationDialog).ok_button_text == str(i18n.call("t", "start_new_game_confirm")),
+			"new-game confirmation uses localized confirm action"
+		)
+		_assert_true(
+			(dialog as ConfirmationDialog).cancel_button_text == str(i18n.call("t", "cancel")),
+			"new-game confirmation uses localized cancel action"
+		)
+	_assert_true(FileAccess.file_exists(primary), "primary remains before explicit confirmation")
+	_assert_true(FileAccess.file_exists(backup), "backup remains before explicit confirmation")
+	_assert_true(_read_file(primary) == primary_before, "primary bytes unchanged before confirmation")
+	_assert_true(_read_file(backup) == backup_before, "backup bytes unchanged before confirmation")
+	_assert_true(navigation.pushed_screen.is_empty(), "new game does not navigate before confirmation")
+
+	if dialog is ConfirmationDialog:
+		(dialog as ConfirmationDialog).canceled.emit()
+	await process_frame
+	_assert_true(_read_file(primary) == primary_before, "cancel leaves primary untouched")
+	_assert_true(_read_file(backup) == backup_before, "cancel leaves backup untouched")
+	_assert_true(navigation.pushed_screen.is_empty(), "cancel does not start a new game")
+
+	menu.call("_on_play")
+	await process_frame
+	if dialog is ConfirmationDialog:
+		(dialog as ConfirmationDialog).confirmed.emit()
+	await process_frame
+	_assert_false(FileAccess.file_exists(primary), "confirmation deletes primary save")
+	_assert_false(FileAccess.file_exists(backup), "confirmation deletes backup save")
+	_assert_true(navigation.pushed_screen == "game", "confirmation starts a clean game")
+
+	root.remove_child(menu)
+	menu.free()
+	root.remove_child(navigation)
+	navigation.free()
+	if original_router != null:
+		root.add_child(original_router)
+
+
 func _test_wheel_without_save_does_not_create_session() -> void:
 	_save.delete_save()
 	var before_has_save := _save.has_save()
@@ -337,6 +434,15 @@ func _write_file(path: String, text: String) -> void:
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	file.store_string(text)
 	file.close()
+
+
+func _read_file(path: String) -> String:
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return ""
+	var text := file.get_as_text()
+	file.close()
+	return text
 
 
 func _cleanup() -> void:

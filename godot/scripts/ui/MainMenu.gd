@@ -18,6 +18,8 @@ const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 @onready var dock_achievements: Button = $Layout/RootVBox/DockRows/DockRowSecondary/DockAchievements
 @onready var version_label: Label = $Layout/RootVBox/VersionLabel
 
+var _new_game_dialog: ConfirmationDialog = null
+
 
 func _autoload(name: String) -> Node:
 	return get_node_or_null("/root/" + name)
@@ -219,8 +221,36 @@ func _on_tagline_input(event: InputEvent) -> void:
 func _on_play() -> void:
 	_play_button_sfx()
 	var save := _autoload("SaveManager")
-	if save != null and save.has_method("delete_save"):
-		save.call("delete_save")
+	var has_save: bool = save != null and save.has_method("has_save") and bool(save.call("has_save"))
+	if has_save:
+		_show_new_game_confirmation()
+		return
+	_navigate("game")
+
+
+func _show_new_game_confirmation() -> void:
+	if _new_game_dialog == null or not is_instance_valid(_new_game_dialog):
+		_new_game_dialog = ConfirmationDialog.new()
+		_new_game_dialog.name = "NewGameConfirmation"
+		_new_game_dialog.confirmed.connect(_confirm_new_game)
+		add_child(_new_game_dialog)
+
+	_new_game_dialog.title = _i18n("confirm_new_game_title")
+	_new_game_dialog.dialog_text = _i18n("confirm_new_game_text")
+	_new_game_dialog.ok_button_text = _i18n("start_new_game_confirm")
+	_new_game_dialog.cancel_button_text = _i18n("cancel")
+	_new_game_dialog.popup_centered()
+
+
+func _confirm_new_game() -> void:
+	var save := _autoload("SaveManager")
+	if save == null or not save.has_method("delete_save"):
+		push_error("MainMenu: SaveManager.delete_save is unavailable; new game aborted")
+		return
+	var deleted := bool(save.call("delete_save"))
+	if not deleted:
+		push_error("MainMenu: could not delete the current save; new game aborted")
+		return
 	_navigate("game")
 
 

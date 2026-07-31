@@ -186,7 +186,7 @@
   "level_countdown": "Moving to level {level} in {seconds}…",
   "dice_not_enough": "You need more XP",
   "confirm_new_game_title": "Start a new game?",
-  "confirm_new_game_text": "All current progress will be reset. Are you sure you want to start a new game?",
+  "confirm_new_game_text": "Your current playthrough and backup will be deleted. Start a new game?",
   "cancel": "Cancel",
   "start_new_game_confirm": "Start new game",
   "confirm_new_game": "Start a new game? Current progress will be lost.",

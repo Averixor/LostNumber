@@ -37,6 +37,7 @@ func _init() -> void:
 	_test_key_aliases()
 	_test_achievement_names()
 	_test_title_placeholder()
+	_test_new_game_confirmation_languages()
 	_test_language_key_parity()
 	_test_visual_skin_languages()
 	_test_wheel_fallback_labels()
@@ -89,6 +90,21 @@ func _test_title_placeholder() -> void:
 	var formatted := str(_i18n.call("t", "achievement_unlocked", ["Перша гра"]))
 	_assert_true("{title}" not in formatted, "achievement_unlocked substitutes {title}")
 	_assert_true("Перша гра" in formatted, "achievement_unlocked includes title value")
+
+
+func _test_new_game_confirmation_languages() -> void:
+	var expected := {
+		"uk": "Поточне проходження та резервну копію буде видалено. Почати нову гру?",
+		"ru": "Текущее прохождение и резервная копия будут удалены. Начать новую игру?",
+		"en": "Your current playthrough and backup will be deleted. Start a new game?",
+	}
+	for lang in expected:
+		_settings.set("language", lang)
+		_assert_eq(
+			str(_i18n.call("t", "confirm_new_game_text")),
+			str(expected[lang]),
+			"%s new-game warning names current progress and backup" % lang
+		)
 
 
 func _test_visual_skin_languages() -> void:
