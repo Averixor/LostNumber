@@ -16,12 +16,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           lfs: true
 
       - name: Setup Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
           cache: npm
@@ -31,3 +31,51 @@ jobs:
 
       - name: Run release checks
         run: npm run release:check
+
+  godot-tests:
+    name: Godot tests (4.7.1)
+    runs-on: ubuntu-latest
+    env:
+      GODOT_VERSION: 4.7.1
+      GODOT_SHA256: c7ff14fd28472c8d4f193043de30278dcf7e5241a1dcf7566b02e27addaa33ba
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Godot 4.7.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot_archive="$RUNNER_TEMP/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          godot_dir="$RUNNER_TEMP/godot-${GODOT_VERSION}"
+          curl --fail --location --retry 3 --output "$godot_archive" \
+            "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          echo "${GODOT_SHA256}  ${godot_archive}" | sha256sum --check --strict
+          mkdir -p "$godot_dir"
+          unzip -q "$godot_archive" -d "$godot_dir"
+          mv "$godot_dir/Godot_v${GODOT_VERSION}-stable_linux.x86_64" "$godot_dir/godot4"
+          chmod +x "$godot_dir/godot4"
+          echo "$godot_dir" >> "$GITHUB_PATH"
+
+      - name: Verify pinned Godot version
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot_version="$(godot4 --version)"
+          echo "Godot version: $godot_version"
+          [[ "$godot_version" == "4.7.1.stable.official.a13da4feb" ]]
+
+      - name: Run full Godot test suite
+        run: npm run godot:test:all
