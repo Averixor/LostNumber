@@ -88,6 +88,19 @@ const KEY_RESOURCES := [
 	"res://scripts/core/GameState.gd",
 ]
 
+
+class NavigationProbe:
+	extends Node
+	var current_screen_id := "main_menu"
+	var current_screen: Node = null
+	var pushed_screen := ""
+
+	func push(screen_id: String) -> void:
+		pushed_screen = screen_id
+
+	func get_current_screen() -> Node:
+		return current_screen
+
 var failed := 0
 var _save: SaveManagerScript
 var _test_dir := ""
@@ -109,6 +122,7 @@ func _init() -> void:
 	_test_bonuses()
 	_test_carry_unique_singular()
 	_test_meta_managers()
+	await _test_safe_new_game_confirmation()
 	await _test_wheel_without_save_does_not_create_session()
 	_test_old_save_defaults()
 	_test_minimal_legacy_save()
@@ -265,6 +279,126 @@ func _test_meta_managers() -> void:
 	_assert_true(spin.ok, "wheel spin ok")
 
 
+func _test_safe_new_game_confirmation() -> void:
+	# SceneTree._init runs before autoload _ready callbacks. Yield before constructing
+	# the real menu so its music request cannot race AudioManager initialization.
+	await process_frame
+	var audio := root.get_node_or_null("AudioManager")
+	var audio_ready: bool = audio == null or audio.get("_music_player") != null
+	_assert_true(
+		audio_ready,
+		"new-game menu test waits for AudioManager readiness"
+	)
+	if not audio_ready:
+		return
+
+	_save.delete_save()
+	var state = GameStateScript.new()
+	state.start_new_game(20260731)
+	state.xp = 17
+	_assert_true(_save.save_game(state), "new-game confirmation setup writes primary save")
+	state.xp = 29
+	_assert_true(_save.save_game(state), "new-game confirmation setup writes backup save")
+
+	var primary := "%s/lost_number_save.json" % _test_dir
+	var backup := "%s/lost_number_save.bak.json" % _test_dir
+	var primary_before := _read_file(primary)
+	var backup_before := _read_file(backup)
+	_assert_true(not primary_before.is_empty(), "new-game confirmation setup has primary bytes")
+	_assert_true(not backup_before.is_empty(), "new-game confirmation setup has backup bytes")
+
+	var original_router := root.get_node_or_null("ScreenRouter")
+	if original_router != null:
+		root.remove_child(original_router)
+	var navigation := NavigationProbe.new()
+	navigation.name = "ScreenRouter"
+	root.add_child(navigation)
+
+	var menu_scene: PackedScene = load("res://scenes/MainMenu.tscn")
+	var menu := menu_scene.instantiate()
+	root.add_child(menu)
+	await process_frame
+	navigation.current_screen = menu
+	var app_scene: PackedScene = load("res://scenes/App.tscn")
+	var app := app_scene.instantiate()
+	root.add_child(app)
+	await process_frame
+	menu.call("_on_play")
+	await process_frame
+
+	var dialog = menu.get("_new_game_dialog")
+	_assert_true(dialog is ConfirmationDialog, "new game with save opens native confirmation")
+	var i18n := root.get_node_or_null("I18nManager")
+	if dialog is ConfirmationDialog and i18n != null:
+		_assert_true(
+			(dialog as ConfirmationDialog).dialog_text == str(i18n.call("t", "confirm_new_game_text")),
+			"new-game confirmation uses localized warning text"
+		)
+		_assert_true(
+			(dialog as ConfirmationDialog).ok_button_text == str(i18n.call("t", "start_new_game_confirm")),
+			"new-game confirmation uses localized confirm action"
+		)
+		_assert_true(
+			(dialog as ConfirmationDialog).cancel_button_text == str(i18n.call("t", "cancel")),
+			"new-game confirmation uses localized cancel action"
+		)
+	_assert_true(FileAccess.file_exists(primary), "primary remains before explicit confirmation")
+	_assert_true(FileAccess.file_exists(backup), "backup remains before explicit confirmation")
+	_assert_true(_read_file(primary) == primary_before, "primary bytes unchanged before confirmation")
+	_assert_true(_read_file(backup) == backup_before, "backup bytes unchanged before confirmation")
+	_assert_true(navigation.pushed_screen.is_empty(), "new game does not navigate before confirmation")
+
+	app.notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	await process_frame
+	await process_frame
+	if dialog is ConfirmationDialog:
+		_assert_true(not (dialog as ConfirmationDialog).visible, "Android Back dismisses new-game confirmation")
+	var exit_dialog: ConfirmationDialog = app.get("_exit_dialog") as ConfirmationDialog
+	var exit_visible: bool = exit_dialog != null and exit_dialog.visible
+	_assert_false(exit_visible, "Android Back does not stack App exit confirmation over new-game modal")
+	_assert_false(bool(app.get("_back_busy")), "Android Back delegation completes")
+	_assert_true(_read_file(primary) == primary_before, "cancel leaves primary untouched")
+	_assert_true(_read_file(backup) == backup_before, "cancel leaves backup untouched")
+	_assert_true(navigation.pushed_screen.is_empty(), "cancel does not start a new game")
+
+	menu.call("_on_play")
+	await process_frame
+	if dialog is ConfirmationDialog:
+		(dialog as ConfirmationDialog).confirmed.emit()
+	await process_frame
+	_assert_false(FileAccess.file_exists(primary), "confirmation deletes primary save")
+	_assert_false(FileAccess.file_exists(backup), "confirmation deletes backup save")
+	_assert_true(navigation.pushed_screen == "game", "confirmation starts a clean game")
+
+	if audio != null and audio.has_method("stop_music"):
+		audio.call("stop_music")
+		var music_player: AudioStreamPlayer = audio.get("_music_player") as AudioStreamPlayer
+		_assert_true(music_player.stream == null, "new-game smoke releases settings music stream")
+		for sfx_player in audio.get("_sfx_players"):
+			sfx_player.stop()
+			sfx_player.stream = null
+		audio.set("_streams", {})
+
+	var menu_ref: WeakRef = weakref(menu)
+	var app_ref: WeakRef = weakref(app)
+	var dialog_ref: WeakRef = weakref(dialog) if dialog is Object else null
+	menu.queue_free()
+	app.queue_free()
+	await process_frame
+	await process_frame
+	_assert_true(menu_ref.get_ref() == null, "new-game smoke frees MainMenu")
+	_assert_true(app_ref.get_ref() == null, "new-game smoke frees App shell")
+	if dialog_ref != null:
+		_assert_true(dialog_ref.get_ref() == null, "new-game smoke frees confirmation dialog")
+
+	navigation.current_screen = null
+	root.remove_child(navigation)
+	navigation.free()
+	if original_router != null:
+		root.add_child(original_router)
+	await process_frame
+
+
 func _test_wheel_without_save_does_not_create_session() -> void:
 	_save.delete_save()
 	var before_has_save := _save.has_save()
@@ -337,6 +471,15 @@ func _write_file(path: String, text: String) -> void:
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	file.store_string(text)
 	file.close()
+
+
+func _read_file(path: String) -> String:
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return ""
+	var text := file.get_as_text()
+	file.close()
+	return text
 
 
 func _cleanup() -> void:
