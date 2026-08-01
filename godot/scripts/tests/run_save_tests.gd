@@ -107,6 +107,7 @@ func _init() -> void:
 		push_error("Save tests failed: %s" % failed)
 		_cleanup()
 		quit(1)
+		return
 
 	print("Save tests passed")
 	_cleanup()
@@ -380,14 +381,32 @@ func _test_failed_save_blocks_menu_navigation() -> void:
 	game.set_meta("visual_capture_no_persistence", false)
 	runtime_save.call("enable_test_root", _test_dir)
 	runtime_save.call("set_test_failure_point", "temp_write")
-	game.call("_show_pause")
-	game.call("_on_back_to_menu")
+	game_state.bonus_inventory["shuffle"] = 1
+	var bonuses_used_before := int(game_state.progress.stats.get("bonuses_used", 0))
+	game.call("_on_bonus_pressed", "shuffle")
 	await process_frame
 	await process_frame
 
 	var hud = game.get("game_hud")
 	var i18n := root.get_node_or_null("I18nManager")
 	var expected_error := str(i18n.call("t", "save_failed")) if i18n != null else "save_failed"
+	_assert_eq(
+		int(game_state.progress.stats.get("bonuses_used", 0)),
+		bonuses_used_before + 1,
+		"shuffle failure: bonus mutation remains in memory"
+	)
+	_assert_text_eq(
+		str(hud.save_indicator.text),
+		expected_error,
+		"shuffle failure: localized error remains visible after HUD refresh"
+	)
+	_assert_true(hud.save_indicator.modulate.a > 0.0, "shuffle failure: save error toast is visible")
+
+	game.call("_show_pause")
+	game.call("_on_back_to_menu")
+	await process_frame
+	await process_frame
+
 	_assert_true(game.is_inside_tree(), "menu failure lifecycle: Game remains in tree")
 	_assert_false(game.is_queued_for_deletion(), "menu failure lifecycle: Game is not queued for deletion")
 	_assert_true(game.get_parent() == root, "menu failure lifecycle: Game screen remains mounted")
@@ -410,6 +429,8 @@ func _test_failed_save_blocks_menu_navigation() -> void:
 			sfx_player.stop()
 			sfx_player.stream = null
 		audio.set("_streams", {})
+		await process_frame
+		await process_frame
 	runtime_save.call("clear_test_failure_point")
 	runtime_save.call("disable_test_root")
 	game.set_meta("visual_capture_no_persistence", true)

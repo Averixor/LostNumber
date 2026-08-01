@@ -274,7 +274,9 @@ func _on_bonus_pressed(type: String) -> void:
 		_play_sfx("button_click")
 		board_view.reset_all_highlights()
 		board_view.refresh_all()
+		_refresh_hud()
 		_save_game()
+		return
 	_refresh_hud()
 
 func _on_cell_picked(cell: Vector2i) -> void:
