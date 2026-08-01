@@ -38,6 +38,7 @@ func _init() -> void:
 	_test_achievement_names()
 	_test_title_placeholder()
 	_test_new_game_confirmation_languages()
+	_test_save_failure_languages()
 	_test_language_key_parity()
 	_test_visual_skin_languages()
 	_test_wheel_fallback_labels()
@@ -104,6 +105,21 @@ func _test_new_game_confirmation_languages() -> void:
 			str(_i18n.call("t", "confirm_new_game_text")),
 			str(expected[lang]),
 			"%s new-game warning names current progress and backup" % lang
+		)
+
+
+func _test_save_failure_languages() -> void:
+	var expected := {
+		"uk": "Не вдалося зберегти прогрес. Гру можна продовжити.",
+		"ru": "Не удалось сохранить прогресс. Игру можно продолжить.",
+		"en": "Could not save progress. You can keep playing.",
+	}
+	for lang in expected:
+		_settings.set("language", lang)
+		_assert_eq(
+			str(_i18n.call("t", "save_failed")),
+			str(expected[lang]),
+			"%s failed-save feedback is localized and non-blocking" % lang
 		)
 
 

@@ -3,6 +3,64 @@ extends SceneTree
 const GameStateScript := preload("res://scripts/core/GameState.gd")
 const SaveManagerScript := preload("res://scripts/managers/SaveManager.gd")
 const LegacySaveMigrationScript := preload("res://scripts/managers/LegacySaveMigration.gd")
+const GameScript := preload("res://scripts/game/Game.gd")
+const GameHudScript := preload("res://scripts/ui/GameHud.gd")
+
+
+class SaveResultStub:
+	extends Node
+	var result := false
+
+	func save_game(_state) -> bool:
+		return result
+
+
+class I18nStub:
+	extends Node
+	var strings := {
+		"save_indicator": "Saved",
+		"save_failed": "Could not save progress. You can keep playing.",
+	}
+
+	func t(key: String, _args: Array = []) -> String:
+		return str(strings.get(key, key))
+
+
+class SaveFeedbackHud:
+	extends GameHudScript
+	var flashed_text := ""
+	var flash_count := 0
+
+	func flash_save_indicator(text: String) -> void:
+		flashed_text = text
+		flash_count += 1
+
+
+class GameSaveProbe:
+	extends GameScript
+	var save_stub: Node
+	var i18n_stub: Node
+
+	func _autoload(name: String) -> Node:
+		if name == "SaveManager":
+			return save_stub
+		if name == "I18nManager":
+			return i18n_stub
+		return null
+
+
+class NavigationProbe:
+	extends Node
+	var go_back_calls := 0
+	var replace_calls := 0
+
+	func go_back():
+		go_back_calls += 1
+		await get_tree().process_frame
+		return true
+
+	func replace(_screen_id: String) -> void:
+		replace_calls += 1
 
 var failed := 0
 var _test_dir := ""
@@ -20,7 +78,19 @@ func _init() -> void:
 	_save.enable_test_root(_test_dir)
 
 	_test_roundtrip()
+	_test_envelope_format_unchanged()
+	_test_partial_temp_never_replaces_primary()
+	_test_bad_checksum_temp_never_replaces_primary()
+	_test_backup_copy_failure_preserves_files()
+	_test_backup_promotion_failure_preserves_files()
+	_test_primary_promotion_failure_keeps_recoverable_save()
+	_test_corrupt_primary_failed_promotion_preserves_valid_backup()
+	_test_corrupt_primary_success_preserves_valid_backup()
+	_test_no_valid_recovery_uses_verified_temp_fail_safe()
+	_test_game_save_feedback_matches_result()
+	await _test_failed_save_blocks_menu_navigation()
 	_test_corrupt_primary_recovers_from_backup()
+	_test_backup_self_heal_promotion_failure_keeps_backup()
 	_test_backup_only_valid_has_save()
 	_test_backup_only_corrupt_no_has_save()
 	_test_corrupt_primary_valid_backup_has_save()
@@ -56,6 +126,327 @@ func _test_roundtrip() -> void:
 	_assert_eq(int(loaded.xp), 128, "xp preserved")
 
 
+func _test_envelope_format_unchanged() -> void:
+	_save.delete_save()
+	var state := GameStateScript.new()
+	state.start_new_game(314)
+	state.xp = 55
+	_assert_true(_save.save_game(state), "compatible envelope: save succeeds")
+
+	var payload = JSON.parse_string(_read_file(_primary_path()))
+	_assert_true(typeof(payload) == TYPE_DICTIONARY, "compatible envelope: primary is JSON object")
+	if typeof(payload) != TYPE_DICTIONARY:
+		return
+	_assert_eq(int(payload.get("envelope_version", -1)), 1, "compatible envelope: version remains 1")
+	_assert_true(payload.has("saved_at"), "compatible envelope: saved_at remains present")
+	_assert_true(payload.has("checksum"), "compatible envelope: checksum remains present")
+	_assert_true(payload.has("data_json"), "compatible envelope: data_json remains present")
+	_assert_false(payload.has("data"), "compatible envelope: canonical data_json shape retained")
+
+
+func _test_partial_temp_never_replaces_primary() -> void:
+	_save.delete_save()
+	var state := GameStateScript.new()
+	state.start_new_game(401)
+	state.xp = 10
+	_assert_true(_save.save_game(state), "partial temp: seed primary")
+	var primary_before := _read_file(_primary_path())
+
+	state.xp = 20
+	_save.set_test_failure_point("temp_partial")
+	_assert_false(_save.save_game(state), "partial temp: save reports false")
+	_save.clear_test_failure_point()
+
+	_assert_text_eq(_read_file(_primary_path()), primary_before, "partial temp: primary bytes unchanged")
+	_assert_false(FileAccess.file_exists(_backup_path()), "partial temp: backup not created before verification")
+	_assert_false(FileAccess.file_exists(_temp_path()), "partial temp: staging file cleaned")
+	var loaded = _save.load_game()
+	_assert_true(loaded != null, "partial temp: original primary still loads")
+	_assert_eq(int(loaded.xp), 10, "partial temp: original progress preserved")
+
+
+func _test_bad_checksum_temp_never_replaces_primary() -> void:
+	_save.delete_save()
+	var state := GameStateScript.new()
+	state.start_new_game(402)
+	state.xp = 30
+	_assert_true(_save.save_game(state), "bad checksum temp: seed primary")
+	var primary_before := _read_file(_primary_path())
+
+	state.xp = 40
+	_save.set_test_failure_point("temp_checksum")
+	_assert_false(_save.save_game(state), "bad checksum temp: save reports false")
+	_save.clear_test_failure_point()
+
+	_assert_text_eq(_read_file(_primary_path()), primary_before, "bad checksum temp: primary bytes unchanged")
+	_assert_false(FileAccess.file_exists(_backup_path()), "bad checksum temp: backup not created before verification")
+	_assert_false(FileAccess.file_exists(_temp_path()), "bad checksum temp: staging file cleaned")
+
+
+func _test_backup_copy_failure_preserves_files() -> void:
+	_seed_primary_and_backup(501)
+	var primary_before := _read_file(_primary_path())
+	var backup_before := _read_file(_backup_path())
+	var state := GameStateScript.new()
+	state.start_new_game(503)
+	state.xp = 503
+
+	_save.set_test_failure_point("backup_copy")
+	_assert_false(_save.save_game(state), "backup copy failure: save reports false")
+	_save.clear_test_failure_point()
+
+	_assert_text_eq(_read_file(_primary_path()), primary_before, "backup copy failure: primary unchanged")
+	_assert_text_eq(_read_file(_backup_path()), backup_before, "backup copy failure: backup unchanged")
+	_assert_false(FileAccess.file_exists(_temp_path()), "backup copy failure: temp cleaned")
+	_assert_false(FileAccess.file_exists(_backup_temp_path()), "backup copy failure: backup stage cleaned")
+
+
+func _test_backup_promotion_failure_preserves_files() -> void:
+	_seed_primary_and_backup(601)
+	var primary_before := _read_file(_primary_path())
+	var backup_before := _read_file(_backup_path())
+	var state := GameStateScript.new()
+	state.start_new_game(603)
+	state.xp = 603
+
+	_save.set_test_failure_point("backup_promotion")
+	_assert_false(_save.save_game(state), "backup promotion failure: save reports false")
+	_save.clear_test_failure_point()
+
+	_assert_text_eq(_read_file(_primary_path()), primary_before, "backup promotion failure: primary unchanged")
+	_assert_text_eq(_read_file(_backup_path()), backup_before, "backup promotion failure: old backup unchanged")
+	_assert_false(FileAccess.file_exists(_temp_path()), "backup promotion failure: temp cleaned")
+	_assert_false(FileAccess.file_exists(_backup_temp_path()), "backup promotion failure: backup stage cleaned")
+
+
+func _test_primary_promotion_failure_keeps_recoverable_save() -> void:
+	_seed_primary_and_backup(701)
+	var primary_before := _read_file(_primary_path())
+	var state := GameStateScript.new()
+	state.start_new_game(703)
+	state.xp = 703
+
+	_save.set_test_failure_point("primary_promotion")
+	_assert_false(_save.save_game(state), "primary promotion failure: save reports false")
+	_save.clear_test_failure_point()
+
+	_assert_text_eq(_read_file(_primary_path()), primary_before, "primary promotion failure: primary unchanged")
+	_assert_text_eq(_read_file(_backup_path()), primary_before, "primary promotion failure: backup holds old primary")
+	_assert_false(FileAccess.file_exists(_temp_path()), "primary promotion failure: temp cleaned")
+	var loaded = _save.load_game()
+	_assert_true(loaded != null, "primary promotion failure: save remains loadable")
+	_assert_eq(int(loaded.xp), 702, "primary promotion failure: last committed progress preserved")
+
+
+func _test_corrupt_primary_failed_promotion_preserves_valid_backup() -> void:
+	_seed_corrupt_primary_with_valid_backup(901)
+	var corrupt_primary_before := _read_file(_primary_path())
+	var valid_backup_before := _read_file(_backup_path())
+	var state := GameStateScript.new()
+	state.start_new_game(903)
+	state.xp = 903
+
+	_save.set_test_failure_point("primary_promotion")
+	_assert_false(
+		_save.save_game(state),
+		"corrupt primary failed promotion: save reports false"
+	)
+	_save.clear_test_failure_point()
+
+	_assert_text_eq(
+		_read_file(_primary_path()),
+		corrupt_primary_before,
+		"corrupt primary failed promotion: corrupt primary is not copied elsewhere"
+	)
+	_assert_text_eq(
+		_read_file(_backup_path()),
+		valid_backup_before,
+		"corrupt primary failed promotion: valid backup bytes remain untouched"
+	)
+	_assert_true(
+		_save._is_valid_save_path(_backup_path()),
+		"corrupt primary failed promotion: backup remains valid"
+	)
+	var loaded = _save.load_game()
+	_assert_true(loaded != null, "corrupt primary failed promotion: backup remains loadable")
+	_assert_eq(int(loaded.xp), 901, "corrupt primary failed promotion: backup progress preserved")
+
+
+func _test_corrupt_primary_success_preserves_valid_backup() -> void:
+	_seed_corrupt_primary_with_valid_backup(911)
+	var valid_backup_before := _read_file(_backup_path())
+	var state := GameStateScript.new()
+	state.start_new_game(913)
+	state.xp = 913
+
+	_assert_true(_save.save_game(state), "corrupt primary success: verified temp is promoted")
+	_assert_text_eq(
+		_read_file(_backup_path()),
+		valid_backup_before,
+		"corrupt primary success: valid backup is preserved"
+	)
+	_assert_true(_save._is_valid_save_path(_backup_path()), "corrupt primary success: backup stays valid")
+	var loaded = _save.load_game()
+	_assert_true(loaded != null, "corrupt primary success: new primary loads")
+	_assert_eq(int(loaded.xp), 913, "corrupt primary success: new progress committed")
+
+
+func _test_no_valid_recovery_uses_verified_temp_fail_safe() -> void:
+	_save.delete_save()
+	_write_file(_primary_path(), "{corrupt primary")
+	_write_file(_backup_path(), "{corrupt backup")
+	var primary_before := _read_file(_primary_path())
+	var backup_before := _read_file(_backup_path())
+	var state := GameStateScript.new()
+	state.start_new_game(921)
+	state.xp = 921
+
+	_save.set_test_failure_point("primary_promotion")
+	_assert_false(_save.save_game(state), "no valid recovery: failed promotion reports false")
+	_save.clear_test_failure_point()
+	_assert_text_eq(_read_file(_primary_path()), primary_before, "no valid recovery: primary unchanged on failure")
+	_assert_text_eq(_read_file(_backup_path()), backup_before, "no valid recovery: backup unchanged on failure")
+
+	_assert_true(_save.save_game(state), "no valid recovery: retry promotes verified temp")
+	_assert_true(_save._is_valid_save_path(_primary_path()), "no valid recovery: new primary is valid")
+	_assert_text_eq(_read_file(_backup_path()), backup_before, "no valid recovery: corrupt backup is not rotated")
+	var loaded = _save.load_game()
+	_assert_true(loaded != null, "no valid recovery: committed state loads")
+	_assert_eq(int(loaded.xp), 921, "no valid recovery: in-memory progress becomes recovery state")
+
+
+func _test_game_save_feedback_matches_result() -> void:
+	var save_stub := SaveResultStub.new()
+	var i18n_stub := I18nStub.new()
+	var hud := SaveFeedbackHud.new()
+	var game := GameSaveProbe.new()
+	game.save_stub = save_stub
+	game.i18n_stub = i18n_stub
+	game.game_hud = hud
+	game.state.start_new_game(801)
+	game.state.xp = 81
+
+	save_stub.result = false
+	_assert_false(game._save_game(), "game feedback: failed save returns false")
+	_assert_text_eq(
+		hud.flashed_text,
+		"Could not save progress. You can keep playing.",
+		"game feedback: failed save shows localized error"
+	)
+	_assert_eq(int(game.state.xp), 81, "game feedback: failed save leaves gameplay state intact")
+
+	save_stub.result = true
+	_assert_true(game._save_game(), "game feedback: successful save returns true")
+	_assert_text_eq(hud.flashed_text, "Saved", "game feedback: success shown only for true")
+	_assert_eq(hud.flash_count, 2, "game feedback: each attempt produces one message")
+
+	game.free()
+	hud.free()
+	i18n_stub.free()
+	save_stub.free()
+
+
+func _test_failed_save_blocks_menu_navigation() -> void:
+	await process_frame
+	var runtime_save := root.get_node_or_null("SaveManager")
+	_assert_true(runtime_save != null, "menu failure lifecycle: runtime SaveManager exists")
+	if runtime_save == null:
+		return
+
+	var original_router := root.get_node_or_null("ScreenRouter")
+	if original_router != null:
+		root.remove_child(original_router)
+	var navigation := NavigationProbe.new()
+	navigation.name = "ScreenRouter"
+	root.add_child(navigation)
+
+	var packed := load("res://scenes/Game.tscn") as PackedScene
+	_assert_true(packed != null, "menu failure lifecycle: Game scene loads")
+	if packed == null:
+		root.remove_child(navigation)
+		navigation.free()
+		if original_router != null:
+			root.add_child(original_router)
+		return
+
+	var game := packed.instantiate()
+	game.set_meta("visual_capture_no_persistence", true)
+	root.add_child(game)
+	await process_frame
+	await process_frame
+
+	var game_state = game.get("state")
+	game_state.xp = 91
+	game.set_meta("visual_capture_no_persistence", false)
+	runtime_save.call("enable_test_root", _test_dir)
+	runtime_save.call("set_test_failure_point", "temp_write")
+	game.call("_show_pause")
+	game.call("_on_back_to_menu")
+	await process_frame
+	await process_frame
+
+	var hud = game.get("game_hud")
+	var i18n := root.get_node_or_null("I18nManager")
+	var expected_error := str(i18n.call("t", "save_failed")) if i18n != null else "save_failed"
+	_assert_true(game.is_inside_tree(), "menu failure lifecycle: Game remains in tree")
+	_assert_false(game.is_queued_for_deletion(), "menu failure lifecycle: Game is not queued for deletion")
+	_assert_true(game.get_parent() == root, "menu failure lifecycle: Game screen remains mounted")
+	_assert_eq(navigation.go_back_calls, 0, "menu failure lifecycle: router.go_back is not called")
+	_assert_eq(navigation.replace_calls, 0, "menu failure lifecycle: router.replace is not called")
+	_assert_text_eq(
+		str(hud.save_indicator.text),
+		expected_error,
+		"menu failure lifecycle: localized error remains visible on live HUD"
+	)
+	_assert_eq(int(game_state.xp), 91, "menu failure lifecycle: in-memory progress remains available")
+
+	var save_tween = hud.get("_save_flash_tween")
+	if save_tween is Tween and save_tween.is_valid():
+		save_tween.kill()
+	var audio := root.get_node_or_null("AudioManager")
+	if audio != null and audio.has_method("stop_music"):
+		audio.call("stop_music")
+		for sfx_player in audio.get("_sfx_players"):
+			sfx_player.stop()
+			sfx_player.stream = null
+		audio.set("_streams", {})
+	runtime_save.call("clear_test_failure_point")
+	runtime_save.call("disable_test_root")
+	game.set_meta("visual_capture_no_persistence", true)
+	var game_ref: WeakRef = weakref(game)
+	var navigation_ref: WeakRef = weakref(navigation)
+	game.queue_free()
+	navigation.queue_free()
+	await process_frame
+	await process_frame
+	await process_frame
+	_assert_true(game_ref.get_ref() == null, "menu failure lifecycle: Game is freed during cleanup")
+	_assert_true(
+		navigation_ref.get_ref() == null,
+		"menu failure lifecycle: navigation probe is freed during cleanup"
+	)
+	if original_router != null:
+		root.add_child(original_router)
+	await process_frame
+
+
+func _seed_primary_and_backup(seed: int) -> void:
+	_save.delete_save()
+	var state := GameStateScript.new()
+	state.start_new_game(seed)
+	state.xp = seed
+	_assert_true(_save.save_game(state), "failure setup: first committed save")
+	state.xp = seed + 1
+	_assert_true(_save.save_game(state), "failure setup: second committed save")
+
+
+func _seed_corrupt_primary_with_valid_backup(seed: int) -> void:
+	_seed_primary_and_backup(seed)
+	_write_file(_primary_path(), "{corrupt primary")
+	_assert_false(_save._is_valid_save_path(_primary_path()), "corrupt-primary setup: primary invalid")
+	_assert_true(_save._is_valid_save_path(_backup_path()), "corrupt-primary setup: backup valid")
+
+
 func _test_corrupt_primary_recovers_from_backup() -> void:
 	_save.delete_save()
 	var state := GameStateScript.new()
@@ -66,12 +457,75 @@ func _test_corrupt_primary_recovers_from_backup() -> void:
 	state.current_level = 3
 	_assert_true(_save.save_game(state), "second save creates backup")
 
-	var primary := "%s/lost_number_save.json" % _test_dir
-	_write_file(primary, "{not json")
+	var backup_before := _read_file(_backup_path())
+	_write_file(_primary_path(), "{not json")
 
 	var loaded = _save.load_game()
 	_assert_true(loaded != null, "recover from backup after corrupt primary")
 	_assert_eq(int(loaded.current_level), 1, "backup level preserved (first save)")
+	_assert_true(_save._is_valid_save_path(_primary_path()), "successful self-heal: primary restored and valid")
+	_assert_text_eq(
+		_read_file(_primary_path()),
+		backup_before,
+		"successful self-heal: primary restored from exact backup bytes"
+	)
+	_assert_text_eq(
+		_read_file(_backup_path()),
+		backup_before,
+		"successful self-heal: backup bytes remain unchanged"
+	)
+	_assert_false(FileAccess.file_exists(_temp_path()), "successful self-heal: staging temp cleaned")
+
+
+func _test_backup_self_heal_promotion_failure_keeps_backup() -> void:
+	_save.delete_save()
+	var state := GameStateScript.new()
+	state.start_new_game(1007)
+	state.xp = 70
+	_assert_true(_save.save_game(state), "failed self-heal setup: first committed save")
+	state.xp = 80
+	_assert_true(_save.save_game(state), "failed self-heal setup: second committed save")
+
+	_write_file(_primary_path(), "{corrupt primary before self-heal")
+	var corrupt_primary_before := _read_file(_primary_path())
+	var valid_backup_before := _read_file(_backup_path())
+	_save.set_test_failure_point("recovery_promotion")
+
+	var loaded = _save.load_game()
+	_assert_true(loaded != null, "failed self-heal: load still returns backup state")
+	_assert_eq(int(loaded.xp), 70, "failed self-heal: backup progress returned")
+	_assert_text_eq(
+		_read_file(_primary_path()),
+		corrupt_primary_before,
+		"failed self-heal: corrupt primary bytes remain unchanged"
+	)
+	_assert_text_eq(
+		_read_file(_backup_path()),
+		valid_backup_before,
+		"failed self-heal: valid backup bytes remain unchanged"
+	)
+	_assert_true(_save._is_valid_save_path(_backup_path()), "failed self-heal: backup remains valid")
+	var backup_loaded = _save._try_load_path(_backup_path(), null)
+	_assert_true(backup_loaded != null, "failed self-heal: backup remains directly loadable")
+	_assert_eq(int(backup_loaded.xp), 70, "failed self-heal: direct backup load preserves progress")
+	_assert_false(FileAccess.file_exists(_temp_path()), "failed self-heal: staging temp cleaned")
+
+	_save.clear_test_failure_point()
+	loaded = _save.load_game()
+	_assert_true(loaded != null, "self-heal retry: load returns backup state")
+	_assert_eq(int(loaded.xp), 70, "self-heal retry: backup progress returned")
+	_assert_true(_save._is_valid_save_path(_primary_path()), "self-heal retry: primary restored and valid")
+	_assert_text_eq(
+		_read_file(_primary_path()),
+		valid_backup_before,
+		"self-heal retry: primary restored from exact backup bytes"
+	)
+	_assert_text_eq(
+		_read_file(_backup_path()),
+		valid_backup_before,
+		"self-heal retry: backup bytes remain unchanged"
+	)
+	_assert_false(FileAccess.file_exists(_temp_path()), "self-heal retry: staging temp cleaned")
 
 
 func _test_backup_only_valid_has_save() -> void:
@@ -207,6 +661,31 @@ func _write_file(path: String, text: String) -> void:
 	file.close()
 
 
+func _read_file(path: String) -> String:
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return ""
+	var text := file.get_as_text()
+	file.close()
+	return text
+
+
+func _primary_path() -> String:
+	return "%s/lost_number_save.json" % _test_dir
+
+
+func _backup_path() -> String:
+	return "%s/lost_number_save.bak.json" % _test_dir
+
+
+func _temp_path() -> String:
+	return "%s/lost_number_save.tmp.json" % _test_dir
+
+
+func _backup_temp_path() -> String:
+	return "%s/lost_number_save.bak.tmp.json" % _test_dir
+
+
 func _cleanup_test_dir() -> void:
 	var dir := DirAccess.open(_test_dir)
 	if dir:
@@ -284,6 +763,14 @@ func _assert_true(value: bool, message: String) -> void:
 
 func _assert_eq(a: int, b: int, message: String) -> void:
 	_assert_true(a == b, "%s (got %s expected %s)" % [message, a, b])
+
+
+func _assert_text_eq(a: String, b: String, message: String) -> void:
+	if a != b:
+		failed += 1
+		push_error("FAIL: %s (text mismatch)" % message)
+	else:
+		print("OK: " + message)
 
 
 func _assert_false(value: bool, message: String) -> void:

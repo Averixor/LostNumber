@@ -131,6 +131,7 @@ const KEY_ALIASES := {
 	"pause_title": "pause_title",
 	"btn_resume": "btn_resume",
 	"save_indicator": "save_indicator",
+	"save_failed": "save_failed",
 	"chain_status_valid": "chain_status_valid",
 	"chain_status_invalid": "chain_status_invalid",
 	"chain_status_continue": "chain_status_continue",
@@ -194,6 +195,11 @@ const STATIC_FALLBACKS := {
 		"uk": "Збережено",
 		"ru": "Сохранено",
 		"en": "Saved",
+	},
+	"save_failed": {
+		"uk": "Не вдалося зберегти прогрес. Гру можна продовжити.",
+		"ru": "Не удалось сохранить прогресс. Игру можно продолжить.",
+		"en": "Could not save progress. You can keep playing.",
 	},
 	"chain_status_valid": {
 		"uk": "Валідно!",

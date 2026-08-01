@@ -191,6 +191,7 @@
   "start_new_game_confirm": "Start new game",
   "confirm_new_game": "Start a new game? Current progress will be lost.",
   "save_done": "Progress saved.",
+  "save_failed": "Could not save progress. You can keep playing.",
   "online_status": "Connection restored",
   "offline_status": "Offline mode",
   "storage_degraded": "Saving unavailable — progress may be lost after refreshing the page.",
