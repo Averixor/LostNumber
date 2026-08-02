@@ -16,6 +16,7 @@ const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 @onready var dock_about: Button = $Layout/RootVBox/DockRows/DockRow/DockAbout
 @onready var dock_daily: Button = $Layout/RootVBox/DockRows/DockRowSecondary/DockDaily
 @onready var dock_achievements: Button = $Layout/RootVBox/DockRows/DockRowSecondary/DockAchievements
+@onready var dock_exit: Button = $Layout/RootVBox/DockRows/DockRowSecondary/DockExit
 @onready var version_label: Label = $Layout/RootVBox/VersionLabel
 
 var _new_game_dialog: ConfirmationDialog = null
@@ -39,7 +40,7 @@ func _i18n(key: String, args: Array = []) -> String:
 
 
 func _dock_buttons() -> Array:
-	return [dock_wheel, dock_settings, dock_stats, dock_about, dock_daily, dock_achievements]
+	return [dock_wheel, dock_settings, dock_stats, dock_about, dock_daily, dock_achievements, dock_exit]
 
 
 func _ready() -> void:
@@ -57,26 +58,28 @@ func _ready() -> void:
 	continue_button.text = _i18n("menu_continue")
 	continue_button.visible = has_save
 	continue_button.disabled = not has_save
+	# Exit lives in the pedestal dock (not a lonely top-right control).
 	if exit_button != null:
-		# Compact chrome control (VISUAL_TARGET: corner sigil, not a primary CTA).
-		exit_button.text = ""
-		exit_button.tooltip_text = _i18n("btn_exit")
-		exit_button.variant = "ghost"
+		exit_button.visible = false
+		exit_button.disabled = true
+	var top_bar := get_node_or_null("Layout/RootVBox/TopBar") as CanvasItem
+	if top_bar != null:
+		top_bar.visible = false
 	version_label.text = _i18n("version_label", [str(ProjectSettings.get_setting("application/config/version", ""))])
 	version_label.add_theme_font_size_override("font_size", 11)
 
 	_set_button_icon(play_button, LnUiLib.icon_path("home.png"))
 	_set_button_icon(continue_button, LnUiLib.icon_path("save.png"))
-	if exit_button != null:
-		_set_button_icon(exit_button, LnUiLib.icon_path("exit.png"))
 
-	# VISUAL_TARGET pedestal row: wheel · settings · stats · about (+ working daily/achievements).
-	dock_wheel.call("setup", _i18n("dock_wheel"), LnUiLib.wheel_icon_path("wheel-x2.png"))
+	# VISUAL_TARGET pedestal row: wheel · settings · stats · about (+ daily/achievements/exit).
+	dock_wheel.call("setup", _i18n("dock_wheel"), LnUiLib.icon_path("wheel.png"))
 	dock_settings.call("setup", _i18n("dock_settings"), LnUiLib.icon_path("settings.png"))
 	dock_stats.call("setup", _i18n("btn_stats"), LnUiLib.icon_path("statistics.png"))
 	dock_about.call("setup", _i18n("btn_about"), LnUiLib.icon_path("about.png"))
 	dock_daily.call("setup", _i18n("dock_daily"), LnUiLib.icon_path("daily-tasks.png"))
 	dock_achievements.call("setup", _i18n("dock_achievements"), LnUiLib.icon_path("achievements.png"))
+	if dock_exit != null:
+		dock_exit.call("setup", _i18n("btn_exit"), LnUiLib.icon_path("exit.png"))
 	dock_wheel.disabled = not has_save
 	if dock_wheel.has_method("refresh_enabled_visual"):
 		dock_wheel.call("refresh_enabled_visual")
@@ -85,20 +88,17 @@ func _ready() -> void:
 		cta.variant = "primary"
 		cta.custom_minimum_size = Vector2(0, CTA_HEIGHT)
 		cta.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	if exit_button != null:
-		exit_button.custom_minimum_size = Vector2(52, 44)
-		exit_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 
 	play_button.pressed.connect(_on_play)
 	continue_button.pressed.connect(_on_continue)
-	if exit_button != null:
-		exit_button.pressed.connect(_on_exit)
 	dock_wheel.pressed.connect(_on_wheel)
 	dock_settings.pressed.connect(_on_settings)
 	dock_stats.pressed.connect(_on_stats)
 	dock_about.pressed.connect(_on_about)
 	dock_daily.pressed.connect(_on_daily)
 	dock_achievements.pressed.connect(_on_achievements)
+	if dock_exit != null:
+		dock_exit.pressed.connect(_on_exit)
 
 	var theme_mgr := _autoload("ThemeManager")
 	if theme_mgr != null and theme_mgr.has_signal("theme_changed"):
@@ -162,12 +162,6 @@ func _apply_title_style() -> void:
 		tagline_color = theme_mgr.call("get_text_color")
 	tagline_label.add_theme_color_override("font_color", Color(tagline_color, 0.92 if is_dark else 1.0))
 	version_label.add_theme_color_override("font_color", Color(version_color, 0.85 if is_dark else 0.92))
-	if exit_button != null:
-		var exit_color := tagline_color if is_dark else ThemeTokensLib.DAWN_COLOR_TEXT
-		exit_button.add_theme_color_override("font_color", exit_color)
-		exit_button.add_theme_color_override("icon_normal_color", exit_color)
-		exit_button.add_theme_color_override("icon_hover_color", exit_color)
-		exit_button.add_theme_color_override("icon_pressed_color", exit_color)
 
 func _set_button_icon(button: Button, path: String) -> void:
 	if not ResourceLoader.exists(path):
@@ -185,8 +179,6 @@ func _animate_entrance() -> void:
 		items.append(continue_button)
 	for dock in _dock_buttons():
 		items.append(dock)
-	if exit_button != null:
-		items.append(exit_button)
 	items.append(version_label)
 	for item in items:
 		item.modulate.a = 0.0

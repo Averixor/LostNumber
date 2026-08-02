@@ -82,10 +82,11 @@ func _audio():
 
 
 func _save():
+	## Silent success: autosave must not flash a toast after every toggle.
+	## Surface feedback only when a real failure path needs it (callers use show_toast).
 	var settings = _settings()
 	if settings != null and settings.has_method("save_settings"):
 		settings.call("save_settings")
-	LnUiLib.show_toast(self, _i18n("save_indicator"))
 
 
 func _setup_labels() -> void:
@@ -439,8 +440,8 @@ func _on_language_selected(index: int) -> void:
 		_load_settings()
 
 
-func _on_leaderboard_toggled(enabled: bool) -> void:
-	LnUiLib.show_toast(self, _i18n("save_indicator"))
+func _on_leaderboard_toggled(_enabled: bool) -> void:
+	pass
 
 
 func _on_theme_cycle() -> void:

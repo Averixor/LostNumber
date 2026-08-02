@@ -4,6 +4,7 @@ class_name LnUi
 ## Shared Dark Neon Fantasy glass UI styles.
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
+const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
 
 const BG_DARK := Color("#0a0e27")
 const BG_SECONDARY := Color("#141829")
@@ -372,11 +373,44 @@ static func small_pill(bg: Color = Color(0.14, 0.07, 0.19, 0.86), border: Color 
 	return sb
 
 
-static func apply_button(btn: Button, disabled: bool = false, use_visual_skin: bool = false) -> void:
-	btn.add_theme_stylebox_override("normal", button_normal(use_visual_skin))
-	btn.add_theme_stylebox_override("hover", button_hover(use_visual_skin))
-	btn.add_theme_stylebox_override("pressed", button_pressed(use_visual_skin))
-	btn.add_theme_stylebox_override("disabled", button_disabled(use_visual_skin))
+static func _has_visual_skin() -> bool:
+	var theme_mgr := _theme_manager()
+	return theme_mgr != null and theme_mgr.has_method("get_visual_skin") and theme_mgr.call("get_visual_skin") != null
+
+
+static func apply_button(
+	btn: Button,
+	disabled: bool = false,
+	use_visual_skin: bool = false,
+	allow_focus: bool = false
+) -> void:
+	# Auto-detect active VisualSkin so callers that omit the flag cannot stamp neon purple.
+	var skin_on := use_visual_skin or _has_visual_skin()
+	if skin_on:
+		var palette := GothicVisualsLib.resolve_palette(_theme_manager())
+		btn.add_theme_stylebox_override("normal", GothicVisualsLib.icon_button(palette, "normal"))
+		btn.add_theme_stylebox_override("hover", GothicVisualsLib.icon_button(palette, "hover"))
+		btn.add_theme_stylebox_override("pressed", GothicVisualsLib.icon_button(palette, "pressed"))
+		btn.add_theme_stylebox_override("disabled", GothicVisualsLib.icon_button(palette, "disabled"))
+		btn.add_theme_stylebox_override("focus", GothicVisualsLib.icon_button(palette, "hover"))
+		btn.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
+		btn.add_theme_color_override("font_hover_color", GothicVisualsLib.GOLD_LIGHT)
+		btn.add_theme_color_override("font_pressed_color", GothicVisualsLib.TEXT_IVORY)
+		btn.add_theme_color_override("font_focus_color", GothicVisualsLib.TEXT_IVORY)
+		btn.add_theme_color_override("font_disabled_color", GothicVisualsLib.TEXT_MUTED)
+		btn.add_theme_font_size_override("font_size", 16)
+		btn.icon = null
+		if btn.custom_minimum_size.y < 48.0:
+			btn.custom_minimum_size.y = 48
+		btn.focus_mode = Control.FOCUS_ALL if allow_focus else Control.FOCUS_NONE
+		btn.disabled = disabled
+		if btn is BaseButton:
+			hook_press_scale(btn as BaseButton)
+		return
+	btn.add_theme_stylebox_override("normal", button_normal(false))
+	btn.add_theme_stylebox_override("hover", button_hover(false))
+	btn.add_theme_stylebox_override("pressed", button_pressed(false))
+	btn.add_theme_stylebox_override("disabled", button_disabled(false))
 	btn.add_theme_color_override("font_color", TEXT)
 	btn.add_theme_color_override("font_hover_color", TEXT)
 	btn.add_theme_color_override("font_pressed_color", TEXT)
@@ -384,7 +418,7 @@ static func apply_button(btn: Button, disabled: bool = false, use_visual_skin: b
 	btn.add_theme_font_size_override("font_size", 16)
 	if btn.custom_minimum_size.y < 48.0:
 		btn.custom_minimum_size.y = 48
-	btn.focus_mode = Control.FOCUS_NONE
+	btn.focus_mode = Control.FOCUS_ALL if allow_focus else Control.FOCUS_NONE
 	btn.disabled = disabled
 	if btn is BaseButton:
 		hook_press_scale(btn as BaseButton)
@@ -589,6 +623,10 @@ static func apply_check_icon(check: CheckButton, icon_name: String) -> void:
 
 
 static func apply_button_icon(btn: Button, icon_name: String) -> void:
+	# Gothic panel actions are text-first; circular back/wheel badges read as purple chrome.
+	if _has_visual_skin() and (icon_name == "back.png" or icon_name.begins_with("wheel-")):
+		btn.icon = null
+		return
 	var tex := load_icon(icon_name)
 	if tex == null:
 		return
@@ -860,11 +898,20 @@ static func show_toast(host: Control, text: String, duration: float = 1.6) -> vo
 	var toast := PanelContainer.new()
 	toast.name = "LnToast"
 	toast.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	toast.add_theme_stylebox_override("panel", small_pill(Color(0.12, 0.06, 0.16, 0.92), BORDER_ACTIVE))
+	var use_skin := false
+	var theme_mgr := _theme_manager()
+	if theme_mgr != null and theme_mgr.has_method("get_visual_skin"):
+		use_skin = theme_mgr.call("get_visual_skin") != null
+	var pill: StyleBoxFlat
+	if use_skin:
+		pill = small_pill(Color(0.10, 0.08, 0.12, 0.94), Color("#d6ad58"))
+	else:
+		pill = small_pill(Color(0.12, 0.06, 0.16, 0.92), BORDER_ACTIVE)
+	toast.add_theme_stylebox_override("panel", pill)
 	var label := Label.new()
 	label.text = text
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.add_theme_color_override("font_color", TEXT)
+	label.add_theme_color_override("font_color", Color("#f7ead5") if use_skin else TEXT)
 	label.add_theme_font_size_override("font_size", 14)
 	toast.add_child(label)
 	layer.add_child(toast)

@@ -40,9 +40,13 @@ func _apply_gothic_visuals() -> void:
 	GothicScreenMixinLib.apply_background(self, "", 0.30, &"menu")
 	GothicScreenMixinLib.style_cta_button(self, spin_button)
 	for button in [back_button, result_close]:
+		if button != null:
+			button.icon = null
+			button.expand_icon = false
 		GothicScreenMixinLib.style_button(self, button)
 		if button != null:
 			button.focus_mode = Control.FOCUS_NONE
+			button.icon = null
 	GothicScreenMixinLib.style_panel(self, result_card)
 	title_label.add_theme_color_override("font_color", GothicVisualsLib.GOLD_LIGHT)
 	if cost_label != null:
@@ -50,10 +54,13 @@ func _apply_gothic_visuals() -> void:
 	if result_label != null:
 		result_label.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
 	if spin_button != null:
+		spin_button.icon = null
 		spin_button.custom_minimum_size = Vector2(240, 52)
 		spin_button.add_theme_font_size_override("font_size", 17)
 		spin_button.focus_mode = Control.FOCUS_NONE
 	if back_button != null:
 		back_button.custom_minimum_size = Vector2(220, 48)
+		back_button.icon = null
 	if wheel_canvas != null:
 		wheel_canvas.custom_minimum_size = Vector2(320, 320)
+		wheel_canvas.queue_redraw()

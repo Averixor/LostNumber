@@ -34,6 +34,7 @@ func _apply_gothic_visuals() -> void:
 		if button.has_method("refresh_enabled_visual"):
 			button.call("refresh_enabled_visual")
 	_refresh_cta_styles()
+	_hide_top_exit()
 	_refresh_logo_visibility()
 	_apply_title_style()
 
@@ -44,6 +45,13 @@ func _refresh_cta_styles() -> void:
 			continue
 		if button.has_method("set_gothic_cta"):
 			button.call("set_gothic_cta", true)
-	if exit_button != null and exit_button.has_method("set_gothic_cta"):
-		# Compact chrome control — not a primary CTA strip.
-		exit_button.call("set_gothic_cta", false)
+
+
+func _hide_top_exit() -> void:
+	## Exit is a dock pedestal item; keep the legacy top-right control hidden.
+	if exit_button != null:
+		exit_button.visible = false
+		exit_button.disabled = true
+	var top_bar := get_node_or_null("Layout/RootVBox/TopBar") as CanvasItem
+	if top_bar != null:
+		top_bar.visible = false

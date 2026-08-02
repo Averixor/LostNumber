@@ -1,14 +1,9 @@
 extends "res://scripts/ui/WheelCanvas.gd"
 class_name ReadableWheelCanvas
 
-## Text-first wheel presentation. The previous stone pictograms were ambiguous
-## at phone scale; every sector now shows its localized reward name instead.
-
-
-func _load_sector_icons() -> void:
-	## Intentionally do not load res://assets/ui/icons/wheel/*.
-	_sector_textures.clear()
-	_sector_icon_slots.clear()
+## Text-first wheel presentation used by Wheel.tscn.
+## Base WheelCanvas already draws localized label_key captions (no sector icons);
+## this subclass keeps the #47 scene identity and clearer XP/multiplier fallbacks.
 
 
 func _sector_label(sector: Dictionary) -> String:
@@ -24,7 +19,7 @@ func _sector_label(sector: Dictionary) -> String:
 		"multiplier":
 			return "×%d XP" % int(sector.get("multiplier", 2))
 		_:
-			return str(sector.get("label", sector.get("value", "")))
+			return _compact_wheel_label(sector)
 
 
 func _i18n(key: String) -> String:
@@ -34,26 +29,22 @@ func _i18n(key: String) -> String:
 	return key
 
 
-func _draw_sector_content(
-	icon_pos: Vector2,
-	label_pos: Vector2,
-	_sector: Dictionary,
-	label: String,
+func _draw_sector_label(
+	pos: Vector2,
+	text: String,
 	angle: float,
 	highlighted: bool,
-	_icon_size: float
+	font_size_override: int = -1
 ) -> void:
-	if label.is_empty():
-		return
-	# Place text in the middle of the former icon/caption bands. This provides
-	# enough arc width for UK/RU words while keeping the hub and rim clear.
-	var text_pos := icon_pos.lerp(label_pos, 0.56)
-	var font_size := 13
-	if label.length() > 8:
-		font_size = 11
-	if label.length() > 12:
-		font_size = 9
-	_draw_sector_label(text_pos, label, angle, highlighted, font_size)
+	# Slightly tighter sizes for long UK/RU words on 420×920.
+	var font_size := font_size_override
+	if font_size <= 0:
+		font_size = 12
+		if text.length() > 8:
+			font_size = 10
+		if text.length() > 12:
+			font_size = 9
+	super._draw_sector_label(pos, text, angle, highlighted, font_size)
 
 
 func set_sector_icon_slot(_sector_type: String, _texture: Texture2D) -> void:

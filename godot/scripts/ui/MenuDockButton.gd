@@ -91,7 +91,6 @@ func _apply_style() -> void:
 func _apply_gothic_style() -> void:
 	var palette := GothicVisualsLib.resolve_palette(get_node_or_null("/root/ThemeManager"))
 	var rim: Color = palette.get("rim", GothicVisualsLib.GOLD)
-	var crystal: Color = palette.get("crystal", GothicVisualsLib.CRYSTAL)
 	caption.add_theme_color_override("font_color", Color(GothicVisualsLib.TEXT_IVORY, 0.92))
 	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	caption.autowrap_mode = TextServer.AUTOWRAP_OFF
@@ -111,8 +110,8 @@ func _apply_gothic_style() -> void:
 	var hover := normal.duplicate() as StyleBoxFlat
 	hover.bg_color = Color(GothicVisualsLib.STONE_MID.lightened(0.08), 0.94)
 	hover.border_color = Color(rim.lightened(0.10), 0.95)
-	hover.shadow_color = Color(crystal, 0.28)
-	hover.shadow_size = 8
+	hover.shadow_color = Color(GothicVisualsLib.STONE_BLACK, 0.48)
+	hover.shadow_size = 7
 	add_theme_stylebox_override("hover", hover)
 	add_theme_stylebox_override("focus", hover.duplicate())
 

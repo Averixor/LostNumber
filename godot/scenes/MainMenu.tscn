@@ -41,6 +41,7 @@ theme_override_constants/separation = 14
 alignment = 1
 
 [node name="TopBar" type="HBoxContainer" parent="Layout/RootVBox"]
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 8
 alignment = 2
@@ -51,6 +52,7 @@ size_flags_horizontal = 3
 mouse_filter = 2
 
 [node name="ExitButton" parent="Layout/RootVBox/TopBar" instance=ExtResource("3_neonbtn")]
+visible = false
 custom_minimum_size = Vector2(52, 44)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -150,6 +152,10 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="DockAchievements" parent="Layout/RootVBox/DockRows/DockRowSecondary" instance=ExtResource("4_dock")]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DockExit" parent="Layout/RootVBox/DockRows/DockRowSecondary" instance=ExtResource("4_dock")]
 layout_mode = 2
 size_flags_horizontal = 3
 
