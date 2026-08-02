@@ -15,5 +15,5 @@ func _ready() -> void:
 
 func _apply_gothic_visuals() -> void:
 	GothicScreenMixinLib.apply_background(self)
-	GothicScreenMixinLib.style_subtree(self, self)
 	title_label.add_theme_color_override("font_color", GothicVisualsLib.GOLD_LIGHT)
+	GothicScreenMixinLib.style_button(self, back_button)
