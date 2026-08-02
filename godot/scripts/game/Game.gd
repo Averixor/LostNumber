@@ -303,12 +303,19 @@ func _on_chain_updated(can_finish: bool) -> void:
 
 
 func _on_chain_finished(path: Array[Vector2i]) -> void:
+	## Lock board input for the whole merge+gravity settle. GameState.Phase.ANIMATING
+	## already gates Board._gui_input and BonusManager; it was never set on this path.
+	if state.phase != GameState.Phase.PLAYING:
+		return
+	state.phase = GameState.Phase.ANIMATING
+
 	var chain_len := path.size()
 	var float_pos := Vector2.INF
 	if not path.is_empty():
 		float_pos = board_view.get_cell_center_local(path.back())
 	var result := state.merge_current_chain(true)
 	if not result.ok:
+		_release_chain_input_lock()
 		_play_sfx("invalid")
 		board_view.reset_all_highlights()
 		board_view.refresh_all()
@@ -335,6 +342,15 @@ func _on_chain_finished(path: Array[Vector2i]) -> void:
 		_play_sfx("level_up")
 		_play_sfx("victory")
 		level_complete_panel.visible = state.should_show_level_complete()
+		# merge_current_chain may already have set Phase.WIN — do not force PLAYING.
+	_release_chain_input_lock()
+
+
+func _release_chain_input_lock() -> void:
+	if state == null:
+		return
+	if state.phase == GameState.Phase.ANIMATING:
+		state.phase = GameState.Phase.PLAYING
 
 func _on_chain_cancelled() -> void:
 	_play_sfx("invalid")
