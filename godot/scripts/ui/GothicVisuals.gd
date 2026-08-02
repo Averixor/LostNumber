@@ -30,6 +30,28 @@ const TEXT_IVORY := Color("#f7ead5")
 const TEXT_MUTED := Color("#bbaec4")
 
 
+static func resolve_palette(theme_mgr: Node) -> Dictionary:
+	## Always prefer active VisualSkin when present; never bare procedural neon.
+	if theme_mgr != null and theme_mgr.has_method("get_palette"):
+		if theme_mgr.has_method("uses_visual_skin"):
+			return theme_mgr.call("get_palette", bool(theme_mgr.call("uses_visual_skin")))
+		if theme_mgr.has_method("get_visual_skin"):
+			return theme_mgr.call("get_palette", theme_mgr.call("get_visual_skin") != null)
+		return theme_mgr.call("get_palette", true)
+	return {
+		"bg": STONE_BLACK,
+		"panel": STONE_DEEP,
+		"primary": CRYSTAL,
+		"secondary": GOLD,
+		"accent": CRYSTAL_LIGHT,
+		"danger": Color("#D0545C"),
+		"success": Color("#4A9152"),
+		"rim": GOLD,
+		"crystal": CRYSTAL,
+		"glow": 0.85,
+	}
+
+
 static func tile_face_color(value: int) -> Color:
 	if value <= 0:
 		return Color.TRANSPARENT

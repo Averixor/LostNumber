@@ -63,6 +63,24 @@ func _test_resource() -> void:
 	_assert_true(skin.tile_style_for_value(2) != null, "tile style is generated from frame")
 	_assert_true(skin.palette(true).has("primary"), "visual skin palette exposes primary color")
 	_assert_true(skin.overlay_color(true).a > 0.0, "visual skin overlay is visible")
+	_assert_true(skin.has_chrome_styles(), "gothic_crystal fills panel/modal/hud/button styles")
+	_assert_true(skin.style_for(&"panel") != null, "panel StyleBox is non-null")
+	_assert_true(skin.style_for(&"modal") != null, "modal StyleBox is non-null")
+	_assert_true(skin.style_for(&"hud") != null, "hud StyleBox is non-null")
+	_assert_true(skin.style_for(&"button_normal") != null, "button_normal StyleBox is non-null")
+	_assert_true(skin.style_for(&"button_hover") != null, "button_hover StyleBox is non-null")
+	_assert_true(skin.style_for(&"button_pressed") != null, "button_pressed StyleBox is non-null")
+	_assert_true(skin.style_for(&"button_disabled") != null, "button_disabled StyleBox is non-null")
+	var wheel := skin.get_wheel_colors()
+	_assert_true(wheel.size() >= 4, "gothic wheel palette has sector colors")
+	_assert_true(skin.wheel_sector_colors.size() >= 4, "gothic_crystal declares explicit wheel colors")
+	# Explicit gothic sectors must not match neon pink/cyan acid decorative accents.
+	for c in wheel:
+		var sector := Color(c)
+		_assert_true(
+			not _is_near_neon_decorative(sector),
+			"gothic wheel sector avoids neon pink/cyan/acid green"
+		)
 
 
 func _test_manager_api() -> void:
@@ -95,6 +113,23 @@ func _test_manager_api() -> void:
 		"full-frame tile art asset exists on disk"
 	)
 	_assert_true(manager.get_palette(true).has("primary"), "manager resolves visual palette")
+	_assert_true(manager.get_palette().has("rim"), "default get_palette prefers active VisualSkin")
+	_assert_true(manager.get_visual_style(&"panel") != null, "manager resolves panel style from skin")
+	_assert_true(manager.get_visual_style(&"modal") != null, "manager resolves modal style from skin")
+	_assert_true(manager.get_visual_style(&"hud") != null, "manager resolves hud style from skin")
+	_assert_true(manager.get_visual_style(&"button_normal") != null, "manager resolves button_normal")
+	var manager_wheel: Array = manager.get_wheel_colors()
+	_assert_true(manager_wheel.size() >= 4, "manager get_wheel_colors uses gothic skin palette")
+	var skin_wheel := skin.get_wheel_colors() if skin != null else []
+	_assert_true(
+		skin != null and manager_wheel.size() == skin_wheel.size(),
+		"manager wheel colors match VisualSkin.get_wheel_colors"
+	)
+	_assert_true(manager.uses_visual_skin(), "manager reports gothic visual skin active")
+	manager.set_visual_skin_id(manager.PROCEDURAL_VISUAL_SKIN_ID)
+	_assert_true(not manager.uses_visual_skin(), "procedural_neon disables VisualSkin")
+	_assert_true(manager.get_visual_style(&"panel") == null, "procedural_neon has no skin StyleBoxes")
+	manager.set_visual_skin_id(manager.DEFAULT_VISUAL_SKIN_ID)
 	_assert_true(not manager.set_visual_skin(&"missing_skin"), "manager rejects unknown visual skin")
 	manager.free()
 
@@ -210,6 +245,21 @@ func _test_dark_only_theme_controls_hidden() -> void:
 		)
 		skin.queue_free()
 		await process_frame
+
+
+func _color_distance(a: Color, b: Color) -> float:
+	var dr := a.r - b.r
+	var dg := a.g - b.g
+	var db := a.b - b.b
+	return sqrt(dr * dr + dg * dg + db * db)
+
+
+func _is_near_neon_decorative(c: Color) -> bool:
+	return (
+		_color_distance(c, Color("#ff1b9e")) < 0.35
+		or _color_distance(c, Color("#00f0ff")) < 0.35
+		or _color_distance(c, Color("#00ff6b")) < 0.35
+	)
 
 
 func _assert_true(value: bool, message: String) -> void:
