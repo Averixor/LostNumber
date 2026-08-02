@@ -3,7 +3,7 @@ class_name DailyQuestCard
 
 ## Gothic daily quest card with progress and reward.
 
-const LnUiLib := preload("res://scripts/ui/LnUi.gd")
+const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
 
 const MIN_HEIGHT_ACTIVE := 58
 const MIN_HEIGHT_DONE := 48
@@ -13,6 +13,16 @@ const MIN_HEIGHT_DONE := 48
 @onready var progress_label: Label = $Panel/HBox/Content/Progress
 @onready var reward_label: Label = $Panel/HBox/Reward
 @onready var panel: PanelContainer = $Panel
+
+
+func _theme_manager() -> Node:
+	return get_node_or_null("/root/ThemeManager")
+
+
+func _base_panel_style(theme: Node) -> StyleBox:
+	if theme != null and theme.has_method("get_visual_style"):
+		return theme.call("get_visual_style", &"panel") as StyleBox
+	return null
 
 
 func setup(done: bool, text: String, progress_text: String, reward_text: String, status_text: String = "") -> void:
@@ -29,24 +39,29 @@ func setup(done: bool, text: String, progress_text: String, reward_text: String,
 	progress.text = progress_text
 	reward.text = reward_text
 	status.text = "✓" if done else "○"
-	status.add_theme_color_override("font_color", LnUiLib.VALID if done else LnUiLib.TEXT_DISABLED)
 
 	progress.visible = not done
 	if done and not status_text.is_empty():
 		reward.text = status_text
 
-	var panel_style := LnUiLib.glass_box(12, 1,
-		Color(0.157, 0.078, 0.216, 0.78 if not done else 0.62),
-		LnUiLib.BORDER_ACTIVE if done else LnUiLib.BORDER)
-	panel_style.content_margin_left = 10
-	panel_style.content_margin_right = 10
+	var theme := _theme_manager()
+	var palette := GothicVisualsLib.resolve_palette(theme)
+	var panel_style := GothicVisualsLib.card_panel(palette, done, _base_panel_style(theme))
 	panel_style.content_margin_top = 6 if done else 8
 	panel_style.content_margin_bottom = 6 if done else 8
 	card_panel.add_theme_stylebox_override("panel", panel_style)
 
-	title.add_theme_color_override("font_color", LnUiLib.TEXT)
-	progress.add_theme_color_override("font_color", LnUiLib.TEXT_MUTED)
-	reward.add_theme_color_override("font_color", LnUiLib.ACCENT if not done else LnUiLib.TEXT_DISABLED)
+	var success: Color = palette.get("success", Color("#4A9152"))
+	status.add_theme_color_override(
+		"font_color",
+		success.lightened(0.16) if done else GothicVisualsLib.TEXT_MUTED
+	)
+	title.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
+	progress.add_theme_color_override("font_color", GothicVisualsLib.TEXT_MUTED)
+	reward.add_theme_color_override(
+		"font_color",
+		GothicVisualsLib.TEXT_MUTED if done else GothicVisualsLib.GOLD_LIGHT
+	)
 	title.add_theme_font_size_override("font_size", 16 if done else 17)
 	progress.add_theme_font_size_override("font_size", 13)
 	reward.add_theme_font_size_override("font_size", 13 if not done else 12)
