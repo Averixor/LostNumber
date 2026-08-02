@@ -39,14 +39,17 @@ func _ready() -> void:
 func refresh() -> void:
 	var theme_mgr := AutoloadAccessLib.get_autoload("ThemeManager")
 	var screen_id := _current_screen_id()
-	var use_visual_skin := screen_id == "game"
+	var gothic_active := false
+	if theme_mgr != null and theme_mgr.has_method("uses_visual_skin"):
+		gothic_active = bool(theme_mgr.call("uses_visual_skin"))
+	var use_visual_skin := screen_id == "game" or gothic_active
 	var dark := true
 	if theme_mgr != null and theme_mgr.has_method("is_dark"):
 		dark = bool(theme_mgr.call("is_dark"))
 
 	base_color.color = ThemeTokensLib.COLOR_BG if dark else ThemeTokensLib.DAWN_COLOR_BG
 	if theme_mgr != null and theme_mgr.has_method("get_palette"):
-		var palette: Dictionary = theme_mgr.call("get_palette", use_visual_skin)
+		var palette: Dictionary = theme_mgr.call("get_palette", gothic_active or use_visual_skin)
 		base_color.color = palette.get("bg", base_color.color)
 
 	art.texture = null
@@ -56,14 +59,14 @@ func refresh() -> void:
 
 	# Menu/meta screens keep a stronger scrim for text readability.
 	# Gameplay must stay open: skin overlay_color (~0.72) reads as a full-screen lid.
-	var dim_alpha := 0.28 if use_visual_skin else -1.0
+	var dim_alpha := 0.28 if screen_id == "game" else 0.40
 	if theme_mgr != null and theme_mgr.has_method("get_overlay_color"):
-		dim_overlay.color = theme_mgr.call("get_overlay_color", dim_alpha, use_visual_skin)
+		dim_overlay.color = theme_mgr.call("get_overlay_color", dim_alpha, gothic_active)
 	else:
-		dim_overlay.color = Color(0.03, 0.01, 0.07, 0.28 if use_visual_skin else 0.4) if dark else Color(Color("#ffe8f8"), 0.35)
+		dim_overlay.color = Color(0.04, 0.03, 0.02, dim_alpha) if dark else Color(Color("#ffe8f8"), 0.35)
 
-	_setup_glow(dark, theme_mgr, use_visual_skin)
-	_setup_effects(theme_mgr, use_visual_skin)
+	_setup_glow(dark, theme_mgr, gothic_active)
+	_setup_effects(theme_mgr, gothic_active)
 
 
 func _on_screen_changed(_screen_id: String) -> void:
@@ -82,7 +85,7 @@ func _effects_enabled() -> bool:
 	return bool(enabled)
 
 
-func _setup_glow(dark: bool, theme_mgr: Node, use_visual_skin: bool) -> void:
+func _setup_glow(dark: bool, theme_mgr: Node, gothic_active: bool) -> void:
 	if glow.texture == null:
 		var gradient := Gradient.new()
 		gradient.colors = PackedColorArray([Color(1, 1, 1, 1), Color(1, 1, 1, 0)])
@@ -95,28 +98,31 @@ func _setup_glow(dark: bool, theme_mgr: Node, use_visual_skin: bool) -> void:
 		tex.width = 256
 		tex.height = 256
 		glow.texture = tex
-	var tint := ThemeTokensLib.MENU_TITLE_GLOW if dark else ThemeTokensLib.DAWN_COLOR_ACCENT
+	var tint := Color("#d6ad58") if gothic_active else (ThemeTokensLib.MENU_TITLE_GLOW if dark else ThemeTokensLib.DAWN_COLOR_ACCENT)
 	if theme_mgr != null and theme_mgr.has_method("get_palette"):
-		var palette: Dictionary = theme_mgr.call("get_palette", use_visual_skin)
-		tint = palette.get("accent", tint)
-	var alpha := 0.16 * float(theme_mgr.call("get_glow_intensity", use_visual_skin) if theme_mgr != null and theme_mgr.has_method("get_glow_intensity") else 1.0) if _effects_enabled() else 0.08
+		var palette: Dictionary = theme_mgr.call("get_palette", gothic_active)
+		tint = palette.get("rim", palette.get("secondary", tint))
+	var intensity := 0.45 if gothic_active else 1.0
+	if theme_mgr != null and theme_mgr.has_method("get_glow_intensity"):
+		intensity = float(theme_mgr.call("get_glow_intensity", gothic_active))
+	var alpha := (0.10 if gothic_active else 0.16) * intensity if _effects_enabled() else 0.06
 	glow.modulate = Color(tint.r, tint.g, tint.b, alpha)
 
 
-func _setup_effects(theme_mgr: Node, use_visual_skin: bool) -> void:
+func _setup_effects(theme_mgr: Node, gothic_active: bool) -> void:
 	if not _effects_enabled():
 		if _particles != null:
 			_particles.queue_free()
 			_particles = null
 		return
-	var particle_color := ThemeTokensLib.ICON_PINK
+	var particle_color := Color("#d6ad58") if gothic_active else ThemeTokensLib.ICON_PINK
 	if theme_mgr != null and theme_mgr.has_method("get_particle_color"):
-		particle_color = theme_mgr.call("get_particle_color", use_visual_skin)
+		particle_color = theme_mgr.call("get_particle_color", gothic_active)
 	if _particles != null:
-		_particles.color = Color(particle_color, 0.18)
+		_particles.color = Color(particle_color, 0.14 if gothic_active else 0.18)
 		return
 
-	# Slow floating neon dots (web .float-color parity), built only when enabled.
+	# Slow floating dots (web .float-color parity), built only when enabled.
 	_particles = CPUParticles2D.new()
 	_particles.amount = PARTICLE_AMOUNT_FULL if _effects_enabled() else PARTICLE_AMOUNT_LOW
 	_particles.lifetime = 12.0
@@ -129,7 +135,7 @@ func _setup_effects(theme_mgr: Node, use_visual_skin: bool) -> void:
 	_particles.initial_velocity_max = 16.0
 	_particles.scale_amount_min = 1.5
 	_particles.scale_amount_max = 4.0
-	_particles.color = Color(particle_color, 0.18)
+	_particles.color = Color(particle_color, 0.14 if gothic_active else 0.18)
 	_on_resized()
 	effects_root.add_child(_particles)
 

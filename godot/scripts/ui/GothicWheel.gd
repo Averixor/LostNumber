@@ -52,6 +52,7 @@ func _apply_gothic_visuals() -> void:
 	if result_label != null:
 		result_label.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
 	if spin_button != null:
+		spin_button.icon = null
 		spin_button.custom_minimum_size = Vector2(240, 52)
 		spin_button.add_theme_font_size_override("font_size", 17)
 		spin_button.focus_mode = Control.FOCUS_NONE

@@ -126,6 +126,36 @@ func _test_manager_api() -> void:
 		"manager wheel colors match VisualSkin.get_wheel_colors"
 	)
 	_assert_true(manager.uses_visual_skin(), "manager reports gothic visual skin active")
+	var chrome := GothicVisualsLib.resolve_palette(manager)
+	_assert_true(
+		_color_distance(chrome.get("primary", Color.WHITE), Color("#8F55D6")) > 0.35,
+		"gothic chrome primary is not violet crystal"
+	)
+	_assert_true(
+		_color_distance(chrome.get("primary", Color.WHITE), GothicVisualsLib.GOLD) < 0.20,
+		"gothic chrome primary maps to gold"
+	)
+	var cta := GothicVisualsLib.cta_button(chrome, "normal") as StyleBoxFlat
+	_assert_true(cta != null, "cta_button returns StyleBoxFlat")
+	if cta != null:
+		_assert_true(
+			_color_distance(Color(cta.bg_color.r, cta.bg_color.g, cta.bg_color.b), Color("#8F55D6")) > 0.35,
+			"cta fill is not purple"
+		)
+		_assert_true(
+			_color_distance(Color(cta.shadow_color.r, cta.shadow_color.g, cta.shadow_color.b), Color("#8F55D6")) > 0.35,
+			"cta shadow is not purple bloom"
+		)
+	var booster := GothicVisualsLib.booster_button(chrome, true, true) as StyleBoxFlat
+	if booster != null:
+		_assert_true(
+			_color_distance(Color(booster.bg_color.r, booster.bg_color.g, booster.bg_color.b), Color("#8F55D6")) > 0.35,
+			"active booster fill is not purple"
+		)
+	_assert_true(
+		ResourceLoader.exists("res://assets/ui/icons/gothic/wheel.png"),
+		"gothic fortune wheel dock icon exists"
+	)
 	manager.set_visual_skin_id(manager.PROCEDURAL_VISUAL_SKIN_ID)
 	_assert_true(not manager.uses_visual_skin(), "procedural_neon disables VisualSkin")
 	_assert_true(manager.get_visual_style(&"panel") == null, "procedural_neon has no skin StyleBoxes")
@@ -188,6 +218,28 @@ func _test_app_shell_single_logo() -> void:
 		"App-shell menu has exactly one logo (overlay XOR baked-in)"
 	)
 	_assert_true(logo_visible, "fresh App-shell menu shows LogoImage overlay")
+	var top_exit := menu.get_node_or_null("Layout/RootVBox/TopBar/ExitButton") as CanvasItem
+	_assert_true(
+		top_exit == null or not top_exit.visible,
+		"top-right Exit is hidden (dock owns exit)"
+	)
+	var dock_exit := menu.get_node_or_null("Layout/RootVBox/DockRows/DockRowSecondary/DockExit") as CanvasItem
+	_assert_true(dock_exit != null and dock_exit.visible, "dock Exit pedestal is present")
+	var dock_wheel := menu.get_node_or_null("Layout/RootVBox/DockRows/DockRow/DockWheel") as Button
+	_assert_true(dock_wheel != null, "dock Wheel pedestal is present")
+	if dock_wheel != null:
+		var icon_rect := dock_wheel.get_node_or_null("VBox/Icon") as TextureRect
+		_assert_true(icon_rect != null and icon_rect.texture != null, "dock Wheel has an icon texture")
+		if icon_rect != null and icon_rect.texture != null:
+			var icon_path := str(icon_rect.texture.resource_path)
+			_assert_true(
+				icon_path.find("wheel-x2") < 0,
+				"dock Wheel does not use purple crystal wheel-x2 badge"
+			)
+			_assert_true(
+				icon_path.find("icons/gothic/wheel") >= 0 or icon_path.find("wheel.png") >= 0,
+				"dock Wheel uses gothic fortune wheel icon"
+			)
 	if router != null and router.has_method("unregister"):
 		router.call("unregister")
 	app.queue_free()

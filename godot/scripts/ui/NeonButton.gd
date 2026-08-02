@@ -200,6 +200,8 @@ func _apply_gothic_cta() -> void:
 	_set_font_colors(GothicVisualsLib.TEXT_IVORY, GothicVisualsLib.GOLD_LIGHT)
 	add_theme_color_override("font_disabled_color", GothicVisualsLib.TEXT_MUTED)
 	add_theme_font_size_override("font_size", 16)
+	# Crystal/neon badge icons read as purple chrome on CTAs — labels are enough.
+	icon = null
 
 
 func _gothic_palette() -> Dictionary:

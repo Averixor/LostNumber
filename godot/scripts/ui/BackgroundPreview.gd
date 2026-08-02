@@ -160,8 +160,8 @@ func _refresh_cards() -> void:
 	for card in _cards:
 		var selected := str(card.get_meta("background_path", "")) == _selected_path
 		var style := StyleBoxFlat.new()
-		style.bg_color = Color(0.055, 0.025, 0.08, 0.9)
-		style.border_color = Color("#59ef86") if selected else Color(0.66, 0.33, 0.97, 0.58)
+		style.bg_color = Color(0.06, 0.05, 0.04, 0.9)
+		style.border_color = Color("#d6ad58") if selected else Color(0.55, 0.45, 0.28, 0.58)
 		style.set_border_width_all(2 if selected else 1)
 		style.set_corner_radius_all(10)
 		style.set_content_margin_all(4)

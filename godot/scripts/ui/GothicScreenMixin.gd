@@ -22,11 +22,23 @@ static func apply_background(
 	var resolved_path := backdrop_path
 	if resolved_path.is_empty():
 		var theme := host.get_node_or_null("/root/ThemeManager")
-		if theme != null and theme.has_method("get_visual_background_path"):
+		# Prefer user-selected / custom photo (Settings → Background) over fixed splash.
+		if theme != null and theme.has_method("get_background_texture_path"):
+			var selected := str(theme.call("get_background_texture_path", str(screen_kind)))
+			if not selected.is_empty():
+				if selected.begins_with("user://") and FileAccess.file_exists(selected):
+					resolved_path = selected
+				elif ResourceLoader.exists(selected):
+					resolved_path = selected
+		if resolved_path.is_empty() and theme != null and theme.has_method("get_visual_background_path"):
 			resolved_path = str(theme.call("get_visual_background_path", screen_kind))
-	if resolved_path.is_empty() or not ResourceLoader.exists(resolved_path):
+	if resolved_path.is_empty() or (
+		not resolved_path.begins_with("user://") and not ResourceLoader.exists(resolved_path)
+	) or (resolved_path.begins_with("user://") and not FileAccess.file_exists(resolved_path)):
 		resolved_path = DEFAULT_BACKDROP
-	if ResourceLoader.exists(resolved_path):
+	if ResourceLoader.exists(resolved_path) or (
+		resolved_path.begins_with("user://") and FileAccess.file_exists(resolved_path)
+	):
 		var use_skin := false
 		var theme := host.get_node_or_null("/root/ThemeManager")
 		if theme != null and theme.has_method("get_visual_skin"):
@@ -70,15 +82,14 @@ static func style_modal(host: Node, panel: PanelContainer) -> void:
 		return
 	var colors := palette(host)
 	var rim: Color = colors.get("rim", GothicVisualsLib.GOLD)
-	var crystal: Color = colors.get("crystal", GothicVisualsLib.CRYSTAL)
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(GothicVisualsLib.STONE_BLACK, 0.95)
 	style.border_color = Color(rim, 0.74)
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(12)
 	style.set_content_margin_all(20)
-	style.shadow_color = Color(crystal, 0.28)
-	style.shadow_size = 18
+	style.shadow_color = Color(GothicVisualsLib.STONE_BLACK, 0.55)
+	style.shadow_size = 14
 	panel.add_theme_stylebox_override("panel", style)
 
 

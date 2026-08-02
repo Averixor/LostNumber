@@ -34,7 +34,7 @@ func _apply_gothic_visuals() -> void:
 		if button.has_method("refresh_enabled_visual"):
 			button.call("refresh_enabled_visual")
 	_refresh_cta_styles()
-	_refresh_exit_control()
+	_hide_top_exit()
 	_refresh_logo_visibility()
 	_apply_title_style()
 
@@ -47,14 +47,11 @@ func _refresh_cta_styles() -> void:
 			button.call("set_gothic_cta", true)
 
 
-func _refresh_exit_control() -> void:
-	if exit_button == null:
-		return
-	# Readable labeled control — not a mystery corner speck.
-	exit_button.text = _i18n("btn_exit")
-	exit_button.tooltip_text = _i18n("btn_exit")
-	exit_button.variant = "secondary"
-	exit_button.icon = null
-	exit_button.custom_minimum_size = Vector2(96, 44)
-	exit_button.size_flags_horizontal = Control.SIZE_SHRINK_END
-	GothicScreenMixinLib.style_button(self, exit_button)
+func _hide_top_exit() -> void:
+	## Exit is a dock pedestal item; keep the legacy top-right control hidden.
+	if exit_button != null:
+		exit_button.visible = false
+		exit_button.disabled = true
+	var top_bar := get_node_or_null("Layout/RootVBox/TopBar") as CanvasItem
+	if top_bar != null:
+		top_bar.visible = false

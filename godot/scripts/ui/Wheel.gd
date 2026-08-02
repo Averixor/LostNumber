@@ -60,13 +60,15 @@ func _ready() -> void:
 	result_close.pressed.connect(_hide_result)
 	wheel_canvas.spin_finished.connect(_on_spin_animation_done)
 	var use_skin := theme != null and theme.has_method("get_visual_skin") and theme.call("get_visual_skin") != null
-	LnUiLib.apply_button(back_button, false, use_skin)
+	# Never stamp neon StyleBoxes onto gothic NeonButtons — GothicWheel owns chrome.
 	if not use_skin:
+		LnUiLib.apply_button(back_button, false, false)
 		LnUiLib.apply_button_icon(back_button, "back.png")
 		LnUiLib.apply_button_icon(result_close, "back.png")
 	else:
 		back_button.icon = null
 		result_close.icon = null
+		spin_button.icon = null
 
 	_state = _load_state()
 	if _state == null:
@@ -99,8 +101,14 @@ func _refresh_ui() -> void:
 		spin_button.text = _wheel_error_text(str(check.get("reason", "")))
 	else:
 		spin_button.text = _i18n("btn_spin_wheel", [cost])
-	LnUiLib.apply_wheel_button_icon(spin_button, "wheel-xp-25.png", 32)
-	LnUiLib.apply_button(spin_button, spin_button.disabled)
+	# Crystal wheel-sector badges on Spin look like purple chrome; gothic uses text-only.
+	var theme_mgr := _autoload("ThemeManager")
+	var use_skin := theme_mgr != null and theme_mgr.has_method("get_visual_skin") and theme_mgr.call("get_visual_skin") != null
+	if use_skin:
+		spin_button.icon = null
+	else:
+		LnUiLib.apply_wheel_button_icon(spin_button, "wheel-xp-25.png", 32)
+		LnUiLib.apply_button(spin_button, spin_button.disabled)
 	_style_action_buttons()
 	cost_label.text = _i18n("wheel_daily_limit", [_state.wheel_spins_today, WheelManager.MAX_DAILY_SPINS])
 
@@ -122,7 +130,7 @@ func _on_spin() -> void:
 	_play_sfx("wheel_spin")
 	spin_button.disabled = true
 	spin_button.text = _i18n("wheel_spinning")
-	LnUiLib.apply_button(spin_button, true)
+	spin_button.icon = null
 	_style_action_buttons()
 	await wheel_canvas.animate_to_sector(int(prep.index), WheelManager.SPIN_DURATION_SEC)
 
@@ -145,14 +153,19 @@ func _style_result_modal() -> void:
 		result_dim.color = LnUiLib.DIM_DARK
 	if result_card == null:
 		return
-	var style := LnUiLib.glass_box(ThemeTokensLib.RADIUS_PANEL, 2, LnUiLib.PANEL, LnUiLib.BORDER_ACTIVE)
-	style.shadow_color = Color(LnUiLib.ACCENT_2, 0.42)
-	style.shadow_size = 18
+	var style := LnUiLib.glass_box(ThemeTokensLib.RADIUS_PANEL, 2, Color("#1a1612", 0.95), Color("#d6ad58", 0.74))
+	style.shadow_color = Color(0, 0, 0, 0.55)
+	style.shadow_size = 14
 	style.set_content_margin_all(20)
 	result_card.add_theme_stylebox_override("panel", style)
 	result_label.add_theme_color_override("font_color", LnUiLib.TEXT)
 	result_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_BODY)
-	LnUiLib.apply_button(result_close)
+	result_close.icon = null
+	# GothicWheel / NeonButton own chrome when visual skin is active.
+	var theme := _autoload("ThemeManager")
+	var use_skin := theme != null and theme.has_method("get_visual_skin") and theme.call("get_visual_skin") != null
+	if not use_skin:
+		LnUiLib.apply_button(result_close)
 
 
 func _show_result(text: String) -> void:
@@ -198,7 +211,7 @@ func _disable_invalid_session() -> void:
 	if spin_button != null:
 		spin_button.disabled = true
 		spin_button.text = _i18n("wheel_no_save")
-		LnUiLib.apply_button(spin_button, true)
+		spin_button.icon = null
 		_style_action_buttons()
 	if cost_label != null:
 		cost_label.text = _i18n("wheel_no_save_hint")

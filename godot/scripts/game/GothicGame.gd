@@ -61,21 +61,14 @@ func _style_level_complete_overlay() -> void:
 
 
 func _style_action_button(button: Button, primary: bool) -> void:
-	var palette := _theme_palette()
-	var normal := GothicVisualsLib.booster_button(palette, primary, true)
-	var hover := normal.duplicate()
-	var pressed := normal.duplicate()
-	hover.bg_color = hover.bg_color.lightened(0.08)
-	hover.shadow_size += 3
-	pressed.bg_color = pressed.bg_color.darkened(0.10)
-	button.add_theme_stylebox_override("normal", normal)
-	button.add_theme_stylebox_override("hover", hover)
-	button.add_theme_stylebox_override("pressed", pressed)
-	button.add_theme_stylebox_override("focus", hover.duplicate())
+	if primary:
+		GothicScreenMixinLib.style_cta_button(self, button)
+	else:
+		GothicScreenMixinLib.style_button(self, button)
 	button.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
 	button.add_theme_color_override("font_hover_color", GothicVisualsLib.GOLD_LIGHT)
 	button.add_theme_color_override("font_pressed_color", GothicVisualsLib.TEXT_IVORY)
-
-
-func _theme_palette() -> Dictionary:
-	return GothicVisualsLib.resolve_palette(_autoload("ThemeManager"))
+	# Drop legacy neon/crystal button icons — text labels carry meaning.
+	button.icon = null
+	if primary:
+		button.custom_minimum_size.y = maxf(button.custom_minimum_size.y, 52.0)
