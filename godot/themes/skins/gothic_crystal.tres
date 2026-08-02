@@ -1,8 +1,140 @@
-[gd_resource type="Resource" script_class="VisualSkin" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="VisualSkin" load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/VisualSkin.gd" id="1_skin"]
 [ext_resource type="Texture2D" path="res://assets/ui/skins/gothic_crystal/game-backdrop.png" id="2_background"]
 [ext_resource type="Texture2D" path="res://assets/ui/skins/gothic_crystal/tiles/stone_frame.webp" id="3_tile_frame"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+bg_color = Color(0.0941176, 0.0745098, 0.121569, 0.9)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.839216, 0.678431, 0.345098, 0.78)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0.560784, 0.333333, 0.839216, 0.2)
+shadow_size = 10
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_modal"]
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 20.0
+bg_color = Color(0.0627451, 0.0509804, 0.0862745, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.839216, 0.678431, 0.345098, 0.74)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0.560784, 0.333333, 0.839216, 0.28)
+shadow_size = 18
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0.0941176, 0.0745098, 0.121569, 0.9)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.839216, 0.678431, 0.345098, 0.78)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0.560784, 0.333333, 0.839216, 0.2)
+shadow_size = 10
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_normal"]
+content_margin_left = 16.0
+content_margin_top = 14.0
+content_margin_right = 16.0
+content_margin_bottom = 14.0
+bg_color = Color(0.172549, 0.145098, 0.196078, 0.92)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.92549, 0.819608, 0.505882, 0.92)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0.0627451, 0.0509804, 0.0862745, 0.42)
+shadow_size = 5
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_hover"]
+content_margin_left = 16.0
+content_margin_top = 14.0
+content_margin_right = 16.0
+content_margin_bottom = 14.0
+bg_color = Color(0.211765, 0.180392, 0.239216, 0.96)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.952941, 0.835294, 0.545098, 0.95)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0.0627451, 0.0509804, 0.0862745, 0.48)
+shadow_size = 6
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_pressed"]
+content_margin_left = 16.0
+content_margin_top = 14.0
+content_margin_right = 16.0
+content_margin_bottom = 14.0
+bg_color = Color(0.0627451, 0.0509804, 0.0862745, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.301961, 0.207843, 0.121569, 0.88)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0.0627451, 0.0509804, 0.0862745, 0.28)
+shadow_size = 2
+shadow_offset = Vector2(0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_disabled"]
+content_margin_left = 16.0
+content_margin_top = 14.0
+content_margin_right = 16.0
+content_margin_bottom = 14.0
+bg_color = Color(0.0627451, 0.0509804, 0.0862745, 0.55)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.227451, 0.196078, 0.235294, 0.45)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0)
+shadow_size = 0
 
 [resource]
 script = ExtResource("1_skin")
@@ -13,7 +145,36 @@ supports_light_mode = false
 menu_background = ExtResource("2_background")
 game_background = ExtResource("2_background")
 overlay_color_value = Color(0.0313725, 0.0235294, 0.0509804, 0.72)
+panel_style = SubResource("StyleBoxFlat_panel")
+modal_style = SubResource("StyleBoxFlat_modal")
+hud_style = SubResource("StyleBoxFlat_hud")
+button_normal = SubResource("StyleBoxFlat_button_normal")
+button_hover = SubResource("StyleBoxFlat_button_hover")
+button_pressed = SubResource("StyleBoxFlat_button_pressed")
+button_disabled = SubResource("StyleBoxFlat_button_disabled")
 tile_common = ExtResource("3_tile_frame")
 tile_rare = ExtResource("3_tile_frame")
 tile_epic = ExtResource("3_tile_frame")
 tile_legendary = ExtResource("3_tile_frame")
+background_color = Color(0.0627451, 0.0509804, 0.0862745, 1)
+panel_color = Color(0.0941176, 0.0745098, 0.121569, 0.94)
+primary_color = Color(0.560784, 0.333333, 0.839216, 1)
+secondary_color = Color(0.839216, 0.678431, 0.345098, 1)
+accent_color = Color(0.788235, 0.65098, 0.941176, 1)
+danger_color = Color(0.815686, 0.329412, 0.360784, 1)
+success_color = Color(0.290196, 0.568627, 0.321569, 1)
+text_dark_color = Color(0.968627, 0.917647, 0.835294, 1)
+text_light_color = Color(0.160784, 0.113725, 0.188235, 1)
+rim_color = Color(0.839216, 0.678431, 0.345098, 1)
+crystal_color = Color(0.560784, 0.333333, 0.839216, 1)
+chain_valid_color = Color(0.290196, 0.568627, 0.321569, 1)
+chain_invalid_color = Color(0.815686, 0.329412, 0.360784, 1)
+chain_continue_color = Color(0.839216, 0.678431, 0.345098, 1)
+chain_core_color = Color(0.968627, 0.917647, 0.835294, 0.95)
+particle_color = Color(0.788235, 0.65098, 0.941176, 1)
+glow_intensity = 0.85
+tile_common_color = Color(0.227451, 0.152941, 0.313726, 1)
+tile_rare_color = Color(0.403922, 0.227451, 0.552941, 1)
+tile_epic_color = Color(0.337255, 0.188235, 0.52549, 1)
+tile_legendary_color = Color(0.541176, 0.392157, 0.168627, 1)
+wheel_sector_colors = PackedColorArray(0.0941176, 0.0745098, 0.121569, 1, 0.301961, 0.188235, 0.45098, 1, 0.321569, 0.160784, 0.211765, 1, 0.560784, 0.415686, 0.211765, 1, 0.152941, 0.12549, 0.176471, 1, 0.45098, 0.290196, 0.65098, 1, 0.25098, 0.14902, 0.176471, 1, 0.678431, 0.52549, 0.270588, 1)

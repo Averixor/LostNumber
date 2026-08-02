@@ -2,8 +2,10 @@ extends Button
 class_name MenuDockButton
 
 ## Bottom dock item: circular icon button with label below.
+## Skin-aware: gothic_crystal → stone/bronze/gold pedestal; procedural_neon → legacy neon.
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
+const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
 const DISABLED_MODULATE := Color(1, 1, 1, 0.38)
 
 @onready var icon_rect: TextureRect = $VBox/Icon
@@ -68,21 +70,79 @@ func _fit_caption_font() -> void:
 	caption.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 
 
+func _uses_visual_skin() -> bool:
+	var theme := get_node_or_null("/root/ThemeManager")
+	if theme == null:
+		return false
+	if theme.has_method("uses_visual_skin"):
+		return bool(theme.call("uses_visual_skin"))
+	return theme.has_method("get_visual_skin") and theme.call("get_visual_skin") != null
+
+
 func _apply_style() -> void:
 	custom_minimum_size = Vector2(72, 76)
+	if _uses_visual_skin():
+		_apply_gothic_style()
+	else:
+		_apply_neon_style()
+	_fit_caption_font()
+
+
+func _apply_gothic_style() -> void:
+	var palette := GothicVisualsLib.resolve_palette(get_node_or_null("/root/ThemeManager"))
+	var rim: Color = palette.get("rim", GothicVisualsLib.GOLD)
+	var crystal: Color = palette.get("crystal", GothicVisualsLib.CRYSTAL)
+	caption.add_theme_color_override("font_color", Color(GothicVisualsLib.TEXT_IVORY, 0.92))
+	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	caption.autowrap_mode = TextServer.AUTOWRAP_OFF
+
+	var radius := 36
+	var normal := StyleBoxFlat.new()
+	normal.bg_color = Color(GothicVisualsLib.STONE_MID, 0.88)
+	normal.set_corner_radius_all(radius)
+	normal.set_border_width_all(2)
+	normal.border_color = Color(GothicVisualsLib.BRONZE.lerp(rim, 0.45), 0.82)
+	normal.set_content_margin_all(8)
+	normal.shadow_color = Color(GothicVisualsLib.STONE_BLACK, 0.40)
+	normal.shadow_size = 5
+	normal.shadow_offset = Vector2(0, 2)
+	add_theme_stylebox_override("normal", normal)
+
+	var hover := normal.duplicate() as StyleBoxFlat
+	hover.bg_color = Color(GothicVisualsLib.STONE_MID.lightened(0.08), 0.94)
+	hover.border_color = Color(rim.lightened(0.10), 0.95)
+	hover.shadow_color = Color(crystal, 0.28)
+	hover.shadow_size = 8
+	add_theme_stylebox_override("hover", hover)
+	add_theme_stylebox_override("focus", hover.duplicate())
+
+	var pressed := normal.duplicate() as StyleBoxFlat
+	pressed.bg_color = Color(GothicVisualsLib.STONE_BLACK, 0.94)
+	pressed.border_color = Color(rim.darkened(0.12), 0.88)
+	pressed.shadow_size = 2
+	add_theme_stylebox_override("pressed", pressed)
+
+	var disabled_style := normal.duplicate() as StyleBoxFlat
+	disabled_style.bg_color = Color(GothicVisualsLib.STONE_BLACK, 0.55)
+	disabled_style.border_color = Color(GothicVisualsLib.IRON, 0.42)
+	disabled_style.shadow_color = Color.TRANSPARENT
+	disabled_style.shadow_size = 0
+	add_theme_stylebox_override("disabled", disabled_style)
+
+
+func _apply_neon_style() -> void:
 	var text_color := ThemeTokensLib.COLOR_TEXT
 	var theme := get_node_or_null("/root/ThemeManager")
 	var is_dark := true
 	if theme != null and theme.has_method("is_dark"):
 		is_dark = bool(theme.call("is_dark"))
 	if theme != null and theme.has_method("get_text_color"):
-		text_color = theme.call("get_text_color")
+		text_color = theme.call("get_text_color", false)
 	elif not is_dark:
 		text_color = ThemeTokensLib.DAWN_COLOR_TEXT
 	caption.add_theme_color_override("font_color", Color(text_color, 0.92 if is_dark else 1.0))
 	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	caption.autowrap_mode = TextServer.AUTOWRAP_OFF
-	_fit_caption_font()
 
 	var radius := 36
 	var normal := StyleBoxFlat.new()
