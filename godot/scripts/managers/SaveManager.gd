@@ -5,11 +5,14 @@ extends Node
 
 const SAVE_FILE := "lost_number_save.json"
 const BACKUP_FILE := "lost_number_save.bak.json"
+const TEMP_FILE := "lost_number_save.tmp.json"
+const BACKUP_TEMP_FILE := "lost_number_save.bak.tmp.json"
 const ENVELOPE_VERSION := 1
 
 const GameStateScript := preload("res://scripts/core/GameState.gd")
 
 var _test_root: String = ""
+var _test_failure_point: String = ""
 
 
 func _save_path(file_name: String = SAVE_FILE) -> String:
@@ -24,6 +27,18 @@ func enable_test_root(absolute_dir: String) -> void:
 
 func disable_test_root() -> void:
 	_test_root = ""
+	_test_failure_point = ""
+
+
+func set_test_failure_point(point: String) -> void:
+	if _test_root.is_empty():
+		push_error("SaveManager: failure injection requires an enabled test root")
+		return
+	_test_failure_point = point
+
+
+func clear_test_failure_point() -> void:
+	_test_failure_point = ""
 
 
 func has_save() -> bool:
@@ -57,11 +72,53 @@ func save_game(state) -> bool:
 	var json_text := JSON.stringify(envelope, "\t")
 	var primary := _save_path(SAVE_FILE)
 	var backup := _save_path(BACKUP_FILE)
+	var temp := _save_path(TEMP_FILE)
+	var backup_temp := _save_path(BACKUP_TEMP_FILE)
 
-	if FileAccess.file_exists(primary):
-		_copy_file(primary, backup)
+	_cleanup_staging_files([temp, backup_temp])
+	if _test_failure_point == "temp_write":
+		push_error("SaveManager.save_game: injected temp write failure")
+		return false
+	if not _write_text_file(temp, json_text):
+		_cleanup_staging_files([temp, backup_temp])
+		return false
 
-	return _write_text_file(primary, json_text)
+	_apply_test_temp_corruption(temp)
+	if not _is_valid_save_path(temp):
+		push_error("SaveManager.save_game: temporary save failed JSON/checksum verification")
+		_cleanup_staging_files([temp, backup_temp])
+		return false
+
+	var primary_exists := FileAccess.file_exists(primary)
+	var primary_valid := primary_exists and _is_valid_save_path(primary)
+	if primary_valid:
+		if _test_failure_point == "backup_copy":
+			push_error("SaveManager.save_game: injected backup copy failure")
+			_cleanup_staging_files([temp, backup_temp])
+			return false
+		if not _copy_file(primary, backup_temp):
+			push_error("SaveManager.save_game: old primary could not be staged as backup")
+			_cleanup_staging_files([temp, backup_temp])
+			return false
+		if not _promote_file(backup_temp, backup, "backup_promotion"):
+			push_error("SaveManager.save_game: staged backup could not replace backup")
+			_cleanup_staging_files([temp, backup_temp])
+			return false
+	elif primary_exists:
+		if _is_valid_save_path(backup):
+			push_warning("SaveManager.save_game: primary is invalid; preserving valid backup")
+		else:
+			push_warning(
+				"SaveManager.save_game: no valid existing recovery save; promoting verified temp only"
+			)
+
+	if not _promote_file(temp, primary, "primary_promotion"):
+		push_error("SaveManager.save_game: verified temp could not replace primary")
+		_restore_primary_if_needed(primary, backup)
+		_cleanup_staging_files([temp, backup_temp])
+		return false
+
+	return true
 
 
 func load_game(state = null):
@@ -78,8 +135,9 @@ func load_game(state = null):
 	push_warning("SaveManager: primary save invalid, trying backup")
 	loaded = _try_load_path(backup, state)
 	if loaded != null:
-		# Self-heal: promote recovered backup to primary.
-		_copy_file(backup, primary)
+		# Self-heal through a verified staging file; backup remains untouched on failure.
+		if not _restore_backup_to_primary(backup, primary):
+			push_warning("SaveManager: loaded backup but could not self-heal primary")
 		return loaded
 
 	push_warning("SaveManager: primary and backup saves are invalid")
@@ -88,10 +146,10 @@ func load_game(state = null):
 
 func delete_save() -> bool:
 	var ok := true
-	for file_name in [SAVE_FILE, BACKUP_FILE]:
+	for file_name in [SAVE_FILE, BACKUP_FILE, TEMP_FILE, BACKUP_TEMP_FILE]:
 		var path := _save_path(file_name)
 		if FileAccess.file_exists(path):
-			var err := DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+			var err := DirAccess.remove_absolute(_absolute_path(path))
 			if err != OK:
 				push_error("SaveManager.delete_save failed for %s" % path)
 				ok = false
@@ -208,7 +266,12 @@ func _write_text_file(path: String, text: String) -> bool:
 		push_error("SaveManager: cannot write %s" % path)
 		return false
 	file.store_string(text)
+	file.flush()
+	var write_error := file.get_error()
 	file.close()
+	if write_error != OK:
+		push_error("SaveManager: write failed for %s (err %s)" % [path, write_error])
+		return false
 	return true
 
 
@@ -221,10 +284,79 @@ func _read_text_file(path: String) -> String:
 	return text
 
 
-func _copy_file(from_path: String, to_path: String) -> void:
-	var source := FileAccess.open(from_path, FileAccess.READ)
-	if source == null:
+func _copy_file(from_path: String, to_path: String) -> bool:
+	if not FileAccess.file_exists(from_path):
+		push_error("SaveManager: cannot read %s for copy" % from_path)
+		return false
+	var err := DirAccess.copy_absolute(_absolute_path(from_path), _absolute_path(to_path))
+	if err != OK:
+		push_error("SaveManager: cannot copy %s to %s (err %s)" % [from_path, to_path, err])
+		return false
+	if _read_text_file(to_path) != _read_text_file(from_path):
+		push_error("SaveManager: copied bytes do not match source (%s -> %s)" % [from_path, to_path])
+		return false
+	return true
+
+
+func _promote_file(from_path: String, to_path: String, failure_point: String) -> bool:
+	if _test_failure_point == failure_point:
+		push_error("SaveManager: injected %s failure" % failure_point)
+		return false
+	var err := DirAccess.rename_absolute(_absolute_path(from_path), _absolute_path(to_path))
+	if err != OK:
+		push_error("SaveManager: cannot promote %s to %s (err %s)" % [from_path, to_path, err])
+		return false
+	return true
+
+
+func _restore_primary_if_needed(primary: String, backup: String) -> void:
+	# A failed atomic rename should leave primary untouched. If a platform violates
+	# that contract, the just-verified backup still contains the old primary.
+	if FileAccess.file_exists(primary) or not FileAccess.file_exists(backup):
 		return
-	var content := source.get_as_text()
-	source.close()
-	_write_text_file(to_path, content)
+	if not _copy_file(backup, primary):
+		push_error("SaveManager: primary promotion failed and backup restore also failed")
+
+
+func _restore_backup_to_primary(backup: String, primary: String) -> bool:
+	var temp := _save_path(TEMP_FILE)
+	_cleanup_staging_files([temp])
+	if not _copy_file(backup, temp):
+		push_error("SaveManager: could not stage backup for primary recovery")
+		_cleanup_staging_files([temp])
+		return false
+	if not _is_valid_save_path(temp):
+		push_error("SaveManager: staged backup failed verification during primary recovery")
+		_cleanup_staging_files([temp])
+		return false
+	if not _promote_file(temp, primary, "recovery_promotion"):
+		push_error("SaveManager: verified backup stage could not replace primary")
+		_cleanup_staging_files([temp])
+		return false
+	return true
+
+
+func _cleanup_staging_files(paths: Array) -> void:
+	for path_value in paths:
+		var path := str(path_value)
+		if not FileAccess.file_exists(path):
+			continue
+		var err := DirAccess.remove_absolute(_absolute_path(path))
+		if err != OK:
+			push_warning("SaveManager: could not clean staging file %s (err %s)" % [path, err])
+
+
+func _apply_test_temp_corruption(temp: String) -> void:
+	if _test_root.is_empty():
+		return
+	if _test_failure_point == "temp_partial":
+		_write_text_file(temp, "{\"envelope_version\":1,")
+	elif _test_failure_point == "temp_checksum":
+		var payload := _quiet_load(temp)
+		if not payload.is_empty():
+			payload["checksum"] = "injected-invalid-checksum"
+			_write_text_file(temp, JSON.stringify(payload, "\t"))
+
+
+func _absolute_path(path: String) -> String:
+	return ProjectSettings.globalize_path(path)

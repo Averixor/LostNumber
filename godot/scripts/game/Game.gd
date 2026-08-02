@@ -206,13 +206,21 @@ func _maybe_vibrate(duration_ms: int = 35) -> void:
 	Input.vibrate_handheld(duration_ms)
 
 
-func _save_game() -> void:
+func _save_game() -> bool:
 	if bool(get_meta("visual_capture_no_persistence", false)):
-		return
+		return true
 	var save := _autoload("SaveManager")
-	if save != null and save.has_method("save_game"):
-		save.call("save_game", state)
+	if save == null or not save.has_method("save_game"):
+		push_error("Game: SaveManager.save_game is unavailable; progress remains in memory")
+		game_hud.flash_save_indicator(_i18n("save_failed"))
+		return false
+	var saved := bool(save.call("save_game", state))
+	if saved:
 		game_hud.flash_save_indicator(_i18n("save_indicator"))
+		return true
+	push_error("Game: SaveManager.save_game returned false; progress remains in memory")
+	game_hud.flash_save_indicator(_i18n("save_failed"))
+	return false
 
 
 func _show_pause() -> void:
@@ -266,7 +274,9 @@ func _on_bonus_pressed(type: String) -> void:
 		_play_sfx("button_click")
 		board_view.reset_all_highlights()
 		board_view.refresh_all()
+		_refresh_hud()
 		_save_game()
+		return
 	_refresh_hud()
 
 func _on_cell_picked(cell: Vector2i) -> void:
@@ -346,7 +356,8 @@ func _on_continue_level() -> void:
 func _on_back_to_menu() -> void:
 	_play_sfx("button_click")
 	_hide_pause()
-	_save_game()
+	if not _save_game():
+		return
 	var router := _autoload("ScreenRouter")
 	if router == null:
 		get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
