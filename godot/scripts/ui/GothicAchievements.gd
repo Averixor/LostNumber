@@ -1,5 +1,5 @@
-extends "res://scripts/ui/DailyQuests.gd"
-class_name GothicDailyQuests
+extends "res://scripts/ui/Achievements.gd"
+class_name GothicAchievements
 
 const GothicScreenMixinLib := preload("res://scripts/ui/GothicScreenMixin.gd")
 const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
