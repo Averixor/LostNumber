@@ -1,6 +1,8 @@
 extends Control
 class_name AchievementCard
 
+const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
+
 @onready var status_label: Label = get_node_or_null("Panel/HBox/Status") as Label
 @onready var name_label: Label = get_node_or_null("Panel/HBox/Name") as Label
 @onready var progress_label: Label = get_node_or_null("Panel/HBox/Progress") as Label
@@ -16,6 +18,16 @@ func _resolve_nodes() -> void:
 		progress_label = get_node_or_null("Panel/HBox/Progress") as Label
 	if panel == null:
 		panel = get_node_or_null("Panel") as PanelContainer
+
+
+func _theme_manager() -> Node:
+	return get_node_or_null("/root/ThemeManager")
+
+
+func _base_panel_style(theme: Node) -> StyleBox:
+	if theme != null and theme.has_method("get_visual_style"):
+		return theme.call("get_visual_style", &"panel") as StyleBox
+	return null
 
 
 func setup(arg0 = null, arg1 = "", arg2 = 0, arg3 = 1, arg4 = "✓", arg5 = "○") -> void:
@@ -50,14 +62,20 @@ func setup(arg0 = null, arg1 = "", arg2 = 0, arg3 = 1, arg4 = "✓", arg5 = "○
 	name_label.text = name_text
 	progress_label.text = "%d / %d" % [progress, max_val]
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.12, 0.07, 0.17, 0.84)
-	style.set_corner_radius_all(12)
-	style.set_border_width_all(1)
-	style.border_color = Color(0.95, 0.25, 0.65, 0.55) if unlocked else Color(0.55, 0.35, 0.75, 0.35)
-	style.set_content_margin_all(10)
-	panel.add_theme_stylebox_override("panel", style)
+	var theme := _theme_manager()
+	var palette := GothicVisualsLib.resolve_palette(theme)
+	panel.add_theme_stylebox_override(
+		"panel",
+		GothicVisualsLib.card_panel(palette, unlocked, _base_panel_style(theme))
+	)
 
-	status_label.modulate = Color(0.4, 0.95, 0.55, 1.0) if unlocked else Color(0.65, 0.58, 0.72, 1.0)
-	name_label.add_theme_color_override("font_color", Color(0.95, 0.9, 1.0, 1.0))
-	progress_label.add_theme_color_override("font_color", Color(0.75, 0.68, 0.82, 1.0))
+	var success: Color = palette.get("success", Color("#4A9152"))
+	status_label.add_theme_color_override(
+		"font_color",
+		success.lightened(0.16) if unlocked else GothicVisualsLib.TEXT_MUTED
+	)
+	name_label.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
+	progress_label.add_theme_color_override(
+		"font_color",
+		GothicVisualsLib.GOLD_LIGHT if unlocked else GothicVisualsLib.TEXT_MUTED
+	)
