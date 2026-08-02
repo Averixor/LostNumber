@@ -95,22 +95,17 @@ func _apply_visual_skin_styles() -> void:
 func _apply_gothic_secondary() -> void:
 	var radius := ThemeTokensLib.RADIUS_BUTTON
 	var palette := _gothic_palette()
-	var normal := LnUiLib.button_normal(true)
-	var hover := LnUiLib.button_hover(true)
-	var pressed := LnUiLib.button_pressed(true)
-	var disabled := LnUiLib.button_disabled(true)
-	if normal == null:
-		normal = GothicVisualsLib.icon_button(palette, "normal")
-	if hover == null:
-		hover = GothicVisualsLib.icon_button(palette, "hover")
-	if pressed == null:
-		pressed = GothicVisualsLib.icon_button(palette, "pressed")
-	if disabled == null:
-		disabled = GothicVisualsLib.icon_button(palette, "disabled")
+	# Prefer carved stone/gold over VisualSkin StyleBoxes that still carry crystal bloom.
+	var normal := GothicVisualsLib.icon_button(palette, "normal")
+	var hover := GothicVisualsLib.icon_button(palette, "hover")
+	var pressed := GothicVisualsLib.icon_button(palette, "pressed")
+	var disabled := GothicVisualsLib.icon_button(palette, "disabled")
 	_set_styleboxes(normal, hover, pressed, disabled, _focus_ring(radius, GothicVisualsLib.GOLD, false))
 	_set_font_colors(GothicVisualsLib.TEXT_IVORY, GothicVisualsLib.GOLD_LIGHT)
 	add_theme_color_override("font_disabled_color", GothicVisualsLib.TEXT_MUTED)
 	add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_BODY)
+	# Drop legacy neon icons that read as "mystery stones".
+	icon = null
 
 
 func _apply_gothic_ghost() -> void:
@@ -120,7 +115,9 @@ func _apply_gothic_ghost() -> void:
 	normal.content_margin_top = 8.0
 	normal.content_margin_bottom = 8.0
 	var hover: StyleBoxFlat = normal.duplicate()
-	hover.bg_color = Color(GothicVisualsLib.CRYSTAL, 0.10)
+	hover.bg_color = Color(GothicVisualsLib.STONE_MID, 0.35)
+	hover.border_color = Color(GothicVisualsLib.GOLD, 0.55)
+	hover.set_border_width_all(1)
 	var pressed: StyleBoxFlat = normal.duplicate()
 	pressed.bg_color = Color(GothicVisualsLib.GOLD, 0.12)
 	var disabled: StyleBoxFlat = normal.duplicate()
@@ -271,7 +268,7 @@ func _apply_secondary() -> void:
 
 	var disabled := LnUiLib.button_disabled(use_skin)
 
-	_set_styleboxes(normal, hover, pressed, disabled, _focus_ring(radius, _menu_primary_border()))
+	_set_styleboxes(normal, hover, pressed, disabled, _focus_ring(radius, _menu_primary_border(), false))
 	_set_font_colors(ThemeTokensLib.COLOR_TEXT, ThemeTokensLib.COLOR_SECONDARY)
 	add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_BODY)
 
@@ -289,7 +286,7 @@ func _apply_ghost() -> void:
 	pressed.bg_color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.14)
 	var disabled: StyleBoxFlat = normal.duplicate()
 
-	_set_styleboxes(normal, hover, pressed, disabled, _focus_ring(radius, ThemeTokensLib.COLOR_ACCENT))
+	_set_styleboxes(normal, hover, pressed, disabled, _focus_ring(radius, ThemeTokensLib.COLOR_SECONDARY, false))
 	_set_font_colors(ThemeTokensLib.COLOR_PRIMARY, ThemeTokensLib.COLOR_SECONDARY)
 	add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_SMALL)
 

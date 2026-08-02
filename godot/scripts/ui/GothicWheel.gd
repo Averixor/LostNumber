@@ -40,6 +40,8 @@ func _apply_gothic_visuals() -> void:
 	GothicScreenMixinLib.apply_background(self, "", 0.30, &"menu")
 	GothicScreenMixinLib.style_cta_button(self, spin_button)
 	for button in [back_button, result_close]:
+		if button != null:
+			button.icon = null
 		GothicScreenMixinLib.style_button(self, button)
 		if button != null:
 			button.focus_mode = Control.FOCUS_NONE
@@ -57,3 +59,4 @@ func _apply_gothic_visuals() -> void:
 		back_button.custom_minimum_size = Vector2(220, 48)
 	if wheel_canvas != null:
 		wheel_canvas.custom_minimum_size = Vector2(320, 320)
+		wheel_canvas.queue_redraw()

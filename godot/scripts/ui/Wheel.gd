@@ -59,9 +59,14 @@ func _ready() -> void:
 	back_button.pressed.connect(_on_back)
 	result_close.pressed.connect(_hide_result)
 	wheel_canvas.spin_finished.connect(_on_spin_animation_done)
-	LnUiLib.apply_button(back_button)
-	LnUiLib.apply_button_icon(back_button, "back.png")
-	LnUiLib.apply_button_icon(result_close, "back.png")
+	var use_skin := theme != null and theme.has_method("get_visual_skin") and theme.call("get_visual_skin") != null
+	LnUiLib.apply_button(back_button, false, use_skin)
+	if not use_skin:
+		LnUiLib.apply_button_icon(back_button, "back.png")
+		LnUiLib.apply_button_icon(result_close, "back.png")
+	else:
+		back_button.icon = null
+		result_close.icon = null
 
 	_state = _load_state()
 	if _state == null:

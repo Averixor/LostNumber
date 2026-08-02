@@ -157,27 +157,32 @@ func _test_visual_skin_languages() -> void:
 
 func _test_wheel_fallback_labels() -> void:
 	var wheel := WheelCanvasScript.new()
-	# Disk labels: short tokens / icon-only. Full names remain in result modal i18n.
+	# Disk labels: localized label_key preferred; compact tokens as fallback.
 	for value in [25, 50, 75, 100]:
-		var compact := str(wheel.call("_compact_wheel_label", "", {"effect": "xp", "value": value}))
+		var compact := str(wheel.call("_compact_wheel_label", {"effect": "xp", "value": value}))
 		_assert_eq(compact, "+%d" % value, "xp disk token: +%d" % value)
 	_assert_eq(
-		str(wheel.call("_compact_wheel_label", "", {"effect": "multiplier", "value": 5})),
-		"2× XP",
+		str(wheel.call("_compact_wheel_label", {"effect": "multiplier", "value": 5})),
+		"×2 XP",
 		"multiplier disk token"
 	)
 	for value in ["destroy", "shuffle", "explosion"]:
-		var compact := str(wheel.call("_compact_wheel_label", "ignored", {"effect": "bonus", "value": value}))
-		_assert_eq(compact, "", "bonus disk is icon-only: %s" % value)
-		# Result-modal strings must stay present in every locale.
 		var key := "wheel_sector_%s" % value
+		var via_key := str(wheel.call("_sector_label", {"effect": "bonus", "value": value, "label_key": key}))
+		# Result-modal / disk strings must stay present in every locale.
 		for lang in ["uk", "ru", "en"]:
 			_settings.set("language", lang)
 			var translated := str(_i18n.call("t", key))
 			_assert_true(
 				translated != key and not translated.is_empty(),
-				"%s result string kept: %s" % [lang, value]
+				"%s sector string kept: %s" % [lang, value]
 			)
+			_assert_eq(
+				str(wheel.call("_sector_label", {"effect": "bonus", "value": value, "label_key": key})),
+				translated,
+				"%s disk uses label_key: %s" % [lang, value]
+			)
+		_assert_true(not via_key.is_empty(), "bonus disk label non-empty: %s" % value)
 	wheel.free()
 
 

@@ -128,6 +128,7 @@ func _delegate_back_to_current_screen(router: Node) -> bool:
 
 func _show_exit_confirm() -> void:
 	if _exit_dialog != null and is_instance_valid(_exit_dialog):
+		_style_exit_dialog()
 		_exit_dialog.popup_centered()
 		return
 
@@ -138,7 +139,38 @@ func _show_exit_confirm() -> void:
 	_exit_dialog.cancel_button_text = _i18n("menu_back")
 	_exit_dialog.confirmed.connect(_quit_app)
 	modal_layer.add_child(_exit_dialog)
+	_style_exit_dialog()
 	_exit_dialog.popup_centered()
+
+
+func _style_exit_dialog() -> void:
+	if _exit_dialog == null or not is_instance_valid(_exit_dialog):
+		return
+	var use_skin := false
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("get_visual_skin"):
+		use_skin = theme_mgr.call("get_visual_skin") != null
+	if not use_skin:
+		return
+	# Stone/gold dialog — avoid default neon AcceptDialog accents.
+	var panel := StyleBoxFlat.new()
+	panel.bg_color = Color(0.06, 0.05, 0.09, 0.96)
+	panel.border_color = Color(0.84, 0.68, 0.35, 0.82)
+	panel.set_border_width_all(2)
+	panel.set_corner_radius_all(12)
+	panel.set_content_margin_all(16)
+	panel.shadow_color = Color(0, 0, 0, 0.45)
+	panel.shadow_size = 12
+	_exit_dialog.add_theme_stylebox_override("panel", panel)
+	_exit_dialog.add_theme_color_override("title_color", Color(0.95, 0.84, 0.55, 1.0))
+	_exit_dialog.add_theme_color_override("font_color", Color(0.97, 0.92, 0.84, 1.0))
+	var ok := _exit_dialog.get_ok_button()
+	var cancel := _exit_dialog.get_cancel_button()
+	for btn in [ok, cancel]:
+		if btn == null:
+			continue
+		LnUiLib.apply_button(btn, false, true)
+		btn.icon = null
 
 
 func request_exit() -> void:

@@ -153,6 +153,61 @@ static func style_cta_button(host: Node, button: Button) -> void:
 	button.add_theme_font_size_override("font_size", 16)
 
 
+static func style_settings_toggle(host: Node, check: CheckButton, compact: bool = false) -> void:
+	if check == null:
+		return
+	var colors := palette(host)
+	var row := GothicVisualsLib.settings_row(colors, compact)
+	var hover := row.duplicate(true) as StyleBoxFlat
+	hover.bg_color = Color(GothicVisualsLib.STONE_MID.lightened(0.06), 0.94)
+	hover.border_color = Color(colors.get("rim", GothicVisualsLib.GOLD), 0.88)
+	var pressed := row.duplicate(true) as StyleBoxFlat
+	pressed.bg_color = Color(GothicVisualsLib.STONE_BLACK, 0.92)
+	check.custom_minimum_size = Vector2(0, 44.0 if compact else 52.0)
+	check.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	check.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	check.add_theme_stylebox_override("normal", row)
+	check.add_theme_stylebox_override("hover", hover)
+	check.add_theme_stylebox_override("pressed", pressed)
+	check.add_theme_stylebox_override("hover_pressed", pressed.duplicate(true))
+	check.add_theme_stylebox_override("disabled", row.duplicate(true))
+	check.add_theme_font_size_override("font_size", 15 if compact else 18)
+	check.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
+	check.add_theme_color_override("font_pressed_color", GothicVisualsLib.TEXT_IVORY)
+	check.add_theme_color_override("font_hover_color", GothicVisualsLib.GOLD_LIGHT)
+	check.add_theme_color_override("font_disabled_color", GothicVisualsLib.TEXT_MUTED)
+	check.add_theme_constant_override("h_separation", 8 if compact else 12)
+	check.add_theme_constant_override("icon_max_width", 22 if compact else 26)
+	# Checkbox glyph: muted → gold (never neon pink/green accents).
+	check.add_theme_color_override("icon_normal_color", GothicVisualsLib.TEXT_MUTED)
+	check.add_theme_color_override("icon_hover_color", GothicVisualsLib.GOLD_LIGHT)
+	check.add_theme_color_override("icon_pressed_color", GothicVisualsLib.GOLD)
+	check.add_theme_color_override("icon_hover_pressed_color", GothicVisualsLib.GOLD_LIGHT)
+	check.add_theme_color_override("icon_disabled_color", GothicVisualsLib.TEXT_MUTED)
+
+
+static func style_settings_option(host: Node, option: OptionButton, compact: bool = false) -> void:
+	if option == null:
+		return
+	var colors := palette(host)
+	var row := GothicVisualsLib.settings_row(colors, compact)
+	row.content_margin_left = 8 if compact else 10
+	row.content_margin_right = 8 if compact else 10
+	var hover := row.duplicate(true) as StyleBoxFlat
+	hover.border_color = Color(colors.get("rim", GothicVisualsLib.GOLD), 0.90)
+	option.custom_minimum_size.y = maxf(option.custom_minimum_size.y, 48.0)
+	option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	option.add_theme_font_size_override("font_size", 14 if compact else 15)
+	option.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
+	option.add_theme_color_override("font_hover_color", GothicVisualsLib.GOLD_LIGHT)
+	option.add_theme_color_override("font_pressed_color", GothicVisualsLib.TEXT_IVORY)
+	option.add_theme_color_override("font_focus_color", GothicVisualsLib.TEXT_IVORY)
+	option.add_theme_stylebox_override("normal", row)
+	option.add_theme_stylebox_override("hover", hover)
+	option.add_theme_stylebox_override("pressed", row.duplicate(true))
+	option.add_theme_stylebox_override("focus", hover.duplicate(true))
+
+
 static func style_subtree(host: Node, root: Node) -> void:
 	if root == null:
 		return

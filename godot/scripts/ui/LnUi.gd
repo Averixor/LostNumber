@@ -860,11 +860,20 @@ static func show_toast(host: Control, text: String, duration: float = 1.6) -> vo
 	var toast := PanelContainer.new()
 	toast.name = "LnToast"
 	toast.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	toast.add_theme_stylebox_override("panel", small_pill(Color(0.12, 0.06, 0.16, 0.92), BORDER_ACTIVE))
+	var use_skin := false
+	var theme_mgr := _theme_manager()
+	if theme_mgr != null and theme_mgr.has_method("get_visual_skin"):
+		use_skin = theme_mgr.call("get_visual_skin") != null
+	var pill: StyleBoxFlat
+	if use_skin:
+		pill = small_pill(Color(0.10, 0.08, 0.12, 0.94), Color("#d6ad58"))
+	else:
+		pill = small_pill(Color(0.12, 0.06, 0.16, 0.92), BORDER_ACTIVE)
+	toast.add_theme_stylebox_override("panel", pill)
 	var label := Label.new()
 	label.text = text
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.add_theme_color_override("font_color", TEXT)
+	label.add_theme_color_override("font_color", Color("#f7ead5") if use_skin else TEXT)
 	label.add_theme_font_size_override("font_size", 14)
 	toast.add_child(label)
 	layer.add_child(toast)
