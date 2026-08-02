@@ -63,6 +63,11 @@ const TILE_FRAME_ATLAS_REGION := Rect2(140, 130, 1320, 1340)
 @export var tile_epic_color: Color = Color(0.337, 0.188, 0.525, 1.0)
 @export var tile_legendary_color: Color = Color(0.541, 0.392, 0.169, 1.0)
 
+@export_group("Wheel")
+## Explicit sector colors for fortune wheel. When empty, derived from this skin's
+## own palette — never from Dark Neon ThemeTokens.
+@export var wheel_sector_colors: PackedColorArray = PackedColorArray()
+
 @export_group("Effects")
 @export var chain_texture: Texture2D
 @export var merge_frames: SpriteFrames
@@ -189,6 +194,28 @@ func palette(dark_mode: bool = true) -> Dictionary:
 		"rim": rim_color,
 		"crystal": crystal_color,
 	}
+
+
+func get_wheel_colors() -> Array[Color]:
+	var result: Array[Color] = []
+	if wheel_sector_colors.size() > 0:
+		for c in wheel_sector_colors:
+			result.append(c)
+		return result
+	# Skin-local fallback from this kit's palette (stone/gold/crystal), not neon tokens.
+	return ThemeTokensLib.wheel_colors_for_palette(palette(true))
+
+
+func has_chrome_styles() -> bool:
+	return (
+		panel_style != null
+		and modal_style != null
+		and hud_style != null
+		and button_normal != null
+		and button_hover != null
+		and button_pressed != null
+		and button_disabled != null
+	)
 
 
 func text_color(dark_mode: bool = true) -> Color:

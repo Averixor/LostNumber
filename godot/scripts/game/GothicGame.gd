@@ -18,25 +18,13 @@ func _apply_theme() -> void:
 
 
 func _style_pause_overlay() -> void:
-	var palette := _theme_palette()
-	var rim: Color = palette.get("rim", GothicVisualsLib.GOLD)
-	var crystal: Color = palette.get("crystal", GothicVisualsLib.CRYSTAL)
-
 	# Full-screen scrim only (transparent to content until pause is shown).
 	var scrim := StyleBoxFlat.new()
 	scrim.bg_color = Color(GothicVisualsLib.STONE_BLACK, 0.72)
 	scrim.set_content_margin_all(0)
 	pause_overlay.add_theme_stylebox_override("panel", scrim)
 
-	var modal_style := StyleBoxFlat.new()
-	modal_style.bg_color = Color(GothicVisualsLib.STONE_BLACK, 0.95)
-	modal_style.border_color = Color(rim, 0.74)
-	modal_style.set_border_width_all(2)
-	modal_style.set_corner_radius_all(12)
-	modal_style.set_content_margin_all(20)
-	modal_style.shadow_color = Color(crystal, 0.28)
-	modal_style.shadow_size = 18
-	pause_modal.add_theme_stylebox_override("panel", modal_style)
+	GothicScreenMixinLib.style_modal(self, pause_modal)
 
 	pause_title.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_TITLE + 4)
 	pause_title.add_theme_color_override("font_color", GothicVisualsLib.GOLD_LIGHT)
@@ -52,17 +40,19 @@ func _style_pause_overlay() -> void:
 func _style_level_complete_overlay() -> void:
 	if level_complete_panel == null or continue_button == null or overlay_title == null:
 		return
-	var palette := _theme_palette()
 	# Dim the playfield; put the solid gothic card on ModalFrame only.
 	var scrim := StyleBoxFlat.new()
 	scrim.bg_color = Color(GothicVisualsLib.STONE_BLACK, 0.72)
 	scrim.set_content_margin_all(0)
 	level_complete_panel.add_theme_stylebox_override("panel", scrim)
-	var card := GothicVisualsLib.hud_panel(palette)
-	card.bg_color = Color(GothicVisualsLib.STONE_BLACK, 0.96)
-	card.set_content_margin_all(24)
-	card.shadow_size = 20
-	level_complete_modal.add_theme_stylebox_override("panel", card)
+	GothicScreenMixinLib.style_modal(self, level_complete_modal)
+	var card := level_complete_modal.get_theme_stylebox("panel")
+	if card is StyleBoxFlat:
+		var flat := (card as StyleBoxFlat).duplicate(true) as StyleBoxFlat
+		flat.bg_color = Color(GothicVisualsLib.STONE_BLACK, 0.96)
+		flat.set_content_margin_all(24)
+		flat.shadow_size = 20
+		level_complete_modal.add_theme_stylebox_override("panel", flat)
 	overlay_title.add_theme_color_override("font_color", GothicVisualsLib.GOLD_LIGHT)
 	overlay_title.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_TITLE + 4)
 	overlay_title.add_theme_constant_override("outline_size", 2)
@@ -88,7 +78,4 @@ func _style_action_button(button: Button, primary: bool) -> void:
 
 
 func _theme_palette() -> Dictionary:
-	var theme := _autoload("ThemeManager")
-	if theme != null and theme.has_method("get_palette"):
-		return theme.call("get_palette")
-	return {}
+	return GothicVisualsLib.resolve_palette(_autoload("ThemeManager"))

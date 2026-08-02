@@ -7,10 +7,7 @@ const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
 
 
 func _theme_palette() -> Dictionary:
-	var theme := get_node_or_null("/root/ThemeManager")
-	if theme != null and theme.has_method("get_palette"):
-		return theme.call("get_palette")
-	return {}
+	return GothicVisualsLib.resolve_palette(get_node_or_null("/root/ThemeManager"))
 
 
 func _apply_styles() -> void:
@@ -39,10 +36,10 @@ func _apply_styles() -> void:
 	level_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.78))
 	level_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
-	var panel_style := GothicVisualsLib.hud_panel(palette)
+	var panel_style := _hud_panel_style(palette)
 	$GoalRow/GoalPanel.add_theme_stylebox_override("panel", panel_style)
-	$XpRow/XpPanel.add_theme_stylebox_override("panel", panel_style.duplicate())
-	bottom_strip.add_theme_stylebox_override("panel", panel_style.duplicate())
+	$XpRow/XpPanel.add_theme_stylebox_override("panel", panel_style.duplicate(true))
+	bottom_strip.add_theme_stylebox_override("panel", panel_style.duplicate(true))
 
 	if _goal_track != null:
 		_goal_track.color = Color(GothicVisualsLib.STONE_BLACK, 0.88)
@@ -116,15 +113,26 @@ func _style_bonus_button(button: Button, kind: String, count: int, active_bonus:
 	_apply_bonus_wheel_icon(button, kind)
 
 
+func _hud_panel_style(palette: Dictionary) -> StyleBox:
+	var theme := get_node_or_null("/root/ThemeManager")
+	if theme != null and theme.has_method("get_visual_style"):
+		var themed := theme.call("get_visual_style", &"hud") as StyleBox
+		if themed != null:
+			return themed
+	return GothicVisualsLib.hud_panel(palette)
+
+
 func update_chain_sum(state: GameState, can_finish: bool, dragging: bool = false) -> void:
 	super.update_chain_sum(state, can_finish, dragging)
 	if not bottom_strip.visible:
 		return
 	var valid := can_finish and state != null and state.selected_path.size() >= 2
-	var style := GothicVisualsLib.hud_panel(_theme_palette())
-	style.border_color = GothicVisualsLib.GOLD_LIGHT if valid else GothicVisualsLib.CRYSTAL_LIGHT
-	style.shadow_color = Color(style.border_color, 0.32)
-	style.shadow_size = 12
+	var style := _hud_panel_style(_theme_palette())
+	if style is StyleBoxFlat:
+		var flat := style as StyleBoxFlat
+		flat.border_color = GothicVisualsLib.GOLD_LIGHT if valid else GothicVisualsLib.CRYSTAL_LIGHT
+		flat.shadow_color = Color(flat.border_color, 0.32)
+		flat.shadow_size = 12
 	bottom_strip.add_theme_stylebox_override("panel", style)
 	chain_sum_label.add_theme_color_override(
 		"font_color",

@@ -63,6 +63,11 @@ func _animate_scale(target: float) -> void:
 
 
 func _apply_styles() -> void:
+	# When gothic_crystal (or any VisualSkin) is active, own chrome here so
+	# GothicScreenMixin.style_subtree cannot race neon→stone overrides.
+	if _uses_visual_skin():
+		_apply_visual_skin_styles()
+		return
 	if _gothic_cta:
 		_apply_gothic_cta()
 		return
@@ -75,6 +80,54 @@ func _apply_styles() -> void:
 			_apply_ghost()
 		_:
 			_apply_secondary()
+
+
+func _apply_visual_skin_styles() -> void:
+	if _gothic_cta or variant == "primary" or variant == "success":
+		_apply_gothic_cta()
+		return
+	if variant == "ghost":
+		_apply_gothic_ghost()
+		return
+	_apply_gothic_secondary()
+
+
+func _apply_gothic_secondary() -> void:
+	var radius := ThemeTokensLib.RADIUS_BUTTON
+	var palette := _gothic_palette()
+	var normal := LnUiLib.button_normal(true)
+	var hover := LnUiLib.button_hover(true)
+	var pressed := LnUiLib.button_pressed(true)
+	var disabled := LnUiLib.button_disabled(true)
+	if normal == null:
+		normal = GothicVisualsLib.icon_button(palette, "normal")
+	if hover == null:
+		hover = GothicVisualsLib.icon_button(palette, "hover")
+	if pressed == null:
+		pressed = GothicVisualsLib.icon_button(palette, "pressed")
+	if disabled == null:
+		disabled = GothicVisualsLib.icon_button(palette, "disabled")
+	_set_styleboxes(normal, hover, pressed, disabled, _focus_ring(radius, GothicVisualsLib.GOLD, false))
+	_set_font_colors(GothicVisualsLib.TEXT_IVORY, GothicVisualsLib.GOLD_LIGHT)
+	add_theme_color_override("font_disabled_color", GothicVisualsLib.TEXT_MUTED)
+	add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_BODY)
+
+
+func _apply_gothic_ghost() -> void:
+	var radius := ThemeTokensLib.RADIUS_BUTTON
+	var normal := _base_stylebox(radius)
+	normal.bg_color = Color(0, 0, 0, 0)
+	normal.content_margin_top = 8.0
+	normal.content_margin_bottom = 8.0
+	var hover: StyleBoxFlat = normal.duplicate()
+	hover.bg_color = Color(GothicVisualsLib.CRYSTAL, 0.10)
+	var pressed: StyleBoxFlat = normal.duplicate()
+	pressed.bg_color = Color(GothicVisualsLib.GOLD, 0.12)
+	var disabled: StyleBoxFlat = normal.duplicate()
+	_set_styleboxes(normal, hover, pressed, disabled, _focus_ring(radius, GothicVisualsLib.GOLD, false))
+	_set_font_colors(GothicVisualsLib.TEXT_IVORY, GothicVisualsLib.GOLD_LIGHT)
+	add_theme_color_override("font_disabled_color", GothicVisualsLib.TEXT_MUTED)
+	add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_SMALL)
 
 
 func _base_stylebox(radius: int) -> StyleBoxFlat:
@@ -153,11 +206,7 @@ func _apply_gothic_cta() -> void:
 
 
 func _gothic_palette() -> Dictionary:
-	var theme_mgr := get_node_or_null("/root/ThemeManager")
-	if theme_mgr != null and theme_mgr.has_method("get_palette"):
-		var use_skin := theme_mgr.has_method("get_visual_skin") and theme_mgr.call("get_visual_skin") != null
-		return theme_mgr.call("get_palette", use_skin)
-	return {}
+	return GothicVisualsLib.resolve_palette(get_node_or_null("/root/ThemeManager"))
 
 
 func _gothic_disabled_stylebox(radius: int) -> StyleBoxFlat:

@@ -230,26 +230,33 @@ func get_preview_invalid_color(use_visual_skin: bool = false) -> Color:
 	return ThemeTokensLib.DAWN_COLOR_PREVIEW_INVALID
 
 
-func get_palette(use_visual_skin: bool = false) -> Dictionary:
+func uses_visual_skin(id: String = "") -> bool:
+	return get_visual_skin(id) != null
+
+
+func get_palette(use_visual_skin: bool = true) -> Dictionary:
+	## Prefer active VisualSkin chrome. Dark Neon ThemeTokens remain the fallback
+	## only when procedural_neon is active (get_visual_skin() == null) or the
+	## caller explicitly opts out with use_visual_skin=false.
 	var skin := get_visual_skin() if use_visual_skin else null
 	if skin != null:
 		return skin.palette(_visual_skin_dark_mode())
 	return ThemeTokensLib.get_skin_palette(_normalize_index(background_index), is_dark())
 
 
-func get_primary_color(use_visual_skin: bool = false) -> Color:
+func get_primary_color(use_visual_skin: bool = true) -> Color:
 	return get_palette(use_visual_skin).get("primary", get_accent_color(use_visual_skin))
 
 
-func get_secondary_color(use_visual_skin: bool = false) -> Color:
+func get_secondary_color(use_visual_skin: bool = true) -> Color:
 	return get_palette(use_visual_skin).get("secondary", get_accent_color(use_visual_skin))
 
 
-func get_danger_color(use_visual_skin: bool = false) -> Color:
+func get_danger_color(use_visual_skin: bool = true) -> Color:
 	return get_palette(use_visual_skin).get("danger", get_preview_invalid_color(use_visual_skin))
 
 
-func get_success_color(use_visual_skin: bool = false) -> Color:
+func get_success_color(use_visual_skin: bool = true) -> Color:
 	return get_palette(use_visual_skin).get("success", get_preview_valid_color(use_visual_skin))
 
 
@@ -285,12 +292,12 @@ func get_chain_core_color() -> Color:
 	return skin.chain_core_color if skin != null else Color(0.96, 0.98, 1.0, 0.95)
 
 
-func get_particle_color(use_visual_skin: bool = false) -> Color:
+func get_particle_color(use_visual_skin: bool = true) -> Color:
 	var skin := get_visual_skin() if use_visual_skin else null
 	return skin.particle_color if skin != null else ThemeTokensLib.ICON_PINK
 
 
-func get_overlay_color(alpha: float = -1.0, use_visual_skin: bool = false) -> Color:
+func get_overlay_color(alpha: float = -1.0, use_visual_skin: bool = true) -> Color:
 	var skin := get_visual_skin() if use_visual_skin else null
 	var color := skin.overlay_color(_visual_skin_dark_mode()) if skin != null else (
 		Color(0.03, 0.01, 0.07, 0.40) if is_dark() else Color(Color("#ffe8f8"), 0.35)
@@ -300,12 +307,15 @@ func get_overlay_color(alpha: float = -1.0, use_visual_skin: bool = false) -> Co
 	return color
 
 
-func get_glow_intensity(use_visual_skin: bool = false) -> float:
+func get_glow_intensity(use_visual_skin: bool = true) -> float:
 	return float(get_palette(use_visual_skin).get("glow", 1.0))
 
 
 func get_wheel_colors() -> Array:
-	return ThemeTokensLib.wheel_colors_for_palette(get_palette())
+	var skin := get_visual_skin()
+	if skin != null:
+		return skin.get_wheel_colors()
+	return ThemeTokensLib.wheel_colors_for_palette(get_palette(false))
 
 
 func get_title_gradient() -> Array:
@@ -313,19 +323,19 @@ func get_title_gradient() -> Array:
 	return [p.get("title_top"), p.get("title_mid"), p.get("title_end")]
 
 
-func get_background_color(use_visual_skin: bool = false) -> Color:
+func get_background_color(use_visual_skin: bool = true) -> Color:
 	return get_palette(use_visual_skin).get("bg", ThemeTokensLib.COLOR_BG if is_dark() else ThemeTokensLib.DAWN_COLOR_BG)
 
 
-func get_panel_color(use_visual_skin: bool = false) -> Color:
+func get_panel_color(use_visual_skin: bool = true) -> Color:
 	return get_palette(use_visual_skin).get("panel", ThemeTokensLib.COLOR_PANEL if is_dark() else ThemeTokensLib.DAWN_COLOR_PANEL)
 
 
-func get_accent_color(use_visual_skin: bool = false) -> Color:
+func get_accent_color(use_visual_skin: bool = true) -> Color:
 	return get_palette(use_visual_skin).get("accent", ThemeTokensLib.COLOR_ACCENT if is_dark() else ThemeTokensLib.DAWN_COLOR_ACCENT)
 
 
-func get_text_color(use_visual_skin: bool = false) -> Color:
+func get_text_color(use_visual_skin: bool = true) -> Color:
 	var skin := get_visual_skin() if use_visual_skin else null
 	if skin != null:
 		return skin.text_color(_visual_skin_dark_mode())
