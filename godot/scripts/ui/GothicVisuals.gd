@@ -101,6 +101,35 @@ static func hud_panel(palette: Dictionary = {}) -> StyleBoxFlat:
 	return style
 
 
+static func card_panel(
+	palette: Dictionary = {},
+	complete: bool = false,
+	base_style: StyleBox = null
+) -> StyleBoxFlat:
+	## Shared list-row chrome for achievements and daily quests. Duplicate the
+	## active VisualSkin panel when available, then apply compact state tinting.
+	var style: StyleBoxFlat = null
+	if base_style is StyleBoxFlat:
+		style = (base_style as StyleBoxFlat).duplicate(true) as StyleBoxFlat
+	if style == null:
+		style = hud_panel(palette)
+
+	var rim: Color = palette.get("rim", GOLD)
+	var crystal: Color = palette.get("crystal", CRYSTAL)
+	style.bg_color = Color(STONE_DEEP, 0.94 if not complete else 0.78)
+	style.border_color = Color(rim, 0.82 if complete else 0.56)
+	style.set_border_width_all(2 if complete else 1)
+	style.set_corner_radius_all(10)
+	style.content_margin_left = 10
+	style.content_margin_right = 10
+	style.content_margin_top = 8
+	style.content_margin_bottom = 8
+	style.shadow_color = Color(crystal, 0.18 if complete else 0.10)
+	style.shadow_size = 8 if complete else 5
+	style.shadow_offset = Vector2(0, 2)
+	return style
+
+
 static func icon_button(palette: Dictionary = {}, state: String = "normal") -> StyleBoxFlat:
 	var style := _stone_button_base(palette, 9, 9)
 	_apply_stone_button_state(style, palette, state)
