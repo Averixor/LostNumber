@@ -505,7 +505,12 @@ func _play_connect_sfx() -> void:
 		Input.vibrate_handheld(20)
 
 func _gui_input(event: InputEvent) -> void:
-	if not is_inside_tree() or state == null or state.phase != GameState.Phase.PLAYING:
+	if not is_inside_tree() or state == null:
+		return
+	# PLAYING only: ANIMATING (merge settle), WIN, TRANSITIONING block new chains.
+	if state.phase != GameState.Phase.PLAYING:
+		if state.phase == GameState.Phase.ANIMATING:
+			accept_event()
 		return
 	var local_pos: Vector2 = event.position
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -558,6 +563,8 @@ func _flush_pending_drag() -> void:
 		_extend_drag_at_local(_pending_drag_local)
 
 func _start_drag_at_local(local_pos: Vector2) -> void:
+	if state == null or state.phase != GameState.Phase.PLAYING:
+		return
 	var cell: Vector2i = _cell_at_local(local_pos)
 	if cell.x < 0:
 		return
