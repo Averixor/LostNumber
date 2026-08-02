@@ -102,31 +102,26 @@ static func style_button(host: Node, button: Button) -> void:
 			button.call("_apply_style")
 		return
 	if button is NeonButton:
+		button.icon = null
 		if button.has_method("_apply_styles"):
 			button.call("_apply_styles")
 		return
 	var colors := palette(host)
-	var normal := _visual_style(host, &"button_normal")
-	var hover := _visual_style(host, &"button_hover")
-	var pressed := _visual_style(host, &"button_pressed")
-	var disabled := _visual_style(host, &"button_disabled")
-	if normal == null:
-		normal = GothicVisualsLib.icon_button(colors, "normal")
-	if hover == null:
-		hover = GothicVisualsLib.icon_button(colors, "hover")
-	if pressed == null:
-		pressed = GothicVisualsLib.icon_button(colors, "pressed")
-	if disabled == null:
-		disabled = GothicVisualsLib.icon_button(colors, "disabled")
+	# Prefer procedural stone/gold over VisualSkin boxes that historically carried violet bloom.
+	var normal := GothicVisualsLib.icon_button(colors, "normal")
+	var hover := GothicVisualsLib.icon_button(colors, "hover")
+	var pressed := GothicVisualsLib.icon_button(colors, "pressed")
+	var disabled := GothicVisualsLib.icon_button(colors, "disabled")
 	button.add_theme_stylebox_override("normal", normal)
 	button.add_theme_stylebox_override("hover", hover)
 	button.add_theme_stylebox_override("pressed", pressed)
 	button.add_theme_stylebox_override("disabled", disabled)
-	button.add_theme_stylebox_override("focus", hover.duplicate(true) if hover != null else GothicVisualsLib.icon_button(colors, "hover"))
+	button.add_theme_stylebox_override("focus", hover.duplicate(true))
 	button.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
 	button.add_theme_color_override("font_hover_color", GothicVisualsLib.GOLD_LIGHT)
 	button.add_theme_color_override("font_pressed_color", GothicVisualsLib.TEXT_IVORY)
 	button.add_theme_color_override("font_disabled_color", GothicVisualsLib.TEXT_MUTED)
+	button.icon = null
 
 
 static func style_cta_button(host: Node, button: Button) -> void:

@@ -30,6 +30,8 @@ func _ready() -> void:
 	focus_mode = Control.FOCUS_ALL
 	custom_minimum_size.y = maxf(custom_minimum_size.y, 48.0)
 	_apply_styles()
+	# Parent screens may force gothic_crystal after child _ready — re-stamp chrome.
+	call_deferred("_apply_styles")
 	resized.connect(_update_pivot)
 	button_down.connect(_on_button_down)
 	button_up.connect(_on_button_up)

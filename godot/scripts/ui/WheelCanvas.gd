@@ -46,15 +46,16 @@ func _refresh_theme_colors() -> void:
 	if theme != null and theme.has_method("get_wheel_colors"):
 		for c in theme.call("get_wheel_colors"):
 			var sector := Color(c)
-			# Cohesive jewel wedges — muted, scene-matched (not flat MS-paint greens).
-			sector = sector.darkened(0.28)
-			sector.s = clampf(sector.s * 0.62, 0.22, 0.58)
-			sector.v = clampf(sector.v * 0.92, 0.28, 0.62)
+			# Dark stone wedges — desaturate hard so violet skin leftovers cannot bloom.
+			sector = sector.darkened(0.35)
+			sector.s = clampf(sector.s * 0.35, 0.08, 0.32)
+			sector.v = clampf(sector.v * 0.85, 0.18, 0.48)
 			_wheel_colors.append(sector)
 	if _wheel_colors.is_empty():
 		for c in ThemeTokensLib.WHEEL_SECTOR_COLORS:
 			var sector := Color(c)
-			sector.s = clampf(sector.s * 0.75, 0.22, 0.55)
+			sector.s = clampf(sector.s * 0.40, 0.10, 0.30)
+			sector.v = clampf(sector.v * 0.80, 0.20, 0.45)
 			_wheel_colors.append(sector)
 
 
@@ -104,13 +105,13 @@ func _draw() -> void:
 		draw_line(inner, outer, Color(0.06, 0.04, 0.05, 0.72), 1.8)
 		draw_line(inner, outer, Color(gold, 0.12), 0.7)
 
-	# Localized sector captions only (no crystal icons).
+	# Localized sector captions — always upright, compact when long.
 	for i in count:
 		var start := rotation_angle + slice * float(i) - PI * 0.5
 		var end := start + slice
 		var mid := (start + end) * 0.5
 		var dir := Vector2(cos(mid), sin(mid))
-		var disk_label := _sector_label(sectors[i])
+		var disk_label := _label_for_disk(sectors[i])
 		var label_pos := center + dir * (radius * LABEL_RADIUS_FACTOR)
 		_draw_sector_label(label_pos, disk_label, mid, i == pointer_index)
 
@@ -211,25 +212,48 @@ func _i18n_manager() -> Node:
 	return null
 
 
+func _label_for_disk(sector: Dictionary) -> String:
+	## Disk text must stay short so adjacent UK/RU labels never collide.
+	var full := _sector_label(sector)
+	if full.length() <= 8:
+		return full
+	var compact := _compact_wheel_label(sector)
+	if not compact.is_empty() and compact.length() < full.length():
+		return compact
+	return full
+
+
 func _compact_wheel_label(sector: Dictionary) -> String:
 	var effect := str(sector.get("effect", ""))
 	if effect == "xp":
 		return "+%d" % int(sector.get("value", 0))
 	if effect == "multiplier":
 		return "×2 XP"
-	# Bonus sectors without live i18n still need a readable disk token.
+	# Bonus sectors: prefer short localized tokens over long verbs.
 	var bonus := str(sector.get("value", ""))
 	match bonus:
 		"destroy":
-			return "Destroy"
+			return _short_locale_label("wheel_sector_destroy", "Destroy")
 		"shuffle":
-			return "Shuffle"
+			return _short_locale_label("wheel_sector_shuffle", "Shuffle")
 		"explosion":
 			return "3×3"
 		_:
 			pass
 	var label := str(sector.get("label", ""))
 	return label
+
+
+func _short_locale_label(key: String, fallback: String) -> String:
+	var i18n := _i18n_manager()
+	if i18n != null and i18n.has_method("t"):
+		var translated := str(i18n.call("t", key)).strip_edges()
+		if not translated.is_empty() and translated != key:
+			if translated.length() <= 8:
+				return translated
+			# "Перемішати" / "Перемешать" → readable abbreviated disk token.
+			return translated.substr(0, mini(6, translated.length())) + "."
+	return fallback
 
 
 func set_sector_icon_slot(_sector_type: String, _texture: Texture2D) -> void:
@@ -240,34 +264,55 @@ func set_sector_icon_slot(_sector_type: String, _texture: Texture2D) -> void:
 func _draw_sector_label(
 	pos: Vector2,
 	text: String,
-	angle: float,
+	_angle: float,
 	highlighted: bool,
 	font_size_override: int = -1
 ) -> void:
 	if text.is_empty():
 		return
 	var font := ThemeDB.fallback_font
+	var lines := _disk_label_lines(text)
 	var font_size := font_size_override
 	if font_size <= 0:
-		if text.length() > 12:
+		var longest := 0
+		for line in lines:
+			longest = maxi(longest, str(line).length())
+		if longest > 10 or lines.size() > 1:
+			font_size = 10
+		elif longest > 7:
 			font_size = 11
-		elif text.length() > 8:
-			font_size = 12
-		elif text.length() > 5:
-			font_size = 14
+		elif longest > 5:
+			font_size = 13
 		else:
-			font_size = 16
+			font_size = 15
 	var text_color := Color(GothicVisualsLib.TEXT_IVORY, 0.98 if highlighted else 0.92)
-	var shadow := Color(0, 0, 0, 0.90)
-	var readable_angle := angle + PI * 0.5
-	if cos(readable_angle) < 0.0:
-		readable_angle += PI
-	draw_set_transform(pos, readable_angle, Vector2.ONE)
-	var text_size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_CENTER, -1, font_size)
-	var origin := Vector2(-text_size.x * 0.5, font_size * 0.32)
-	draw_string(font, origin + Vector2(1, 2), text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, shadow)
-	draw_string(font, origin, text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, text_color)
+	var shadow := Color(0, 0, 0, 0.92)
+	# Always upright — never arc-rotated (bottom sectors were upside-down).
+	draw_set_transform(pos, 0.0, Vector2.ONE)
+	var line_height := float(font_size) + 2.0
+	var total_h := line_height * float(lines.size())
+	var y0 := -total_h * 0.5 + font_size * 0.78
+	for li in lines.size():
+		var line := str(lines[li])
+		var text_size := font.get_string_size(line, HORIZONTAL_ALIGNMENT_CENTER, -1, font_size)
+		var origin := Vector2(-text_size.x * 0.5, y0 + line_height * float(li))
+		draw_string(font, origin + Vector2(1, 2), line, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, shadow)
+		draw_string(font, origin, line, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, text_color)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
+func _disk_label_lines(text: String) -> PackedStringArray:
+	var trimmed := text.strip_edges()
+	if trimmed.is_empty():
+		return PackedStringArray()
+	if " " in trimmed and trimmed.length() > 7:
+		var parts := trimmed.split(" ", false)
+		if parts.size() >= 2:
+			return PackedStringArray([str(parts[0]), " ".join(parts.slice(1))])
+	if trimmed.length() > 11:
+		var mid := int(ceil(float(trimmed.length()) * 0.5))
+		return PackedStringArray([trimmed.substr(0, mid), trimmed.substr(mid)])
+	return PackedStringArray([trimmed])
 
 
 func _draw_sector_wedge(

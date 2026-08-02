@@ -39,9 +39,9 @@ func _draw_sector_label(
 	# Slightly tighter sizes for long UK/RU words on 420×920.
 	var font_size := font_size_override
 	if font_size <= 0:
-		font_size = 13
+		font_size = 12
 		if text.length() > 8:
-			font_size = 11
+			font_size = 10
 		if text.length() > 12:
 			font_size = 9
 	super._draw_sector_label(pos, text, angle, highlighted, font_size)

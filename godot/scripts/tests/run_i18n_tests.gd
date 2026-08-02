@@ -182,6 +182,9 @@ func _test_wheel_fallback_labels() -> void:
 				translated,
 				"%s disk uses label_key: %s" % [lang, value]
 			)
+			var disk := str(wheel.call("_label_for_disk", {"effect": "bonus", "value": value, "label_key": key}))
+			_assert_true(not disk.is_empty(), "%s disk label non-empty: %s" % [lang, value])
+			_assert_true(disk.length() <= 10, "%s disk label compact enough: %s (%s)" % [lang, value, disk])
 		_assert_true(not via_key.is_empty(), "bonus disk label non-empty: %s" % value)
 	wheel.free()
 
