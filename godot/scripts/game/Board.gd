@@ -606,8 +606,13 @@ func _collect_cells_along_pointer_path(local_pos: Vector2) -> Array[Vector2i]:
 	if cursor.x < 0:
 		return [raw_target]
 
+	var picked_target: Vector2i = _pick_cell_for_chain(local_pos, cursor)
+	var chain_target: Vector2i = raw_target
+	if picked_target.x >= 0 and Rules.is_adjacent(cursor, raw_target):
+		chain_target = picked_target
+
 	if not _last_pointer_local.is_finite():
-		return _chain_step_cells(cursor, raw_target)
+		return _chain_step_cells(cursor, chain_target)
 
 	var dx: float = local_pos.x - _last_pointer_local.x
 	var dy: float = local_pos.y - _last_pointer_local.y
@@ -627,7 +632,7 @@ func _collect_cells_along_pointer_path(local_pos: Vector2) -> Array[Vector2i]:
 			_append_unique_chain_cell(cells, sample_cell)
 			cursor = sample_cell
 
-	_append_chain_line_cells(cells, cursor, raw_target)
+	_append_chain_line_cells(cells, cursor, chain_target)
 	return cells
 
 func _finish_drag(play_cancel_signal: bool = true) -> void:
@@ -731,7 +736,9 @@ func _pick_cell_for_chain(local_pos: Vector2, from_cell: Vector2i = Vector2i(-99
 		return nearest
 
 	var min_side: float = minf(cell_size.x, cell_size.y)
-	var reach_sq: float = pow(min_side * 0.82 + cell_gap * 0.5, 2.0)
+	var reach: float = min_side * 0.82 + cell_gap * 0.5
+	var reach_sq: float = reach * reach
+	var diag_reach_sq: float = pow(reach * 1.28, 2.0)
 	var best_adj := Vector2i(-1, -1)
 	var best_score := -INF
 	var pointer_from_last := local_pos - _cell_center(last)
@@ -745,7 +752,8 @@ func _pick_cell_for_chain(local_pos: Vector2, from_cell: Vector2i = Vector2i(-99
 				continue
 			var center := _cell_center(candidate)
 			var dist_sq := local_pos.distance_squared_to(center)
-			if dist_sq > reach_sq:
+			var candidate_reach_sq := diag_reach_sq if dx != 0 and dy != 0 else reach_sq
+			if dist_sq > candidate_reach_sq:
 				continue
 			var score := -dist_sq + _chain_neighbor_pick_bias(last, candidate, pointer_from_last) * 0.35
 			if score <= best_score:
@@ -755,14 +763,17 @@ func _pick_cell_for_chain(local_pos: Vector2, from_cell: Vector2i = Vector2i(-99
 
 	if best_adj.x >= 0:
 		return best_adj
-	return nearest
+	return Vector2i(-1, -1)
 
 
 func _chain_neighbor_pick_bias(from_cell: Vector2i, candidate: Vector2i, pointer_from_last: Vector2) -> float:
 	var step := Vector2(candidate - from_cell)
 	if step == Vector2.ZERO or pointer_from_last.length_squared() < 0.01:
 		return 0.0
-	return pointer_from_last.normalized().dot(step.normalized())
+	var bias := pointer_from_last.normalized().dot(step.normalized())
+	if absf(step.x) > 0.0 and absf(step.y) > 0.0 and absf(pointer_from_last.x) > 1.0 and absf(pointer_from_last.y) > 1.0:
+		bias += 0.08
+	return bias
 
 
 func _cells_on_grid_line(from_cell: Vector2i, to_cell: Vector2i) -> Array[Vector2i]:
