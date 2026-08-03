@@ -49,7 +49,7 @@
     "cursor:audit:stream": "node ./scripts/cursor-audit-local.mjs --stream"
   },
   "devDependencies": {
-    "@cursor/sdk": "^1.0.24",
+    "@cursor/sdk": "^1.0.26",
     "eslint": "^10.8.0",
     "globals": "^17.8.0",
     "prettier": "3.9.6",
