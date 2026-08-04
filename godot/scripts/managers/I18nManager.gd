@@ -105,6 +105,8 @@ const KEY_ALIASES := {
 	"settings_skin_selected": "settings_skin_selected",
 	"skin_selected_badge": "skin_selected_badge",
 	"settings_pick_background": "settings_pick_background",
+	"settings_pick_gallery_bg": "settings_pick_gallery_bg",
+	"settings_gallery_bg_applied": "settings_gallery_bg_applied",
 	"skin_preview_dark_only": "skin_preview_dark_only",
 	"settings_theme_twilight": "settings_theme_twilight",
 	"skin_apply": "skin_apply",
@@ -186,6 +188,16 @@ const STATIC_FALLBACKS := {
 		"uk": "Повний імпорт через файловий діалог ще не готовий. Збереження не змінено. Автоміграція при старті лишається.",
 		"ru": "Полный импорт через файловый диалог ещё не готов. Сохранение не изменено. Автомиграция при старте сохраняется.",
 		"en": "Full file-picker import is not ready yet. Save unchanged. Startup auto-migration still runs.",
+	},
+	"settings_pick_gallery_bg": {
+		"uk": "Обрати фон з галереї",
+		"ru": "Выбрать фон из галереи",
+		"en": "Pick background from gallery",
+	},
+	"settings_gallery_bg_applied": {
+		"uk": "Фон з галереї застосовано",
+		"ru": "Фон из галереи применён",
+		"en": "Gallery background applied",
 	},
 	"pause_title": {
 		"uk": "Пауза",

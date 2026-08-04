@@ -128,6 +128,8 @@ func _test_visual_skin_languages() -> void:
 		"settings_visual_skin_label",
 		"settings_visual_skin_pick",
 		"settings_pick_background",
+		"settings_pick_gallery_bg",
+		"settings_gallery_bg_applied",
 		"settings_background_label",
 		"settings_background_auto",
 		"background_preview_title",
