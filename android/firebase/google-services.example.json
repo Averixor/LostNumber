@@ -1,5 +1,5 @@
 {
-  "_comment": "PLACEHOLDER ONLY — fake ids. Do not use in builds. Copy real google-services.json from Firebase Console to android/firebase/dev/ or android/firebase/prod/ (gitignored).",
+  "_comment": "PLACEHOLDER ONLY — not a real Firebase config. Do not use in builds. Real google-services.json from Console goes to android/firebase/dev/ or prod/ (gitignored). Never put a string starting with AIzaSy here — GitHub secret scanning treats that as a live Google API key.",
   "project_info": {
     "project_number": "000000000000",
     "project_id": "lost-number-example-fake",
@@ -16,7 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyExampleOnlyNotARealKey00000000000"
+          "current_key": "REPLACE_ME_WITH_CONSOLE_ANDROID_API_KEY"
         }
       ],
       "services": {
