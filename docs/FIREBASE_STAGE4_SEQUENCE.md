@@ -4,6 +4,7 @@
 | ---------------- | ----------------------------------------------------------------------------------------------- |
 | Призначення      | Один шлях від **CT smoke** до flip gates → лише потім runtime bridge                            |
 | Статус CT зараз  | **`pending`** — не стверджувати completed без Play opt-in smoke                                 |
+| Цей документ     | На `main` після merge **#72** (`de01730…`) — інструкції готові; **CT ще не виконано**           |
 | Runtime / bridge | **BLOCKED** — не стартувати `godot/firebase-android-bridge`, SDK, `INTERNET=true`               |
 | Flip gates       | Лише OWNER у [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md) після фактів нижче          |
 | Агент з репо     | Готує цей handoff; **не** ставить `[x]` у gates і **не** оголошує CT / Phase 5 / Console «done» |

@@ -13,14 +13,16 @@
 
 ## Поточний факт Closed testing
 
-| Поле                          | Значення                                                                                | Джерело                   |
-| ----------------------------- | --------------------------------------------------------------------------------------- | ------------------------- |
-| CT status                     | **`pending`** (Play opt-in / device smoke **не** виконано з репо)                       | `docs/STAGE3_CLOSEOUT.md` |
-| Release AAB source commit     | `2ef0fcdf2aaf5083cf79c88a41b989720e137b47`                                              | STAGE1 / STAGE3           |
-| Release AAB SHA-256           | `398b83f33d79b878e71ca1262d6cfac2e0a981045d77299a5c0824c1dba848c4`                      | STAGE1 / STAGE3           |
-| versionName / versionCode     | `2.1.6` / `16`                                                                          | STAGE1                    |
-| Package (release / debug)     | `com.averixor.lostnumber` / `com.averixor.lostnumber.dev`                               | SoT / STAGE1              |
-| Docs kickoff base (main HEAD) | `19d393a39f5b00fa7a0144138149b4d6b910c234` (після #70; AAB record лишається `2ef0fcd…`) | git                       |
+| Поле                      | Значення                                                                    | Джерело                   |
+| ------------------------- | --------------------------------------------------------------------------- | ------------------------- |
+| CT status                 | **`pending`** (Play opt-in / device smoke **не** виконано з репо)           | `docs/STAGE3_CLOSEOUT.md` |
+| Release AAB source commit | `2ef0fcdf2aaf5083cf79c88a41b989720e137b47`                                  | STAGE1 / STAGE3           |
+| Release AAB SHA-256       | `398b83f33d79b878e71ca1262d6cfac2e0a981045d77299a5c0824c1dba848c4`          | STAGE1 / STAGE3           |
+| versionName / versionCode | `2.1.6` / `16`                                                              | STAGE1                    |
+| Package (release / debug) | `com.averixor.lostnumber` / `com.averixor.lostnumber.dev`                   | SoT / STAGE1              |
+| Docs sequence on main     | PR **#72** MERGED — `docs/FIREBASE_STAGE4_SEQUENCE.md` walkable path        | git                       |
+| main HEAD (docs)          | `de01730b295acf7f8dce2850d8d3121fb843aa27` (merge #72; **не** AAB source)   | git                       |
+| **Негайний OWNER крок**   | **CT smoke** (upload AAB → Play opt-in → Boot→Menu→merge→save→restore→Back) | SEQUENCE §1               |
 
 Upload key fingerprints (звірити з Console): [`docs/PLAY_CONSOLE_RECON.md`](PLAY_CONSOLE_RECON.md).
 
