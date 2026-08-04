@@ -9,15 +9,15 @@ Single canonical reference for PO-approved decisions. When docs disagree with th
 
 ## Version snapshot
 
-| Field               | Value                                  |
-| ------------------- | -------------------------------------- |
-| Package             | `com.averixor.lostnumber`              |
-| Debug package       | `com.averixor.lostnumber.dev`          |
-| versionName         | `2.1.6`                                |
-| versionCode         | `16`                                   |
-| Next Play upload    | versionCode `17` (mandatory increment) |
-| Engine              | Godot **4.7**                          |
-| npm package version | `2.1.6`                                |
+| Field               | Value                                      |
+| ------------------- | ------------------------------------------ |
+| Package             | `com.averixor.lostnumber`                  |
+| Debug package       | `com.averixor.lostnumber.dev`              |
+| versionName         | `2.1.6`                                    |
+| versionCode         | `16`                                       |
+| Next Play upload    | versionCode `16` or `17` (Console decides) |
+| Engine              | Godot **4.7**                              |
+| npm package version | `2.1.6`                                    |
 
 **Versioning rule (code ≥ 15):** `versionName = 2.1.(versionCode - 10)` — e.g. code `16` → `2.1.6`. Debug builds append `-dev`.
 
@@ -34,7 +34,7 @@ Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`.
 | **i18n**             | uk / ru / en — **285 keys** each                                                                                                                                                                                                                 | `godot/assets/i18n/*.json`, `run_i18n_tests.gd`         |
 | **Levels**           | First **40** configs algorithmically generated at init (`_generate_manual_levels(40)`); from index 40+ separate procedural branch                                                                                                                | `LevelManager.gd`                                       |
 | **Visual authority** | **PO mockups + [VISUAL_TARGET.md](./VISUAL_TARGET.md)** = acceptance; gothic fantasy integration over flat neon                                                                                                                                  | `VISUAL_TARGET.md`, `docs/archive/VISUAL_PORT_MAP.md`   |
-| **Legacy import UI** | Settings **Import** button is a stub (`settings_import_legacy_none` only); startup migration + `LegacySaveMigration` autoload work                                                                                                               | `Settings.gd`, `LegacySaveMigration.gd`, `Boot.gd`      |
+| **Legacy import UI** | Settings **Import** button is a stub (`settings_import_legacy_stub`): no save mutation; startup migration + `LegacySaveMigration` autoload work                                                                                                  | `Settings.gd`, `LegacySaveMigration.gd`, `Boot.gd`      |
 | **CI**               | Workflow сконфігурований: `release:check` **і** `godot:test:all` (Godot **4.7.1** pinned) на push/PR `main`. Перед релізним рішенням **окремо підтвердити** successful run для цільового commit SHA — не стверджувати «зелений» без журналу run. | `.github/workflows/ci.yml`                              |
 | **Network**          | None — fully offline                                                                                                                                                                                                                             | —                                                       |
 | **Cloud / Firebase** | Phase 6 — **deferred** until Closed testing is stable and Phase 5 shows no device regressions ([`docs/ROADMAP.md`](../ROADMAP.md))                                                                                                               | `docs/PHASES.md`                                        |

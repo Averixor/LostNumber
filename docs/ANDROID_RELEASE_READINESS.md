@@ -26,7 +26,7 @@ App shell persists `BackgroundLayer` and overlay layers; individual screens moun
 
 ### Versioning
 
-Current: `versionName 2.1.6` / `versionCode 16`. **Every new upload needs a versionCode greater than any previously uploaded** — next release: code `17`.
+Current: `versionName 2.1.6` / `versionCode 16`. **Every new upload needs a versionCode greater than any previously uploaded**. Practical rule: if Console confirms **VC16 already used**, bump to code `17` (name `2.1.7`); otherwise you can keep `16` / `2.1.6` until that fact is confirmed.
 
 > `versionName` is a human-readable label (free-form). `versionCode` is the integer Play compares — just increment it by 1 each upload.
 >
@@ -74,7 +74,7 @@ Then create `android/keystore.properties` following the pattern above with match
 
 ## Prerequisites
 
-- Godot 4.7+ (`godot4` on PATH)
+- Godot 4.7+ (`godot4` on PATH) — baseline project target is 4.7; CI pins 4.7.1
 - Android SDK: `~/Android/Sdk` (or `ANDROID_HOME`)
 - JDK 17: `~/Android/jbr` (snap Godot cannot read `/opt/...`)
 - Export templates (script auto-downloads on first build)

@@ -5,14 +5,15 @@
 
 ## Git / версія
 
-| Поле                      | Значення                                   |
-| ------------------------- | ------------------------------------------ |
-| Branch                    | `main`                                     |
-| Commit SHA                | `a6db8b2939f1379eeca057f53ae7987d77ce954a` |
-| versionName               | **2.1.6**                                  |
-| versionCode               | **16**                                     |
-| Package (release)         | `com.averixor.lostnumber`                  |
-| Package (device QA debug) | `com.averixor.lostnumber.dev`              |
+| Поле                                | Значення                                   |
+| ----------------------------------- | ------------------------------------------ |
+| AAB source branch                   | `main`                                     |
+| AAB source commit SHA               | `a6db8b2939f1379eeca057f53ae7987d77ce954a` |
+| Repo baseline main HEAD (після #58) | `f2d69ddb08413c7f0746f5aff1bfb8d2dd32614d` |
+| versionName                         | **2.1.6**                                  |
+| versionCode                         | **16**                                     |
+| Package (release)                   | `com.averixor.lostnumber`                  |
+| Package (device QA debug)           | `com.averixor.lostnumber.dev`              |
 
 **Version gate:** KEEP **16 / 2.1.6**. Немає факту Console, що VC16 уже uploaded → bump PR `godot/release-play-v17` **не** створювався. Див. [`PLAY_CONSOLE_RECON.md`](PLAY_CONSOLE_RECON.md).
 
