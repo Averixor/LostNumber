@@ -23,3 +23,6 @@ build/
 
 # Legacy JS migration dumps — not maintained for formatting
 docs/archive/**
+
+# ECC continuous-learning instincts: YAML frontmatter + Markdown bodies (not valid YAML)
+.claude/homunculus/**
