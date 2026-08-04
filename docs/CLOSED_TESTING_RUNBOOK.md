@@ -56,8 +56,11 @@ sha256sum build/android/lost-number.aab
 
 ## 5. Після upload (OWNER + tester)
 
+Канонічний 10-кроковий smoke (force-stop / restore): [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md).
+
 - [ ] Немає помилки підпису
-- [ ] Тестер: Play opt-in → install → merge + save + Back
+- [ ] Тестер: Play opt-in → install → Boot → Menu → merge → save → force-stop/relaunch → restore → Back
+- [ ] Результат GO/NO-GO записаний у checklist / closeout / gates
 - [ ] Production не стартувати до identity approval
 
 ## OWNER handoff — що вже готове

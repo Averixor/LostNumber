@@ -18,6 +18,7 @@
 | Аудит 360°                                 | [AUDIT_PLAY_360.md](./AUDIT_PLAY_360.md)                                       |
 | Play Console recon                         | [PLAY_CONSOLE_RECON.md](./PLAY_CONSOLE_RECON.md)                               |
 | Closed testing runbook                     | [CLOSED_TESTING_RUNBOOK.md](./CLOSED_TESTING_RUNBOOK.md)                       |
+| Closed testing smoke checklist (OWNER)     | [CT_SMOKE_CHECKLIST.md](./CT_SMOKE_CHECKLIST.md)                               |
 | Stage 1 release record                     | [STAGE1_RELEASE_RECORD.md](./STAGE1_RELEASE_RECORD.md)                         |
 | Stage 2 prep (no CT upload)                | [STAGE2_PREP.md](./STAGE2_PREP.md)                                             |
 | Stage 3 repo hardening                     | [STAGE3_REPO_HARDENING.md](./STAGE3_REPO_HARDENING.md)                         |
