@@ -14,6 +14,7 @@ Professional technical documentation for the Lost Number project. **Godot 4** is
 | Document                                               | Description                                                             |
 | ------------------------------------------------------ | ----------------------------------------------------------------------- |
 | **[SOURCE_OF_TRUTH.md](./SOURCE_OF_TRUTH.md)**         | **Canonical reference** — decisions, version, doc index                 |
+| [FIREBASE_ADR.md](./FIREBASE_ADR.md)                   | Firebase Cloud Save ADR (Kotlin bridge; runtime blocked on gates)       |
 | [AUDIT_MAIN_2026-07-10.md](./AUDIT_MAIN_2026-07-10.md) | Dated main-branch technical audit (ref `dd6300a`)                       |
 | [GAME.md](./GAME.md)                                   | Game description, goal, mechanics, controls, progression                |
 | [MIGRATION_GODOT.md](./MIGRATION_GODOT.md)             | Godot 4 migration: completed work, remaining tasks                      |
@@ -30,6 +31,9 @@ Professional technical documentation for the Lost Number project. **Godot 4** is
 | [docs/PROJECT_STRUCTURE.md](../PROJECT_STRUCTURE.md)                 | Folder structure and code flows                    |
 | [docs/HANDOFF-IDEAL.md](../HANDOFF-IDEAL.md)                         | Production handoff (ideal build)                   |
 | [docs/PHASES.md](../PHASES.md)                                       | Development phases (performance, Firebase roadmap) |
+| [docs/FIREBASE_STAGE4_GATES.md](../FIREBASE_STAGE4_GATES.md)         | Stage 4 OWNER hard gates (runtime blocked)         |
+| [docs/FIREBASE_OWNER_RUNBOOK.md](../FIREBASE_OWNER_RUNBOOK.md)       | Firebase Console / SHA / secrets setup             |
+| [docs/FIREBASE_PRIVACY_DELTA.md](../FIREBASE_PRIVACY_DELTA.md)       | Privacy / Data safety changes when cloud lands     |
 | [docs/ANDROID.md](../ANDROID.md)                                     | Godot Android build                                |
 | [docs/ANDROID_RELEASE_READINESS.md](../ANDROID_RELEASE_READINESS.md) | Android export, signing, pre-upload gate           |
 | [docs/ANDROID_QA.md](../ANDROID_QA.md)                               | Pre-release QA on device                           |

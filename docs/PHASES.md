@@ -18,14 +18,17 @@
 - Аудіо: `docs/AUDIO.md`, `AudioManager.gd`
 - Smoke: `npm run godot:test:smoke`
 
-## Фаза 6 — Firebase (**відкладено**, roadmap v1.1)
+## Фаза 6 — Firebase (**kickoff ready, runtime blocked**)
 
-> Не стартувати Phase 6, доки Closed testing стабільний і Phase 5 без помітних device-регресій.
-> Див. [`docs/ROADMAP.md`](ROADMAP.md).
+> Docs kickoff: [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md), ADR [`en/FIREBASE_ADR.md`](en/FIREBASE_ADR.md).  
+> **Не** стартувати runtime 4A/4B/4C, доки OWNER не закриє gates (стабільний Closed testing, Phase 5 device sign-off, privacy + explicit Google Auth/Cloud Save approve).  
+> CT зараз: **`pending`**. Див. [`ROADMAP.md`](ROADMAP.md) § Етап 4.
 
-Коли умови виконані (окремий kickoff):
+Коли gates зелені (окремі Godot/Firebase PR):
 
-- Auth: Google.
-- Firestore документ **`users/{uid}/save/current`** (або узгоджений шлях).
-- Конфлікти: брати версію з **більшим `updatedAt`**.
-- Fallback: локальний Godot save (`user://`), коли офлайн або помилка бекенду.
+- Auth: **лише Google**.
+- Bridge: Godot Android **Kotlin** plugin (не WebView/Capacitor); SaveManager-first sync.
+- Firestore: **`users/{uid}/save/current`**; envelope з `revision` + `payloadChecksum`.
+- Конфлікти: revision + checksum + **діалог** (keep local / use remote / cancel) — **без** field-merge.
+- Fallback: локальний Godot save (`user://`); гра повністю без акаунта/мережі.
+- Custom backgrounds — **лише локально**; Crashlytics/Analytics не вмикати мовчки.

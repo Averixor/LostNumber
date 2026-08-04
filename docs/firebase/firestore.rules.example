@@ -1,0 +1,61 @@
+# Firestore security rules — example (docs only)
+
+> **Not deployed.** Copy into a Firebase project / emulator only after gates + `firebase/firestore-rules` PR.  
+> Path: `users/{uid}/save/current` — see [`docs/en/FIREBASE_ADR.md`](../en/FIREBASE_ADR.md).
+
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function hasSaveEnvelope() {
+      return request.resource.data.keys().hasAll([
+        'schemaVersion',
+        'gameSaveVersion',
+        'revision',
+        'payloadChecksum',
+        'payload'
+      ])
+      && request.resource.data.revision is int
+      && request.resource.data.payloadChecksum is string;
+    }
+
+    match /users/{userId}/save/{docId} {
+      allow read: if isOwner(userId) && docId == 'current';
+      allow create, update: if isOwner(userId) && docId == 'current' && hasSaveEnvelope();
+      allow delete: if isOwner(userId) && docId == 'current';
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+```
+
+Tighten size limits and schemaVersion bounds in the real `firebase/firestore-rules` PR.
+
+## Emulator test checklist (scaffold)
+
+Run against Firebase Emulator Suite in `firebase/firestore-rules` PR:
+
+| # | Case                                      | Expect        |
+| - | ----------------------------------------- | ------------- |
+| 1 | Signed-out read `users/u1/save/current`   | **deny**      |
+| 2 | Signed-out write                          | **deny**      |
+| 3 | Auth as `u1`, read/write own `current`    | **allow**     |
+| 4 | Auth as `u1`, write `users/u2/...`        | **deny**      |
+| 5 | Auth as `u1`, write doc id ≠ `current`    | **deny**      |
+| 6 | Missing `revision` / `payloadChecksum`    | **deny**      |
+| 7 | Oversized `payload` (limit TBD in PR)     | **deny**      |
+| 8 | Unrelated collection path                 | **deny**      |
+
+Commands (placeholder — pin versions in runtime PR):
+
+```bash
+firebase emulators:start --only firestore
+# then rules unit tests (Jest/@firebase/rules-unit-testing or equivalent)
+```
