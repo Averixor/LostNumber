@@ -88,6 +88,8 @@ Snapshot from APK on `fix/ui-polish-round-2` (Jul 2026) vs PO mockups.
 | Spin control      | Stone-framed **Крутити** (or icon+text) at bottom; matches menu button language                                                                    |
 | Scene integration | Wheel centered; castle/lava background visible; vignette ties wheel to environment                                                                 |
 
+**Hybrid decision (Stage 2, 2026-08-04):** each sector shows a **large reward icon plus a short i18n label** on the same segment. Icons-only or labels-only are out of scope for polish PRs. Do not change wheel economy / `WheelManager` payout tables in UI polish work. See [`docs/STAGE2_PREP.md`](../STAGE2_PREP.md).
+
 **Godot refs:** `godot/scenes/Wheel.tscn`, `WheelCanvas` / wheel draw code, `godot/assets/ui/icons/wheel/`
 
 **Icon note:** Gothic PNG assets are **approved**; gap is **frame + scale + composition**, not art style change.
