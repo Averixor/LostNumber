@@ -66,6 +66,7 @@ const KEY_ALIASES := {
 	"settings_import_legacy_success": "settings_import_legacy_success",
 	"settings_import_legacy_failed": "settings_import_legacy_failed",
 	"settings_import_legacy_none": "settings_import_legacy_none",
+	"settings_import_legacy_stub": "settings_import_legacy_stub",
 	"btn_stats": "btn_stats",
 	"btn_about": "btn_about",
 	"dock_premium": "dock_premium",
@@ -180,6 +181,11 @@ const STATIC_FALLBACKS := {
 		"uk": "Файл збереження не знайдено",
 		"ru": "Файл сохранения не найден",
 		"en": "No legacy save file found",
+	},
+	"settings_import_legacy_stub": {
+		"uk": "Повний імпорт через файловий діалог ще не готовий. Збереження не змінено. Автоміграція при старті лишається.",
+		"ru": "Полный импорт через файловый диалог ещё не готов. Сохранение не изменено. Автомиграция при старте сохраняется.",
+		"en": "Full file-picker import is not ready yet. Save unchanged. Startup auto-migration still runs.",
 	},
 	"pause_title": {
 		"uk": "Пауза",

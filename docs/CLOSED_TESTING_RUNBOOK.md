@@ -1,48 +1,75 @@
 # Closed testing runbook — Lost Number
 
-Передумови: [`PLAY_CONSOLE_RECON.md`](PLAY_CONSOLE_RECON.md), [`ANDROID_RELEASE_READINESS.md`](ANDROID_RELEASE_READINESS.md), [`ROADMAP.md`](ROADMAP.md).
+Передумови: [`PLAY_CONSOLE_RECON.md`](PLAY_CONSOLE_RECON.md), [`ANDROID_RELEASE_READINESS.md`](ANDROID_RELEASE_READINESS.md), [`STAGE1_RELEASE_RECORD.md`](STAGE1_RELEASE_RECORD.md), [`ROADMAP.md`](ROADMAP.md).
 
 ## Ship target (поки Console не скаже інакше)
 
-| Поле                      | Значення                                                                      |
-| ------------------------- | ----------------------------------------------------------------------------- |
-| Package                   | `com.averixor.lostnumber`                                                     |
-| versionName / versionCode | як у `main` зараз (**2.1.6 / 16**, або **2.1.7 / 17** після окремого bump PR) |
-| AAB                       | `build/android/lost-number.aab` з **конкретного SHA `main`**                  |
-| Privacy                   | [privacy.html](https://averixor.github.io/LostNumber/privacy.html)            |
+| Поле                      | Значення                                                           |
+| ------------------------- | ------------------------------------------------------------------ |
+| Package                   | `com.averixor.lostnumber`                                          |
+| versionName / versionCode | **2.1.6 / 16** (bump лише якщо Console покаже VC16 already used)   |
+| AAB                       | `build/android/lost-number.aab` з SHA `a6db8b29…` (див. record)    |
+| AAB SHA-256               | `6aef26d6ee02ef54162e4f97758ce42c0b0a66ed488100c6334fe743b6f7b52b` |
+| Privacy                   | [privacy.html](https://averixor.github.io/LostNumber/privacy.html) |
 
-## 1. Pre-upload gate
+## 1. Pre-upload gate (репо — виконано 2026-08-04)
 
 ```bash
 git switch main && git pull --ff-only
-# зафіксувати SHA: git rev-parse HEAD
+git rev-parse HEAD   # очікується a6db8b2939f1379eeca057f53ae7987d77ce954a (або новіший main після docs merge)
 npm ci
 npm run godot:verify:aab
+sha256sum build/android/lost-number.aab
 ```
+
+| Крок                    | Статус                                                    |
+| ----------------------- | --------------------------------------------------------- |
+| `godot:verify:aab`      | ✅ OK                                                     |
+| Release record          | ✅ [`STAGE1_RELEASE_RECORD.md`](STAGE1_RELEASE_RECORD.md) |
+| Device QA GO/NO-GO      | ✅ [`ANDROID_QA.md`](ANDROID_QA.md)                       |
+| Listing + ≥2 real shots | ✅ `01` + `02`                                            |
+| Forms cheat sheet       | ✅ [`STAGE1_CONSOLE_FORMS.md`](STAGE1_CONSOLE_FORMS.md)   |
 
 Канонічний gate — `godot:verify:aab` (не лише `godot:test:all`).
 
 ## 2. Device QA
 
-Повний чеклист: [`ANDROID_QA.md`](ANDROID_QA.md). Без P0/P1.
+Повний чеклист: [`ANDROID_QA.md`](ANDROID_QA.md). Без P0/P1 для upload.
 
-## 3. Console перед upload
+## 3. Console перед upload (OWNER)
 
-- [ ] Listing + ≥2 справжні phone screenshots (promo drafts недостатньо для зовнішніх тестерів)
-- [ ] Icon / feature graphic
+- [ ] Recon таблиця OWNER (Upload SHA, VC16, identity, track) — [`PLAY_CONSOLE_RECON.md`](PLAY_CONSOLE_RECON.md)
+- [ ] Listing + ≥2 phone screenshots (`01`, `02`)
+- [ ] Icon / feature graphic (`store/play-high-res-icon-512.png`, `store/feature-graphic-1024x500.png`)
 - [ ] Privacy URL 200
-- [ ] Data safety / IARC / audience
+- [ ] Data safety / IARC / audience — [`STAGE1_CONSOLE_FORMS.md`](STAGE1_CONSOLE_FORMS.md)
 - [ ] Upload key SHA = recon
 
-## 4. Closed testing release
+## 4. Closed testing release (OWNER — лише Console)
 
-1. Test and release → Closed testing → Create new release → upload AAB.
-2. Release notes з фактичною versionName/versionCode.
+1. Test and release → Closed testing → Create new release → upload `build/android/lost-number.aab`.
+2. Release notes: `2.1.6 (16)` — Closed testing candidate з `main@a6db8b29`.
 3. Testers → Save → Review → Start rollout.
-4. Надіслати opt-in URL.
+4. Надіслати opt-in URL тестеру.
 
-## 5. Після upload
+**З репо upload неможливий** (немає Play Console API credentials у цьому середовищі).
+
+## 5. Після upload (OWNER + tester)
 
 - [ ] Немає помилки підпису
-- [ ] Тестер пройшов smoke
+- [ ] Тестер: Play opt-in → install → merge + save + Back
 - [ ] Production не стартувати до identity approval
+
+## OWNER handoff — що вже готове
+
+1. AAB підписаний upload keystore, verify OK, SHA-256 у release record.
+2. Device QA на Xiaomi 23117RA68G → **GO** (див. ANDROID_QA).
+3. Listing тексти: [`store/PLAY_CONSOLE_LISTING.md`](../store/PLAY_CONSOLE_LISTING.md).
+4. Forms: [`STAGE1_CONSOLE_FORMS.md`](STAGE1_CONSOLE_FORMS.md).
+5. Версія **залишена 16** до вашого факту VC16 у Console.
+
+## OWNER blockers
+
+1. Увійти в Play Console і заповнити recon чекбокси (SHA / VC16 / identity / track).
+2. Якщо VC16 already used → сказати агенту зробити PR `godot/release-play-v17`, перезібрати AAB, оновити record.
+3. Upload AAB у Closed testing + opt-in smoke з Play.

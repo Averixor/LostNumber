@@ -472,20 +472,10 @@ func _on_background_auto_toggled(enabled: bool) -> void:
 
 
 func _on_import_legacy() -> void:
-	var migration := _autoload("LegacySaveMigration")
-	if migration == null or not migration.has_method("try_manual_import"):
-		if import_status != null:
-			import_status.text = _i18n("settings_import_legacy_failed")
-		return
-	if import_button != null:
-		import_button.disabled = true
-	var imported := bool(migration.call("try_manual_import"))
-	if import_button != null:
-		import_button.disabled = false
+	## Stage 2 stub B: keep the button, never claim a false success, never mutate save here.
+	## Boot still runs LegacySaveMigration.try_migrate_on_startup(); full file-picker UX is a later PR.
 	if import_status != null:
-		import_status.text = _i18n(
-			"settings_import_legacy_success" if imported else "settings_import_legacy_none"
-		)
+		import_status.text = _i18n("settings_import_legacy_stub")
 
 
 func _on_exit() -> void:

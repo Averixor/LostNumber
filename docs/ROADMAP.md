@@ -1,10 +1,10 @@
 # Lost Number — Roadmap v1.1
 
-| Поле               | Значення                                                          |
-| ------------------ | ----------------------------------------------------------------- |
-| Версія документа   | **1.1** (2026-08-04)                                              |
-| База               | `main` @ `5e39937` (після merge PR #52)                           |
-| Ship version у git | **2.1.6 / versionCode 16** (не змінювати до факту з Play Console) |
+| Поле               | Значення                                                                                                      |
+| ------------------ | ------------------------------------------------------------------------------------------------------------- |
+| Версія документа   | **1.1** (2026-08-04)                                                                                          |
+| База               | `main` @ `f2d69ddb` (після merge #58; Stage 3 repo base) / AAB source `main` @ `a6db8b29` (Stage 1 candidate) |
+| Ship version у git | **2.1.6 / versionCode 16** (не змінювати до факту з Play Console)                                             |
 
 ## Стратегія
 
@@ -37,7 +37,7 @@ PR #48 (`godot/fix-gothic-chrome-readability`) **уже merged** (2026-08-02): h
 
 > Аудит початково виконано на `21a627b`; зміни PR #48 інтегровані в `main` через `1feda649`; перед релізом стан повторно звірено з актуальним HEAD.
 
-Станом на `5e39937`: workflow **CI** має `release-check` + `godot-tests` (Godot 4.7.1). На цьому SHA `godot-tests` = success, `release-check` = failure (Prettier на `AUDIT_PLAY_360.md`) — треба виправити до релізного рішення.
+Станом на `f2d69ddb`: workflow **CI** має `release-check` + `Godot tests (4.7.1)`; на цьому SHA обидва check-runs = success.
 
 ## Етап 1 — Play Console recon → version → AAB → device QA → Closed testing
 
@@ -75,7 +75,8 @@ Closed testing upload
 
 ## Етап 2 — Polish після Closed testing
 
-VISUAL_TARGET, Settings Import stub UX, розмір AAB, фінальні 4 скріншоти.
+Prep (без CT): [`STAGE2_PREP.md`](STAGE2_PREP.md) — hybrid wheel, Import stub B, порядок PR.  
+VISUAL_TARGET, Settings Import stub UX, розмір AAB, фінальні 4 скріншоти. Firebase — ні.
 
 ## Етап 3 — Repo hygiene (окремий PR)
 

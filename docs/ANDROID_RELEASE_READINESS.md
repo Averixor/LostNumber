@@ -26,7 +26,7 @@ App shell persists `BackgroundLayer` and overlay layers; individual screens moun
 
 ### Versioning
 
-Current: `versionName 2.1.6` / `versionCode 16`. **Every new upload needs a versionCode greater than any previously uploaded** — next release: code `17`.
+Current: `versionName 2.1.6` / `versionCode 16`. **Every new upload needs a versionCode greater than any previously uploaded**. Practical rule: if Console confirms **VC16 already used**, bump to code `17` (name `2.1.7`); otherwise you can keep `16` / `2.1.6` until that fact is confirmed.
 
 > `versionName` is a human-readable label (free-form). `versionCode` is the integer Play compares — just increment it by 1 each upload.
 >
@@ -74,10 +74,34 @@ Then create `android/keystore.properties` following the pattern above with match
 
 ## Prerequisites
 
-- Godot 4.7+ (`godot4` on PATH)
+- Godot 4.7+ (`godot4` on PATH) — baseline project target is 4.7; CI pins 4.7.1
 - Android SDK: `~/Android/Sdk` (or `ANDROID_HOME`)
 - JDK 17: `~/Android/jbr` (snap Godot cannot read `/opt/...`)
 - Export templates (script auto-downloads on first build)
+
+## Bundletool (pinned) — AAB deep verification
+
+`npm run godot:verify:aab` запускає `scripts/verify-godot-aab.sh`, який через `bundletool.jar` збирає universal APK з AAB і робить dump:
+
+- package / `versionCode` / `versionName`
+- `minSdk` / `targetSdk`
+- ABI (`native-code`)
+- permissions
+- signing certs (apksigner)
+- наявність launcher/adaptive icon ресурсів у `universal.apk`
+
+Поведінка для `bundletool.jar`:
+
+- Local: якщо `./bundletool.jar` відсутній, буде `warning`, а deep-dump буде пропущено (gate продовжить виконання).
+- CI / `RELEASE_VERIFY=1`: відсутність `bundletool.jar` -> `FAIL`.
+
+Pinned версія: `bundletool-all-1.18.3.jar`
+
+1. Завантаж: [bundletool 1.18.3 release](https://github.com/google/bundletool/releases/tag/1.18.3)
+2. Поклади файл у корінь репозиторію з іменем `bundletool.jar`:
+   - `/home/averixor/Desktop/LostNumber/bundletool.jar`
+3. Альтернатива: вказати шлях через змінну `BUNDLETOOL_JAR`:
+   - `BUNDLETOOL_JAR=/abs/path/bundletool-all-1.18.3.jar npm run godot:verify:aab`
 
 ## Commands
 
