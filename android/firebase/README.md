@@ -1,6 +1,8 @@
 # Android Firebase config (secrets)
 
-Реальні `google-services.json` **не комітити**. У git лише цей README і `google-services.example.json` (підставні id).
+Реальні `google-services.json` **не комітити**. У git лише цей README і `google-services.example.json` (підставні id **без** префікса `AIzaSy` — інакше GitHub Secret Scanning піднімає алерт).
+
+Якщо GitHub показує алерт на example-файл: це зазвичай **false positive** на плейсхолдер. Закрити сповіщення як **false positive** / **revoked** після заміни рядка. Реальний ключ з Console **не** ротували — його в git ніколи не було.
 
 ## Layout
 
