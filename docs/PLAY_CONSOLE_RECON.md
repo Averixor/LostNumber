@@ -10,7 +10,7 @@ Alias: `lostnumber_upload`
 
 ## Локальні fingerprints (звірити з Console)
 
-Отримано через `npm run keystore:info` (2026-08-04, re-verified):
+Отримано через `npm run keystore:info` (2026-08-04, re-verified перед CT upload handoff):
 
 | Алгоритм    | Відбиток                                                                                          |
 | ----------- | ------------------------------------------------------------------------------------------------- |
