@@ -1,8 +1,10 @@
 # Play Console recon — Lost Number
 
 Дата оновлення: 2026-08-04  
-Релізна база git: **`a6db8b2939f1379eeca057f53ae7987d77ce954a`** (`main`)  
+Релізна база git: **`2ef0fcdf2aaf5083cf79c88a41b989720e137b47`** (`main`, post-adaptive CT candidate)  
 Ship version у git: **2.1.6 / versionCode 16** (не bump до факту Console)  
+AAB SHA-256 (див. [`STAGE1_RELEASE_RECORD.md`](STAGE1_RELEASE_RECORD.md)): `398b83f33d79b878e71ca1262d6cfac2e0a981045d77299a5c0824c1dba848c4`  
+Старі candidates `a6db8b29` / `c9e315af…` — **superseded**, не upload.  
 Локальний upload keystore: `android/keystore/lostnumber-upload-2026.jks`  
 Alias: `lostnumber_upload`
 
@@ -39,7 +41,7 @@ Play Console → Setup → App integrity → App signing → **Upload key certif
 | Privacy HTTP               | **200** (`curl -sI`, 2026-08-04 re-check)                       |
 | Privacy URL                | https://averixor.github.io/LostNumber/privacy.html              |
 | Локальний keystore + alias | OK (`lostnumber_upload`)                                        |
-| CI на `a6db8b29`           | green (`release-check` + Godot 4.7.1 + Pages)                   |
+| CI на `2ef0fcd`            | green (`release-check` + Godot 4.7.1) — run 30907149534         |
 | `npm run godot:verify:aab` | **OK** — [`STAGE1_RELEASE_RECORD.md`](STAGE1_RELEASE_RECORD.md) |
 | Phone screenshots ≥2 real  | OK — `01-menu-dark`, `02-gothic-style` (RGB, no alpha)          |
 | IARC / Data safety cheat   | [`STAGE1_CONSOLE_FORMS.md`](STAGE1_CONSOLE_FORMS.md)            |

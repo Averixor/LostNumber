@@ -8,7 +8,7 @@
 | Поле                                | Значення                                   |
 | ----------------------------------- | ------------------------------------------ |
 | AAB source branch                   | `main`                                     |
-| AAB source commit SHA               | `a6db8b2939f1379eeca057f53ae7987d77ce954a` |
+| AAB source commit SHA               | `2ef0fcdf2aaf5083cf79c88a41b989720e137b47` |
 | Repo baseline main HEAD (після #58) | `f2d69ddb08413c7f0746f5aff1bfb8d2dd32614d` |
 | versionName                         | **2.1.6**                                  |
 | versionCode                         | **16**                                     |
@@ -22,21 +22,23 @@
 | Поле    | Значення                                                           |
 | ------- | ------------------------------------------------------------------ |
 | Path    | `build/android/lost-number.aab`                                    |
-| Size    | **141349967** bytes (~135 MiB)                                     |
-| SHA-256 | `6aef26d6ee02ef54162e4f97758ce42c0b0a66ed488100c6334fe743b6f7b52b` |
-| Built   | 2026-08-04 12:24:58 +0300 (під час `npm run godot:verify:aab`)     |
+| Size    | **141352047** bytes (~135 MiB)                                     |
+| SHA-256 | `398b83f33d79b878e71ca1262d6cfac2e0a981045d77299a5c0824c1dba848c4` |
+| Built   | 2026-08-04 15:24:00 +0300 (під час `npm run godot:verify:aab`)     |
 
 > Якщо AAB перезібрати — оновити SHA-256 і дату в цьому файлі перед upload.
+>
+> **Superseded CT candidates (не upload):** `a6db8b29` / `c9e315af…` (pre-adaptive) та проміжний `6aef26d6…` — замінені post-#64 rebuild з `main@2ef0fcd` (adaptive icon + Stage 3 merges + #69).
 
 ## Verifier
 
-| Gate                               | Результат                                                                                                                |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `npm run godot:verify:aab`         | **OK** (exit 0)                                                                                                          |
-| `godot:test:all` (у складі verify) | OK                                                                                                                       |
-| `release:check`                    | OK (вкл. Play Store screenshots RGB, no alpha)                                                                           |
-| Unzip gates                        | OK: no dev/cheat/DebugOverlay; `libgodot_android.so` arm64+x86_64; no `assets/store/`; no `scripts/tests/`               |
-| bundletool / aapt2 dump            | пропущено (`bundletool.jar` відсутній) — versionCode підтверджено `export_presets.cfg` + `release:check` (VC 16 / 2.1.6) |
+| Gate                               | Результат                                                                                                  |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `npm run godot:verify:aab`         | **OK** після fix quoting у `scripts/verify-godot-aab.sh` (tests + release:check + export + unzip gates)    |
+| `godot:test:all` (у складі verify) | OK                                                                                                         |
+| `release:check`                    | OK (вкл. Play Store screenshots RGB, no alpha)                                                             |
+| Unzip gates                        | OK: no dev/cheat/DebugOverlay; `libgodot_android.so` arm64+x86_64; no `assets/store/`; no `scripts/tests/` |
+| bundletool / aapt2 dump            | пропущено локально (`bundletool.jar` відсутній → warning); у CI gate fail якщо `CI=true` без jar           |
 
 ## Screenshots (Stage 1)
 
