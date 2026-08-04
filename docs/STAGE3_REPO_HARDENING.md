@@ -20,7 +20,7 @@
 | Closed testing                                   | `pending`                                                          |
 | Release AAB source commit (окремо від main HEAD) | `a6db8b2939f1379eeca057f53ae7987d77ce954a`                         |
 | Release AAB path                                 | `build/android/lost-number.aab`                                    |
-| Release AAB SHA-256                              | `c9e315afcf27aacc19a5d69b823d8e035da8c07cca8f9bbbcedb6617e5321be6` |
+| Release AAB SHA-256                              | `6aef26d6ee02ef54162e4f97758ce42c0b0a66ed488100c6334fe743b6f7b52b` |
 
 ## Last verified CI (для base SHA)
 
