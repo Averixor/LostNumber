@@ -21,9 +21,9 @@
 | Поле    | Значення                                                           |
 | ------- | ------------------------------------------------------------------ |
 | Path    | `build/android/lost-number.aab`                                    |
-| Size    | **142491081** bytes (~136 MiB)                                     |
-| SHA-256 | `c9e315afcf27aacc19a5d69b823d8e035da8c07cca8f9bbbcedb6617e5321be6` |
-| Built   | 2026-08-04 08:54:52 +0300 (під час `npm run godot:verify:aab`)     |
+| Size    | **141349967** bytes (~135 MiB)                                     |
+| SHA-256 | `6aef26d6ee02ef54162e4f97758ce42c0b0a66ed488100c6334fe743b6f7b52b` |
+| Built   | 2026-08-04 12:24:58 +0300 (під час `npm run godot:verify:aab`)     |
 
 > Якщо AAB перезібрати — оновити SHA-256 і дату в цьому файлі перед upload.
 

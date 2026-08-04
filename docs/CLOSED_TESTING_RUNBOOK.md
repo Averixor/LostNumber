@@ -9,7 +9,7 @@
 | Package                   | `com.averixor.lostnumber`                                          |
 | versionName / versionCode | **2.1.6 / 16** (bump лише якщо Console покаже VC16 already used)   |
 | AAB                       | `build/android/lost-number.aab` з SHA `a6db8b29…` (див. record)    |
-| AAB SHA-256               | `c9e315afcf27aacc19a5d69b823d8e035da8c07cca8f9bbbcedb6617e5321be6` |
+| AAB SHA-256               | `6aef26d6ee02ef54162e4f97758ce42c0b0a66ed488100c6334fe743b6f7b52b` |
 | Privacy                   | [privacy.html](https://averixor.github.io/LostNumber/privacy.html) |
 
 ## 1. Pre-upload gate (репо — виконано 2026-08-04)
