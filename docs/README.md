@@ -14,6 +14,10 @@
 | Production handoff              | [HANDOFF-IDEAL.md](./HANDOFF-IDEAL.md)                                         |
 | Android (Godot)                 | [ANDROID.md](./ANDROID.md)                                                     |
 | Android release checklist       | [ANDROID_RELEASE_READINESS.md](./ANDROID_RELEASE_READINESS.md)                 |
+| Roadmap (Play-first)            | [ROADMAP.md](./ROADMAP.md)                                                     |
+| Аудит 360°                      | [AUDIT_PLAY_360.md](./AUDIT_PLAY_360.md)                                       |
+| Play Console recon              | [PLAY_CONSOLE_RECON.md](./PLAY_CONSOLE_RECON.md)                               |
+| Closed testing runbook          | [CLOSED_TESTING_RUNBOOK.md](./CLOSED_TESTING_RUNBOOK.md)                       |
 | QA перед релізом на телефон     | [ANDROID_QA.md](./ANDROID_QA.md)                                               |
 | Google Play Console             | [PLAY_STORE.md](./PLAY_STORE.md), [PLAY_STORE_GODOT.md](./PLAY_STORE_GODOT.md) |
 | Тексти та графіка для листингу  | [store/PLAY_CONSOLE_LISTING.md](../store/PLAY_CONSOLE_LISTING.md)              |

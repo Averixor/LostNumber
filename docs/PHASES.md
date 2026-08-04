@@ -18,7 +18,12 @@
 - Аудіо: `docs/AUDIO.md`, `AudioManager.gd`
 - Smoke: `npm run godot:test:smoke`
 
-## Фаза 6 — Firebase (ще не впроваджувати до закриття фази 5)
+## Фаза 6 — Firebase (**відкладено**, roadmap v1.1)
+
+> Не стартувати Phase 6, доки Closed testing стабільний і Phase 5 без помітних device-регресій.
+> Див. [`docs/ROADMAP.md`](ROADMAP.md).
+
+Коли умови виконані (окремий kickoff):
 
 - Auth: Google.
 - Firestore документ **`users/{uid}/save/current`** (або узгоджений шлях).
