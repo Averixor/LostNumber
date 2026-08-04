@@ -96,6 +96,7 @@ Custom backgrounds under `user://custom_backgrounds/` stay **device-local** — 
 
 ## Related
 
+- OWNER sequence: [`docs/FIREBASE_STAGE4_SEQUENCE.md`](../FIREBASE_STAGE4_SEQUENCE.md)
 - Gates: [`docs/FIREBASE_STAGE4_GATES.md`](../FIREBASE_STAGE4_GATES.md)
 - Roadmap Stage 4: [`docs/ROADMAP.md`](../ROADMAP.md)
 - Phases: [`docs/PHASES.md`](../PHASES.md)

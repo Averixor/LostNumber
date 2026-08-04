@@ -8,7 +8,8 @@
 | `INTERNET` зараз | `false` в обох Android presets (`godot/export_presets.cfg`) |
 
 > **Правило:** Stage 3 hygiene / repo closeout **не** замінює Closed testing.  
-> Агент **не** відмічає OWNER-чекбокси з репо. Лише OWNER ставить `[x]` після факту.
+> Агент **не** відмічає OWNER-чекбокси з репо. Лише OWNER ставить `[x]` після факту.  
+> **Порядок дій OWNER (walkable):** [`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md) — CT smoke → Phase 5 → privacy → Auth/Cloud approve → Console → SHA/region → **потім** цей файл `[x]` → bridge.
 
 ## Поточний факт Closed testing
 
@@ -86,6 +87,7 @@ Upload key fingerprints (звірити з Console): [`docs/PLAY_CONSOLE_RECON.m
 
 ## Повʼязані документи
 
+- **OWNER sequence (спочатку):** [`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md)
 - ADR: [`docs/en/FIREBASE_ADR.md`](en/FIREBASE_ADR.md)
 - OWNER Console: [`docs/FIREBASE_OWNER_RUNBOOK.md`](FIREBASE_OWNER_RUNBOOK.md)
 - Privacy delta: [`docs/FIREBASE_PRIVACY_DELTA.md`](FIREBASE_PRIVACY_DELTA.md)
