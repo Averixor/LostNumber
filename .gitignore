@@ -12,6 +12,10 @@ android/keystore.properties
 *.jks
 *.keystore
 
+# Firebase google-services (real secrets — never commit)
+android/firebase/**/google-services.json
+!android/firebase/google-services.example.json
+
 # Backup / transient artifacts
 *.bak
 *.broken

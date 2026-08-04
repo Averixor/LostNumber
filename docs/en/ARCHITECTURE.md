@@ -130,7 +130,7 @@ LostNumber/                      ← canonical project root
 | Visual source         | PO mockups + [VISUAL_TARGET.md](./VISUAL_TARGET.md)           | Gothic fantasy integration; archive map in `docs/archive/VISUAL_PORT_MAP.md` |
 | Low performance       | `bg_effects_enabled`                                          | Mirrors web `low-performance.css`; disables particles + slide                |
 | Floating numbers      | Removed (Phase 5.6)                                           | FPS regression on weak devices                                               |
-| Firebase / cloud      | Phase 6 — not started                                         | Blocked until Phase 5 performance closed                                     |
+| Firebase / cloud      | Stage 4 docs kickoff; runtime blocked                         | OWNER gates + Phase 5; ADR `docs/en/FIREBASE_ADR.md`                         |
 
 ### Approved plans
 
@@ -148,14 +148,15 @@ Tracker: [docs/archive/VISUAL_PORT_MAP.md](../archive/VISUAL_PORT_MAP.md) (histo
 
 **Gate:** No noticeable UI regressions; grid stays in sync after long sessions. See `docs/PHASES.md`.
 
-#### Phase 6 — Firebase (future)
+#### Phase 6 — Firebase (Stage 4)
 
-- Google Auth
-- Firestore `users/{uid}/save/current`
-- Conflict resolution: greater `updatedAt` wins
-- Fallback: local save when offline
+- Docs kickoff ready; **runtime blocked** on [`FIREBASE_STAGE4_GATES.md`](../FIREBASE_STAGE4_GATES.md)
+- Google Auth only; Kotlin Android plugin bridge (not WebView/Capacitor)
+- Firestore `users/{uid}/save/current`; SaveManager-first upload
+- Conflicts: `revision` + checksum + dialog (no field-merge)
+- Fallback: local save; offline play without account
 
-**Not started** — do not implement until Phase 5 is closed.
+See [`FIREBASE_ADR.md`](./FIREBASE_ADR.md). Do not implement runtime until OWNER flips gates.
 
 ### CI / automation
 

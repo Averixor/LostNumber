@@ -37,8 +37,8 @@ Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`.
 | **Legacy import UI**  | Settings **Import** stub demoted below gallery CTA (`settings_import_legacy_stub`): no save mutation; startup migration + `LegacySaveMigration` remain                                                                                           | `Settings.gd`, `LegacySaveMigration.gd`, `Boot.gd`            |
 | **Custom background** | Settings **Обрати фон з галереї** + BackgroundPreview picker → `ImagePickerHelper` → `user://custom_backgrounds/` via `SettingsManager.add_custom_background`                                                                                    | `Settings.gd`, `ImagePickerHelper.gd`, `BackgroundPreview.gd` |
 | **CI**                | Workflow сконфігурований: `release:check` **і** `godot:test:all` (Godot **4.7.1** pinned) на push/PR `main`. Перед релізним рішенням **окремо підтвердити** successful run для цільового commit SHA — не стверджувати «зелений» без журналу run. | `.github/workflows/ci.yml`                                    |
-| **Network**           | None — fully offline                                                                                                                                                                                                                             | —                                                             |
-| **Cloud / Firebase**  | Phase 6 — **deferred** until Closed testing is stable and Phase 5 shows no device regressions ([`docs/ROADMAP.md`](../ROADMAP.md))                                                                                                               | `docs/PHASES.md`                                              |
+| **Network**           | None — fully offline (`permissions/internet=false`). Firebase optional later; no INTERNET flip in docs kickoff                                                                                                                                   | `godot/export_presets.cfg`                                    |
+| **Cloud / Firebase**  | Stage 4 docs kickoff **ready**; runtime **blocked** until OWNER completes [`docs/FIREBASE_STAGE4_GATES.md`](../FIREBASE_STAGE4_GATES.md). ADR: [`FIREBASE_ADR.md`](./FIREBASE_ADR.md). Offline-first remains.                                    | `docs/PHASES.md`, `docs/ROADMAP.md`                           |
 
 ## Build commands (by role)
 
@@ -51,28 +51,29 @@ Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`.
 
 ## Doc index — which doc is authoritative for what
 
-| Question                                                  | Authoritative doc                                      |
-| --------------------------------------------------------- | ------------------------------------------------------ |
-| **This file** — decisions, version, doc roles             | `docs/en/SOURCE_OF_TRUTH.md`                           |
-| Game rules (chain, merge, XP)                             | `docs/GAME_RULES.md` + `docs/en/GAME.md`               |
-| Endless progression (40 + procedural)                     | `docs/GAME_RULES.md`, `LevelManager.gd`                |
-| Architecture, autoloads, repo layout                      | `docs/en/ARCHITECTURE.md`                              |
-| Accepted decisions (save, i18n, screens, compliance)      | `docs/en/DECISIONS.md`                                 |
-| Release / Play Console checklists                         | `docs/en/RELEASE.md`, `docs/HANDOFF-IDEAL.md`          |
-| JS → Godot parity checklist (historical)                  | `docs/archive/MIGRATION_FROM_JS.md`                    |
-| **Visual north star** (mockups, gaps, per-screen targets) | `docs/en/VISUAL_TARGET.md`                             |
-| Web → Godot visual port status (historical)               | `docs/archive/VISUAL_PORT_MAP.md`                      |
-| Android export, signing, presets                          | `docs/ANDROID_RELEASE_READINESS.md`                    |
-| Legacy save import                                        | `docs/LEGACY_SAVE_MIGRATION.md`                        |
-| Folder map (uk)                                           | `docs/PROJECT_STRUCTURE.md`                            |
-| Doc navigator (uk)                                        | `docs/README.md`                                       |
-| English doc index                                         | `docs/en/README.md`                                    |
-| Roadmap / Play sequence                                   | `docs/ROADMAP.md`                                      |
-| Play Console recon                                        | `docs/PLAY_CONSOLE_RECON.md`                           |
-| Closed testing runbook                                    | `docs/CLOSED_TESTING_RUNBOOK.md`                       |
-| 360° Play audit                                           | `docs/AUDIT_PLAY_360.md`                               |
-| Godot quick start                                         | `godot/README.md`, root `README.md`                    |
-| Android export, signing, presets                          | `docs/ANDROID_RELEASE_READINESS.md`, `docs/ANDROID.md` |
+| Question                                                  | Authoritative doc                                                                                                              |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **This file** — decisions, version, doc roles             | `docs/en/SOURCE_OF_TRUTH.md`                                                                                                   |
+| Game rules (chain, merge, XP)                             | `docs/GAME_RULES.md` + `docs/en/GAME.md`                                                                                       |
+| Endless progression (40 + procedural)                     | `docs/GAME_RULES.md`, `LevelManager.gd`                                                                                        |
+| Architecture, autoloads, repo layout                      | `docs/en/ARCHITECTURE.md`                                                                                                      |
+| Accepted decisions (save, i18n, screens, compliance)      | `docs/en/DECISIONS.md`                                                                                                         |
+| Release / Play Console checklists                         | `docs/en/RELEASE.md`, `docs/HANDOFF-IDEAL.md`                                                                                  |
+| JS → Godot parity checklist (historical)                  | `docs/archive/MIGRATION_FROM_JS.md`                                                                                            |
+| **Visual north star** (mockups, gaps, per-screen targets) | `docs/en/VISUAL_TARGET.md`                                                                                                     |
+| Web → Godot visual port status (historical)               | `docs/archive/VISUAL_PORT_MAP.md`                                                                                              |
+| Android export, signing, presets                          | `docs/ANDROID_RELEASE_READINESS.md`                                                                                            |
+| Legacy save import                                        | `docs/LEGACY_SAVE_MIGRATION.md`                                                                                                |
+| Folder map (uk)                                           | `docs/PROJECT_STRUCTURE.md`                                                                                                    |
+| Doc navigator (uk)                                        | `docs/README.md`                                                                                                               |
+| English doc index                                         | `docs/en/README.md`                                                                                                            |
+| Roadmap / Play sequence                                   | `docs/ROADMAP.md`                                                                                                              |
+| Firebase Stage 4 gates / ADR / OWNER / privacy delta      | `docs/FIREBASE_STAGE4_GATES.md`, `docs/en/FIREBASE_ADR.md`, `docs/FIREBASE_OWNER_RUNBOOK.md`, `docs/FIREBASE_PRIVACY_DELTA.md` |
+| Play Console recon                                        | `docs/PLAY_CONSOLE_RECON.md`                                                                                                   |
+| Closed testing runbook                                    | `docs/CLOSED_TESTING_RUNBOOK.md`                                                                                               |
+| 360° Play audit                                           | `docs/AUDIT_PLAY_360.md`                                                                                                       |
+| Godot quick start                                         | `godot/README.md`, root `README.md`                                                                                            |
+| Android export, signing, presets                          | `docs/ANDROID_RELEASE_READINESS.md`, `docs/ANDROID.md`                                                                         |
 
 ## Known risks and audits
 
@@ -90,8 +91,8 @@ Update this table when a new dated audit lands on `main`.
 
 - Freeze tiles, pressure transfer
 - Monetization (ads, IAP, premium, tournaments)
-- Cloud save (Phase 6 Firebase)
-- Play Games / Firebase leaderboard HTTP (stub only)
+- Cloud save runtime (Phase 6 / Stage 4) — **blocked** on OWNER gates; docs kickoff only
+- Play Games / Firebase leaderboard HTTP (stub only; 4C after Cloud Save)
 - Twilight theme in settings UI (code exists; art not shipped)
 
 ## When to update this file

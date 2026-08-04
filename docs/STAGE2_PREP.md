@@ -21,7 +21,7 @@
 
 ### Firebase
 
-**Відкладено** до стабільного мобільного релізу / Phase 5 sign-off ([`PHASES.md`](PHASES.md), [`ROADMAP.md`](ROADMAP.md)).
+Docs kickoff ready; **runtime blocked** на OWNER gates ([`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md)). Не стартувати SDK / `INTERNET` до CT + Phase 5 + approve ([`PHASES.md`](PHASES.md), [`ROADMAP.md`](ROADMAP.md)).
 
 ## Порядок UI polish PR (після CT + feedback)
 

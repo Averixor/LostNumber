@@ -22,6 +22,10 @@
 | Stage 2 prep (no CT upload)     | [STAGE2_PREP.md](./STAGE2_PREP.md)                                             |
 | Stage 3 repo hardening          | [STAGE3_REPO_HARDENING.md](./STAGE3_REPO_HARDENING.md)                         |
 | Stage 3 closeout                | [STAGE3_CLOSEOUT.md](./STAGE3_CLOSEOUT.md)                                     |
+| Firebase Stage 4 gates (OWNER)  | [FIREBASE_STAGE4_GATES.md](./FIREBASE_STAGE4_GATES.md)                         |
+| Firebase ADR (en)               | [en/FIREBASE_ADR.md](./en/FIREBASE_ADR.md)                                     |
+| Firebase OWNER Console runbook  | [FIREBASE_OWNER_RUNBOOK.md](./FIREBASE_OWNER_RUNBOOK.md)                       |
+| Firebase privacy delta          | [FIREBASE_PRIVACY_DELTA.md](./FIREBASE_PRIVACY_DELTA.md)                       |
 | QA перед релізом на телефон     | [ANDROID_QA.md](./ANDROID_QA.md)                                               |
 | Google Play Console             | [PLAY_STORE.md](./PLAY_STORE.md), [PLAY_STORE_GODOT.md](./PLAY_STORE_GODOT.md) |
 | Тексти та графіка для листингу  | [store/PLAY_CONSOLE_LISTING.md](../store/PLAY_CONSOLE_LISTING.md)              |

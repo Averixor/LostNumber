@@ -84,7 +84,15 @@ VISUAL_TARGET, Settings Import stub UX, розмір AAB, фінальні 4 с�
 
 ## Етап 4 — Phase 6 Firebase
 
-Лише після стабільного Closed testing і Phase 5 без device-регресій.
+**Kickoff docs ready; runtime blocked.** Offline-first лишається; Firebase optional після OWNER go.
+
+| Статус           | Документ / гілка                                                                                                                                                                                                       |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Docs kickoff     | [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md), [`en/FIREBASE_ADR.md`](en/FIREBASE_ADR.md), [`FIREBASE_OWNER_RUNBOOK.md`](FIREBASE_OWNER_RUNBOOK.md), [`FIREBASE_PRIVACY_DELTA.md`](FIREBASE_PRIVACY_DELTA.md) |
+| Runtime 4A/4B/4C | **BLOCKED** до OWNER flip gates (CT `pending`, Phase 5, privacy + explicit approve)                                                                                                                                    |
+| Перша runtime PR | `godot/firebase-android-bridge` — лише після зелених gates                                                                                                                                                             |
+
+Не вмикати SDK / `INTERNET=true` / Auth UI в kickoff. CT status зараз: **`pending`** ([`STAGE3_CLOSEOUT.md`](STAGE3_CLOSEOUT.md)).
 
 ## Розділення PR (обов’язково)
 
