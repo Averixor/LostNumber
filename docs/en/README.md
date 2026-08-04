@@ -33,6 +33,10 @@ Professional technical documentation for the Lost Number project. **Godot 4** is
 | [docs/ANDROID.md](../ANDROID.md)                                     | Godot Android build                                |
 | [docs/ANDROID_RELEASE_READINESS.md](../ANDROID_RELEASE_READINESS.md) | Android export, signing, pre-upload gate           |
 | [docs/ANDROID_QA.md](../ANDROID_QA.md)                               | Pre-release QA on device                           |
+| [docs/STAGE1_RELEASE_RECORD.md](../STAGE1_RELEASE_RECORD.md)         | Stage 1 closed testing release record              |
+| [docs/STAGE2_PREP.md](../STAGE2_PREP.md)                             | Stage 2 prep (no CT upload)                        |
+| [docs/STAGE3_REPO_HARDENING.md](../STAGE3_REPO_HARDENING.md)         | Stage 3 repo hardening baseline                    |
+| [docs/STAGE3_CLOSEOUT.md](../STAGE3_CLOSEOUT.md)                     | Stage 3 closeout checklist                         |
 | [docs/PLAY_STORE.md](../PLAY_STORE.md)                               | Google Play Console setup                          |
 | [docs/PLAY_STORE_GODOT.md](../PLAY_STORE_GODOT.md)                   | Play listing for Godot build                       |
 | [docs/PRIVACY_HOSTING.md](../PRIVACY_HOSTING.md)                     | Privacy URL hosting options                        |
@@ -69,9 +73,9 @@ npm run godot:test:all
 
 ## Version
 
-| Field       | Value                               |
-| ----------- | ----------------------------------- |
-| Package     | `com.averixor.lostnumber`           |
-| versionName | `2.1.6`                             |
-| versionCode | `16`                                |
-| Next upload | versionCode `17` (required by Play) |
+| Field       | Value                                      |
+| ----------- | ------------------------------------------ |
+| Package     | `com.averixor.lostnumber`                  |
+| versionName | `2.1.6`                                    |
+| versionCode | `16`                                       |
+| Next upload | versionCode `16` or `17` (Console decides) |

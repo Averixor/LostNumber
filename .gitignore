@@ -6,28 +6,47 @@ bundletool.jar
 dummy.c
 libdummy.so
 
-# Android signing (never commit)
+# Signing (never commit)
 android/keystore/
 android/keystore.properties
 *.jks
 *.keystore
 
-# Sync .project/sourceTexts/ folder (source text files)
+# Backup / transient artifacts
+*.bak
+*.broken
+*.swp
+*.swo
 
+# Node / tooling artifacts
 node_modules/
-_site/
 privacy-host/
 
-# Capacitor / Android build artifacts (removed — Godot uses godot/android/build/)
+# Godot cache
+godot/.godot/
+
+# Android / Gradle (do not ignore all `android/`)
 android/.gradle/
 android/app/
 android/build/
 android/local.properties
-# Godot Android APK/AAB output (binaries gitignored; README tracked)
-build/
-!build/android/
-build/android/*
-!build/android/README.md
+.gradle/
+**/.gradle/
+**/build/
+**/intermediates/
+**/outputs/
+
+# Build artifacts (root) — keep only `build/android/README.md` trackable
+/build/
+!/build/android/
+/build/android/*
+!/build/android/README.md
+/_site/
+
+# IDE metadata (Android Studio / IntelliJ)
+.vscode/
+.idea/
+android/.idea/
 
 # Local browser/debug profiles
 .chrome-*/
@@ -37,30 +56,17 @@ _review-diff*.patch
 
 # Local project/cache databases
 .project/
-*.sqlite
-*.sqlite-shm
-*.sqlite-wal
-
-# Персональні налаштування редактора (не застосовувати git.enabled тощо для всіх)
-.vscode/settings.json
-
-# Don't sync user-specific SQLite databases
 .project/*.sqlite
-
-# Don't sync SQLite auxiliary files
 .project/*.sqlite-wal
 .project/*.sqlite-shm
-
-# Don't sync temporary files
 .project/.temp/**
-
-# Don't sync user-specific files
 .project/complete_drafts.txt
 .project/localProjectSettings.json
 .project/localProjectSwap.json
+.project/attachments/files/**
 copilot-messages.log
 
-# Archive formats
+# Archives / large dumps
 *.zip
 *.rar
 *.7z
@@ -71,6 +77,8 @@ copilot-messages.log
 *.gz
 *.bz2
 *.xz
+*.hprof
+java_pid*.hprof
 
 # Windows executables and installers
 *.exe
@@ -94,42 +102,6 @@ copilot-messages.log
 
 # System files
 .DS_Store
-.project/attachments/files/**
 
 # Local/generated duplicate image exports
 public/images/
-
-.vscode/
-
-# IDE metadata (Android Studio / IntelliJ)
-.idea/
-android/.idea/
-
-# JVM / Java crash dumps
-*.hprof
-java_pid*.hprof
-
-# Build output
-/build/
-/_site/
-
-# Godot cache
-godot/.godot/
-
-# Android / Gradle
-.gradle/
-**/.gradle/
-**/build/
-# Root /build: only android/README is meant to be added anew.
-# Already-tracked qa/ and visual-capture/ files stay in the index.
-!/build/
-!/build/android/
-!/build/android/README.md
-/build/**
-!/build/android/
-!/build/android/README.md
-**/intermediates/
-**/outputs/
-
-# Big dumps
-*.hprof

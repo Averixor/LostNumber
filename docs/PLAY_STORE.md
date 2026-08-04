@@ -164,7 +164,7 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 - [ ] Data safety — «дані не збираються»
 - [ ] Email підтримки вказано в Store listing
 - [ ] Closed testing пройдено без критичних багів
-- [ ] versionCode збільшено для наступного релізу (`android/app/build.gradle`)
+- [ ] versionCode відповідає правилам Play: якщо VC16 вже був у Console → bump до code `17` / name `2.1.7`; інакше можна лишити `16` / `2.1.6` до підтвердження
 
 ## 9. Версіонування
 
@@ -177,7 +177,7 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 | ------------ | ----------- | ----------- |
 | Godot (ship) | `2.1.6`     | `16`        |
 
-Кожен новий upload потребує **versionCode більший за будь-який раніше завантажений** (наступний реліз — code `17`, name `2.1.7`).
+Кожен новий upload потребує **versionCode більший за будь-який раніше завантажений**. Практичне правило: якщо Console підтверджує, що **VC16 вже використано**, робимо bump до `17` / `2.1.7`; інакше можна лишити `16` / `2.1.6` до підтвердження.
 
 > Правило іменування (code ≥ 15): `versionName = 2.1.(versionCode - 10)`.
 
