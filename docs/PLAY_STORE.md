@@ -175,9 +175,9 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 
 | Артефакт     | versionName | versionCode |
 | ------------ | ----------- | ----------- |
-| Godot (ship) | `2.1.6`     | `16`        |
+| Godot (ship) | `2.1.7`     | `17`        |
 
-Кожен новий upload потребує **versionCode більший за будь-який раніше завантажений** (наступний реліз — code `17`, name `2.1.7`).
+Кожен новий upload потребує **versionCode більший за будь-який раніше завантажений** (наступний після 17 — code `18`, name `2.1.8`).
 
 > Правило іменування (code ≥ 15): `versionName = 2.1.(versionCode - 10)`.
 

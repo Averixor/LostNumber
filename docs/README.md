@@ -15,6 +15,9 @@
 | Android (Godot)                 | [ANDROID.md](./ANDROID.md)                                                     |
 | Android release checklist       | [ANDROID_RELEASE_READINESS.md](./ANDROID_RELEASE_READINESS.md)                 |
 | QA перед релізом на телефон     | [ANDROID_QA.md](./ANDROID_QA.md)                                               |
+| Play Console recon (SHA / VC)   | [PLAY_CONSOLE_RECON.md](./PLAY_CONSOLE_RECON.md)                               |
+| Closed testing runbook          | [CLOSED_TESTING_RUNBOOK.md](./CLOSED_TESTING_RUNBOOK.md)                       |
+| Аудит 360° (Play readiness)     | [AUDIT_PLAY_360.md](./AUDIT_PLAY_360.md)                                       |
 | Google Play Console             | [PLAY_STORE.md](./PLAY_STORE.md), [PLAY_STORE_GODOT.md](./PLAY_STORE_GODOT.md) |
 | Тексти та графіка для листингу  | [store/PLAY_CONSOLE_LISTING.md](../store/PLAY_CONSOLE_LISTING.md)              |
 | Privacy Policy (файл + хостинг) | [privacy.html](../privacy.html), [PRIVACY_HOSTING.md](./PRIVACY_HOSTING.md)    |
@@ -38,11 +41,12 @@
 
 ## CI
 
-| Workflow                   | Призначення                        |
-| -------------------------- | ---------------------------------- |
-| `.github/workflows/ci.yml` | `npm run release:check` на push/PR |
+| Workflow                      | Призначення                                                          |
+| ----------------------------- | -------------------------------------------------------------------- |
+| `.github/workflows/ci.yml`    | `release:check` **і** `godot:test:all` (Godot 4.7.1) на push/PR main |
+| `.github/workflows/pages.yml` | Privacy policy → GitHub Pages                                        |
 
-Godot headless tests (`npm run godot:test:all`) — локально перед upload.
+Перед Play upload локально: `npm run godot:verify:aab` (потрібен keystore).
 
 ## Архів
 

@@ -16,8 +16,8 @@ App shell persists `BackgroundLayer` and overlay layers; individual screens moun
 | Field       | Release (`preset.0`)            | Debug (`preset.1`)                    |
 | ----------- | ------------------------------- | ------------------------------------- |
 | Package     | `com.averixor.lostnumber`       | `com.averixor.lostnumber.dev`         |
-| versionCode | `16`                            | `16`                                  |
-| versionName | `2.1.6`                         | `2.1.6-dev`                           |
+| versionCode | `17`                            | `17`                                  |
+| versionName | `2.1.7`                         | `2.1.7-dev`                           |
 | Format      | AAB (`export_format=1`)         | APK                                   |
 | minSdk      | 24                              | 24                                    |
 | targetSdk   | 35                              | 35                                    |
@@ -26,11 +26,11 @@ App shell persists `BackgroundLayer` and overlay layers; individual screens moun
 
 ### Versioning
 
-Current: `versionName 2.1.6` / `versionCode 16`. **Every new upload needs a versionCode greater than any previously uploaded** — next release: code `17`.
+Current: `versionName 2.1.7` / `versionCode 17`. **Every new upload needs a versionCode greater than any previously uploaded** — next release after this ship: code `18`.
 
 > `versionName` is a human-readable label (free-form). `versionCode` is the integer Play compares — just increment it by 1 each upload.
 >
-> **Naming rule (code ≥ 15):** `versionName = 2.1.(versionCode - 10)` — e.g. code `15` → `2.1.5`, code `16` → `2.1.6`. Debug builds append `-dev`.
+> **Naming rule (code ≥ 15):** `versionName = 2.1.(versionCode - 10)` — e.g. code `16` → `2.1.6`, code `17` → `2.1.7`. Debug builds append `-dev`.
 
 ABI note: only `arm64-v8a` + `x86_64` are shipped. Dropping `armeabi-v7a` excludes 32-bit-only devices (~8k in the device catalog) — intentional.
 

@@ -22,12 +22,12 @@ High-level technical architecture for Lost Number **2.1.6**. Godot 4.7 is the so
 └─────────────────────────────────────────────────────────┘
 ```
 
-| Layer           | Stack                  | Role                                        |
-| --------------- | ---------------------- | ------------------------------------------- |
-| Gameplay (ship) | Godot 4.7 GDScript     | Boot → App → screens; back-stack navigation |
-| Save            | `user://` JSON (Godot) | Checksum + `.bak` rollback                  |
-| Network         | None                   | Offline-only; no PII                        |
-| CI              | GitHub Actions         | `release:check` on push/PR                  |
+| Layer           | Stack                  | Role                                                  |
+| --------------- | ---------------------- | ----------------------------------------------------- |
+| Gameplay (ship) | Godot 4.7 GDScript     | Boot → App → screens; back-stack navigation           |
+| Save            | `user://` JSON (Godot) | Checksum + `.bak` rollback                            |
+| Network         | None                   | Offline-only; no PII                                  |
+| CI              | GitHub Actions         | `release:check` + `godot:test:all` (4.7.1) on push/PR |
 
 ### Godot runtime architecture
 

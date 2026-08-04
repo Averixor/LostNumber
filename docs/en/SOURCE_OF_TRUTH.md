@@ -1,8 +1,8 @@
 ---
 language: en
 title: Lost Number — Source of Truth
-version: 2.1.6
-last_updated: 2026-07-12
+version: 2.1.7
+last_updated: 2026-08-04
 ---
 
 # Lost Number — Source of Truth
@@ -11,17 +11,17 @@ Single canonical reference for PO-approved decisions. When docs disagree with th
 
 ## Version snapshot
 
-| Field               | Value                                  |
-| ------------------- | -------------------------------------- |
-| Package             | `com.averixor.lostnumber`              |
-| Debug package       | `com.averixor.lostnumber.dev`          |
-| versionName         | `2.1.6`                                |
-| versionCode         | `16`                                   |
-| Next Play upload    | versionCode `17` (mandatory increment) |
-| Engine              | Godot **4.7**                          |
-| npm package version | `2.1.6`                                |
+| Field               | Value                                 |
+| ------------------- | ------------------------------------- |
+| Package             | `com.averixor.lostnumber`             |
+| Debug package       | `com.averixor.lostnumber.dev`         |
+| versionName         | `2.1.7`                               |
+| versionCode         | `17`                                  |
+| Next Play upload    | versionCode `18` (increment after 17) |
+| Engine              | Godot **4.7.1**                       |
+| npm package version | `2.1.7`                               |
 
-**Versioning rule (code ≥ 15):** `versionName = 2.1.(versionCode - 10)` — e.g. code `16` → `2.1.6`. Debug builds append `-dev`.
+**Versioning rule (code ≥ 15):** `versionName = 2.1.(versionCode - 10)` — e.g. code `17` → `2.1.7`. Debug builds append `-dev`.
 
 Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`.
 
@@ -37,9 +37,9 @@ Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`.
 | **Levels**           | First **40** configs algorithmically generated at init (`_generate_manual_levels(40)`); from index 40+ separate procedural branch  | `LevelManager.gd`                                       |
 | **Visual authority** | **PO mockups + [VISUAL_TARGET.md](./VISUAL_TARGET.md)** = acceptance; gothic fantasy integration over flat neon                    | `VISUAL_TARGET.md`, `docs/archive/VISUAL_PORT_MAP.md`   |
 | **Legacy import UI** | Settings **Import** button is a stub (`settings_import_legacy_none` only); startup migration + `LegacySaveMigration` autoload work | `Settings.gd`, `LegacySaveMigration.gd`, `Boot.gd`      |
-| **CI**               | `release:check` only on push/PR; `godot:test:all` **local only**                                                                   | `.github/workflows/ci.yml`                              |
+| **CI**               | `release:check` **and** `godot:test:all` (Godot **4.7.1** pinned) on push/PR to `main`                                             | `.github/workflows/ci.yml`                              |
 | **Network**          | None — fully offline                                                                                                               | —                                                       |
-| **Cloud / Firebase** | Phase 6 — not started                                                                                                              | `docs/PHASES.md`                                        |
+| **Cloud / Firebase** | Phase 6 — **deferred** until Closed testing is stable and Phase 5 shows no device regressions                                      | `docs/PHASES.md`                                        |
 
 ## Build commands (by role)
 

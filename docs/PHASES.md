@@ -18,7 +18,16 @@
 - Аудіо: `docs/AUDIO.md`, `AudioManager.gd`
 - Smoke: `npm run godot:test:smoke`
 
-## Фаза 6 — Firebase (ще не впроваджувати до закриття фази 5)
+## Фаза 6 — Firebase (**відкладено**)
+
+> **Не стартувати Phase 6**, доки не виконано **обидва** умови:
+>
+> 1. Google Play **Closed testing** стабільний (signed AAB uploaded, без P0/P1 на пристрої) — див. `docs/CLOSED_TESTING_RUNBOOK.md`.
+> 2. Фаза 5 без помітних регресій FPS/сітки на слабких телефонах (device QA).
+>
+> Інакше зміняться Data safety, privacy policy й offline-гарантії до першого публічного тесту.
+
+Коли умови виконані (окремий kickoff):
 
 - Auth: Google.
 - Firestore документ **`users/{uid}/save/current`** (або узгоджений шлях).
