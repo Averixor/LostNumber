@@ -31,6 +31,7 @@ Professional technical documentation for the Lost Number project. **Godot 4** is
 | [docs/PROJECT_STRUCTURE.md](../PROJECT_STRUCTURE.md)                 | Folder structure and code flows                    |
 | [docs/HANDOFF-IDEAL.md](../HANDOFF-IDEAL.md)                         | Production handoff (ideal build)                   |
 | [docs/PHASES.md](../PHASES.md)                                       | Development phases (performance, Firebase roadmap) |
+| [docs/FIREBASE_STAGE4_SEQUENCE.md](../FIREBASE_STAGE4_SEQUENCE.md)   | Stage 4 OWNER walkable path (CT → gates → bridge)  |
 | [docs/FIREBASE_STAGE4_GATES.md](../FIREBASE_STAGE4_GATES.md)         | Stage 4 OWNER hard gates (runtime blocked)         |
 | [docs/FIREBASE_OWNER_RUNBOOK.md](../FIREBASE_OWNER_RUNBOOK.md)       | Firebase Console / SHA / secrets setup             |
 | [docs/FIREBASE_PRIVACY_DELTA.md](../FIREBASE_PRIVACY_DELTA.md)       | Privacy / Data safety changes when cloud lands     |

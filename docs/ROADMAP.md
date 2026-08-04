@@ -88,11 +88,12 @@ VISUAL_TARGET, Settings Import stub UX, розмір AAB, фінальні 4 с�
 
 | Статус           | Документ / гілка                                                                                                                                                                                                       |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **OWNER path**   | [`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md) — CT smoke → Phase 5 → privacy → Auth/Cloud approve → Console → SHA/region → gates `[x]` → bridge                                                         |
 | Docs kickoff     | [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md), [`en/FIREBASE_ADR.md`](en/FIREBASE_ADR.md), [`FIREBASE_OWNER_RUNBOOK.md`](FIREBASE_OWNER_RUNBOOK.md), [`FIREBASE_PRIVACY_DELTA.md`](FIREBASE_PRIVACY_DELTA.md) |
 | Runtime 4A/4B/4C | **BLOCKED** до OWNER flip gates (CT `pending`, Phase 5, privacy + explicit approve)                                                                                                                                    |
 | Перша runtime PR | `godot/firebase-android-bridge` — лише після зелених gates                                                                                                                                                             |
 
-Не вмикати SDK / `INTERNET=true` / Auth UI в kickoff. CT status зараз: **`pending`** ([`STAGE3_CLOSEOUT.md`](STAGE3_CLOSEOUT.md)).
+Не вмикати SDK / `INTERNET=true` / Auth UI, доки sequence не пройдено й gates не `[x]`. CT status зараз: **`pending`** ([`STAGE3_CLOSEOUT.md`](STAGE3_CLOSEOUT.md)). **Наступний OWNER крок: CT smoke.**
 
 ## Розділення PR (обов’язково)
 

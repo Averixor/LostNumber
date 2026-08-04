@@ -21,6 +21,7 @@
 ## Фаза 6 — Firebase (**kickoff ready, runtime blocked**)
 
 > Docs kickoff: [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md), ADR [`en/FIREBASE_ADR.md`](en/FIREBASE_ADR.md).  
+> **OWNER walkable path:** [`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md).  
 > **Не** стартувати runtime 4A/4B/4C, доки OWNER не закриє gates (стабільний Closed testing, Phase 5 device sign-off, privacy + explicit Google Auth/Cloud Save approve).  
 > CT зараз: **`pending`**. Див. [`ROADMAP.md`](ROADMAP.md) § Етап 4.
 

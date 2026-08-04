@@ -73,3 +73,4 @@ sha256sum build/android/lost-number.aab
 1. Увійти в Play Console і заповнити recon чекбокси (SHA / VC16 / identity / track).
 2. Якщо VC16 already used → сказати агенту зробити PR `godot/release-play-v17`, перезібрати AAB, оновити record.
 3. Upload AAB у Closed testing + opt-in smoke з Play.
+4. Після зеленого CT smoke — далі по [`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md) (Phase 5 → … → gates); **не** стартувати Firebase bridge раніше.

@@ -1,7 +1,7 @@
 # Firebase OWNER runbook (Console setup)
 
-> Runtime код **не** стартує з цього документа. Спочатку закрити [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md).  
-> Kickoff фіксує **як** OWNER готує Console / SHA / secrets.
+> Runtime код **не** стартує з цього документа. Спочатку пройти [`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md) (CT → Phase 5 → privacy → approve), потім Console/SHA з цього runbook, і лише тоді flip [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md).  
+> Kickoff фіксує **як** OWNER готує Console / SHA / secrets (кроки 5–6 sequence).
 
 ## Проєкти
 
@@ -99,8 +99,9 @@ Crashlytics, Google Analytics, Remote Config — **ні** у kickoff і не в 
 
 ## Чеклист OWNER перед «go» на 4A
 
-1. Gates у [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md) закриті.
-2. Dev + prod проєкти, обидва package names, SHA всіх трьох типів де застосовно.
-3. Google Auth only; Firestore region підтверджена.
-4. Budget alerts; локальні `google-services.json` на місці (gitignore).
-5. Privacy delta прочитаний; готувати Data safety PR разом із `INTERNET=true`.
+1. Повна послідовність: [`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md) (CT smoke першим).
+2. Gates у [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md) закриті (`[x]` — лише OWNER).
+3. Dev + prod проєкти, обидва package names, SHA всіх трьох типів де застосовно.
+4. Google Auth only; Firestore region підтверджена.
+5. Budget alerts; локальні `google-services.json` на місці (gitignore).
+6. Privacy delta прочитаний; готувати Data safety PR разом із `INTERNET=true`.
