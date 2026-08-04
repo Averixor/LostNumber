@@ -18,7 +18,7 @@ npm run godot:android:install  # або adb install -r …
 - [ ] `npm run release:check` проходить
 - [ ] `versionCode` у `godot/export_presets.cfg` **більший** за будь-який раніше завантажений у Console
 - [ ] Keystore / passwords не в git (`git status` чистий від `export_presets.cfg` з паролями)
-- [ ] Privacy URL відкривається: https://averixor.github.io/LostNumber/privacy.html
+- [ ] Privacy URL відкривається: [privacy.html](https://averixor.github.io/LostNumber/privacy.html)
 - [ ] Пристрій **arm64-v8a** (32-bit-only не підтримується)
 
 ## Сценарії на пристрої (arm64)

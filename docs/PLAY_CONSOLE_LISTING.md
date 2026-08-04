@@ -24,7 +24,7 @@
 
 **Українська** — скопіювати в Play Console:
 
-```
+```text
 Логічна головоломка з числами. Рівні, бонуси, збереження прогресу.
 ```
 
@@ -32,7 +32,7 @@
 
 **English** (додаткова локаль):
 
-```
+```text
 Calm number grid puzzle. Levels, bonuses, offline save.
 ```
 
@@ -40,7 +40,7 @@ Calm number grid puzzle. Levels, bonuses, offline save.
 
 **Русский** (додаткова локаль):
 
-```
+```text
 Логическая головоломка с числами. Уровни, бонусы, сохранение прогресса.
 ```
 
@@ -54,7 +54,7 @@ Calm number grid puzzle. Levels, bonuses, offline save.
 
 ### Українська
 
-```
+```text
 Lost Number — логічна головоломка з числами у зручному для тебе темпі.
 
 Поєднуй сусідні клітинки, будуй ланцюжки з правильних сум і відкривай нові рівні. Жодного зайвого тиску — грай коли зручно.
@@ -73,7 +73,7 @@ Lost Number — логічна головоломка з числами у зр�
 
 ### English
 
-```
+```text
 Lost Number is a relaxed number grid puzzle you can enjoy on your schedule.
 
 Connect neighboring tiles, build valid chains, and unlock new levels. No rush — play when it suits you.
@@ -92,7 +92,7 @@ Great for short sessions and brain warm-ups. No account required. No ads in the 
 
 ### Русский
 
-```
+```text
 Lost Number — логическая головоломка с числами в удобном для вас темпе.
 
 Соединяйте соседние клетки, стройте цепочки с нужными суммами и открывайте новые уровни. Без лишнего давления — играйте когда удобно.

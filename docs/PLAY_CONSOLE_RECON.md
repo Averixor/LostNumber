@@ -38,7 +38,7 @@ Alias: `lostnumber_upload`
 
 ## Privacy
 
-- URL: https://averixor.github.io/LostNumber/privacy.html
+- URL: [privacy.html](https://averixor.github.io/LostNumber/privacy.html)
 - Перевірка 2026-08-04: **HTTP 200**
 
 ## Команди

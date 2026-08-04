@@ -46,12 +46,12 @@ Release export requires:
 
 1. **`android/keystore.properties`** (gitignored — local only):
 
-```properties
-storeFile=keystore/your-release.jks
-storePassword=YOUR_STORE_PASSWORD
-keyAlias=your_key_alias
-keyPassword=YOUR_KEY_PASSWORD
-```
+   ```properties
+   storeFile=keystore/your-release.jks
+   storePassword=YOUR_STORE_PASSWORD
+   keyAlias=your_key_alias
+   keyPassword=YOUR_KEY_PASSWORD
+   ```
 
 2. **Keystore file** at `android/keystore/your-release.jks`
 

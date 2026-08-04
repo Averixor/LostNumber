@@ -5,8 +5,6 @@ version: 2.1.7
 last_updated: 2026-08-04
 ---
 
-# Lost Number — Source of Truth
-
 Single canonical reference for PO-approved decisions. When docs disagree with this file, **update the other doc** (or escalate to PO if the code is wrong).
 
 ## Version snapshot

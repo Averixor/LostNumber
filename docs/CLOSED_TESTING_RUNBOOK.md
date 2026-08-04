@@ -5,13 +5,13 @@
 
 ## Поточний ship target
 
-| Поле        | Значення                                           |
-| ----------- | -------------------------------------------------- |
-| Package     | `com.averixor.lostnumber`                          |
-| versionName | `2.1.7`                                            |
-| versionCode | `17`                                               |
-| AAB         | `build/android/lost-number.aab`                    |
-| Privacy     | https://averixor.github.io/LostNumber/privacy.html |
+| Поле        | Значення                                                           |
+| ----------- | ------------------------------------------------------------------ |
+| Package     | `com.averixor.lostnumber`                                          |
+| versionName | `2.1.7`                                                            |
+| versionCode | `17`                                                               |
+| AAB         | `build/android/lost-number.aab`                                    |
+| Privacy     | [privacy.html](https://averixor.github.io/LostNumber/privacy.html) |
 
 ## 1. Локальний pre-upload gate
 
@@ -51,12 +51,12 @@ sha256sum build/android/lost-number.aab > build/android/lost-number.aab.sha256
 2. **Create new release** → upload `lost-number.aab`.
 3. Release name / notes (приклад):
 
-```text
-2.1.7 (17) — Closed testing
-- Godot 4.7 Android build
-- Gothic UI readability fixes
-- Offline puzzle; no ads / no IAP
-```
+   ```text
+   2.1.7 (17) — Closed testing
+   - Godot 4.7 Android build
+   - Gothic UI readability fixes
+   - Offline puzzle; no ads / no IAP
+   ```
 
 4. Add email list або Google Groups тестерів → **Save** → **Review release** → **Start rollout to Closed testing**.
 5. Скопіювати opt-in URL тестерам.

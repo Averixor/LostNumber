@@ -90,7 +90,7 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 4. **Releases** → Create new release → завантажити `app-release.aab`
 5. Release notes (укр.):
 
-   ```
+   ```text
    Перший закритий тест Lost Number 1.0.
    Офлайн головоломка з числами, рівнями, бонусами та локальним збереженням.
    ```
