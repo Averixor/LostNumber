@@ -32,7 +32,7 @@ flowchart TD
 
 ```text
 Stage 4 OWNER — порядок:
-[ ] 1. CT smoke: upload AAB → Play opt-in → Boot→Menu→merge→save→Back; немає P0/P1
+[ ] 1. CT smoke: див. CT_SMOKE_CHECKLIST.md (upload→opt-in→Boot→Menu→merge→save→force-stop→restore→Back→GO/NO-GO)
 [ ] 2. Phase 5: довга сесія на пристрої — немає UI/grid/FPS регресій; записати дату/пристрій
 [ ] 3. Privacy: прочитати FIREBASE_PRIVACY_DELTA; погодити INTERNET+Auth+Firestore + Data safety хвилю
 [ ] 4. Explicit go: Google-only Auth + opt-in Cloud Save (не Anonymous/Email; не 4C leaderboards)
@@ -46,6 +46,8 @@ Stage 4 OWNER — порядок:
 
 ## 1. Closed testing smoke (OWNER) — **зараз**
 
+**Канонічний чеклист:** [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md) (upload → opt-in → Boot → Menu → merge → save → force-stop/relaunch → restore → Back → GO/NO-GO).
+
 **Документи:** [`CLOSED_TESTING_RUNBOOK.md`](CLOSED_TESTING_RUNBOOK.md), AAB/SHA у [`STAGE1_RELEASE_RECORD.md`](STAGE1_RELEASE_RECORD.md) + [`STAGE3_CLOSEOUT.md`](STAGE3_CLOSEOUT.md), recon [`PLAY_CONSOLE_RECON.md`](PLAY_CONSOLE_RECON.md).
 
 | Поле (кандидат)    | Значення (не змінювати з агента без перезбірки)                    |
@@ -54,16 +56,11 @@ Stage 4 OWNER — порядок:
 | AAB SHA-256        | `398b83f33d79b878e71ca1262d6cfac2e0a981045d77299a5c0824c1dba848c4` |
 | versionName / Code | `2.1.6` / `16`                                                     |
 | Package            | `com.averixor.lostnumber`                                          |
+| Локальний файл     | `build/android/lost-number.aab` (SHA збігається з record)          |
 
-**Дії:**
+**Дії:** виконати всі 10 кроків у [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md). CT `pending` → `completed` **лише при GO**.
 
-1. Play Console → Closed testing → upload чинний AAB (запис вище; після перезбірки — оновити STAGE1 record).
-2. Надіслати opt-in URL тестеру → install **з Play** (не лише локальний debug APK).
-3. Smoke: Boot → Main Menu → merge → save → Android Back; немає P0/P1.
-4. Save / load / `.bak` recovery OK на пристрої (див. також gates).
-5. Оновити CT status: `pending` → `completed` **лише після реального smoke** у [`STAGE3_CLOSEOUT.md`](STAGE3_CLOSEOUT.md) і відповідних пунктах [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md).
-
-**Не робити:** оголошувати CT completed з репо / без Play install.
+**Не робити:** оголошувати CT completed з репо / без Play install / без force-stop restore.
 
 ---
 

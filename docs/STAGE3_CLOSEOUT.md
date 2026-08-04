@@ -28,6 +28,7 @@
 
 - [x] CT candidate is recorded in repo: `STAGE1_RELEASE_RECORD.md` and `CLOSED_TESTING_RUNBOOK.md`.
 - CT status right now: `pending` (Play Console opt-in / device smoke **не** виконано з цього середовища)
+- OWNER smoke checklist: [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md) — upload → opt-in → Boot→Menu→merge→save→force-stop→restore→Back → GO/NO-GO
 - Release AAB source commit SHA: `2ef0fcdf2aaf5083cf79c88a41b989720e137b47`
 - Release AAB SHA-256: `398b83f33d79b878e71ca1262d6cfac2e0a981045d77299a5c0824c1dba848c4`
 - Old CT candidates superseded: `a6db8b29` / `c9e315af…` (і проміжний `6aef26d6…`) — потрібен upload лише з нового record після adaptive icon (#64+)
