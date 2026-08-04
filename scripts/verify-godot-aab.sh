@@ -79,13 +79,13 @@ if [[ -f "$BUNDLETOOL" ]]; then
     echo "AAB package/version:"
     echo "$BADGING" | grep -E "^package:" || true
     echo "AAB SDK (min/target):"
-    echo "$BADGING" | grep -E \"sdkVersion:'|targetSdkVersion:'\" || true
+    echo "$BADGING" | grep -E "sdkVersion:'|targetSdkVersion:'" || true
     echo "AAB ABI (native-code):"
-    echo "$BADGING" | grep -E \"native-code:\" || true
+    echo "$BADGING" | grep -E "native-code:" || true
 
     echo "AAB permissions:"
     if "$AAPT2_BIN" dump permissions "$MANIFEST" >/dev/null 2>&1; then
-      "$AAPT2_BIN" dump permissions "$MANIFEST" | grep -E \"android\\.permission\\.|com\\.android\" || true
+      "$AAPT2_BIN" dump permissions "$MANIFEST" | grep -E 'android\.permission\.|com\.android' || true
     else
       echo "note: aapt2 permissions dump unsupported — skipping"
     fi
@@ -113,9 +113,9 @@ if [[ -f "$BUNDLETOOL" ]]; then
   fi
 
   echo "Launcher / adaptive icon resources present in universal.apk:"
-  unzip -l "$MANIFEST" | grep -E \"res/mipmap-anydpi-v26/|res/mipmap/.+icon_(foreground|background)\\.webp|res/mipmap/.+themed_icon|adaptive-icon\" || true
+  unzip -l "$MANIFEST" | grep -E 'res/mipmap-anydpi-v26/|res/mipmap/.+icon_(foreground|background)\.webp|res/mipmap/.+themed_icon|adaptive-icon' || true
 else
-  if [[ \"${RELEASE_VERIFY:-}\" == \"1\" || \"${GITHUB_ACTIONS:-}\" == \"true\" || \"${CI:-}\" == \"true\" ]]; then
+  if [[ "${RELEASE_VERIFY:-}" == "1" || "${GITHUB_ACTIONS:-}" == "true" || "${CI:-}" == "true" ]]; then
     echo "ERROR: bundletool.jar not found at: $BUNDLETOOL" >&2
     echo "ERROR: Install pinned bundletool and place it as ./bundletool.jar (or set BUNDLETOOL_JAR)." >&2
     exit 1

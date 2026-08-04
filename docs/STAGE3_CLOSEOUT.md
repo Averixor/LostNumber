@@ -27,9 +27,10 @@
 > Не оголошую “completed” без реального Play opt-in / device smoke.
 
 - [x] CT candidate is recorded in repo: `STAGE1_RELEASE_RECORD.md` and `CLOSED_TESTING_RUNBOOK.md`.
-- CT status right now: `pending`
-- Release AAB source commit SHA: `a6db8b2939f1379eeca057f53ae7987d77ce954a`
-- Release AAB SHA-256: `c9e315afcf27aacc19a5d69b823d8e035da8c07cca8f9bbbcedb6617e5321be6`
+- CT status right now: `pending` (Play Console opt-in / device smoke **не** виконано з цього середовища)
+- Release AAB source commit SHA: `2ef0fcdf2aaf5083cf79c88a41b989720e137b47`
+- Release AAB SHA-256: `398b83f33d79b878e71ca1262d6cfac2e0a981045d77299a5c0824c1dba848c4`
+- Old CT candidates superseded: `a6db8b29` / `c9e315af…` (і проміжний `6aef26d6…`) — потрібен upload лише з нового record після adaptive icon (#64+)
 
 ### Firebase deferred
 
@@ -57,10 +58,10 @@ Stage 3 base SHA (`main` after #58): `f2d69ddb08413c7f0746f5aff1bfb8d2dd32614d`
 
 | Check                 | Result  | Run/Job                                                                         |
 | --------------------- | ------- | ------------------------------------------------------------------------------- |
-| `release-check`       | success | https://github.com/Averixor/LostNumber/actions/runs/30895490764/job/91947273490 |
-| `Godot tests (4.7.1)` | success | https://github.com/Averixor/LostNumber/actions/runs/30895490764/job/91947273491 |
+| `release-check`       | success | https://github.com/Averixor/LostNumber/actions/runs/30907149534/job/91984792174 |
+| `Godot tests (4.7.1)` | success | https://github.com/Averixor/LostNumber/actions/runs/30907149534/job/91984792209 |
 
-Current main HEAD: `2e8f4b7ef7094fdff0d73f2a94343f5f18691ce1`
+Current main HEAD: `2ef0fcdf2aaf5083cf79c88a41b989720e137b47` (після #68 closeout + #59 + #69; Stage 3 PRs #60–#68 уже на main)
 
 ## PR links (Stage 3)
 
@@ -73,6 +74,7 @@ Current main HEAD: `2e8f4b7ef7094fdff0d73f2a94343f5f18691ce1`
 - [PR #65](https://github.com/Averixor/LostNumber/pull/65)
 - [PR #66](https://github.com/Averixor/LostNumber/pull/66)
 - [PR #67](https://github.com/Averixor/LostNumber/pull/67)
+- [PR #68](https://github.com/Averixor/LostNumber/pull/68)
 
 ## Owner handoff (what remains outside repo automation)
 

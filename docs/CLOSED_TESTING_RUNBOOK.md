@@ -8,15 +8,15 @@
 | ------------------------- | ------------------------------------------------------------------ |
 | Package                   | `com.averixor.lostnumber`                                          |
 | versionName / versionCode | **2.1.6 / 16** (bump лише якщо Console покаже VC16 already used)   |
-| AAB                       | `build/android/lost-number.aab` з SHA `a6db8b29…` (див. record)    |
-| AAB SHA-256               | `6aef26d6ee02ef54162e4f97758ce42c0b0a66ed488100c6334fe743b6f7b52b` |
+| AAB                       | `build/android/lost-number.aab` з SHA `2ef0fcd…` (див. record)     |
+| AAB SHA-256               | `398b83f33d79b878e71ca1262d6cfac2e0a981045d77299a5c0824c1dba848c4` |
 | Privacy                   | [privacy.html](https://averixor.github.io/LostNumber/privacy.html) |
 
 ## 1. Pre-upload gate (репо — виконано 2026-08-04)
 
 ```bash
 git switch main && git pull --ff-only
-git rev-parse HEAD   # очікується a6db8b2939f1379eeca057f53ae7987d77ce954a (або новіший main після docs merge)
+git rev-parse HEAD   # очікується 2ef0fcdf2aaf5083cf79c88a41b989720e137b47 (або новіший main після docs merge)
 npm ci
 npm run godot:verify:aab
 sha256sum build/android/lost-number.aab
@@ -48,7 +48,7 @@ sha256sum build/android/lost-number.aab
 ## 4. Closed testing release (OWNER — лише Console)
 
 1. Test and release → Closed testing → Create new release → upload `build/android/lost-number.aab`.
-2. Release notes: `2.1.6 (16)` — Closed testing candidate з `main@a6db8b29`.
+2. Release notes: `2.1.6 (16)` — Closed testing candidate з `main@2ef0fcd` (post-adaptive; старі `a6db8b29` / `c9e315af…` superseded).
 3. Testers → Save → Review → Start rollout.
 4. Надіслати opt-in URL тестеру.
 

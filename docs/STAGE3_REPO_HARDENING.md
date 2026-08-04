@@ -15,12 +15,13 @@
 
 > Не позначаю як “completed”, доки не підтверджено реальний Play opt-in / device smoke.
 
-| Поле                                             | Значення                                                           |
-| ------------------------------------------------ | ------------------------------------------------------------------ |
-| Closed testing                                   | `pending`                                                          |
-| Release AAB source commit (окремо від main HEAD) | `a6db8b2939f1379eeca057f53ae7987d77ce954a`                         |
-| Release AAB path                                 | `build/android/lost-number.aab`                                    |
-| Release AAB SHA-256                              | `6aef26d6ee02ef54162e4f97758ce42c0b0a66ed488100c6334fe743b6f7b52b` |
+| Поле                      | Значення                                                           |
+| ------------------------- | ------------------------------------------------------------------ |
+| Closed testing            | `pending`                                                          |
+| Release AAB source commit | `2ef0fcdf2aaf5083cf79c88a41b989720e137b47`                         |
+| Release AAB path          | `build/android/lost-number.aab`                                    |
+| Release AAB SHA-256       | `398b83f33d79b878e71ca1262d6cfac2e0a981045d77299a5c0824c1dba848c4` |
+| Superseded (не upload)    | `a6db8b29` / `c9e315af…`, `6aef26d6…`                              |
 
 ## Last verified CI (для base SHA)
 
