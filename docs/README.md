@@ -18,6 +18,10 @@
 | Аудит 360°                      | [AUDIT_PLAY_360.md](./AUDIT_PLAY_360.md)                                       |
 | Play Console recon              | [PLAY_CONSOLE_RECON.md](./PLAY_CONSOLE_RECON.md)                               |
 | Closed testing runbook          | [CLOSED_TESTING_RUNBOOK.md](./CLOSED_TESTING_RUNBOOK.md)                       |
+| Stage 1 release record          | [STAGE1_RELEASE_RECORD.md](./STAGE1_RELEASE_RECORD.md)                         |
+| Stage 2 prep (no CT upload)     | [STAGE2_PREP.md](./STAGE2_PREP.md)                                             |
+| Stage 3 repo hardening          | [STAGE3_REPO_HARDENING.md](./STAGE3_REPO_HARDENING.md)                         |
+| Stage 3 closeout                | [STAGE3_CLOSEOUT.md](./STAGE3_CLOSEOUT.md)                                     |
 | QA перед релізом на телефон     | [ANDROID_QA.md](./ANDROID_QA.md)                                               |
 | Google Play Console             | [PLAY_STORE.md](./PLAY_STORE.md), [PLAY_STORE_GODOT.md](./PLAY_STORE_GODOT.md) |
 | Тексти та графіка для листингу  | [store/PLAY_CONSOLE_LISTING.md](../store/PLAY_CONSOLE_LISTING.md)              |
