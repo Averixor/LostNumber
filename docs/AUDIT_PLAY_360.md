@@ -1,15 +1,17 @@
 # Lost Number — повний технічний аудит 360° (Google Play)
 
-| Поле | Значення |
-| ---- | -------- |
-| Репозиторій | https://github.com/Averixor/LostNumber |
-| Дата аудиту | 2026-08-04 |
-| Локальний HEAD (аудит-машина) | `21a627b` (`godot/fix-gothic-chrome-readability`) |
-| Версія продукту | `2.1.6` / **versionCode 16** |
-| Engine | Godot **4.7.1** (`4.7.1.stable.flathub.a13da4feb` локально; CI pin `4.7.1.stable.official.a13da4feb`) |
-| Суміжні артефакти | `docs/ANDROID_RELEASE_READINESS.md`, `docs/en/SOURCE_OF_TRUTH.md`, `docs/en/VISUAL_TARGET.md`, canvas `lost-number-play-release-audit` |
+| Поле                 | Значення                                                                                                         |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Репозиторій          | https://github.com/Averixor/LostNumber                                                                           |
+| Дата аудиту          | 2026-08-04 (наратив оновлено під roadmap v1.1)                                                                   |
+| Первинний зріз       | `21a627b` (тодішній tip feature-гілки; **не** активна feature зараз)                                             |
+| Інтеграція gothic UI | PR #48 → merge `1feda649` (2026-08-02) у `main`                                                                  |
+| Перед релізом        | Повторно звірити з актуальним `main` HEAD; збирати AAB лише з зафіксованого SHA                                  |
+| Версія в git         | `2.1.6` / **versionCode 16** (bump лише після факту Console)                                                     |
+| Engine               | Godot **4.7.1** (`4.7.1.stable.flathub.a13da4feb` локально; CI pin `4.7.1.stable.official.a13da4feb`)            |
+| Суміжні артефакти    | `docs/ROADMAP.md`, `docs/ANDROID_RELEASE_READINESS.md`, `docs/en/SOURCE_OF_TRUTH.md`, `docs/en/VISUAL_TARGET.md` |
 
-> Цей документ — інженерний 360°-огляд. Статус **завантаження VC16 у Play Console** з репозиторію **не верифікується** (потрібна перевірка власником у Console).
+> Аудит початково виконано на `21a627b`; зміни PR #48 інтегровані в `main` через `1feda649`; перед релізом стан повторно звірити з актуальним HEAD. Статус **завантаження VC16 у Play Console** з репозиторію **не верифікується**.
 
 ---
 
@@ -21,52 +23,52 @@
 
 Цільовий UX-фрейм:
 
-| Параметр | Значення | Джерело |
-| -------- | -------- | ------- |
-| Viewport | **420×920** (portrait) | `godot/project.godot` `window/size/viewport_*` |
-| Orientation | portrait (`handheld/orientation=1`) | `project.godot` |
-| Stretch | `canvas_items` | `project.godot` |
-| Visual north star | gothic / stone-metal UI, не flat neon | `docs/en/VISUAL_TARGET.md` |
+| Параметр          | Значення                              | Джерело                                        |
+| ----------------- | ------------------------------------- | ---------------------------------------------- |
+| Viewport          | **420×920** (portrait)                | `godot/project.godot` `window/size/viewport_*` |
+| Orientation       | portrait (`handheld/orientation=1`)   | `project.godot`                                |
+| Stretch           | `canvas_items`                        | `project.godot`                                |
+| Visual north star | gothic / stone-metal UI, не flat neon | `docs/en/VISUAL_TARGET.md`                     |
 
 ### 1.2 Стек
 
-| Шар | Технологія | Роль |
-| --- | ---------- | ---- |
-| Gameplay | Godot 4.7 GDScript + Control UI | Boot → App → ScreenRouter, гра, i18n, сейви |
-| Tooling | Node.js ≥20.19, npm scripts | format/lint/typecheck, release gates, store verify, Cursor audit SDK |
-| Android export | Godot Gradle build (`use_gradle_build=true`), JDK 17, Android SDK | AAB release / APK debug |
-| Signing | локальний upload keystore (`android/keystore*.jks`, gitignored) | підпис upload key для Play App Signing |
-| CI | GitHub Actions | `release:check` + **Godot tests 4.7.1** на push/PR `main` |
-| Privacy | `privacy.html` → GitHub Pages | URL для Play Console |
+| Шар            | Технологія                                                        | Роль                                                                 |
+| -------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Gameplay       | Godot 4.7 GDScript + Control UI                                   | Boot → App → ScreenRouter, гра, i18n, сейви                          |
+| Tooling        | Node.js ≥20.19, npm scripts                                       | format/lint/typecheck, release gates, store verify, Cursor audit SDK |
+| Android export | Godot Gradle build (`use_gradle_build=true`), JDK 17, Android SDK | AAB release / APK debug                                              |
+| Signing        | локальний upload keystore (`android/keystore*.jks`, gitignored)   | підпис upload key для Play App Signing                               |
+| CI             | GitHub Actions                                                    | `release:check` + **Godot tests 4.7.1** на push/PR `main`            |
+| Privacy        | `privacy.html` → GitHub Pages                                     | URL для Play Console                                                 |
 
 ### 1.3 Ідентичність релізу (перевірено в `export_presets.cfg`)
 
-| Поле | Release (`preset.0`) | Debug (`preset.1`) |
-| ---- | -------------------- | ------------------ |
-| Package | `com.averixor.lostnumber` | `com.averixor.lostnumber.dev` |
-| versionName | `2.1.6` | `2.1.6-dev` |
-| versionCode | **16** | **16** |
-| Format | AAB (`export_format=1`) | APK |
-| minSdk / targetSdk | 24 / **35** | 24 / 35 |
-| ABI | **arm64-v8a**, **x86_64** (`armeabi-v7a=false`) | те саме |
-| Output | `build/android/lost-number.aab` | `build/android/lost-number-debug.apk` |
-| Exclude | `assets/store/*,scripts/tests/*` | те саме |
+| Поле               | Release (`preset.0`)                            | Debug (`preset.1`)                    |
+| ------------------ | ----------------------------------------------- | ------------------------------------- |
+| Package            | `com.averixor.lostnumber`                       | `com.averixor.lostnumber.dev`         |
+| versionName        | `2.1.6`                                         | `2.1.6-dev`                           |
+| versionCode        | **16**                                          | **16**                                |
+| Format             | AAB (`export_format=1`)                         | APK                                   |
+| minSdk / targetSdk | 24 / **35**                                     | 24 / 35                               |
+| ABI                | **arm64-v8a**, **x86_64** (`armeabi-v7a=false`) | те саме                               |
+| Output             | `build/android/lost-number.aab`                 | `build/android/lost-number-debug.apk` |
+| Exclude            | `assets/store/*,scripts/tests/*`                | те саме                               |
 
 Правило версіонування (документоване): для code ≥ 15 → `versionName = 2.1.(versionCode - 10)`. Документація каже, що **наступний upload має бути versionCode 17**, якщо 16 уже колись завантажували в Console.
 
 ### 1.4 Поточний статус (аудит-машина, 2026-08-04)
 
-| Область | Статус | Факт |
-| ------- | ------ | ---- |
-| Код / Godot ship | ✅ сильний | Boot→App, 8 autoloads, headless тести, CI Godot suite |
-| Документація | ✅ висока щільність | SOURCE_OF_TRUTH, VISUAL_TARGET, ANDROID_RELEASE_READINESS, PLAY_STORE |
-| npm / CI baseline | ✅ | `release:check` + `godot:test:all` у CI |
-| Upload keystore | ✅ **локально є** | `android/keystore/lostnumber-upload-2026.jks` + `keystore.properties` (gitignored) |
-| Signed AAB | ✅ **локально є** | `build/android/lost-number.aab` (~142 MB, 2026-07-27) |
-| Debug APK | ✅ | `build/android/lost-number-debug.apk` (~252 MB) |
-| Unified source ZIP | ✅ | `dist/LostNumber-unified-20260719.zip` (pack з `git archive`) |
-| Play Console upload / Closed testing | ❓ / ⚠️ | не підтверджено з git; identity verification блокує Production (`docs/PLAY_STORE.md`) |
-| Активна гілка | ⚠️ feature | `godot/fix-gothic-chrome-readability` (не обов’язково = `main`) |
+| Область                              | Статус              | Факт                                                                                  |
+| ------------------------------------ | ------------------- | ------------------------------------------------------------------------------------- |
+| Код / Godot ship                     | ✅ сильний          | Boot→App, 8 autoloads, headless тести, CI Godot suite                                 |
+| Документація                         | ✅ висока щільність | SOURCE_OF_TRUTH, VISUAL_TARGET, ANDROID_RELEASE_READINESS, PLAY_STORE                 |
+| npm / CI baseline                    | ✅                  | `release:check` + `godot:test:all` у CI                                               |
+| Upload keystore                      | ✅ **локально є**   | `android/keystore/lostnumber-upload-2026.jks` + `keystore.properties` (gitignored)    |
+| Signed AAB                           | ✅ **локально є**   | `build/android/lost-number.aab` (~142 MB, 2026-07-27)                                 |
+| Debug APK                            | ✅                  | `build/android/lost-number-debug.apk` (~252 MB)                                       |
+| Unified source ZIP                   | ✅                  | `dist/LostNumber-unified-20260719.zip` (pack з `git archive`)                         |
+| Play Console upload / Closed testing | ❓ / ⚠️             | не підтверджено з git; identity verification блокує Production (`docs/PLAY_STORE.md`) |
+| Активна гілка                        | ⚠️ feature          | `godot/fix-gothic-chrome-readability` (не обов’язково = `main`)                       |
 
 **Вердикт executive:** інфраструктура та локальний Android release path **суттєво зріліші**, ніж у липневому handoff (тоді не було keystore/AAB). Блокер змістився з «немає підпису взагалі» на **операційний Play Console цикл**: узгодження versionCode з історією upload, Closed testing, IARC/Data safety, identity, якість in-app скріншотів, синхронізація docs із CI.
 
@@ -92,14 +94,14 @@ LostNumber/
 
 Оцінка **separation of concerns**:
 
-| Концерн | Де живе | Оцінка |
-| ------- | ------- | ------ |
-| Ігрова логіка / UI | `godot/scripts`, `godot/scenes` | ✅ чисто відокремлено від npm |
-| Автотести Godot | `godot/scripts/tests/*.gd` + `run-godot-isolated.sh` | ✅ headless, ізольований user-dir |
-| Release/signing secrets | `android/keystore*` (gitignored) | ✅ правильний периметр |
-| Play marketing | `store/` + `docs/store-listing/` | ✅ не всередині gameplay PCK (exclude_filter) |
-| Repo quality gates | Node scripts + ESLint/Prettier/tsc | ✅ для tooling/docs, не для GDScript lint у CI |
-| Legacy Capacitor/Android Gradle app | відсутній як ship path | ✅ Godot Gradle export замість старого app module |
+| Концерн                             | Де живе                                              | Оцінка                                            |
+| ----------------------------------- | ---------------------------------------------------- | ------------------------------------------------- |
+| Ігрова логіка / UI                  | `godot/scripts`, `godot/scenes`                      | ✅ чисто відокремлено від npm                     |
+| Автотести Godot                     | `godot/scripts/tests/*.gd` + `run-godot-isolated.sh` | ✅ headless, ізольований user-dir                 |
+| Release/signing secrets             | `android/keystore*` (gitignored)                     | ✅ правильний периметр                            |
+| Play marketing                      | `store/` + `docs/store-listing/`                     | ✅ не всередині gameplay PCK (exclude_filter)     |
+| Repo quality gates                  | Node scripts + ESLint/Prettier/tsc                   | ✅ для tooling/docs, не для GDScript lint у CI    |
+| Legacy Capacitor/Android Gradle app | відсутній як ship path                               | ✅ Godot Gradle export замість старого app module |
 
 Важливо: каталог `android/` **не** є класичним Android Studio проєктом застосунку. Це **keystore vault** для `scripts/godot-android-export.sh`. Збірка Gradle генерується/використовується через Godot export templates і шляхи на кшталт `godot/android/build/` (частково в `.gitignore` з винятками для wrapper).
 
@@ -109,16 +111,16 @@ LostNumber/
 
 **Autoloads** (`project.godot`):
 
-| Autoload | Файл | Відповідальність |
-| -------- | ---- | ---------------- |
-| SaveManager | `SaveManager.gd` | `user://` envelope, checksum, `.bak` |
-| SettingsManager | `SettingsManager.gd` | prefs, locale, ефекти |
-| AudioManager | `AudioManager.gd` | SFX/music |
-| I18nManager | `I18nManager.gd` | uk/ru/en JSON |
-| ThemeManager | `VisualThemeManager.gd` | dawn/dusk/twilight, фони |
-| LeaderboardService | `LeaderboardService.gd` | offline stub |
-| ScreenRouter | `ScreenRouter.gd` | back-stack, transitions |
-| LegacySaveMigration | `LegacySaveMigration.gd` | Capacitor → Godot import |
+| Autoload            | Файл                     | Відповідальність                     |
+| ------------------- | ------------------------ | ------------------------------------ |
+| SaveManager         | `SaveManager.gd`         | `user://` envelope, checksum, `.bak` |
+| SettingsManager     | `SettingsManager.gd`     | prefs, locale, ефекти                |
+| AudioManager        | `AudioManager.gd`        | SFX/music                            |
+| I18nManager         | `I18nManager.gd`         | uk/ru/en JSON                        |
+| ThemeManager        | `VisualThemeManager.gd`  | dawn/dusk/twilight, фони             |
+| LeaderboardService  | `LeaderboardService.gd`  | offline stub                         |
+| ScreenRouter        | `ScreenRouter.gd`        | back-stack, transitions              |
+| LegacySaveMigration | `LegacySaveMigration.gd` | Capacitor → Godot import             |
 
 Екрани (за архітектурним доком): MainMenu, Game, Settings, Achievements, DailyQuests, Wheel, Stats, About, SkinPreview.
 
@@ -126,16 +128,16 @@ LostNumber/
 
 ### 2.3 Якість документації
 
-| Документ | Роль | Оцінка |
-| -------- | ---- | ------ |
-| `docs/en/SOURCE_OF_TRUTH.md` | Канонічні рішення PO, версії, індекс доків | ✅ відмінно; **застарілий рядок про CI** («godot:test:all local only») — зараз CI має job `godot-tests` |
-| `docs/en/VISUAL_TARGET.md` | Візуальний acceptance (mockups, chrome, wheel) | ✅ сильний product/design SoT |
-| `docs/ANDROID_RELEASE_READINESS.md` | Checklist перед `godot:android:release` | ✅ практичний, актуальні пресети/ABI/signing |
-| `docs/PLAY_STORE.md` | Console listing, privacy, forms | ✅ операційний |
-| `docs/en/ARCHITECTURE.md` | Шар / autoloads / layout | ✅; CI description теж трохи застаріла |
-| `docs/ANDROID_QA.md` | Device QA | ⚠️ короткий (≈19 рядків) — варто розширити під Closed testing |
-| `docs/HANDOFF.txt` / `HANDOFF-IDEAL.md` | Handoff | ✅ |
-| Повне ТЗ `docs/TZ_PLAY_RELEASE.md` | — | ❌ **відсутнє в дереві** (було згенеровано в сесії, не закомічено) |
+| Документ                                | Роль                                           | Оцінка                                                                                                  |
+| --------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `docs/en/SOURCE_OF_TRUTH.md`            | Канонічні рішення PO, версії, індекс доків     | ✅ відмінно; **застарілий рядок про CI** («godot:test:all local only») — зараз CI має job `godot-tests` |
+| `docs/en/VISUAL_TARGET.md`              | Візуальний acceptance (mockups, chrome, wheel) | ✅ сильний product/design SoT                                                                           |
+| `docs/ANDROID_RELEASE_READINESS.md`     | Checklist перед `godot:android:release`        | ✅ практичний, актуальні пресети/ABI/signing                                                            |
+| `docs/PLAY_STORE.md`                    | Console listing, privacy, forms                | ✅ операційний                                                                                          |
+| `docs/en/ARCHITECTURE.md`               | Шар / autoloads / layout                       | ✅; CI description теж трохи застаріла                                                                  |
+| `docs/ANDROID_QA.md`                    | Device QA                                      | ⚠️ короткий (≈19 рядків) — варто розширити під Closed testing                                           |
+| `docs/HANDOFF.txt` / `HANDOFF-IDEAL.md` | Handoff                                        | ✅                                                                                                      |
+| Повне ТЗ `docs/TZ_PLAY_RELEASE.md`      | —                                              | ❌ **відсутнє в дереві** (було згенеровано в сесії, не закомічено)                                      |
 
 **Висновок по docs:** документація вище середнього для інді/Godot-проєктів; головний ризик — **drift** між SOURCE_OF_TRUTH і реальним CI / наявністю keystore+AAB.
 
@@ -145,18 +147,18 @@ LostNumber/
 
 ### 3.1 Екосистема npm-скриптів (карта)
 
-| Група | Скрипти | Призначення |
-| ----- | ------- | ----------- |
-| Quality | `format*`, `lint*`, `typecheck`, `check`, `verify:tagline`, `test`/`test:smoke` | Tooling hygiene + layout smoke |
-| Release gates | `release:check`, `release:ideal` | Композитний pre-merge / ideal gate |
-| Godot | `godot:import`, `godot:test*` , `godot:test:all`, `godot:test:perf` | Import + headless suite (rules/levels/save/smoke/i18n/visual) |
-| Android | `godot:android:debug/release/install/adb-install/log/...` | Export + device ops |
-| AAB gate | `godot:verify:aab` | `godot:test:all` + `release:check` + **перезбірка release** + unzip checks |
-| Store | `store:prepare`, `store:verify` | Іконки / listing assets |
-| Pack | `pack:unified` | Handoff ZIP з **committed HEAD** (`git archive`), denylist, REQUIRED_PATHS, manifest |
-| Meta | `all:*`, `cursor:audit*` | Оркестрація / SDK audit |
-| Privacy | `privacy:package` | Артефакт для Pages |
-| Keystore | `keystore:info` | SHA fingerprints без витоку паролів у git |
+| Група         | Скрипти                                                                         | Призначення                                                                          |
+| ------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Quality       | `format*`, `lint*`, `typecheck`, `check`, `verify:tagline`, `test`/`test:smoke` | Tooling hygiene + layout smoke                                                       |
+| Release gates | `release:check`, `release:ideal`                                                | Композитний pre-merge / ideal gate                                                   |
+| Godot         | `godot:import`, `godot:test*` , `godot:test:all`, `godot:test:perf`             | Import + headless suite (rules/levels/save/smoke/i18n/visual)                        |
+| Android       | `godot:android:debug/release/install/adb-install/log/...`                       | Export + device ops                                                                  |
+| AAB gate      | `godot:verify:aab`                                                              | `godot:test:all` + `release:check` + **перезбірка release** + unzip checks           |
+| Store         | `store:prepare`, `store:verify`                                                 | Іконки / listing assets                                                              |
+| Pack          | `pack:unified`                                                                  | Handoff ZIP з **committed HEAD** (`git archive`), denylist, REQUIRED_PATHS, manifest |
+| Meta          | `all:*`, `cursor:audit*`                                                        | Оркестрація / SDK audit                                                              |
+| Privacy       | `privacy:package`                                                               | Артефакт для Pages                                                                   |
+| Keystore      | `keystore:info`                                                                 | SHA fingerprints без витоку паролів у git                                            |
 
 `release:check` (`scripts/release-check.mjs`) послідовно: Prettier → ESLint → tsc → tagline → `verify-godot-release.mjs` → `verify-play-store.mjs` → smoke-tests.
 
@@ -177,10 +179,10 @@ LostNumber/
 
 #### `ci.yml`
 
-| Job | Що робить | Оцінка |
-| --- | --------- | ------ |
-| `release-check` | `npm ci` + `npm run release:check` на Node 24 | ✅ базовий quality gate |
-| `godot-tests` | Install pinned Godot 4.7.1 + `npm run godot:test:all` | ✅ **критично важливо** — раніше цього не було в SoT |
+| Job             | Що робить                                             | Оцінка                                               |
+| --------------- | ----------------------------------------------------- | ---------------------------------------------------- |
+| `release-check` | `npm ci` + `npm run release:check` на Node 24         | ✅ базовий quality gate                              |
+| `godot-tests`   | Install pinned Godot 4.7.1 + `npm run godot:test:all` | ✅ **критично важливо** — раніше цього не було в SoT |
 
 Checkout з `lfs: true` — правильно, якщо великі assets у LFS.
 
@@ -190,12 +192,12 @@ Checkout з `lfs: true` — правильно, якщо великі assets у 
 
 #### Відсутні / свідомі прогалини CI
 
-| Gap | Ризик | Рекомендація |
-| --- | ----- | ------------ |
-| Немає збірки AAB у CI | Не ловить поломку export templates / Gradle на runner | Опційно: night job з **GitHub encrypted secrets** для upload key (висока складність/безпека) або self-hosted runner |
-| Немає `store:verify` окремим обов’язковим job (входить у release:check) | Низький | Залишити в `release:check` |
-| Feature branches без required checks на GitHub settings | Процесний | Увімкнути branch protection: обидва jobs required |
-| Документація каже «Godot tests local only» | Drift | Оновити SOURCE_OF_TRUTH / ARCHITECTURE |
+| Gap                                                                     | Ризик                                                 | Рекомендація                                                                                                        |
+| ----------------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Немає збірки AAB у CI                                                   | Не ловить поломку export templates / Gradle на runner | Опційно: night job з **GitHub encrypted secrets** для upload key (висока складність/безпека) або self-hosted runner |
+| Немає `store:verify` окремим обов’язковим job (входить у release:check) | Низький                                               | Залишити в `release:check`                                                                                          |
+| Feature branches без required checks на GitHub settings                 | Процесний                                             | Увімкнути branch protection: обидва jobs required                                                                   |
+| Документація каже «Godot tests local only»                              | Drift                                                 | Оновити SOURCE_OF_TRUTH / ARCHITECTURE                                                                              |
 
 ### 3.4 Pack / provenance
 
@@ -215,38 +217,38 @@ Checkout з `lfs: true` — правильно, якщо великі assets у 
 
 ### 4.1 Android release configuration
 
-| Вимога Play / інженерна | Стан у репо |
-| ----------------------- | ----------- |
-| targetSdk 35 | ✅ |
-| AAB (не APK) для upload | ✅ preset + локальний `lost-number.aab` |
-| Підпис upload key | ✅ локально (`lostnumber-upload-2026.jks`) |
-| Secrets не в git | ✅ `.gitignore`: `android/keystore/`, `*.jks`, `keystore.properties` |
-| Виключення тестів/store з бінарника | ✅ `exclude_filter` + `verify-godot-aab.sh` checks |
-| Migration plugin | ✅ `LostNumberMigrationPlugin-release.aar` у REQUIRED_PATHS |
-| Adaptive icons | ⚠️ порожні поля в preset (optional) |
-| 32-bit ABI | ❌ свідомо вимкнено (`armeabi-v7a=false`) — ~8k пристроїв |
+| Вимога Play / інженерна             | Стан у репо                                                          |
+| ----------------------------------- | -------------------------------------------------------------------- |
+| targetSdk 35                        | ✅                                                                   |
+| AAB (не APK) для upload             | ✅ preset + локальний `lost-number.aab`                              |
+| Підпис upload key                   | ✅ локально (`lostnumber-upload-2026.jks`)                           |
+| Secrets не в git                    | ✅ `.gitignore`: `android/keystore/`, `*.jks`, `keystore.properties` |
+| Виключення тестів/store з бінарника | ✅ `exclude_filter` + `verify-godot-aab.sh` checks                   |
+| Migration plugin                    | ✅ `LostNumberMigrationPlugin-release.aar` у REQUIRED_PATHS          |
+| Adaptive icons                      | ⚠️ порожні поля в preset (optional)                                  |
+| 32-bit ABI                          | ❌ свідомо вимкнено (`armeabi-v7a=false`) — ~8k пристроїв            |
 
 `godot:verify:aab` перевіряє: відсутність `dev|cheat|DebugOverlay` у listing zip; наявність `libgodot_android.so`; відсутність `assets/store/` і `scripts/tests/`; розмір; далі — логіка скрипта (bundletool за наявності).
 
 ### 4.2 Версіонування vs Console
 
-| Сценарій | Дія |
-| -------- | --- |
-| VC16 **ніколи** не upload | можна залишити 16 / 2.1.6 для першого upload |
-| VC16 уже в Console (навіть draft/rejected) | **обов’язково** bump → **17** / **2.1.7** у `export_presets.cfg` + sync docs/`package.json` |
-| Документація зараз | ANDROID_RELEASE_READINESS / SOURCE_OF_TRUTH пишуть «next = 17» — трактувати як **очікування**, доки власник не підтвердить Console |
+| Сценарій                                   | Дія                                                                                                                                |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| VC16 **ніколи** не upload                  | можна залишити 16 / 2.1.6 для першого upload                                                                                       |
+| VC16 уже в Console (навіть draft/rejected) | **обов’язково** bump → **17** / **2.1.7** у `export_presets.cfg` + sync docs/`package.json`                                        |
+| Документація зараз                         | ANDROID_RELEASE_READINESS / SOURCE_OF_TRUTH пишуть «next = 17» — трактувати як **очікування**, доки власник не підтвердить Console |
 
 ### 4.3 Store compliance assets
 
-| Актив | Шлях | Статус |
-| ----- | ---- | ------ |
-| High-res icon 512 | `store/play-high-res-icon-512.png` | ✅ |
-| Feature graphic 1024×500 | `store/feature-graphic-1024x500.png` | ✅ |
-| Phone screenshots (≥2) | `store/screenshots/phone/01…04-*.png` | ⚠️ 4 файли є; `PLAY_STORE.md` / README все ще кажуть **чернетки з фонів**, не фінальні in-app captures |
-| Listing copy UK/EN/RU | `docs/store-listing/*` + `store/PLAY_CONSOLE_LISTING.md` | ✅ |
-| Privacy URL | Pages + `privacy.html` | ✅ стратегія готова |
-| IARC / Data safety / Audience | таблиці в `docs/PLAY_STORE.md` | 📋 треба заповнити **в Console** |
-| Ads / IAP | No (offline puzzle) | ✅ спрощує Data safety |
+| Актив                         | Шлях                                                     | Статус                                                                                                 |
+| ----------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| High-res icon 512             | `store/play-high-res-icon-512.png`                       | ✅                                                                                                     |
+| Feature graphic 1024×500      | `store/feature-graphic-1024x500.png`                     | ✅                                                                                                     |
+| Phone screenshots (≥2)        | `store/screenshots/phone/01…04-*.png`                    | ⚠️ 4 файли є; `PLAY_STORE.md` / README все ще кажуть **чернетки з фонів**, не фінальні in-app captures |
+| Listing copy UK/EN/RU         | `docs/store-listing/*` + `store/PLAY_CONSOLE_LISTING.md` | ✅                                                                                                     |
+| Privacy URL                   | Pages + `privacy.html`                                   | ✅ стратегія готова                                                                                    |
+| IARC / Data safety / Audience | таблиці в `docs/PLAY_STORE.md`                           | 📋 треба заповнити **в Console**                                                                       |
+| Ads / IAP                     | No (offline puzzle)                                      | ✅ спрощує Data safety                                                                                 |
 
 ### 4.4 Play Console blockers (поза git)
 
@@ -257,13 +259,13 @@ Checkout з `lfs: true` — правильно, якщо великі assets у 
 
 ### 4.5 Локальна готовність vs «здано в Play»
 
-| Критерій | Локально | Play |
-| -------- | -------- | ---- |
-| Signed AAB існує | ✅ | ❓ uploaded? |
-| Keystore узгоджений з Console | ❓ треба звірити fingerprints | — |
-| Listing graphics uploaded | матеріали готові | ❓ |
-| Device QA formal sign-off | debug APK є | ❓ по `ANDROID_QA.md` |
-| `godot:verify:aab` last green | не зафіксовано в цьому аудиті як прогон 2026-08-04 | — |
+| Критерій                      | Локально                                           | Play                  |
+| ----------------------------- | -------------------------------------------------- | --------------------- |
+| Signed AAB існує              | ✅                                                 | ❓ uploaded?          |
+| Keystore узгоджений з Console | ❓ треба звірити fingerprints                      | —                     |
+| Listing graphics uploaded     | матеріали готові                                   | ❓                    |
+| Device QA formal sign-off     | debug APK є                                        | ❓ по `ANDROID_QA.md` |
+| `godot:verify:aab` last green | не зафіксовано в цьому аудиті як прогон 2026-08-04 | —                     |
 
 ---
 
@@ -271,30 +273,30 @@ Checkout з `lfs: true` — правильно, якщо великі assets у 
 
 ### 5.1 Security practices
 
-| Практика | Оцінка |
-| -------- | ------ |
-| `.jks` / `keystore.properties` у `.gitignore` | ✅ |
-| Каталог `android/keystore/` ігнорується | ✅ (у т.ч. `.pem` через ігнор директорії) |
+| Практика                                                          | Оцінка                                                                                        |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `.jks` / `keystore.properties` у `.gitignore`                     | ✅                                                                                            |
+| Каталог `android/keystore/` ігнорується                           | ✅ (у т.ч. `.pem` через ігнор директорії)                                                     |
 | Export script може тимчасово писати паролі в `export_presets.cfg` | ⚠️ мітиговано `verify-godot-release.mjs` (відхиляє commit) — ризик людської помилки лишається |
-| AAB/APK у `build/android/*` gitignored | ✅ |
-| Немає мережевих API ключів у грі | ✅ offline |
-| `@cursor/sdk` + `CURSOR_API_KEY` для audit | ⚠️ лише local tooling; не комітити ключ |
-| `docs/PLAY_STORE.md` містить контакт email | інформаційний; ок для public listing |
+| AAB/APK у `build/android/*` gitignored                            | ✅                                                                                            |
+| Немає мережевих API ключів у грі                                  | ✅ offline                                                                                    |
+| `@cursor/sdk` + `CURSOR_API_KEY` для audit                        | ⚠️ лише local tooling; не комітити ключ                                                       |
+| `docs/PLAY_STORE.md` містить контакт email                        | інформаційний; ок для public listing                                                          |
 
 **Рекомендація безпеки:** після кожного `godot:android:release` завжди `git status` / `git diff godot/export_presets.cfg` — переконатися, що паролі не staged.
 
 ### 5.2 Технічні ризики Godot 4.7 + Android
 
-| Ризик | Деталі в цьому репо | Severity |
-| ----- | ------------------- | -------- |
-| Export templates / JDK / SDK path | Документовано snap Godot + `~/Android/jbr`; крихко на нових машинах | Medium |
-| Розмір AAB/APK | ~142 MB AAB / ~252 MB debug — великий для casual puzzle; перевірити asset compression / import settings | Medium |
-| Immersive + notch / gesture nav | `screen/immersive_mode=true` — потрібен device QA на сучасних телефонах | Medium |
-| Audio / Autoload lifecycle у тестах | вже був leak ambient у visual tests — фікс є, моніторити регресії | Low–Med |
-| LevelManager overflow / `pow(2,n)` | згадано в історичних аудитах — medium gameplay debt | Medium |
-| Legacy Import UI stub | Settings Import показує stub — очікування користувачів Capacitor | Low–Med |
-| Відсутність armeabi-v7a | свідомий tradeoff | Low (бізнес) |
-| Flathub vs official Godot binary | Локально flathub, CI official — майже той самий hash `a13da4feb`, але різниця channel | Low |
+| Ризик                               | Деталі в цьому репо                                                                                     | Severity     |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------ |
+| Export templates / JDK / SDK path   | Документовано snap Godot + `~/Android/jbr`; крихко на нових машинах                                     | Medium       |
+| Розмір AAB/APK                      | ~142 MB AAB / ~252 MB debug — великий для casual puzzle; перевірити asset compression / import settings | Medium       |
+| Immersive + notch / gesture nav     | `screen/immersive_mode=true` — потрібен device QA на сучасних телефонах                                 | Medium       |
+| Audio / Autoload lifecycle у тестах | вже був leak ambient у visual tests — фікс є, моніторити регресії                                       | Low–Med      |
+| LevelManager overflow / `pow(2,n)`  | згадано в історичних аудитах — medium gameplay debt                                                     | Medium       |
+| Legacy Import UI stub               | Settings Import показує stub — очікування користувачів Capacitor                                        | Low–Med      |
+| Відсутність armeabi-v7a             | свідомий tradeoff                                                                                       | Low (бізнес) |
+| Flathub vs official Godot binary    | Локально flathub, CI official — майже той самий hash `a13da4feb`, але різниця channel                   | Low          |
 
 ### 5.3 Bottlenecks процесу
 
@@ -306,15 +308,15 @@ Checkout з `lfs: true` — правильно, якщо великі assets у 
 
 ### 5.4 Dependencies risk
 
-| Dependency | Ризик |
-| ---------- | ----- |
-| Godot 4.7.1 pin у CI | ✅ добре; оновлення minor потребує оновлення SHA + templates |
-| Node 24 у CI / engines ≥20.19 | ✅ |
-| ESLint 10 / Prettier 3.9 / TS 5.9 | Low |
-| `@cursor/sdk` | не впливає на ship binary |
-| undici override для `@connectrpc/connect-node` | tooling-only |
-| Android Gradle через Godot | transitive AGP/SDK — класичний мобільний supply-chain; тримати templates в sync з engine |
-| GitHub Actions pin commit SHAs для checkout/setup-node | ✅ гарна практика в `ci.yml` |
+| Dependency                                             | Ризик                                                                                    |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| Godot 4.7.1 pin у CI                                   | ✅ добре; оновлення minor потребує оновлення SHA + templates                             |
+| Node 24 у CI / engines ≥20.19                          | ✅                                                                                       |
+| ESLint 10 / Prettier 3.9 / TS 5.9                      | Low                                                                                      |
+| `@cursor/sdk`                                          | не впливає на ship binary                                                                |
+| undici override для `@connectrpc/connect-node`         | tooling-only                                                                             |
+| Android Gradle через Godot                             | transitive AGP/SDK — класичний мобільний supply-chain; тримати templates в sync з engine |
+| GitHub Actions pin commit SHAs для checkout/setup-node | ✅ гарна практика в `ci.yml`                                                             |
 
 ### 5.5 Tracked junk (борг репозиторію)
 
@@ -334,37 +336,37 @@ Checkout з `lfs: true` — правильно, якщо великі assets у 
 
 ### 6.1 High priority
 
-| # | Дія | Навіщо | Як виміряти |
-| - | --- | ------ | ----------- |
-| H1 | **Play Console recon** | App signing upload cert SHA vs `npm run keystore:info`; max versionCode; чи є VC16 | Записати 3 факти в handoff note |
-| H2 | **Version bump decision** | Якщо VC16 уже був — `export_presets.cfg` → code **17**, name **2.1.7**, sync `package.json` + SOURCE_OF_TRUTH | Diff + `release:check` |
-| H3 | **Пересобрати AAB з цільової гілки** (`main` або merge UI-fix) | Поточний AAB від 2026-07-27 може не містити chrome fixes з `21a627b` | Новий mtime AAB + `godot:verify:aab` green |
-| H4 | **`npm run godot:verify:aab` на release-машині** | Єдиний канонічний pre-upload gate | Exit 0; логи зберегти |
-| H5 | **Closed testing upload** | Реальний шлях у Play | Track має AAB + release notes |
-| H6 | **Звірити upload key** | Інакше Console відхилить підпис | SHA-1/256 match |
+| #   | Дія                                                            | Навіщо                                                                                                        | Як виміряти                                |
+| --- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| H1  | **Play Console recon**                                         | App signing upload cert SHA vs `npm run keystore:info`; max versionCode; чи є VC16                            | Записати 3 факти в handoff note            |
+| H2  | **Version bump decision**                                      | Якщо VC16 уже був — `export_presets.cfg` → code **17**, name **2.1.7**, sync `package.json` + SOURCE_OF_TRUTH | Diff + `release:check`                     |
+| H3  | **Пересобрати AAB з цільової гілки** (`main` або merge UI-fix) | Поточний AAB від 2026-07-27 може не містити chrome fixes з `21a627b`                                          | Новий mtime AAB + `godot:verify:aab` green |
+| H4  | **`npm run godot:verify:aab` на release-машині**               | Єдиний канонічний pre-upload gate                                                                             | Exit 0; логи зберегти                      |
+| H5  | **Closed testing upload**                                      | Реальний шлях у Play                                                                                          | Track має AAB + release notes              |
+| H6  | **Звірити upload key**                                         | Інакше Console відхилить підпис                                                                               | SHA-1/256 match                            |
 
 ### 6.2 Medium priority
 
-| # | Дія | Навіщо |
-| - | --- | ------ |
-| M1 | In-app phone screenshots (меню/гра/налаштування) замість promo drafts | Compliance + conversion |
-| M2 | Заповнити IARC, Data safety, Target audience в Console за `docs/PLAY_STORE.md` | Review readiness |
-| M3 | Розширити `docs/ANDROID_QA.md` (12+ сценаріїв: back stack, audio pause, save/load, locale, immersive) | Formal QA sign-off |
-| M4 | Оновити SOURCE_OF_TRUTH / ARCHITECTURE: CI тепер ганяє `godot:test:all` | Doc drift |
-| M5 | Закомітити канонічне ТЗ (`docs/TZ_PLAY_RELEASE.md` або цей аудит як SoT) | Онбординг |
-| M6 | Device QA на arm64 телефоні debug/release-derived APK | Перед відкритим тестуванням |
-| M7 | Перевірити розмір AAB / texture import (чи можна стиснути без втрати VISUAL_TARGET) | Store download UX |
+| #   | Дія                                                                                                   | Навіщо                      |
+| --- | ----------------------------------------------------------------------------------------------------- | --------------------------- |
+| M1  | In-app phone screenshots (меню/гра/налаштування) замість promo drafts                                 | Compliance + conversion     |
+| M2  | Заповнити IARC, Data safety, Target audience в Console за `docs/PLAY_STORE.md`                        | Review readiness            |
+| M3  | Розширити `docs/ANDROID_QA.md` (12+ сценаріїв: back stack, audio pause, save/load, locale, immersive) | Formal QA sign-off          |
+| M4  | Оновити SOURCE_OF_TRUTH / ARCHITECTURE: CI тепер ганяє `godot:test:all`                               | Doc drift                   |
+| M5  | Закомітити канонічне ТЗ (`docs/TZ_PLAY_RELEASE.md` або цей аудит як SoT)                              | Онбординг                   |
+| M6  | Device QA на arm64 телефоні debug/release-derived APK                                                 | Перед відкритим тестуванням |
+| M7  | Перевірити розмір AAB / texture import (чи можна стиснути без втрати VISUAL_TARGET)                   | Store download UX           |
 
 ### 6.3 Low priority
 
-| # | Дія | Навіщо |
-| - | --- | ------ |
-| L1 | Cleanup PR: видалити tracked `.bak` / `.broken` / soft-gothic / stray `.import` після пошуку посилань | Гігієна |
-| L2 | Adaptive launcher icons у export preset | Play polish |
-| L3 | Опційний CI secret-based AAB smoke (або self-hosted) | Catch export regressions |
-| L4 | Branch protection: required `release-check` + `godot-tests` | Процес |
-| L5 | Розглянути `armeabi-v7a` лише якщо аналітика покаже втрати | Coverage |
-| L6 | Phase 6 Firebase — не починати до стабільного Play Closed testing | Scope control |
+| #   | Дія                                                                                                   | Навіщо                   |
+| --- | ----------------------------------------------------------------------------------------------------- | ------------------------ |
+| L1  | Cleanup PR: видалити tracked `.bak` / `.broken` / soft-gothic / stray `.import` після пошуку посилань | Гігієна                  |
+| L2  | Adaptive launcher icons у export preset                                                               | Play polish              |
+| L3  | Опційний CI secret-based AAB smoke (або self-hosted)                                                  | Catch export regressions |
+| L4  | Branch protection: required `release-check` + `godot-tests`                                           | Процес                   |
+| L5  | Розглянути `armeabi-v7a` лише якщо аналітика покаже втрати                                            | Coverage                 |
+| L6  | Phase 6 Firebase — не починати до стабільного Play Closed testing                                     | Scope control            |
 
 ### 6.4 Рекомендований порядок виконання (операційний)
 
@@ -419,4 +421,4 @@ npm run pack:unified   # потребує clean git tree
 
 ---
 
-*Кінець аудиту 360°. Статус Play Console upload/identity — підтверджує власник акаунта, не git.*
+_Кінець аудиту 360°. Статус Play Console upload/identity — підтверджує власник акаунта, не git._

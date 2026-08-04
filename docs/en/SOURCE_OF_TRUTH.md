@@ -2,10 +2,8 @@
 language: en
 title: Lost Number — Source of Truth
 version: 2.1.6
-last_updated: 2026-07-12
+last_updated: 2026-08-04
 ---
-
-# Lost Number — Source of Truth
 
 Single canonical reference for PO-approved decisions. When docs disagree with this file, **update the other doc** (or escalate to PO if the code is wrong).
 
@@ -27,19 +25,19 @@ Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`.
 
 ## Decisions table
 
-| Topic                | Canonical choice                                                                                                                   | Verify in code                                          |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| **Ship target**      | Godot 4.7 Android AAB → Google Play (`npm run godot:android:release`)                                                              | `scripts/godot-android-export.sh`, `export_presets.cfg` |
-| **Entry flow**       | `Boot.tscn` → `App.tscn` → screens via `ScreenRouter` autoload                                                                     | `godot/project.godot`, `ScreenRouter.gd`                |
-| **Autoloads**        | SaveManager, SettingsManager, AudioManager, I18nManager, ThemeManager, LeaderboardService, ScreenRouter, LegacySaveMigration       | `project.godot` `[autoload]`                            |
-| **Save**             | `user://` envelope v1 + SHA-256 + `.bak`; legacy import via `LegacySaveMigration`                                                  | `SaveManager.gd`, `LegacySaveMigration.gd`              |
-| **i18n**             | uk / ru / en — **285 keys** each                                                                                                   | `godot/assets/i18n/*.json`, `run_i18n_tests.gd`         |
-| **Levels**           | First **40** configs algorithmically generated at init (`_generate_manual_levels(40)`); from index 40+ separate procedural branch  | `LevelManager.gd`                                       |
-| **Visual authority** | **PO mockups + [VISUAL_TARGET.md](./VISUAL_TARGET.md)** = acceptance; gothic fantasy integration over flat neon                    | `VISUAL_TARGET.md`, `docs/archive/VISUAL_PORT_MAP.md`   |
-| **Legacy import UI** | Settings **Import** button is a stub (`settings_import_legacy_none` only); startup migration + `LegacySaveMigration` autoload work | `Settings.gd`, `LegacySaveMigration.gd`, `Boot.gd`      |
-| **CI**               | `release:check` only on push/PR; `godot:test:all` **local only**                                                                   | `.github/workflows/ci.yml`                              |
-| **Network**          | None — fully offline                                                                                                               | —                                                       |
-| **Cloud / Firebase** | Phase 6 — not started                                                                                                              | `docs/PHASES.md`                                        |
+| Topic                | Canonical choice                                                                                                                                                                                                                                 | Verify in code                                          |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------- |
+| **Ship target**      | Godot 4.7 Android AAB → Google Play (`npm run godot:android:release`)                                                                                                                                                                            | `scripts/godot-android-export.sh`, `export_presets.cfg` |
+| **Entry flow**       | `Boot.tscn` → `App.tscn` → screens via `ScreenRouter` autoload                                                                                                                                                                                   | `godot/project.godot`, `ScreenRouter.gd`                |
+| **Autoloads**        | SaveManager, SettingsManager, AudioManager, I18nManager, ThemeManager, LeaderboardService, ScreenRouter, LegacySaveMigration                                                                                                                     | `project.godot` `[autoload]`                            |
+| **Save**             | `user://` envelope v1 + SHA-256 + `.bak`; legacy import via `LegacySaveMigration`                                                                                                                                                                | `SaveManager.gd`, `LegacySaveMigration.gd`              |
+| **i18n**             | uk / ru / en — **285 keys** each                                                                                                                                                                                                                 | `godot/assets/i18n/*.json`, `run_i18n_tests.gd`         |
+| **Levels**           | First **40** configs algorithmically generated at init (`_generate_manual_levels(40)`); from index 40+ separate procedural branch                                                                                                                | `LevelManager.gd`                                       |
+| **Visual authority** | **PO mockups + [VISUAL_TARGET.md](./VISUAL_TARGET.md)** = acceptance; gothic fantasy integration over flat neon                                                                                                                                  | `VISUAL_TARGET.md`, `docs/archive/VISUAL_PORT_MAP.md`   |
+| **Legacy import UI** | Settings **Import** button is a stub (`settings_import_legacy_none` only); startup migration + `LegacySaveMigration` autoload work                                                                                                               | `Settings.gd`, `LegacySaveMigration.gd`, `Boot.gd`      |
+| **CI**               | Workflow сконфігурований: `release:check` **і** `godot:test:all` (Godot **4.7.1** pinned) на push/PR `main`. Перед релізним рішенням **окремо підтвердити** successful run для цільового commit SHA — не стверджувати «зелений» без журналу run. | `.github/workflows/ci.yml`                              |
+| **Network**          | None — fully offline                                                                                                                                                                                                                             | —                                                       |
+| **Cloud / Firebase** | Phase 6 — **deferred** until Closed testing is stable and Phase 5 shows no device regressions ([`docs/ROADMAP.md`](../ROADMAP.md))                                                                                                               | `docs/PHASES.md`                                        |
 
 ## Build commands (by role)
 
@@ -68,7 +66,10 @@ Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`.
 | Folder map (uk)                                           | `docs/PROJECT_STRUCTURE.md`                            |
 | Doc navigator (uk)                                        | `docs/README.md`                                       |
 | English doc index                                         | `docs/en/README.md`                                    |
-| Production handoff                                        | `docs/HANDOFF-IDEAL.md`                                |
+| Roadmap / Play sequence                                   | `docs/ROADMAP.md`                                      |
+| Play Console recon                                        | `docs/PLAY_CONSOLE_RECON.md`                           |
+| Closed testing runbook                                    | `docs/CLOSED_TESTING_RUNBOOK.md`                       |
+| 360° Play audit                                           | `docs/AUDIT_PLAY_360.md`                               |
 | Godot quick start                                         | `godot/README.md`, root `README.md`                    |
 | Android export, signing, presets                          | `docs/ANDROID_RELEASE_READINESS.md`, `docs/ANDROID.md` |
 
@@ -76,9 +77,11 @@ Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`.
 
 Dated technical audits capture static-analysis findings, test gaps, and release blockers. They are **not** copied into the Master Project Source.
 
-| Audit                                                  | Ref       | Notes                                                                                                                 |
-| ------------------------------------------------------ | --------- | --------------------------------------------------------------------------------------------------------------------- |
-| [AUDIT_MAIN_2026-07-10.md](./AUDIT_MAIN_2026-07-10.md) | `dd6300a` | LevelManager high-index risk, backup-only save, migration plugin path, Settings import stub, CI/`release:ideal` scope |
+| Audit                                                  | Ref       | Notes                                                                                                                      |
+| ------------------------------------------------------ | --------- | -------------------------------------------------------------------------------------------------------------------------- |
+| [AUDIT_MAIN_2026-07-10.md](./AUDIT_MAIN_2026-07-10.md) | `dd6300a` | LevelManager high-index risk, backup-only save, migration plugin path, Settings import stub, CI/`release:ideal` scope      |
+| [AUDIT_PLAY_360.md](../AUDIT_PLAY_360.md)              | `5e39937` | 360° Play readiness; gothic PR #48 already on main; CI jobs configured — confirm run per release SHA; VC16 Console unknown |
+| [ROADMAP.md](../ROADMAP.md)                            | v1.1      | Play-first sequence; hard version gate; separate PRs for audit/QA/hygiene/v17                                              |
 
 Update this table when a new dated audit lands on `main`.
 
