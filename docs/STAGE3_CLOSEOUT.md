@@ -53,6 +53,15 @@
 
 Stage 3 base SHA (`main` after #58): `f2d69ddb08413c7f0746f5aff1bfb8d2dd32614d`
 
+### Current main HEAD (for final deliverable)
+
+| Check                 | Result  | Run/Job                                                                         |
+| --------------------- | ------- | ------------------------------------------------------------------------------- |
+| `release-check`       | success | https://github.com/Averixor/LostNumber/actions/runs/30895490764/job/91947273490 |
+| `Godot tests (4.7.1)` | success | https://github.com/Averixor/LostNumber/actions/runs/30895490764/job/91947273491 |
+
+Current main HEAD: `2e8f4b7ef7094fdff0d73f2a94343f5f18691ce1`
+
 ## PR links (Stage 3)
 
 - [PR #58](https://github.com/Averixor/LostNumber/pull/58)
