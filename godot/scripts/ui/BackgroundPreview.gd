@@ -37,7 +37,7 @@ func _ready() -> void:
 		_selected_path = str(settings.call("get_selected_background_path", _active_bucket()))
 
 	title_label.text = _t("background_preview_title")
-	custom_button.text = _t("skin_custom_bg")
+	custom_button.text = _t("settings_pick_gallery_bg")
 	cancel_button.text = _t("skin_cancel")
 	apply_button.text = _t("skin_apply")
 	LnUiLib.apply_title(title_label, 26)

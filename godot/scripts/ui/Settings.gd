@@ -2,6 +2,7 @@ extends Control
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 const LnUiLib := preload("res://scripts/ui/LnUi.gd")
+const ImagePickerHelperLib := preload("res://scripts/ui/ImagePickerHelper.gd")
 
 const MUSIC_TRACKS := ["ambient", "crystal_flow", "digital_horizon", "neon_drift", "stellar_logic"]
 const VOLUME_LEVELS := [0.25, 0.5, 0.75, 1.0]
@@ -24,6 +25,8 @@ const TILE_FONT_SCALES := [0.85, 1.0, 1.1, 1.2]
 @onready var background_label: Label = get_node_or_null("Scroll/VBox/BackgroundLabel") as Label
 @onready var background_pick_button: Button = get_node_or_null("Scroll/VBox/BackgroundPickButton") as Button
 @onready var background_auto_check: CheckButton = get_node_or_null("Scroll/VBox/BackgroundAutoCheck") as CheckButton
+@onready var gallery_pick_button: Button = get_node_or_null("Scroll/VBox/GalleryPickButton") as Button
+@onready var gallery_status: Label = get_node_or_null("Scroll/VBox/GalleryStatus") as Label
 @onready var import_button: Button = get_node_or_null("Scroll/VBox/ImportLegacyButton") as Button
 @onready var import_status: Label = get_node_or_null("Scroll/VBox/ImportStatus") as Label
 @onready var exit_button: Button = get_node_or_null("Scroll/VBox/ExitButton") as Button
@@ -112,6 +115,10 @@ func _setup_labels() -> void:
 		background_pick_button.text = _i18n("settings_pick_background")
 	if background_auto_check != null:
 		background_auto_check.text = _i18n("settings_background_auto")
+	if gallery_pick_button != null:
+		gallery_pick_button.text = _i18n("settings_pick_gallery_bg")
+	if gallery_status != null:
+		gallery_status.text = ""
 	if import_button != null:
 		import_button.text = _i18n("settings_import_legacy")
 	if import_status != null:
@@ -235,7 +242,7 @@ func _style_controls() -> void:
 	if title_label != null:
 		LnUiLib.apply_title(title_label, 24)
 
-	for btn in [back_button, theme_button, skin_pick_button, background_pick_button, import_button, exit_button]:
+	for btn in [back_button, theme_button, skin_pick_button, background_pick_button, gallery_pick_button, import_button, exit_button]:
 		if btn != null:
 			LnUiLib.apply_button(btn, btn.disabled)
 
@@ -269,8 +276,8 @@ func _apply_unified_font() -> void:
 	var controls: Array = [
 		sound_check, music_check, bg_effects_check, leaderboard_check, background_auto_check,
 		sfx_volume_option, music_volume_option, music_track_option, tile_font_size_option, language_option,
-		theme_button, skin_pick_button, background_pick_button, import_button, exit_button, back_button,
-		skin_label, background_label, import_status,
+		theme_button, skin_pick_button, background_pick_button, gallery_pick_button, import_button, exit_button, back_button,
+		skin_label, background_label, gallery_status, import_status,
 	]
 	if vbox != null:
 		for child in vbox.get_children():
@@ -313,6 +320,8 @@ func _connect_signals() -> void:
 		background_pick_button.pressed.connect(_on_background_pick_pressed)
 	if background_auto_check != null:
 		background_auto_check.toggled.connect(_on_background_auto_toggled)
+	if gallery_pick_button != null:
+		gallery_pick_button.pressed.connect(_on_gallery_pick_pressed)
 	if import_button != null:
 		import_button.pressed.connect(_on_import_legacy)
 	if exit_button != null:
@@ -471,9 +480,50 @@ func _on_background_auto_toggled(enabled: bool) -> void:
 	_save()
 
 
+func _active_background_bucket() -> String:
+	var theme_mgr = _theme()
+	if theme_mgr != null and theme_mgr.has_method("theme_bucket"):
+		return str(theme_mgr.call("theme_bucket"))
+	return "dark"
+
+
+func _set_gallery_status(text: String) -> void:
+	if gallery_status != null:
+		gallery_status.text = text
+
+
+func _on_gallery_pick_pressed() -> void:
+	## Primary CTA: pick any device image via gallery / file manager, copy into user://, apply as background.
+	_set_gallery_status("")
+	if import_status != null:
+		import_status.text = ""
+	var source := str(await ImagePickerHelperLib.pick_image(self, Callable(self, "_i18n")))
+	if source.is_empty():
+		return
+	var settings = _settings()
+	if settings == null or not settings.has_method("add_custom_background"):
+		_set_gallery_status(_i18n("skin_bg_load_failed"))
+		LnUiLib.show_toast(self, _i18n("skin_bg_load_failed"))
+		return
+	var imported := str(settings.call("add_custom_background", _active_background_bucket(), source))
+	if imported.is_empty():
+		_set_gallery_status(_i18n("skin_bg_load_failed"))
+		LnUiLib.show_toast(self, _i18n("skin_bg_load_failed"))
+		return
+	var theme_mgr = _theme()
+	if theme_mgr != null and theme_mgr.has_method("apply_background_path"):
+		theme_mgr.call("apply_background_path", imported)
+	elif settings.has_method("apply_background_for_active_theme"):
+		settings.call("apply_background_for_active_theme", imported)
+	_set_gallery_status(_i18n("settings_gallery_bg_applied"))
+	LnUiLib.show_toast(self, _i18n("settings_gallery_bg_applied"))
+
+
 func _on_import_legacy() -> void:
-	## Stage 2 stub B: keep the button, never claim a false success, never mutate save here.
-	## Boot still runs LegacySaveMigration.try_migrate_on_startup(); full file-picker UX is a later PR.
+	## Stage 2 stub B (demoted): honest stub only — never mutate save from Settings.
+	## Boot still runs LegacySaveMigration.try_migrate_on_startup(); full import UX is a later PR.
+	if gallery_status != null:
+		gallery_status.text = ""
 	if import_status != null:
 		import_status.text = _i18n("settings_import_legacy_stub")
 

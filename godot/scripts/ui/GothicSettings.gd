@@ -38,6 +38,8 @@ func _apply_gothic_visuals() -> void:
 	_apply_gothic_control_chrome()
 	if title_label != null:
 		title_label.add_theme_color_override("font_color", GothicVisualsLib.GOLD_LIGHT)
+	if gallery_status != null:
+		gallery_status.add_theme_color_override("font_color", GothicVisualsLib.TEXT_MUTED)
 	if import_status != null:
 		import_status.add_theme_color_override("font_color", GothicVisualsLib.TEXT_MUTED)
 	_style_labels()
@@ -50,7 +52,7 @@ func _apply_gothic_control_chrome() -> void:
 		title_label.add_theme_font_size_override("font_size", 24)
 		title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
-	for btn in [back_button, theme_button, skin_pick_button, background_pick_button, import_button, exit_button]:
+	for btn in [back_button, theme_button, skin_pick_button, background_pick_button, gallery_pick_button, import_button, exit_button]:
 		if btn == null:
 			continue
 		btn.icon = null
@@ -59,6 +61,8 @@ func _apply_gothic_control_chrome() -> void:
 
 	if back_button != null:
 		back_button.custom_minimum_size = Vector2(180, 48)
+	if gallery_pick_button != null:
+		gallery_pick_button.custom_minimum_size.y = maxf(gallery_pick_button.custom_minimum_size.y, 48.0)
 	if exit_button != null:
 		exit_button.custom_minimum_size.y = maxf(exit_button.custom_minimum_size.y, 48.0)
 
@@ -75,9 +79,10 @@ func _style_labels() -> void:
 	for child in vbox.get_children():
 		if child is Label:
 			var label := child as Label
+			var muted := label == import_status or label == gallery_status
 			label.add_theme_color_override(
 				"font_color",
-				GothicVisualsLib.TEXT_MUTED if label == import_status else GothicVisualsLib.TEXT_IVORY
+				GothicVisualsLib.TEXT_MUTED if muted else GothicVisualsLib.TEXT_IVORY
 			)
 
 

@@ -103,6 +103,8 @@
   "settings_theme_dusk": "Темна",
   "settings_theme_twilight": "Сутінки",
   "settings_pick_background": "Обрати фон",
+  "settings_pick_gallery_bg": "Обрати фон з галереї",
+  "settings_gallery_bg_applied": "Фон з галереї застосовано",
   "settings_visual_skin_pick": "Обрати оформлення",
   "settings_background_label": "Фон:",
   "settings_background_auto": "Щоденна автозаміна фону",

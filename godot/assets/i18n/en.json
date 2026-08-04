@@ -103,6 +103,8 @@
   "settings_theme_dusk": "Dark",
   "settings_theme_twilight": "Twilight",
   "settings_pick_background": "Pick background",
+  "settings_pick_gallery_bg": "Pick background from gallery",
+  "settings_gallery_bg_applied": "Gallery background applied",
   "settings_visual_skin_pick": "Choose visual style",
   "settings_background_label": "Background:",
   "settings_background_auto": "Daily background rotation",
