@@ -3,7 +3,7 @@
 | Поле               | Значення                                                          |
 | ------------------ | ----------------------------------------------------------------- |
 | Версія документа   | **1.1** (2026-08-04)                                              |
-| База               | `main` @ `5e39937` (після merge PR #52)                           |
+| База               | `main` @ `a6db8b29` (після merge #55/#56/#57; Stage 1 candidate)  |
 | Ship version у git | **2.1.6 / versionCode 16** (не змінювати до факту з Play Console) |
 
 ## Стратегія
@@ -75,7 +75,8 @@ Closed testing upload
 
 ## Етап 2 — Polish після Closed testing
 
-VISUAL_TARGET, Settings Import stub UX, розмір AAB, фінальні 4 скріншоти.
+Prep (без CT): [`STAGE2_PREP.md`](STAGE2_PREP.md) — hybrid wheel, Import stub B, порядок PR.  
+VISUAL_TARGET, Settings Import stub UX, розмір AAB, фінальні 4 скріншоти. Firebase — ні.
 
 ## Етап 3 — Repo hygiene (окремий PR)
 

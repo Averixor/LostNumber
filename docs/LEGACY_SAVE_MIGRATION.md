@@ -10,8 +10,10 @@
 ## File import (desktop / manual)
 
 1. Export JSON from Capacitor Web (`localStorage` key **`lostNumberSave`**) or copy an old flat save.
-2. Place as `legacy_capacitor_save.json` in Godot `user://`, **or** use **Settings → Import legacy save** (desktop file picker).
+2. Place as `legacy_capacitor_save.json` in Godot `user://` (Boot auto-migration), **or** use full Settings file-picker UX when implemented.
 3. On success the file is renamed to `*.imported` so it is not imported twice.
+
+**Settings stub B (Stage 2 prep):** the Settings button stays, shows an honest i18n stub (`settings_import_legacy_stub`), and **does not mutate** the save. Full picker UX is a later PR (`godot/settings-import-ux`). Startup `try_migrate_on_startup` is unchanged.
 
 ## Android plugin
 
