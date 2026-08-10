@@ -235,6 +235,7 @@ func _show_new_game_confirmation() -> void:
 	_style_new_game_dialog()
 	var dialog_w := _fit_new_game_dialog_width()
 	_new_game_dialog.popup_centered(Vector2i(dialog_w, 0))
+	_size_dialog_action_buttons()
 
 
 func _style_new_game_dialog() -> void:
@@ -258,10 +259,50 @@ func _style_new_game_dialog() -> void:
 		LnUiLib.apply_button(btn, false, true, true)
 		btn.icon = null
 		btn.focus_mode = Control.FOCUS_ALL
-		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		btn.clip_text = true
-		btn.custom_minimum_size = Vector2(0, 48)
-		btn.add_theme_font_size_override("font_size", 15)
+		btn.clip_text = false
+		btn.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
+		btn.add_theme_font_size_override("font_size", 16)
+		# Tighten gothic icon_button side padding so labels stay readable.
+		for state in ["normal", "hover", "pressed", "disabled", "focus"]:
+			var box: StyleBox = btn.get_theme_stylebox(state)
+			if box is StyleBoxFlat:
+				var flat := (box as StyleBoxFlat).duplicate() as StyleBoxFlat
+				flat.content_margin_left = 14.0
+				flat.content_margin_right = 14.0
+				flat.content_margin_top = 10.0
+				flat.content_margin_bottom = 10.0
+				btn.add_theme_stylebox_override(state, flat)
+
+
+func _size_dialog_action_buttons() -> void:
+	if _new_game_dialog == null or not is_instance_valid(_new_game_dialog):
+		return
+	var ok := _new_game_dialog.get_ok_button()
+	var cancel := _new_game_dialog.get_cancel_button()
+	var buttons: Array[Button] = []
+	if ok != null:
+		buttons.append(ok)
+	if cancel != null:
+		buttons.append(cancel)
+	var widest := 0.0
+	for btn in buttons:
+		var font := btn.get_theme_font("font")
+		var font_size := btn.get_theme_font_size("font_size")
+		var text_w := 0.0
+		if font != null:
+			text_w = font.get_string_size(btn.text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+		# Padding for tightened StyleBoxFlat margins + border.
+		var need_w := text_w + 36.0
+		widest = maxf(widest, need_w)
+		btn.custom_minimum_size = Vector2(need_w, 52)
+		btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	# Dialog must be at least wide enough for both actions + gap + panel margins.
+	var pair_w := int(ceili(widest * 2.0 + 28.0 + 40.0))
+	var viewport_w := int(get_viewport_rect().size.x)
+	var max_w := maxi(280, viewport_w - 48)
+	var final_w := clampi(maxi(_new_game_dialog.size.x, pair_w), 280, max_w)
+	_new_game_dialog.size = Vector2i(final_w, _new_game_dialog.size.y)
+	_new_game_dialog.popup_centered(Vector2i(final_w, 0))
 
 
 func _fit_new_game_dialog_width() -> int:
@@ -269,7 +310,7 @@ func _fit_new_game_dialog_width() -> int:
 	# Keep side margins so the Window never draws past the portrait frame.
 	var max_w := maxi(280, viewport_w - 48)
 	_new_game_dialog.max_size = Vector2i(max_w, 4096)
-	_new_game_dialog.min_size = Vector2i(maxi(260, mini(max_w, 340)), 0)
+	_new_game_dialog.min_size = Vector2i(maxi(300, mini(max_w, 372)), 0)
 	var label := _new_game_dialog.get_label()
 	if label != null:
 		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
