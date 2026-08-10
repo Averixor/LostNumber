@@ -190,7 +190,7 @@
   "confirm_new_game_title": "Start a new game?",
   "confirm_new_game_text": "Your current playthrough and backup will be deleted. Start a new game?",
   "cancel": "Cancel",
-  "start_new_game_confirm": "Start new game",
+  "start_new_game_confirm": "Start",
   "confirm_new_game": "Start a new game? Current progress will be lost.",
   "save_done": "Progress saved.",
   "save_failed": "Could not save progress. You can keep playing.",
