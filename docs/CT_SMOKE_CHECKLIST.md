@@ -18,7 +18,7 @@
 ```text
 build/android/lost-number.aab
 SHA-256: 727a4e747ef9a25144c07788bb617e7081ce2c5d2d4bb2a5c8ca971ecef24e67
-source:  SEE_STAGE1_RELEASE_RECORD (release/play-v16)
+source:  67019bc49293d19c8ed781956c7bcd739f96e07e
 version: 2.1.6 / VC 16
 package: com.averixor.lostnumber
 branch:  release/play-v16
@@ -78,7 +78,7 @@ SMOKE:
 | Дата           | \_\_\_\_-\_\_-\_\_                             |
 | Пристрій       | \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |
 | AAB SHA-256    | `727a4e74…`                                    |
-| AAB source SHA | (див. STAGE1_RELEASE_RECORD)                   |
+| AAB source SHA |                                                |
 | Upload SHA OK  | ☐ так / ☐ ні                                   |
 | VC16 unused    | ☐ так / ☐ ні (був → VC17 AAB)                  |
 | Вердикт        | ☐ **GO** / ☐ **NO-GO**                         |

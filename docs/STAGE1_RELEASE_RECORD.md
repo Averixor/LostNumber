@@ -5,16 +5,16 @@
 
 ## Git / версія
 
-| Поле                       | Значення                                                            |
-| -------------------------- | ------------------------------------------------------------------- |
-| AAB source branch          | `release/play-v16`                                                  |
-| AAB base (origin/main)     | `b8c2040d017786c1428f4aa814b5d1f556e1dd81`                          |
-| AAB source commit SHA      | _(заповнюється після commit RC на `release/play-v16` — див. нижче)_ |
-| versionName                | **2.1.6**                                                           |
-| versionCode                | **16**                                                              |
-| Package (release)          | `com.averixor.lostnumber`                                           |
-| Package (device QA debug)  | `com.averixor.lostnumber.dev`                                       |
-| Worktree (build host path) | `/home/averixor/Desktop/LostNumber-rc`                              |
+| Поле                       | Значення                                   |
+| -------------------------- | ------------------------------------------ |
+| AAB source branch          | `release/play-v16`                         |
+| AAB base (origin/main)     | `b8c2040d017786c1428f4aa814b5d1f556e1dd81` |
+| AAB source commit SHA      |                                            |
+| versionName                | **2.1.6**                                  |
+| versionCode                | **16**                                     |
+| Package (release)          | `com.averixor.lostnumber`                  |
+| Package (device QA debug)  | `com.averixor.lostnumber.dev`              |
+| Worktree (build host path) | `/home/averixor/Desktop/LostNumber-rc`     |
 
 **Version gate:** KEEP **16 / 2.1.6** — Console max versionCode **не** підтверджено OWNER. Якщо VC16 уже uploaded → STOP і bump `17 / 2.1.7` на `release/play-v17`. Див. [`PLAY_CONSOLE_RECON.md`](PLAY_CONSOLE_RECON.md).
 
