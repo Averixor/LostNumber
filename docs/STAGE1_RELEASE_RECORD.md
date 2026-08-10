@@ -9,7 +9,7 @@
 | -------------------------- | ------------------------------------------ |
 | AAB source branch          | `release/play-v16`                         |
 | AAB base (origin/main)     | `b8c2040d017786c1428f4aa814b5d1f556e1dd81` |
-| AAB source commit SHA      |                                            |
+| AAB source commit SHA      | `67019bc49293d19c8ed781956c7bcd739f96e07e` |
 | versionName                | **2.1.6**                                  |
 | versionCode                | **16**                                     |
 | Package (release)          | `com.averixor.lostnumber`                  |
