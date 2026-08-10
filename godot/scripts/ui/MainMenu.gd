@@ -224,6 +224,7 @@ func _show_new_game_confirmation() -> void:
 	if _new_game_dialog == null or not is_instance_valid(_new_game_dialog):
 		_new_game_dialog = ConfirmationDialog.new()
 		_new_game_dialog.name = "NewGameConfirmation"
+		_new_game_dialog.dialog_autowrap = true
 		_new_game_dialog.confirmed.connect(_confirm_new_game)
 		add_child(_new_game_dialog)
 
@@ -231,7 +232,49 @@ func _show_new_game_confirmation() -> void:
 	_new_game_dialog.dialog_text = _i18n("confirm_new_game_text")
 	_new_game_dialog.ok_button_text = _i18n("start_new_game_confirm")
 	_new_game_dialog.cancel_button_text = _i18n("cancel")
-	_new_game_dialog.popup_centered()
+	_style_new_game_dialog()
+	var dialog_w := _fit_new_game_dialog_width()
+	_new_game_dialog.popup_centered(Vector2i(dialog_w, 0))
+
+
+func _style_new_game_dialog() -> void:
+	if _new_game_dialog == null or not is_instance_valid(_new_game_dialog):
+		return
+	# Stone/gold panel — match App exit confirm; avoid neon purple theme bleed.
+	var panel := StyleBoxFlat.new()
+	panel.bg_color = Color(0.06, 0.05, 0.09, 0.96)
+	panel.border_color = Color(0.84, 0.68, 0.35, 0.82)
+	panel.set_border_width_all(2)
+	panel.set_corner_radius_all(12)
+	panel.set_content_margin_all(14)
+	panel.shadow_color = Color(0, 0, 0, 0.45)
+	panel.shadow_size = 12
+	_new_game_dialog.add_theme_stylebox_override("panel", panel)
+	_new_game_dialog.add_theme_color_override("title_color", Color(0.95, 0.84, 0.55, 1.0))
+	_new_game_dialog.add_theme_color_override("font_color", Color(0.97, 0.92, 0.84, 1.0))
+	for btn in [_new_game_dialog.get_ok_button(), _new_game_dialog.get_cancel_button()]:
+		if btn == null:
+			continue
+		LnUiLib.apply_button(btn, false, true, true)
+		btn.icon = null
+		btn.focus_mode = Control.FOCUS_ALL
+		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn.clip_text = true
+		btn.custom_minimum_size = Vector2(0, 48)
+		btn.add_theme_font_size_override("font_size", 15)
+
+
+func _fit_new_game_dialog_width() -> int:
+	var viewport_w := int(get_viewport_rect().size.x)
+	# Keep side margins so the Window never draws past the portrait frame.
+	var max_w := maxi(280, viewport_w - 48)
+	_new_game_dialog.max_size = Vector2i(max_w, 4096)
+	_new_game_dialog.min_size = Vector2i(maxi(260, mini(max_w, 340)), 0)
+	var label := _new_game_dialog.get_label()
+	if label != null:
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		label.custom_minimum_size.x = float(max_w - 56)
+	return max_w
 
 
 func _confirm_new_game() -> void:

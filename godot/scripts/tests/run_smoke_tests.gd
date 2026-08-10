@@ -342,6 +342,28 @@ func _test_safe_new_game_confirmation() -> void:
 			(dialog as ConfirmationDialog).cancel_button_text == str(i18n.call("t", "cancel")),
 			"new-game confirmation uses localized cancel action"
 		)
+		var confirm := dialog as ConfirmationDialog
+		var max_w: int = int(menu.get_viewport_rect().size.x)
+		_assert_true(
+			confirm.size.x <= max_w,
+			"new-game confirmation fits viewport width"
+		)
+		var ok_btn := confirm.get_ok_button()
+		var cancel_btn := confirm.get_cancel_button()
+		_assert_true(ok_btn != null and cancel_btn != null, "new-game confirmation has both actions")
+		if ok_btn != null and cancel_btn != null:
+			_assert_true(
+				ok_btn.size.x > 0.0 and cancel_btn.size.x > 0.0,
+				"new-game confirmation action buttons have positive width"
+			)
+			_assert_true(
+				ok_btn.global_position.x + ok_btn.size.x <= max_w + 1.0,
+				"new-game confirm button stays inside viewport"
+			)
+			_assert_true(
+				cancel_btn.global_position.x + cancel_btn.size.x <= max_w + 1.0,
+				"new-game cancel button stays inside viewport"
+			)
 	_assert_true(FileAccess.file_exists(primary), "primary remains before explicit confirmation")
 	_assert_true(FileAccess.file_exists(backup), "backup remains before explicit confirmation")
 	_assert_true(_read_file(primary) == primary_before, "primary bytes unchanged before confirmation")
