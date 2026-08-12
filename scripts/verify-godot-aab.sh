@@ -47,8 +47,38 @@ if unzip -l "$AAB" | grep -E 'scripts/tests/'; then
 fi
 echo "OK: scripts/tests/ excluded from AAB"
 
+echo "== AAB upload-key certificate =="
+# Must match Play Console → App integrity → Upload key certificate (not App signing key).
+EXPECTED_UPLOAD_SHA1="43:93:42:63:7F:1D:1B:26:F7:9A:DF:24:D8:34:31:58:FA:C2:AA:C3"
+CERT_TMP="$(mktemp -d)"
+unzip -qo "$AAB" 'META-INF/*.RSA' 'META-INF/*.DSA' 'META-INF/*.EC' -d "$CERT_TMP" 2>/dev/null || true
+CERT_FILE="$(find "$CERT_TMP/META-INF" -type f \( -name '*.RSA' -o -name '*.DSA' -o -name '*.EC' \) 2>/dev/null | head -1 || true)"
+if [[ -z "${CERT_FILE:-}" || ! -f "$CERT_FILE" ]]; then
+  rm -rf "$CERT_TMP"
+  echo "ERROR: no signing certificate found in AAB META-INF" >&2
+  exit 1
+fi
+CERT_OUT="$(keytool -printcert -file "$CERT_FILE" 2>/dev/null || true)"
+rm -rf "$CERT_TMP"
+AAB_SHA1="$(printf '%s\n' "$CERT_OUT" | grep -E 'SHA1:' | head -1 | sed -E 's/.*SHA1:[[:space:]]*//' | tr -d '[:space:]' | tr '[:lower:]' '[:upper:]')"
+EXPECTED_NORM="$(printf '%s' "$EXPECTED_UPLOAD_SHA1" | tr -d '[:space:]' | tr '[:lower:]' '[:upper:]')"
+if [[ -z "$AAB_SHA1" ]]; then
+  echo "ERROR: could not parse SHA-1 from AAB signing certificate" >&2
+  exit 1
+fi
+echo "AAB upload cert SHA-1: $AAB_SHA1"
+if [[ "$AAB_SHA1" != "$EXPECTED_NORM" ]]; then
+  echo "ERROR: AAB signing SHA-1 mismatch (wrong keystore)." >&2
+  echo "ERROR: expected upload key $EXPECTED_UPLOAD_SHA1" >&2
+  echo "ERROR: got               $AAB_SHA1" >&2
+  echo "ERROR: Do not upload debug/editor APK to Play. Rebuild with: npm run godot:android:release" >&2
+  exit 1
+fi
+echo "OK: AAB signed with expected upload key (SHA-1 match)"
+
 echo "== AAB size =="
 ls -lh "$AAB"
+sha256sum "$AAB" | tee "$AAB.sha256"
 
 if [[ -f "$BUNDLETOOL" ]]; then
   echo "== bundletool verification dump (package/version/sdk/ABI/perms/icons/signing) =="
