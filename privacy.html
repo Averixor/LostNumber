@@ -164,11 +164,11 @@
         </ul>
 
         <p>
-          Якщо ви натискаєте <strong>Увійти через Google</strong>, Google і Firebase Auth обробляють
-          дані облікового запису Google (зокрема ідентифікатор користувача; email може оброблятися
-          SDK для показу статусу акаунта). Ми <strong>не</strong> зберігаємо ігровий прогрес на
-          наших серверах і <strong>не</strong> вмикаємо Firebase Analytics, Crashlytics чи рекламу в
-          цій версії.
+          Якщо ви натискаєте <strong>Увійти за допомогою Google</strong>, Google і Firebase Auth
+          обробляють дані облікового запису Google (зокрема ідентифікатор користувача; email може
+          оброблятися SDK для показу статусу акаунта). Ми <strong>не</strong> зберігаємо ігровий
+          прогрес на наших серверах і <strong>не</strong> вмикаємо Firebase Analytics, Crashlytics
+          чи рекламу в цій версії.
         </p>
       </section>
 
@@ -202,7 +202,7 @@
 
         <p>
           Android-збірка оголошує дозвіл <code>INTERNET</code> (і за потреби
-          <code>ACCESS_NETWORK_STATE</code>) для <strong>опційного</strong> входу через Google /
+          <code>ACCESS_NETWORK_STATE</code>) для <strong>опційного</strong> входу за допомогою Google /
           Firebase Auth. Грати можна повністю офлайн без входу.
         </p>
 
@@ -234,8 +234,10 @@
 
         <p>
           Гра призначена для широкої аудиторії, зокрема для сімейного використання, але не
-          орієнтована переважно на дітей. Ми свідомо не збираємо персональні дані користувачів,
-          зокрема дітей.
+          орієнтована переважно на дітей. Ми <strong>не</strong> збираємо персональні дані для
+          реклами чи аналітики. Єдиний опційний випадок — <strong>Увійти за допомогою Google</strong>
+          (Firebase Auth): тоді Google / Firebase обробляють дані акаунта для автентифікації; інакше
+          прогрес лишається лише локально на пристрої.
         </p>
       </section>
 
@@ -317,7 +319,9 @@
 
         <p>
           The app is intended for a general audience and is not primarily directed at children. We
-          do not knowingly collect personal data from users, including children.
+          do not collect personal data for advertising or analytics. The only optional case is
+          <strong>Sign in with Google</strong> (Firebase Auth): Google / Firebase then process
+          account data for authentication; otherwise progress stays local on the device only.
         </p>
 
         <p>

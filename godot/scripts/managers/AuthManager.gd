@@ -17,7 +17,6 @@ var user: Dictionary = {}
 var last_error: String = ""
 
 var _plugin = null
-var _plugin_bound: bool = false
 
 
 func _ready() -> void:
@@ -121,17 +120,17 @@ func sign_out() -> void:
 
 
 func _bind_plugin() -> void:
-	if _plugin_bound:
-		return
-	_plugin_bound = true
-	if not is_android():
+	# Retry until the Android singleton appears; do not latch a failed attempt.
+	if _plugin != null or not is_android():
 		return
 	if not Engine.has_singleton(PLUGIN_NAME):
 		push_warning("AuthManager: Android singleton %s not found" % PLUGIN_NAME)
 		return
 	_plugin = Engine.get_singleton(PLUGIN_NAME)
 	if _plugin != null and _plugin.has_signal("auth_result"):
-		_plugin.connect("auth_result", Callable(self, "_on_plugin_auth_result"))
+		var cb := Callable(self, "_on_plugin_auth_result")
+		if not _plugin.is_connected("auth_result", cb):
+			_plugin.connect("auth_result", cb)
 
 
 func _on_plugin_auth_result(json_text: String) -> void:

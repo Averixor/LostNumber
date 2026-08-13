@@ -33,7 +33,7 @@
 
 ## Контролі користувача (B2)
 
-1. Opt-in Sign in Google (Settings).
+1. Opt-in — Sign in with Google (Settings).
 2. Sign out — без wipe локального сейву.
 3. Гра повністю без акаунта.
 

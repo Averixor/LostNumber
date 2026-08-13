@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.godotengine.godot.Godot;
 import org.godotengine.godot.plugin.GodotPlugin;
@@ -42,6 +43,7 @@ public class LostNumberFirebasePlugin extends GodotPlugin {
   private boolean firebaseReady = false;
   private String lastError = "";
   private String webClientId = "";
+  private final ExecutorService credentialExecutor = Executors.newSingleThreadExecutor();
 
   public LostNumberFirebasePlugin(Godot godot) {
     super(godot);
@@ -171,7 +173,7 @@ public class LostNumberFirebasePlugin extends GodotPlugin {
         activity,
         request,
         cancellationSignal,
-        Executors.newSingleThreadExecutor(),
+        credentialExecutor,
         new CredentialManagerCallback<GetCredentialResponse, GetCredentialException>() {
           @Override
           public void onResult(GetCredentialResponse result) {
@@ -244,7 +246,7 @@ public class LostNumberFirebasePlugin extends GodotPlugin {
       credentialManager.clearCredentialStateAsync(
           new ClearCredentialStateRequest(),
           cancellationSignal,
-          Executors.newSingleThreadExecutor(),
+          credentialExecutor,
           new CredentialManagerCallback<Void, ClearCredentialException>() {
             @Override
             public void onResult(Void unused) {
