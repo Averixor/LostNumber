@@ -1,5 +1,7 @@
 # Lost Number — повний технічний аудит 360° (Google Play)
 
+> **Dated audit (2026-08-04) — historical.** Current identity: `com.Averixor.Lost_Number` / VC **6** / Auth B2 — [`docs/en/SOURCE_OF_TRUTH.md`](en/SOURCE_OF_TRUTH.md), [`STAGE1_RELEASE_RECORD.md`](STAGE1_RELEASE_RECORD.md). Do not treat VC16 / old package lines below as live ship contract.
+
 | Поле                 | Значення                                                                                                         |
 | -------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | Репозиторій          | https://github.com/Averixor/LostNumber                                                                           |
@@ -7,11 +9,11 @@
 | Первинний зріз       | `21a627b` (тодішній tip feature-гілки; **не** активна feature зараз)                                             |
 | Інтеграція gothic UI | PR #48 → merge `1feda649` (2026-08-02) у `main`                                                                  |
 | Перед релізом        | Повторно звірити з актуальним `main` HEAD; збирати AAB лише з зафіксованого SHA                                  |
-| Версія в git         | `2.1.6` / **versionCode 16** (bump лише після факту Console)                                                     |
+| Версія в git (тоді)  | `2.1.6` / **versionCode 16** (legacy snapshot)                                                                   |
 | Engine               | Godot **4.7.1** (`4.7.1.stable.flathub.a13da4feb` локально; CI pin `4.7.1.stable.official.a13da4feb`)            |
 | Суміжні артефакти    | `docs/ROADMAP.md`, `docs/ANDROID_RELEASE_READINESS.md`, `docs/en/SOURCE_OF_TRUTH.md`, `docs/en/VISUAL_TARGET.md` |
 
-> Аудит початково виконано на `21a627b`; зміни PR #48 інтегровані в `main` через `1feda649`; перед релізом стан повторно звірити з актуальним HEAD. Статус **завантаження VC16 у Play Console** з репозиторію **не верифікується**.
+> Аудит початково виконано на `21a627b`; зміни PR #48 інтегровані в `main` через `1feda649`. VC16 у цьому документі — **історичний** зріз, не поточний SoT.
 
 ---
 
