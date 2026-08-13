@@ -16,6 +16,7 @@ Listing: **`com.Averixor.Lost_Number`**
 | Auth              | Google Sign-In via `LostNumberFirebase`       |
 | Cloud Save        | **ні** (наступний PR)                         |
 | targetSdk         | **36**                                        |
+| Git (main)        | `0739a18` (PR #84 Firebase BoM wiring)        |
 
 **Version gate:** VC **1–5** могли вже бути в Console → поточний код **6**. Далі: VC ≥ попереднього + 1.
 

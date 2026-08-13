@@ -29,8 +29,9 @@ Universal sideload APK (upload-signed): `build/android/lost-number-universal.apk
 
 ### Debug app (still needed for `.dev` APK)
 
-1. Firebase → Add Android app: `com.Averixor.Lost_Number.dev`
-2. Register debug SHA-1: `3F:54:CA:7D:63:33:D0:B6:E7:5C:7A:97:52:02:0B:6E:F9:46:CD:35`
+1. Firebase Console → project **`lost-number`** (або `lost-number-dev`, якщо розділено) → Add Android app: `com.Averixor.Lost_Number.dev`
+2. Register debug SHA-1: `3F:54:CA:7D:63:33:D0:B6:E7:5C:7A:97:52:02:0B:6E:F9:46:CD:35`  
+   (SHA-256 debug: `C6:1D:F2:03:B2:16:8F:A1:A6:2E:6B:9E:78:2D:40:23:1E:78:33:AF:FF:54:4C:DA:35:E0:21:02:43:68:BA:47`)
 3. Download JSON → `android/firebase/dev/google-services.json`
 4. `npm run godot:android:debug`
 

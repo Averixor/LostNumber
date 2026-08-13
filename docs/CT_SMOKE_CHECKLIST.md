@@ -3,7 +3,7 @@
 | Поле                | Значення                                                                |
 | ------------------- | ----------------------------------------------------------------------- |
 | Статус CT           | **Auth-ready AAB готовий** — потрібен OWNER Sign-In smoke + Play opt-in |
-| Docs / source       | `main` + PR Firebase BoM wiring                                         |
+| Docs / source       | `main` @ `0739a18` (PR #84 merged)                                      |
 | Install джерело     | **Google Play** після opt-in (sideload лише для локального Auth QA)     |
 | Package (release)   | **`com.Averixor.Lost_Number`**                                          |
 | Firebase / INTERNET | prod JSON + oauth_client OK; AAB містить Firebase resources             |
@@ -22,7 +22,7 @@
 ```text
 build/android/lost-number.aab
 SHA-256: c85ee34032a0b0abfab78dbe4b50d2dd35e05fb14aa8d8a020c96104ee507d52
-source:  (local Auth-ready rebuild 2026-08-14; confirm HEAD after PR #84 merge)
+source:  local Auth-ready rebuild 2026-08-14; code on main via #84 (`0739a18`)
 version: 2.1.6 / VC 6
 package: com.Averixor.Lost_Number
 cert SHA-1: 43:93:42:63:7F:1D:1B:26:F7:9A:DF:24:D8:34:31:58:FA:C2:AA:C3
@@ -54,7 +54,7 @@ cert SHA-1: 43:93:42:63:7F:1D:1B:26:F7:9A:DF:24:D8:34:31:58:FA:C2:AA:C3
 ```text
 Closed testing smoke — Lost Number 2.1.6 / VC6
 package: com.Averixor.Lost_Number
-AAB SHA-256: (вписати після rebuild)
+AAB SHA-256: c85ee34032a0b0abfab78dbe4b50d2dd35e05fb14aa8d8a020c96104ee507d52
 
 PRE-UPLOAD (обовʼязково):
 [ ] 0a. Upload key SHA у Console == таблиця вище (не App signing key)
