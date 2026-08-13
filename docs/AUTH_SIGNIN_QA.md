@@ -56,13 +56,13 @@ If `INSTALL_FAILED_USER_RESTRICTED`: phone Settings → Developer options → **
 
 ### Device smoke record (2026-08-14)
 
-| Field | Value |
-| --- | --- |
-| Device | Xiaomi 23117RA68G (`emerald`) |
-| Artifact | `lost-number-universal.apk` from AAB `c85ee340…` |
-| Package | `com.Averixor.Lost_Number` VC6 / 2.1.6 |
-| Result | **PASS** — Credential Manager → FirebaseAuth uid; Settings shows «Увійшли»; Sign-Out OK |
-| Notes | Install via USB required once; not Play CT install |
+| Field    | Value                                                                                   |
+| -------- | --------------------------------------------------------------------------------------- |
+| Device   | Xiaomi 23117RA68G (`emerald`)                                                           |
+| Artifact | `lost-number-universal.apk` from AAB `c85ee340…`                                        |
+| Package  | `com.Averixor.Lost_Number` VC6 / 2.1.6                                                  |
+| Result   | **PASS** — Credential Manager → FirebaseAuth uid; Settings shows «Увійшли»; Sign-Out OK |
+| Notes    | Install via USB required once; not Play CT install                                      |
 
 ## Out of scope
 

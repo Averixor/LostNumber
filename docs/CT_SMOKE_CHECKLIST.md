@@ -1,12 +1,12 @@
 # Closed testing smoke — OWNER checklist
 
-| Поле                | Значення                                                                |
-| ------------------- | ----------------------------------------------------------------------- |
-| Статус CT           | **Auth smoke PASS (sideload)** — далі Play upload AAB + CT opt-in       |
-| Docs / source       | `main` @ `0739a18` (PR #84 merged)                                      |
-| Install джерело     | **Google Play** після opt-in (sideload лише для локального Auth QA)     |
-| Package (release)   | **`com.Averixor.Lost_Number`**                                          |
-| Firebase / INTERNET | prod JSON + oauth_client OK; AAB містить Firebase resources             |
+| Поле                | Значення                                                            |
+| ------------------- | ------------------------------------------------------------------- |
+| Статус CT           | **Auth smoke PASS (sideload)** — далі Play upload AAB + CT opt-in   |
+| Docs / source       | `main` @ `0739a18` (PR #84 merged)                                  |
+| Install джерело     | **Google Play** після opt-in (sideload лише для локального Auth QA) |
+| Package (release)   | **`com.Averixor.Lost_Number`**                                      |
+| Firebase / INTERNET | prod JSON + oauth_client OK; AAB містить Firebase resources         |
 
 Повний runbook: [`CLOSED_TESTING_RUNBOOK.md`](CLOSED_TESTING_RUNBOOK.md). Auth QA: [`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md). Recon: [`PLAY_CONSOLE_RECON.md`](PLAY_CONSOLE_RECON.md).
 
@@ -82,17 +82,17 @@ SMOKE:
 
 ## Результат (заповнює OWNER)
 
-| Поле           | Значення                                       |
-| -------------- | ---------------------------------------------- |
-| Дата           | 2026-08-14                                     |
-| Пристрій       | Xiaomi 23117RA68G (emerald)                    |
+| Поле           | Значення                                                           |
+| -------------- | ------------------------------------------------------------------ |
+| Дата           | 2026-08-14                                                         |
+| Пристрій       | Xiaomi 23117RA68G (emerald)                                        |
 | AAB SHA-256    | `c85ee34032a0b0abfab78dbe4b50d2dd35e05fb14aa8d8a020c96104ee507d52` |
-| AAB source SHA | `main` @ `6099b68` (+ local Auth-ready AAB)    |
-| Upload SHA OK  | ☑ так (upload cert `43:93…`)                   |
-| Auth smoke OK  | ☑ так (sideload universal APK)                 |
-| Вердикт        | ☐ **GO** (після Play CT install) / ☐ **NO-GO** |
-| P0 / P1        | none                                           |
-| Нотатки        | Sideload Auth PASS; CT GO лише після install з Play |
+| AAB source SHA | `main` @ `6099b68` (+ local Auth-ready AAB)                        |
+| Upload SHA OK  | ☑ так (upload cert `43:93…`)                                       |
+| Auth smoke OK  | ☑ так (sideload universal APK)                                     |
+| Вердикт        | ☐ **GO** (після Play CT install) / ☐ **NO-GO**                     |
+| P0 / P1        | none                                                               |
+| Нотатки        | Sideload Auth PASS; CT GO лише після install з Play                |
 
 ### Після вердикту
 

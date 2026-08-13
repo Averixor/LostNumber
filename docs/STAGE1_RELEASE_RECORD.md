@@ -47,7 +47,7 @@ Listing: **`com.Averixor.Lost_Number`**
 | versionCode | **6**                                                              |
 | Built       | 2026-08-14 (prod `google-services.json` + oauth_client type 3)     |
 | Firebase    | `google_app_id` / `default_web_client_id` / project — **present**  |
-| CT status   | **Auth smoke PASS** (sideload 2026-08-14) → upload AAB to Play CT |
+| CT status   | **Auth smoke PASS** (sideload 2026-08-14) → upload AAB to Play CT  |
 
 ## Verifier
 
