@@ -131,14 +131,15 @@
       <header>
         <h1>Lost Number — Політика конфіденційності</h1>
         <p class="updated">
-          <time datetime="2026-07-26">Останнє оновлення: 26 липня 2026 року</time>
+          <time datetime="2026-08-13">Останнє оновлення: 13 серпня 2026 року</time>
         </p>
       </header>
 
       <section class="card" aria-label="Короткий опис">
         <p>
           <strong>Lost Number</strong> — офлайн-орієнтована логічна гра з числами. Ця політика
-          пояснює, які дані обробляються на вашому пристрої.
+          пояснює, які дані обробляються на вашому пристрої та (за вашим вибором) під час входу
+          через Google.
         </p>
       </section>
 
@@ -146,17 +147,29 @@
         <h2>1. Які дані ми збираємо</h2>
 
         <p>
-          Ми <strong>не збираємо</strong> і <strong>не передаємо на сервери</strong> персональні
-          дані, дані облікових записів, контакти, геолокацію або рекламні ідентифікатори.
+          Гра <strong>працює без облікового запису</strong>. Прогрес, налаштування та локальні дані
+          зберігаються на пристрої і <strong>не синхронізуються в хмару</strong> у поточній версії.
         </p>
 
-        <p>Уся ігрова інформація зберігається локально на вашому пристрої:</p>
+        <p>Локально на пристрої зберігаються:</p>
 
         <ul>
           <li>прогрес рівнів, очки досвіду та інвентар бонусів;</li>
           <li>досягнення, щоденні завдання й статистика;</li>
-          <li>налаштування мови, теми, звуку, музики та анімацій.</li>
+          <li>налаштування мови, теми, звуку, музики та анімацій;</li>
+          <li>
+            за вашим вибором — мінімальний кеш статусу входу (ідентифікатор Firebase Auth UID /
+            відображуване ім’я), без паролів і токенів у відкритому вигляді поза SDK.
+          </li>
         </ul>
+
+        <p>
+          Якщо ви натискаєте <strong>Увійти за допомогою Google</strong>, Google і Firebase Auth
+          обробляють дані облікового запису Google (зокрема ідентифікатор користувача; email може
+          оброблятися SDK для показу статусу акаунта). Ми <strong>не</strong> зберігаємо ігровий
+          прогрес на наших серверах і <strong>не</strong> вмикаємо Firebase Analytics, Crashlytics
+          чи рекламу в цій версії.
+        </p>
       </section>
 
       <section>
@@ -168,7 +181,9 @@
           налаштування та дані теми записуються у JSON-файли каталогу <code>user://</code>.
         </p>
 
-        <p>Ці дані не синхронізуються з хмарними сервісами та не передаються на наші сервери.</p>
+        <p>
+          Ці ігрові дані не синхронізуються з хмарним збереженням Lost Number у поточній версії.
+        </p>
 
         <p>
           Очищення даних застосунку в налаштуваннях Android або перевстановлення гри призведе до
@@ -186,9 +201,9 @@
         <h2>3. Мережа та дозволи</h2>
 
         <p>
-          Поточна Android-версія гри не запитує дозвіл
-          <code>INTERNET</code>. Для використання гри не потрібен обліковий запис, а ігровий прогрес
-          не передається на наші сервери.
+          Android-збірка оголошує дозвіл <code>INTERNET</code> (і за потреби
+          <code>ACCESS_NETWORK_STATE</code>) для <strong>опційного</strong> входу за допомогою
+          Google / Firebase Auth. Грати можна повністю офлайн без входу.
         </p>
 
         <p>
@@ -209,7 +224,8 @@
 
         <p>
           У поточній версії гри немає сторонньої реклами, покупок у застосунку або сторонніх SDK
-          аналітики, зокрема Firebase Analytics чи AdMob.
+          аналітики. Firebase використовується лише для Auth (Google Sign-In); Firebase Analytics і
+          AdMob <strong>не</strong> ввімкнені.
         </p>
       </section>
 
@@ -218,8 +234,11 @@
 
         <p>
           Гра призначена для широкої аудиторії, зокрема для сімейного використання, але не
-          орієнтована переважно на дітей. Ми свідомо не збираємо персональні дані користувачів,
-          зокрема дітей.
+          орієнтована переважно на дітей. Ми <strong>не</strong> збираємо персональні дані для
+          реклами чи аналітики. Єдиний опційний випадок —
+          <strong>Увійти за допомогою Google</strong>
+          (Firebase Auth): тоді Google / Firebase обробляють дані акаунта для автентифікації; інакше
+          прогрес лишається лише локально на пристрої.
         </p>
       </section>
 
@@ -264,9 +283,9 @@
         <h1 id="privacy-policy-en">Privacy Policy</h1>
 
         <p>
-          <strong>Lost Number</strong> is an offline-oriented number puzzle game. The app does not
-          collect or transmit personal data to our servers. The current Android build does not
-          request the <code>INTERNET</code> permission.
+          <strong>Lost Number</strong> is an offline-oriented number puzzle game. You can play
+          without an account. Gameplay progress stays on the device and is <strong>not</strong>
+          cloud-synced in the current version.
         </p>
 
         <p>
@@ -283,9 +302,9 @@
         </p>
 
         <p>
-          The current Android build does not request the
-          <code>INTERNET</code> permission. The game does not require an account and does not send
-          gameplay progress to our servers.
+          The Android build requests the <code>INTERNET</code> permission for
+          <strong>optional</strong> Google Sign-In via Firebase Auth. Sign-in is opt-in from
+          Settings. Firebase Analytics, Crashlytics, and AdMob are <strong>not</strong> enabled.
         </p>
 
         <p>
@@ -294,13 +313,16 @@
         </p>
 
         <p>
-          The current version contains no third-party advertising, in-app purchases, or third-party
-          analytics SDKs such as Firebase Analytics or AdMob.
+          The current version contains no third-party advertising or in-app purchases. Firebase is
+          used for Auth (Google Sign-In) only — not for analytics SDKs such as Firebase Analytics or
+          AdMob.
         </p>
 
         <p>
           The app is intended for a general audience and is not primarily directed at children. We
-          do not knowingly collect personal data from users, including children.
+          do not collect personal data for advertising or analytics. The only optional case is
+          <strong>Sign in with Google</strong> (Firebase Auth): Google / Firebase then process
+          account data for authentication; otherwise progress stays local on the device only.
         </p>
 
         <p>

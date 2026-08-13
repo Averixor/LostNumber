@@ -2,6 +2,8 @@
 current_manifest.xml
 old_manifest.xml
 bundletool.jar
+tools/bundletool-all.jar
+tools/bundletool*.jar
 *.apks
 dummy.c
 libdummy.so

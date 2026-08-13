@@ -7,7 +7,7 @@ last_updated: 2026-07-16
 
 # Lost Number — English Documentation
 
-Professional technical documentation for the Lost Number project. **Godot 4** is the sole ship target (`2.1.6` / versionCode `16`).
+Professional technical documentation for the Lost Number project. **Godot 4** is the sole ship target (`2.1.6` / versionCode `6`, package `com.Averixor.Lost_Number`).
 
 ## English docs (this folder)
 
@@ -79,9 +79,10 @@ npm run godot:test:all
 
 ## Version
 
-| Field       | Value                                      |
-| ----------- | ------------------------------------------ |
-| Package     | `com.averixor.lostnumber`                  |
-| versionName | `2.1.6`                                    |
-| versionCode | `16`                                       |
-| Next upload | versionCode `16` or `17` (Console decides) |
+| Field       | Value                                        |
+| ----------- | -------------------------------------------- |
+| Package     | `com.Averixor.Lost_Number`                   |
+| Debug       | `com.Averixor.Lost_Number.dev`               |
+| versionName | `2.1.6` (debug: `dev`)                       |
+| versionCode | `6`                                          |
+| Next upload | versionCode `>` Console max for this listing |

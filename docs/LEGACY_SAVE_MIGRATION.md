@@ -58,18 +58,23 @@ Enable in export: `export_presets.cfg` → `plugins/LostNumberMigration=true` on
 
 ### Test on device
 
+Current Play listing packages: `com.Averixor.Lost_Number` / `.dev`.  
+Legacy Capacitor / old Godot listing used `com.averixor.lostnumber` / `.dev` — paths below for **Option B** still refer to that old app data directory when upgrading from a prior install.
+
 **Option A — adb push (always works, no old app required):**
 
 ```bash
-adb push my-save.json /data/data/com.averixor.lostnumber/files/lostnumber_legacy_export.json
+# Current debug listing
+adb push my-save.json /data/data/com.Averixor.Lost_Number.dev/files/lostnumber_legacy_export.json
 # Launch app → startup migration OR Settings → Import legacy save
 ```
 
-**Option B — upgrade from Capacitor build:**
+**Option B — upgrade from Capacitor / old listing:**
 
-Install old Capacitor APK with existing save, then install Godot APK/AAB **without clearing data**. Tap **Settings → Import legacy save** (calls plugin first, then `user://` files).
+Install old Capacitor APK (`com.averixor.lostnumber`) with existing save, then install Godot APK/AAB for the **same** package **without clearing data**. Tap **Settings → Import legacy save** (calls plugin first, then `user://` files).  
+Note: the new listing `com.Averixor.Lost_Number` is a **different** app id — it will not see old-package data; use Option A or file import.
 
-**Option C — dev package:**
+**Option C — legacy debug package path (old listing only):**
 
 Same paths under `/data/data/com.averixor.lostnumber.dev/files/`.
 

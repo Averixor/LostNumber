@@ -10,6 +10,8 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const failures = [];
+const DEBUG_VERSION_NAME = 'dev';
+const ANDROID_TARGET_SDK = '36';
 
 function fail(msg) {
   failures.push(msg);
@@ -66,10 +68,10 @@ function verifyExportPresetsNoSecrets() {
   const debugCode = readOption(debugOptions, 'version/code');
 
   const expectedOptions = [
-    [releaseOptions, 'package/unique_name', 'com.averixor.lostnumber', 'release package'],
-    [debugOptions, 'package/unique_name', 'com.averixor.lostnumber.dev', 'debug package'],
+    [releaseOptions, 'package/unique_name', 'com.Averixor.Lost_Number', 'release package'],
+    [debugOptions, 'package/unique_name', 'com.Averixor.Lost_Number.dev', 'debug package'],
     [releaseOptions, 'version/name', packageJson.version, 'release versionName'],
-    [debugOptions, 'version/name', `${packageJson.version}-dev`, 'debug versionName'],
+    [debugOptions, 'version/name', DEBUG_VERSION_NAME, 'debug versionName'],
     [releaseOptions, 'gradle_build/export_format', '1', 'release AAB format'],
     [debugOptions, 'gradle_build/export_format', '0', 'debug APK format'],
     [releaseOptions, 'package/signed', 'true', 'release signing enabled'],
@@ -86,7 +88,10 @@ function verifyExportPresetsNoSecrets() {
       `release/debug versionCode must be the same positive integer, got ${releaseCode}/${debugCode}`,
     );
   } else {
-    ok(`Android identity: VC ${releaseCode}, ${packageJson.version}, release/debug package IDs`);
+    ok(
+      `Android identities: release ${releaseCode} / ${packageJson.version} / ${ANDROID_TARGET_SDK}; ` +
+        `debug ${debugCode} / ${DEBUG_VERSION_NAME} / ${ANDROID_TARGET_SDK}`,
+    );
   }
 
   for (const [index, options] of [
@@ -105,21 +110,36 @@ function verifyExportPresetsNoSecrets() {
         fail(`preset.${index} ${key} must be ${expected}, got ${actual ?? 'missing'}`);
       }
     }
-    if (readOption(options, 'permissions/internet') !== 'false') {
-      fail(`preset.${index} must set permissions/internet=false for offline release`);
+    if (readOption(options, 'permissions/internet') !== 'true') {
+      fail(`preset.${index} must set permissions/internet=true for Google Sign-In`);
+    }
+    for (const mediaKey of [
+      'permissions/read_media_images',
+      'permissions/read_external_storage',
+      'permissions/read_media_visual_user_selected',
+    ]) {
+      const mediaVal = readOption(options, mediaKey);
+      if (mediaVal === 'true') {
+        fail(`preset.${index} must not enable ${mediaKey} (system photo picker only)`);
+      }
     }
   }
-  ok('Android presets are offline and limited to arm64-v8a/x86_64');
+  ok('Android presets enable INTERNET and limit ABIs to arm64-v8a/x86_64');
 
-  if (!/gradle_build\/target_sdk="35"/.test(content)) {
-    fail('godot/export_presets.cfg must set gradle_build/target_sdk="35" on all Android presets');
+  const targetSdkPattern = new RegExp(`gradle_build/target_sdk="${ANDROID_TARGET_SDK}"`, 'g');
+  const targetSdkMatches = content.match(targetSdkPattern) || [];
+  if (targetSdkMatches.length < 2) {
+    fail(
+      `godot/export_presets.cfg must set target_sdk=${ANDROID_TARGET_SDK} on both Android presets`,
+    );
   } else {
-    const targetSdkMatches = content.match(/gradle_build\/target_sdk="35"/g) || [];
-    if (targetSdkMatches.length < 2) {
-      fail('godot/export_presets.cfg must set target_sdk=35 on both Android presets');
-    } else {
-      ok('export_presets target_sdk=35 on Android presets');
-    }
+    ok(`export_presets target_sdk=${ANDROID_TARGET_SDK} on Android presets`);
+  }
+
+  if (!/plugins\/LostNumberFirebase=true/.test(content)) {
+    fail('export_presets must enable plugins/LostNumberFirebase=true');
+  } else {
+    ok('LostNumberFirebase plugin enabled in export presets');
   }
 
   const excludeFilters = [...content.matchAll(/^exclude_filter="([^"]*)"/gm)].map(
@@ -137,29 +157,29 @@ function verifyExportPresetsNoSecrets() {
   ok('export_presets.cfg has no keystore passwords');
 }
 
-function verifyPrivacyPolicyMatchesOfflineBuild() {
+function verifyPrivacyPolicyMatchesAuthBuild() {
   const privacyPath = join(root, 'privacy.html');
   if (!existsSync(privacyPath)) {
     fail('privacy.html missing');
     return;
   }
   const privacy = readFileSync(privacyPath, 'utf8');
-  const contradictoryInternetClaims = [
-    /may\s+(request|declare)[^<]{0,160}<code>INTERNET<\/code>/is,
-    /може\s+оголошувати[^<]{0,160}<code>INTERNET<\/code>/is,
-  ];
-  for (const pattern of contradictoryInternetClaims) {
-    if (pattern.test(privacy)) {
-      fail(`privacy.html contradicts offline manifest: ${pattern}`);
-    }
-  }
   if (!privacy.includes('<code>user://</code>')) {
     fail('privacy.html must describe local Godot user:// storage');
   }
-  if (!/does\s+not\s+request\s+the\s*<code>INTERNET<\/code>\s*permission/i.test(privacy)) {
-    fail('privacy.html English summary must state that INTERNET is not requested');
+  if (!/optional.*Google Sign-In/i.test(privacy)) {
+    fail('privacy.html English section must describe optional Google Sign-In');
   }
-  ok('privacy policy matches offline manifest and local user:// storage');
+  if (!privacy.includes('<code>INTERNET</code>')) {
+    fail('privacy.html must mention INTERNET permission');
+  }
+  if (/does\s+not\s+request\s+the\s*<code>INTERNET<\/code>\s*permission/i.test(privacy)) {
+    fail('privacy.html must not claim INTERNET is absent (Auth-capable build)');
+  }
+  if (!/Firebase Analytics/i.test(privacy)) {
+    fail('privacy.html must state Firebase Analytics is not enabled');
+  }
+  ok('privacy policy matches Auth-capable INTERNET build (Sign-In only, no Analytics)');
 }
 
 function resolveAapt2() {
@@ -188,44 +208,145 @@ function resolveBundletoolJar() {
   return null;
 }
 
-function readMergedReleaseManifest() {
-  const manifestPath = join(
-    root,
-    'godot/android/build/build/intermediates/merged_manifests/standardRelease/processStandardReleaseManifest/AndroidManifest.xml',
-  );
-  if (!existsSync(manifestPath)) {
-    return null;
-  }
-  return readFileSync(manifestPath, 'utf8');
-}
-
-function verifyManifestText(manifestText, sourceLabel) {
-  const targetSdkMatch = manifestText.match(/android:targetSdkVersion="(\d+)"/);
-  if (!targetSdkMatch) {
-    fail(`could not read targetSdkVersion from ${sourceLabel}`);
-  } else {
-    const targetSdk = Number(targetSdkMatch[1]);
-    if (targetSdk < 35) {
-      fail(`release manifest targetSdkVersion must be >= 35, got ${targetSdk} (${sourceLabel})`);
-    } else {
-      ok(`release manifest targetSdkVersion=${targetSdk} (${sourceLabel})`);
+function extractAabContract(aabPath) {
+  const workDir = mkdtempSync(join(tmpdir(), 'ln-aab-contract-'));
+  try {
+    const unzipManifest = spawnSync('unzip', ['-p', aabPath, 'base/manifest/AndroidManifest.xml'], {
+      encoding: 'buffer',
+      maxBuffer: 20 * 1024 * 1024,
+    });
+    if (unzipManifest.status !== 0 || !unzipManifest.stdout || unzipManifest.stdout.length < 32) {
+      return { error: 'failed to extract base/manifest/AndroidManifest.xml from AAB' };
     }
-  }
-
-  if (/android:debuggable="true"/.test(manifestText)) {
-    fail(`release manifest must not be debuggable (${sourceLabel})`);
-  } else {
-    ok(`release manifest is not debuggable (${sourceLabel})`);
+    // Binary XML — use strings for contract probes.
+    const stringsResult = spawnSync('strings', ['-n', '4'], {
+      input: unzipManifest.stdout,
+      encoding: 'utf8',
+      maxBuffer: 20 * 1024 * 1024,
+    });
+    const blob = `${stringsResult.stdout || ''}\n${unzipManifest.stdout.toString('latin1')}`;
+    const listing = spawnSync('unzip', ['-l', aabPath], { encoding: 'utf8' });
+    const listText = listing.stdout || '';
+    // Probe Firebase google-services resource strings (plugin marker alone is insufficient).
+    const resourceEntries = ['base/resources.pb', 'base/assets/google-services.json'];
+    let resourceBlob = '';
+    for (const entry of resourceEntries) {
+      if (!listText.includes(entry)) {
+        continue;
+      }
+      const extracted = spawnSync('unzip', ['-p', aabPath, entry], {
+        encoding: 'buffer',
+        maxBuffer: 40 * 1024 * 1024,
+      });
+      if (extracted.status === 0 && extracted.stdout?.length) {
+        const asText = spawnSync('strings', ['-n', '4'], {
+          input: extracted.stdout,
+          encoding: 'utf8',
+          maxBuffer: 40 * 1024 * 1024,
+        });
+        resourceBlob += `\n${asText.stdout || ''}\n${extracted.stdout.toString('latin1')}`;
+      }
+    }
+    if (!resourceBlob || !/google_app_id/.test(resourceBlob)) {
+      // Zip-compressed AAB still exposes many resource name strings to `strings`.
+      const aabStrings = spawnSync('strings', ['-n', '8', aabPath], {
+        encoding: 'utf8',
+        maxBuffer: 80 * 1024 * 1024,
+      });
+      resourceBlob += `\n${aabStrings.stdout || ''}`;
+    }
+    return {
+      blob,
+      listText,
+      hasInternet: /android\.permission\.INTERNET/.test(blob),
+      hasReadMediaImages: /android\.permission\.READ_MEDIA_IMAGES/.test(blob),
+      hasReadExternalStorage: /android\.permission\.READ_EXTERNAL_STORAGE/.test(blob),
+      packageName: (blob.match(/com\.Averixor\.Lost_Number(?:\.dev)?/) || [])[0] || null,
+      hasFirebasePluginMeta: /LostNumberFirebase/.test(blob) || /LostNumberFirebase/.test(listText),
+      hasMigrationOnly: /LostNumberMigration/.test(blob) || /LostNumberMigration/.test(listText),
+      hasGoogleAppId: /google_app_id/.test(resourceBlob),
+      hasDefaultWebClientId: /default_web_client_id/.test(resourceBlob),
+      hasFirebaseProjectId:
+        /project_id/.test(resourceBlob) || /gcm_defaultSenderId/.test(resourceBlob),
+    };
+  } finally {
+    rmSync(workDir, { recursive: true, force: true });
   }
 }
 
 function verifyAab(aabPath) {
   if (!existsSync(aabPath)) {
-    console.log(`note: AAB not found at ${aabPath} — skipping AAB manifest checks`);
+    console.log(
+      `note: AAB not found at ${aabPath} — skipping AAB artifact checks (presets still gated)`,
+    );
     return;
   }
 
   ok(`AAB present: ${aabPath}`);
+
+  const contract = extractAabContract(aabPath);
+  if (contract.error) {
+    fail(contract.error);
+    return;
+  }
+
+  if (contract.packageName !== 'com.Averixor.Lost_Number') {
+    fail(`AAB package must be com.Averixor.Lost_Number, got ${contract.packageName ?? 'unknown'}`);
+  } else {
+    ok('AAB package is com.Averixor.Lost_Number');
+  }
+
+  if (!contract.hasInternet) {
+    fail('AAB missing android.permission.INTERNET (Auth-capable source contract)');
+  } else {
+    ok('AAB declares INTERNET');
+  }
+
+  if (contract.hasReadMediaImages || contract.hasReadExternalStorage) {
+    fail(
+      'AAB must not declare broad READ_MEDIA_IMAGES / READ_EXTERNAL_STORAGE (use system picker)',
+    );
+  } else {
+    ok('AAB has no broad photo/storage permissions');
+  }
+
+  if (!contract.hasFirebasePluginMeta && !contract.hasMigrationOnly) {
+    fail('AAB missing expected Android plugin metadata markers');
+  } else if (!contract.hasFirebasePluginMeta) {
+    fail('AAB missing LostNumberFirebase plugin (source enables Auth bridge)');
+  } else {
+    ok('AAB includes LostNumberFirebase plugin marker');
+  }
+
+  // Hard-fail Firebase resources only when OWNER already placed prod JSON (rebuild expected).
+  // Without JSON in repo, CI/local may still have a stale AAB — warn, do not block merge.
+  const prodJson = join(root, 'android/firebase/prod/google-services.json');
+  const missingFirebaseResources = [];
+  if (!contract.hasGoogleAppId) {
+    missingFirebaseResources.push('google_app_id');
+  }
+  if (!contract.hasDefaultWebClientId) {
+    missingFirebaseResources.push('default_web_client_id');
+  }
+  if (!contract.hasFirebaseProjectId) {
+    missingFirebaseResources.push('project_id/gcm_defaultSenderId');
+  }
+  if (missingFirebaseResources.length) {
+    const detail = missingFirebaseResources.join(', ');
+    if (existsSync(prodJson)) {
+      fail(
+        `AAB missing Firebase config resources (${detail}). ` +
+          'Rebuild after android/firebase/prod/google-services.json before Closed Testing',
+      );
+    } else {
+      console.log(
+        `note: AAB missing Firebase resources (${detail}) — CT NO-GO until OWNER places ` +
+          'android/firebase/prod/google-services.json and rebuilds',
+      );
+    }
+  } else {
+    ok('AAB includes Firebase google-services resources (app id / web client / project)');
+  }
 
   const aapt2 = resolveAapt2();
   const bundletoolJar = resolveBundletoolJar();
@@ -252,32 +373,27 @@ function verifyAab(aabPath) {
       );
       if (extractResult.status !== 0) {
         fail(`bundletool build-apks failed: ${extractResult.stderr || extractResult.stdout}`);
-        return;
-      }
-
-      const unzipDir = join(workDir, 'unzipped');
-      const unzipResult = spawnSync('unzip', ['-qo', apksPath, '-d', unzipDir], {
-        cwd: root,
-        encoding: 'utf8',
-      });
-      if (unzipResult.status !== 0) {
-        fail('failed to unzip universal APK from bundletool output');
-        return;
-      }
-
-      const universalApk = join(unzipDir, 'universal.apk');
-      if (!existsSync(universalApk)) {
-        fail('universal.apk missing from bundletool output');
-        return;
-      }
-
-      if (aapt2) {
-        const dump = spawnSync(aapt2, ['dump', 'badging', universalApk], {
+      } else {
+        const unzipDir = join(workDir, 'unzipped');
+        const unzipResult = spawnSync('unzip', ['-qo', apksPath, '-d', unzipDir], {
           cwd: root,
           encoding: 'utf8',
         });
-        if (dump.status === 0) {
-          manifestXml = dump.stdout;
+        if (unzipResult.status !== 0) {
+          fail('failed to unzip universal APK from bundletool output');
+        } else {
+          const universalApk = join(unzipDir, 'universal.apk');
+          if (!existsSync(universalApk)) {
+            fail('universal.apk missing from bundletool output');
+          } else if (aapt2) {
+            const dump = spawnSync(aapt2, ['dump', 'badging', universalApk], {
+              cwd: root,
+              encoding: 'utf8',
+            });
+            if (dump.status === 0) {
+              manifestXml = dump.stdout;
+            }
+          }
         }
       }
     } finally {
@@ -291,8 +407,8 @@ function verifyAab(aabPath) {
       fail('could not read targetSdkVersion from release AAB');
     } else {
       const targetSdk = Number(targetSdkMatch[1]);
-      if (targetSdk < 35) {
-        fail(`release AAB targetSdkVersion must be >= 35, got ${targetSdk}`);
+      if (targetSdk < Number(ANDROID_TARGET_SDK)) {
+        fail(`release AAB targetSdkVersion must be >= ${ANDROID_TARGET_SDK}, got ${targetSdk}`);
       } else {
         ok(`release AAB targetSdkVersion=${targetSdk}`);
       }
@@ -306,19 +422,14 @@ function verifyAab(aabPath) {
     return;
   }
 
-  const mergedManifest = readMergedReleaseManifest();
-  if (mergedManifest) {
-    verifyManifestText(mergedManifest, 'Godot Gradle merged manifest');
-    return;
-  }
-
-  console.log(
-    'note: bundletool/AAB badging unavailable and Gradle manifest missing — skipping AAB SDK checks',
+  // Never treat Godot Gradle intermediates as proof of the shipped AAB.
+  fail(
+    'could not dump AAB badging (install bundletool + aapt2). Refusing false-green from Gradle merged manifest',
   );
 }
 
 verifyExportPresetsNoSecrets();
-verifyPrivacyPolicyMatchesOfflineBuild();
+verifyPrivacyPolicyMatchesAuthBuild();
 verifyAab(join(root, 'build/android/lost-number.aab'));
 
 if (failures.length) {

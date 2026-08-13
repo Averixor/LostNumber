@@ -1,27 +1,20 @@
 extends RefCounted
 
 ## Native gallery / file picker on Android and desktop; FileDialog fallback in editor/Linux dev.
+## Android: use the system picker only — do NOT declare/request broad READ_MEDIA_IMAGES.
 
 const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 
 
 static func pick_image(host: Control, i18n: Callable) -> String:
 	if OS.get_name() == "Android":
-		await _request_android_media_permissions(host, i18n)
+		# Photo Picker / SAF via DisplayServer — no broad storage permission.
 		return await _pick_with_display_server(host, i18n, true)
 
 	if DisplayServer.has_feature(DisplayServer.FEATURE_NATIVE_DIALOG_FILE):
 		return await _pick_with_display_server(host, i18n, false)
 
 	return await _pick_with_file_dialog(host, i18n)
-
-
-static func _android_media_permissions() -> PackedStringArray:
-	return PackedStringArray([
-		"READ_MEDIA_IMAGES",
-		"READ_EXTERNAL_STORAGE",
-		"READ_MEDIA_VISUAL_USER_SELECTED",
-	])
 
 
 static func _desktop_image_filters() -> PackedStringArray:
@@ -63,38 +56,14 @@ static func _pick_with_display_server(host: Control, i18n: Callable, on_android:
 	return selected
 
 
-static func _request_android_media_permissions(host: Control, i18n: Callable) -> void:
-	if _has_android_media_permission():
-		return
-
-	# Requests permissions declared in the Android export manifest.
-	OS.request_permissions()
-	await host.get_tree().on_request_permissions_result
-
-	if _has_android_media_permission():
-		return
-
-	# SAF native picker still works without broad storage access; warn in Ukrainian.
-	LnUiLib.show_toast(host, str(i18n.call("skin_picker_permission_denied")))
-
-
-static func _has_android_media_permission() -> bool:
-	var required := _android_media_permissions()
-	for granted in OS.get_granted_permissions():
-		if granted in required:
-			return true
-	return false
-
-
 static func _pick_with_file_dialog(host: Control, i18n: Callable) -> String:
 	var dialog := FileDialog.new()
-	dialog.title = str(i18n.call("skin_custom_bg"))
 	dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
 	dialog.access = FileDialog.ACCESS_FILESYSTEM
-	dialog.filters = PackedStringArray(["*.png, *.jpg, *.jpeg, *.webp ; Images"])
-
+	dialog.title = str(i18n.call("skin_custom_bg"))
+	dialog.filters = _desktop_image_filters()
 	host.add_child(dialog)
-
+	dialog.popup_centered_ratio(0.8)
 	var selected := ""
 	var done := false
 	dialog.file_selected.connect(func(path: String) -> void:
@@ -104,10 +73,7 @@ static func _pick_with_file_dialog(host: Control, i18n: Callable) -> String:
 	dialog.canceled.connect(func() -> void:
 		done = true
 	)
-	dialog.popup_centered(Vector2i(720, 540))
-
 	while not done:
 		await host.get_tree().process_frame
-
 	dialog.queue_free()
 	return selected

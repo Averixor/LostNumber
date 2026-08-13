@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-PKG_DEV="com.averixor.lostnumber.dev"
+PKG_DEV="com.Averixor.Lost_Number.dev"
 
 adb start-server >/dev/null 2>&1 || true
 

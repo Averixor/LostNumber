@@ -5,7 +5,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 APK="$ROOT/build/android/lost-number-debug.apk"
-PKG_DEV="com.averixor.lostnumber.dev"
+PKG_DEV="com.Averixor.Lost_Number.dev"
 
 adb start-server >/dev/null 2>&1 || true
 

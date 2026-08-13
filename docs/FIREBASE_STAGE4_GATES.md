@@ -1,11 +1,12 @@
 # Stage 4 Firebase — hard gates (OWNER)
 
-| Поле             | Значення                                                    |
-| ---------------- | ----------------------------------------------------------- |
-| Статус runtime   | **BLOCKED** — не починати 4A / 4B / 4C код                  |
-| Kickoff docs     | Готово (цей файл + ADR / OWNER runbook / privacy delta)     |
-| Offline-first    | Залишається; Firebase **optional** після go                 |
-| `INTERNET` зараз | `false` в обох Android presets (`godot/export_presets.cfg`) |
+| Поле             | Значення                                                                                 |
+| ---------------- | ---------------------------------------------------------------------------------------- |
+| Статус runtime   | **Auth B2 (Sign-In only) у коді**; Cloud Save / 4B/4C **BLOCKED** до OWNER CT gates      |
+| Kickoff docs     | Готово (цей файл + ADR / OWNER runbook / privacy delta)                                  |
+| Offline-first    | Залишається; Google Sign-In optional; гра без акаунта                                    |
+| `INTERNET` зараз | `true` (Auth-capable) у обох Android presets (`godot/export_presets.cfg`)                |
+| Package          | `com.Averixor.Lost_Number` / `.dev` (новий listing; не старий `com.averixor.lostnumber`) |
 
 > **Правило:** Stage 3 hygiene / repo closeout **не** замінює Closed testing.  
 > Агент **не** відмічає OWNER-чекбокси з репо. Лише OWNER ставить `[x]` після факту.  
@@ -13,16 +14,15 @@
 
 ## Поточний факт Closed testing
 
-| Поле                      | Значення                                                                  | Джерело                    |
-| ------------------------- | ------------------------------------------------------------------------- | -------------------------- |
-| CT status                 | **`pending`** (Play opt-in / device smoke **не** виконано з репо)         | `docs/STAGE3_CLOSEOUT.md`  |
-| Release AAB source commit | `2ef0fcdf2aaf5083cf79c88a41b989720e137b47`                                | STAGE1 / STAGE3            |
-| Release AAB SHA-256       | `398b83f33d79b878e71ca1262d6cfac2e0a981045d77299a5c0824c1dba848c4`        | STAGE1 / STAGE3            |
-| versionName / versionCode | `2.1.6` / `16`                                                            | STAGE1                     |
-| Package (release / debug) | `com.averixor.lostnumber` / `com.averixor.lostnumber.dev`                 | SoT / STAGE1               |
-| Docs sequence on main     | PR **#72** MERGED — `docs/FIREBASE_STAGE4_SEQUENCE.md` walkable path      | git                        |
-| main HEAD (docs)          | `de01730b295acf7f8dce2850d8d3121fb843aa27` (merge #72; **не** AAB source) | git                        |
-| **Негайний OWNER крок**   | **CT smoke** — [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)           | SEQUENCE §1 / CT checklist |
+| Поле                      | Значення                                                               | Джерело                   |
+| ------------------------- | ---------------------------------------------------------------------- | ------------------------- |
+| CT status                 | **NO-GO / BLOCKED** — потрібні JSON + новий AAB + Sign-In smoke        | STAGE1 / CT_SMOKE         |
+| Release AAB (CT)          | **pending rebuild** після `android/firebase/prod/google-services.json` | STAGE1                    |
+| Rejected local AAB        | `1463fd4c…` (без Firebase resources) — **не** upload                   | STAGE1                    |
+| Legacy AAB (superseded)   | `398b83f3…` @ `2ef0fcd…` / old package — **не** upload                 | historical                |
+| versionName / versionCode | `2.1.6` / `6`                                                          | SoT / presets             |
+| Package (release / debug) | `com.Averixor.Lost_Number` / `com.Averixor.Lost_Number.dev`            | SoT / STAGE1              |
+| **Негайний OWNER крок**   | Firebase JSON → rebuild → Auth QA → потім CT                           | AUTH_SIGNIN_QA / SEQUENCE |
 
 Upload key fingerprints (звірити з Console): [`docs/PLAY_CONSOLE_RECON.md`](PLAY_CONSOLE_RECON.md).
 
@@ -40,28 +40,26 @@ Upload key fingerprints (звірити з Console): [`docs/PLAY_CONSOLE_RECON.m
 ### Product / privacy approve
 
 - [ ] Явне OWNER approve: **Google Auth** + **Cloud Save** (Phase 6)
-- [ ] Privacy review виконаний ([`FIREBASE_PRIVACY_DELTA.md`](FIREBASE_PRIVACY_DELTA.md) + оновлення policy/Data safety у хвилі з `INTERNET=true`)
+- [ ] Privacy / Data safety Console forms match Auth B2 ([`FIREBASE_PRIVACY_DELTA.md`](FIREBASE_PRIVACY_DELTA.md); `INTERNET` уже true)
 
 ### Console / env (перед 4A)
 
 - [ ] Firebase проєкти `lost-number-dev` / `lost-number-prod` створені ([`FIREBASE_OWNER_RUNBOOK.md`](FIREBASE_OWNER_RUNBOOK.md))
-- [ ] Android apps: `com.averixor.lostnumber` + `.dev`; SHA-1/256 для debug / upload / Play App Signing зареєстровані
+- [ ] Android apps: `com.Averixor.Lost_Number` + `.dev`; SHA-1/256 для debug / upload / Play App Signing зареєстровані
 - [ ] Firestore region підтверджена OWNER (рекомендація kickoff: **`europe-west3`**)
 - [ ] Budget alerts налаштовані; secrets layout без commit реальних `google-services.json`
 
-## Runtime blocked
+## Runtime blocked (Cloud Save / 4B+)
 
-Поки будь-який чекбокс вище ☐:
+Auth B2 (`LostNumberFirebase`, `AuthManager`, `INTERNET=true`) **вже в коді**. Нижче — що ще заборонено до OWNER flip gates для **Cloud Save**:
 
-| Заборонено                                    | Примітка                                 |
-| --------------------------------------------- | ---------------------------------------- |
-| Firebase SDK у Godot / Gradle                 | Немає в kickoff                          |
-| Kotlin plugin `LostNumberFirebase`            | Гілка `godot/firebase-android-bridge`    |
-| `AuthManager` / `CloudSyncManager` / Cloud UI | Після bridge                             |
-| `permissions/internet=true` у export presets  | Лише Firebase-capable PR + privacy хвиля |
-| Commit реальних `google-services.json`        | Gitignored; лише example у репо          |
-| Crashlytics / Analytics / Remote Config       | Не вмикати «заодно»                      |
-| 4C leaderboards                               | Окремо після Cloud Save sign-off         |
+| Заборонено                              | Примітка                             |
+| --------------------------------------- | ------------------------------------ |
+| Cloud Save / Firestore runtime          | Stage 4B після CT GO + OWNER approve |
+| `CloudSyncManager` / cloud conflict UI  | Після Cloud Save approve             |
+| Commit реальних `google-services.json`  | Gitignored; лише example у репо      |
+| Crashlytics / Analytics / Remote Config | Не вмикати «заодно»                  |
+| 4C leaderboards                         | Окремо після Cloud Save sign-off     |
 
 ## Runtime workstreams (deferred — blocked)
 

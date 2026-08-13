@@ -1,0 +1,14 @@
+[config]
+
+name="LostNumberFirebase"
+binary_type="local"
+binary="LostNumberFirebasePlugin/LostNumberFirebasePlugin-release.aar"
+
+[dependencies]
+
+remote=["com.google.firebase:firebase-auth:23.1.0", "androidx.credentials:credentials:1.3.0", "androidx.credentials:credentials-play-services-auth:1.3.0", "com.google.android.libraries.identity.googleid:googleid:1.1.1"]
+
+[android]
+
+min_sdk="24"
+target_sdk="36"

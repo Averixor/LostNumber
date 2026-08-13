@@ -93,7 +93,14 @@ func import_from_android_plugin() -> bool:
 		return false
 
 	var plugin = Engine.get_singleton(ANDROID_PLUGIN_NAME)
-	if plugin == null or not plugin.has_method("exportLegacySave"):
+	# Godot 4.7 JNISingleton: Java methods are visible via has_java_method(), not has_method().
+	var has_export := false
+	if plugin != null:
+		if plugin.has_method("has_java_method"):
+			has_export = bool(plugin.call("has_java_method", "exportLegacySave"))
+		else:
+			has_export = plugin.has_method("exportLegacySave")
+	if plugin == null or not has_export:
 		return false
 
 	var json_text := str(plugin.call("exportLegacySave"))

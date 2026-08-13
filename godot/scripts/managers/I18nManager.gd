@@ -394,6 +394,7 @@ func _format(text: String, args: Array) -> String:
 	# JS-style {placeholders} — match names present in the string, not positional index.
 	var names := [
 		"title", "level", "xp", "target", "cost", "turns", "used", "total", "value", "multiplier", "sum",
+		"name", "message",
 	]
 	var placeholders: Array[String] = []
 	for name in names:

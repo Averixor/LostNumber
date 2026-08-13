@@ -1,8 +1,11 @@
 # Lost Number — Production Handoff (Ideal Build)
 
-**Package:** `com.averixor.lostnumber`  
-**Version:** `2.1.6` (versionCode `16`)  
-**Audience:** Casual 3+, offline puzzle  
+> **SUPERSEDED (2026-08-13).** Canonical identity / Auth / CT: [`docs/en/SOURCE_OF_TRUTH.md`](en/SOURCE_OF_TRUTH.md), [`STAGE1_RELEASE_RECORD.md`](STAGE1_RELEASE_RECORD.md), [`CLOSED_TESTING_RUNBOOK.md`](CLOSED_TESTING_RUNBOOK.md).  
+> Current package: **`com.Averixor.Lost_Number`** / VC **6** / Auth B2 (Sign-In only). CT **NO-GO** until Firebase JSON + new AAB.
+
+**Package (historical text below):** `com.averixor.lostnumber`  
+**Version (historical):** `2.1.6` (versionCode `16`)  
+**Audience:** Casual 3+, offline puzzle (+ optional Google Sign-In in current build)  
 **Primary Android:** Godot 4.7 native (`build/android/lost-number.aab`)
 
 ---

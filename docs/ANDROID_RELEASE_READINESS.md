@@ -15,22 +15,22 @@ App shell persists `BackgroundLayer` and overlay layers; individual screens moun
 
 | Field       | Release (`preset.0`)            | Debug (`preset.1`)                    |
 | ----------- | ------------------------------- | ------------------------------------- |
-| Package     | `com.averixor.lostnumber`       | `com.averixor.lostnumber.dev`         |
-| versionCode | `16`                            | `16`                                  |
-| versionName | `2.1.6`                         | `2.1.6-dev`                           |
+| Package     | `com.Averixor.Lost_Number`      | `com.Averixor.Lost_Number.dev`        |
+| versionCode | `6`                             | `6`                                   |
+| versionName | `2.1.6`                         | `dev`                                 |
 | Format      | AAB (`export_format=1`)         | APK                                   |
 | minSdk      | 24                              | 24                                    |
-| targetSdk   | 35                              | 35                                    |
+| targetSdk   | 36                              | 36                                    |
 | ABI         | arm64-v8a, x86_64               | arm64-v8a, x86_64                     |
 | Output      | `build/android/lost-number.aab` | `build/android/lost-number-debug.apk` |
 
 ### Versioning
 
-Current: `versionName 2.1.6` / `versionCode 16`. **Every new upload needs a versionCode greater than any previously uploaded**. Practical rule: if Console confirms **VC16 already used**, bump to code `17` (name `2.1.7`); otherwise you can keep `16` / `2.1.6` until that fact is confirmed.
+Current release: `versionName 2.1.6` / `versionCode 6`. **Every new upload needs a versionCode greater than any previously uploaded**, so the final upload code still depends on the Play Console history.
 
 > `versionName` is a human-readable label (free-form). `versionCode` is the integer Play compares — just increment it by 1 each upload.
 >
-> **Naming rule (code ≥ 15):** `versionName = 2.1.(versionCode - 10)` — e.g. code `15` → `2.1.5`, code `16` → `2.1.6`. Debug builds append `-dev`.
+> **Naming rule:** release uses the product version (`2.1.6`); debug uses the fixed `versionName=dev`. Android/Play compares the independent integer `versionCode`.
 
 ABI note: only `arm64-v8a` + `x86_64` are shipped. Dropping `armeabi-v7a` excludes 32-bit-only devices (~8k in the device catalog) — intentional.
 

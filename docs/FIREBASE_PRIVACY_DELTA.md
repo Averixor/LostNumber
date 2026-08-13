@@ -1,63 +1,50 @@
-# Privacy / Data safety delta — Firebase Cloud Save
+# Privacy / Data safety delta — Firebase Auth (Sign-In only)
 
-> **Зараз (kickoff):** мережі немає; `INTERNET=false`; цей документ — **план змін**, не факт у проді.  
-> Коли runtime увімкне Auth + Firestore + `INTERNET=true`, оновити `privacy.html`, Play Data safety, [`STAGE1_CONSOLE_FORMS.md`](STAGE1_CONSOLE_FORMS.md), SoT в **тій самій** хвилі PR (`docs/firebase-privacy-console`).
+> **Зараз (B2):** `INTERNET=true`; optional Google Sign-In; **немає** Cloud Save / Firestore.
+> Коли з’явиться Cloud Save, розширити цей delta + Data safety у тій самій хвилі PR.
 
-## Що зміниться (коли Stage 4 runtime увімкнено)
+## Що змінилось у B2
 
-| До (сьогодні)                      | Після Firebase-capable build                              |
-| ---------------------------------- | --------------------------------------------------------- |
-| Повністю offline                   | Optional cloud: Google Sign-In + sync progress            |
-| Немає UID / хмарного прогресу      | Firebase Auth UID; Firestore save envelope                |
-| Немає мережевих дозволів для cloud | `INTERNET` + `ACCESS_NETWORK_STATE` (лише в Firebase PR)  |
-| Гра без акаунта — норма            | Залишається: гра **без** акаунта / мережі (offline-first) |
+| До                                  | Після B2                                                         |
+| ----------------------------------- | ---------------------------------------------------------------- |
+| Повністю offline (`INTERNET=false`) | Опційний Google Sign-In; гра без акаунта лишається нормою        |
+| Немає UID                           | Firebase Auth UID після явного входу                             |
+| Немає мережі для Auth               | `INTERNET` + `ACCESS_NETWORK_STATE`                              |
+| privacy: «INTERNET не запитується»  | privacy: optional Google Sign-In; Analytics/Crashlytics вимкнені |
 
-## Дані, що очікуються в хмарі
+## Дані Auth (без Cloud Save)
 
-| Категорія (Play Data safety)     | Приклад вмісту                                         | Примітка                                   |
-| -------------------------------- | ------------------------------------------------------ | ------------------------------------------ |
-| App activity / gameplay progress | Рівні, очки, unlocks у `payload`                       | Необхідно для Cloud Save                   |
-| App info and performance         | `appVersion`, `versionCode`, sync metadata, `revision` | Мінімум для конфліктів / діагностики       |
-| Device or other IDs              | Firebase Auth `uid`; opaque `deviceId`                 | Не логінити зайвий PII в Firestore         |
-| Personal info (email)            | Лише якщо Auth/SDK реально обробляє account email      | **Мінімізувати**; не дублювати email у doc |
+| Категорія (Play Data safety) | Приклад                       | Примітка                                          |
+| ---------------------------- | ----------------------------- | ------------------------------------------------- |
+| Personal info (account)      | Google account / display name | Opt-in Sign-In; мінімізувати email у власних docs |
+| Device or other IDs          | Firebase Auth `uid`           | Локальний UI-кеш `user://auth_session.json`       |
 
-**Не** завантажувати: custom background images, OAuth tokens, local keystores, зайві контакти/photos.
+**Не** завантажувати: ігровий прогрес у Firestore, custom backgrounds, OAuth tokens у plaintext поза SDK.
 
 ## Crashlytics / Analytics
 
-| Продукт              | Kickoff / Stage 4 MVP       |
-| -------------------- | --------------------------- |
-| Firebase Crashlytics | **НЕ** вмикати автоматично  |
-| Google Analytics     | **НЕ** вмикати автоматично  |
-| Remote Config        | **НЕ** в першому Cloud Save |
+| Продукт              | B2                    |
+| -------------------- | --------------------- |
+| Firebase Auth        | **Так** (Google only) |
+| Firestore / Cloud    | **Ні**                |
+| Firebase Crashlytics | **НІ**                |
+| Google Analytics     | **НІ**                |
+| Remote Config        | **НІ**                |
 
-Окреме OWNER-рішення + окремий privacy delta, якщо колись знадобляться.
+## Контролі користувача (B2)
 
-## Контролі користувача (обовʼязково в 4B UI)
+1. Opt-in — Sign in with Google (Settings).
+2. Sign out — без wipe локального сейву.
+3. Гра повністю без акаунта.
 
-1. **Opt-in** — Sign in Google (хмарне збереження вимкнене за замовчуванням / явний вхід).
-2. **Sync** — ручний sync + політики з ADR (після local save).
-3. **Sign out** — вихід з акаунта без обовʼязкового wipe локального сейву.
-4. **Delete cloud data** — видалення `users/{uid}/save/current` (і повʼязаних cloud docs за правилами).
-5. **Account deletion path** — процедура видалення акаунта (Play / support); **без** авто-wipe локального `user://` сейву.
-6. **Retention** — описати в privacy policy (як довго зберігаємо cloud save після delete request).
-7. **Support contact** — канал у privacy / About для запитів на дані.
+## Документи оновлені в цій хвилі
 
-## Conflict UI (privacy UX)
-
-Діалог keep local / use remote / cancel — користувач свідомо обирає, яка копія прогресу залишається canonical локально після конфлікту. Без тихого field-merge.
-
-## Документи для оновлення в privacy PR
-
-- `privacy.html` + [`PRIVACY_HOSTING.md`](PRIVACY_HOSTING.md)
-- Play Console Data safety form
-- [`STAGE1_CONSOLE_FORMS.md`](STAGE1_CONSOLE_FORMS.md)
-- [`docs/en/SOURCE_OF_TRUTH.md`](en/SOURCE_OF_TRUTH.md) (Network / Cloud rows)
-- Inventory / store listing якщо згадують «offline only» без застереження
+- `privacy.html`
+- [`docs/en/SOURCE_OF_TRUTH.md`](en/SOURCE_OF_TRUTH.md)
+- Play Console Data safety — OWNER оновлює форму під optional Account info / App activity = local only
 
 ## Посилання
 
-- OWNER sequence: [`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md) (крок 3–4)
-- Gates: [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md)
 - ADR: [`en/FIREBASE_ADR.md`](en/FIREBASE_ADR.md)
-- OWNER Console: [`FIREBASE_OWNER_RUNBOOK.md`](FIREBASE_OWNER_RUNBOOK.md)
+- OWNER: [`FIREBASE_OWNER_RUNBOOK.md`](FIREBASE_OWNER_RUNBOOK.md)
+- QA: [`docs/AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md)

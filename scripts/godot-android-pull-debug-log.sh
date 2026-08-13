@@ -2,7 +2,7 @@
 # Pull debug NDJSON from device into workspace log file.
 set -euo pipefail
 
-PKG_DEV="com.averixor.lostnumber.dev"
+PKG_DEV="com.Averixor.Lost_Number.dev"
 OUT="/home/averixor/Desktop/LostNumber/.cursor/debug-98f8ff.log"
 REMOTE="files/debug-98f8ff.log"
 

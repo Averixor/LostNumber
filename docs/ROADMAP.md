@@ -1,10 +1,12 @@
 # Lost Number — Roadmap v1.1
 
-| Поле               | Значення                                                                                             |
-| ------------------ | ---------------------------------------------------------------------------------------------------- |
-| Версія документа   | **1.1** (2026-08-04)                                                                                 |
-| База               | `main` @ `2ef0fcd` (Stage 3 PRs merged) / AAB source `main` @ `2ef0fcd` (post-adaptive CT candidate) |
-| Ship version у git | **2.1.6 / versionCode 16** (не змінювати до факту з Play Console)                                    |
+| Поле               | Значення                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------- |
+| Версія документа   | **1.2** (2026-08-13)                                                                  |
+| Listing            | `com.Averixor.Lost_Number`                                                            |
+| Ship version у git | **2.1.6 / versionCode 6**                                                             |
+| Auth B2            | Shipped in source (Sign-In only); CT **NO-GO** до JSON + нового AAB                   |
+| Cloud Save         | Deferred — після CT GO ([`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md)) |
 
 ## Стратегія
 
@@ -41,27 +43,23 @@ PR #48 (`godot/fix-gothic-chrome-readability`) **уже merged** (2026-08-02): h
 
 ## Етап 1 — Play Console recon → version → AAB → device QA → Closed testing
 
-### Жорсткий version gate (не міняти код до факту Console)
+### Жорсткий version gate
 
 ```text
-Console max versionCode
+Console max versionCode (новий listing com.Averixor.Lost_Number)
         ↓
-VC16 не використовувався → залишити 16 / 2.1.6
-VC16 уже існує          → bump 17 / 2.1.7 (окремий PR godot/release-play-v17)
+max < 6  → upload 6 / 2.1.6
+max ≥ 6  → bump max+1 (окремий PR) + rebuild
         ↓
-збірка з main @ SHA
+Firebase JSON у AAB + Auth smoke PASS
         ↓
-npm run godot:verify:aab   ← канонічний фінальний gate
+npm run release:check / godot:verify:aab
         ↓
-device QA (окремий deliverable)
-        ↓
-Closed testing upload
+Closed testing upload (новий SHA only)
 ```
 
-`npm run godot:test:all` допустимий як ранній gate; **фінальний** — завжди `godot:verify:aab` (перебудовує AAB).
-
 Власник Console: [`docs/PLAY_CONSOLE_RECON.md`](PLAY_CONSOLE_RECON.md).  
-Операції upload: [`docs/CLOSED_TESTING_RUNBOOK.md`](CLOSED_TESTING_RUNBOOK.md) (версія в runbook = поточна в git, до bump).
+Операції upload: [`docs/CLOSED_TESTING_RUNBOOK.md`](CLOSED_TESTING_RUNBOOK.md).
 
 ### Device QA
 
@@ -86,14 +84,14 @@ VISUAL_TARGET, Settings Import stub UX, розмір AAB, фінальні 4 с�
 
 **Kickoff docs ready; runtime blocked.** Offline-first лишається; Firebase optional після OWNER go.
 
-| Статус           | Документ / гілка                                                                                                                                                                                                       |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **OWNER path**   | [`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md) — CT smoke → Phase 5 → privacy → Auth/Cloud approve → Console → SHA/region → gates `[x]` → bridge                                                         |
-| Docs kickoff     | [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md), [`en/FIREBASE_ADR.md`](en/FIREBASE_ADR.md), [`FIREBASE_OWNER_RUNBOOK.md`](FIREBASE_OWNER_RUNBOOK.md), [`FIREBASE_PRIVACY_DELTA.md`](FIREBASE_PRIVACY_DELTA.md) |
-| Runtime 4A/4B/4C | **BLOCKED** до OWNER flip gates (CT `pending`, Phase 5, privacy + explicit approve)                                                                                                                                    |
-| Перша runtime PR | `godot/firebase-android-bridge` — лише після зелених gates                                                                                                                                                             |
+| Статус           | Документ / гілка                                                                                                                                           |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **OWNER path**   | [`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md) — Auth-ready AAB → CT smoke → Cloud Save approve → gates                                      |
+| Docs / Auth B2   | [`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md), [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md), [`FIREBASE_PRIVACY_DELTA.md`](FIREBASE_PRIVACY_DELTA.md) |
+| Auth B2 runtime  | **Shipped** (Sign-In only); CT **NO-GO** до JSON + нового AAB                                                                                              |
+| Cloud Save 4B/4C | **BLOCKED** до CT GO + OWNER flip gates                                                                                                                    |
 
-Не вмикати SDK / `INTERNET=true` / Auth UI, доки sequence не пройдено й gates не `[x]`. CT status зараз: **`pending`** ([`STAGE3_CLOSEOUT.md`](STAGE3_CLOSEOUT.md)). **Наступний OWNER крок: CT smoke.**
+**Наступний OWNER крок:** `google-services.json` → rebuild → Sign-In smoke → CT ([`CLOSED_TESTING_RUNBOOK.md`](CLOSED_TESTING_RUNBOOK.md)).
 
 ## Розділення PR (обов’язково)
 
@@ -102,7 +100,7 @@ VISUAL_TARGET, Settings Import stub UX, розмір AAB, фінальні 4 с�
 | `docs/roadmap-v1.1-sot-ci` | ROADMAP v1.1, SoT CI + audit index, audit narrative, Prettier AUDIT, recon/runbook **без** version bump |
 | `docs/android-device-qa`   | Повний device checklist                                                                                 |
 | `fix/repo-hygiene`         | Junk cleanup only                                                                                       |
-| `godot/release-play-v17`   | **Лише якщо** Console підтвердить, що VC16 використано                                                  |
+| `godot/release-vc-bump`    | Якщо Console max VC ≥ 6 — bump code + rebuild                                                           |
 
 ## Що свідомо не стверджуємо без перевірки
 

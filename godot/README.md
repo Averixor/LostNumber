@@ -55,7 +55,7 @@ npm run godot:android:debug     # build/android/lost-number-debug.apk
 npm run godot:android:release   # build/android/lost-number.aab
 ```
 
-Version: `2.1.6` / versionCode `16` (`export_presets.cfg`). Details: `docs/ANDROID_RELEASE_READINESS.md`, `docs/PLAY_STORE_GODOT.md`. Legacy save: `docs/LEGACY_SAVE_MIGRATION.md` (file import + `LostNumberMigration` Android plugin AAR).
+Version: `2.1.6` / versionCode `6` (`export_presets.cfg`). Package: `com.Averixor.Lost_Number` / `.dev`. Details: `docs/ANDROID_RELEASE_READINESS.md`, `docs/PLAY_STORE_GODOT.md`, `docs/AUTH_SIGNIN_QA.md`. Legacy save: `docs/LEGACY_SAVE_MIGRATION.md` (file import + `LostNumberMigration` Android plugin AAR).
 
 ## Structure
 
