@@ -6,45 +6,53 @@ Auth: Firebase Google Sign-In only. **No Cloud Save.**
 ## P0 runtime note (Godot 4.7)
 
 `AuthManager` must detect Android plugin methods via `has_java_method()`, not `has_method()`.  
-Builds that still use `has_method()` fail with `sign_in_unavailable` before Java/`isAvailable()` runs.  
-Do **not** upload AAB SHA `1463fd4c…` to Closed Testing (same broken bridge).
+Do **not** upload AAB SHA `1463fd4c…` to Closed Testing.
 
-## OWNER prep (required for real OAuth)
+## Current Auth-ready release AAB (2026-08-14)
 
-1. Firebase projects + Android apps for both package IDs (`lost-number-dev` / `lost-number-prod`, Google Auth only, no Analytics)
-2. Register SHA-1/256: debug keystore, upload `43:93…`, Play App signing `37:FB…`
-3. Auth provider: Google only
-4. Place gitignored configs:
-   - `android/firebase/dev/google-services.json`
-   - `android/firebase/prod/google-services.json`
-5. Rebuild plugin AAR if Java changed: `npm run godot:android:firebase-aar`
-6. Rebuild debug + release after JSON lands — **AAB SHA will change**; only the new SHA is CT-eligible
+| Field   | Value                                                              |
+| ------- | ------------------------------------------------------------------ |
+| Path    | `build/android/lost-number.aab`                                    |
+| SHA-256 | `c85ee34032a0b0abfab78dbe4b50d2dd35e05fb14aa8d8a020c96104ee507d52` |
+| Config  | `android/firebase/prod/google-services.json` (oauth_client type 3) |
+
+Universal sideload APK (upload-signed): `build/android/lost-number-universal.apk` (local only).
+
+## OWNER prep
+
+### Release app (done if Console matches)
+
+- Package `com.Averixor.Lost_Number`
+- SHA-1: upload `43:93…`, Play App Signing `37:FB…`
+- Web OAuth client present in `google-services.json`
+- Auth → Google enabled
+
+### Debug app (still needed for `.dev` APK)
+
+1. Firebase → Add Android app: `com.Averixor.Lost_Number.dev`
+2. Register debug SHA-1: `3F:54:CA:7D:63:33:D0:B6:E7:5C:7A:97:52:02:0B:6E:F9:46:CD:35`
+3. Download JSON → `android/firebase/dev/google-services.json`
+4. `npm run godot:android:debug`
 
 ## Build / install
 
 ```bash
-npm run godot:android:firebase-aar   # if needed
-npm run godot:android:debug
-adb install -r build/android/lost-number-debug.apk
+npm run godot:android:release
+# optional local install (phone must allow USB install):
+# adb install -r build/android/lost-number-universal.apk
 ```
 
-Export copies `android/firebase/dev/google-services.json` into `godot/android/build/` when present.
+If `INSTALL_FAILED_USER_RESTRICTED`: phone Settings → Developer options → **Install via USB** / confirm dialog.
 
 ## Checklist
 
-- [ ] Cold start → Main menu **without** account (no blocking auth popup)
-- [ ] Settings → Account shows **Guest**
-- [ ] Desktop/editor: Sign-In button disabled / «Android only»
-- [ ] On device **without** `google-services.json`: toast `firebase_not_configured` (honest failure) — **not** `sign_in_unavailable`
-- [ ] On device **with** config: Sign in with Google → picker → Settings shows display name/email
-- [ ] Sign out → Guest again; local save still present
-- [ ] Play a level offline while signed out and while signed in — progress still local only
-- [ ] `privacy.html` mentions optional Google Sign-In + `INTERNET`
-- [ ] Release presets: `permissions/internet=true`, `plugins/LostNumberFirebase=true`, `target_sdk=36`
-- [ ] `npm run release:check` fails if AAB has plugin marker but no `google_app_id` / `default_web_client_id`
+- [x] Cold start without blocking auth popup (prior QA)
+- [x] Without JSON: `firebase_not_configured` (prior QA)
+- [x] AAB has Firebase resources (`release:check` PASS)
+- [ ] Positive Sign-In with Google on device (release or debug)
+- [ ] Sign out → Guest; local save remains
+- [ ] Offline play while signed in/out
 
-## Out of scope (do not test as shipped)
+## Out of scope
 
-- Cloud sync / conflict dialog
-- In-game admin roles
-- Analytics / Crashlytics
+- Cloud sync / Analytics / Crashlytics / in-game admin

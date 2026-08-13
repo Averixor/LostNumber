@@ -1,12 +1,12 @@
 # Closed testing smoke — OWNER checklist
 
-| Поле                | Значення                                                                                       |
-| ------------------- | ---------------------------------------------------------------------------------------------- |
-| Статус CT           | **BLOCKED / NO-GO** — потрібні Firebase JSON + новий Auth-ready AAB + Sign-In smoke            |
-| Docs / source       | `main` (Auth B2 + upload-key verify gate)                                                      |
-| Install джерело     | **Google Play** після opt-in (не sideload debug APK як CT smoke)                               |
-| Package (release)   | **`com.Averixor.Lost_Number`**                                                                 |
-| Firebase / INTERNET | Auth bridge у source є; **реальний Sign-In** — лише після `google-services.json` + rebuild AAB |
+| Поле                | Значення                                                                |
+| ------------------- | ----------------------------------------------------------------------- |
+| Статус CT           | **Auth-ready AAB готовий** — потрібен OWNER Sign-In smoke + Play opt-in |
+| Docs / source       | `main` + PR Firebase BoM wiring                                         |
+| Install джерело     | **Google Play** після opt-in (sideload лише для локального Auth QA)     |
+| Package (release)   | **`com.Averixor.Lost_Number`**                                          |
+| Firebase / INTERNET | prod JSON + oauth_client OK; AAB містить Firebase resources             |
 
 Повний runbook: [`CLOSED_TESTING_RUNBOOK.md`](CLOSED_TESTING_RUNBOOK.md). Auth QA: [`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md). Recon: [`PLAY_CONSOLE_RECON.md`](PLAY_CONSOLE_RECON.md).
 
@@ -21,8 +21,8 @@
 
 ```text
 build/android/lost-number.aab
-SHA-256: (pending rebuild after google-services.json)
-source:  (pending)
+SHA-256: c85ee34032a0b0abfab78dbe4b50d2dd35e05fb14aa8d8a020c96104ee507d52
+source:  (local Auth-ready rebuild 2026-08-14; confirm HEAD after PR #84 merge)
 version: 2.1.6 / VC 6
 package: com.Averixor.Lost_Number
 cert SHA-1: 43:93:42:63:7F:1D:1B:26:F7:9A:DF:24:D8:34:31:58:FA:C2:AA:C3

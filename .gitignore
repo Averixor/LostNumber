@@ -7,6 +7,7 @@ tools/bundletool*.jar
 *.apks
 dummy.c
 libdummy.so
+.tmp/
 
 # Signing (never commit)
 android/keystore/

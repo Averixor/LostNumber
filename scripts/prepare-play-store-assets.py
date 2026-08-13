@@ -222,13 +222,16 @@ def main() -> None:
     save_feature_graphic()
     phone_dir = STORE / "screenshots" / "phone"
     existing_screenshots = sorted(phone_dir.glob("*.png"))
-    if args.overwrite_promo_screenshots or len(existing_screenshots) < 2:
+    if args.overwrite_promo_screenshots:
         save_screenshots()
-    else:
+    elif existing_screenshots:
         print(
             "Preserved store/screenshots/phone/ "
-            "(use --overwrite-promo-screenshots to replace them with promo drafts)"
+            f"({len(existing_screenshots)} png; use --overwrite-promo-screenshots to replace)"
         )
+    else:
+        # No captures yet — generate promo drafts once.
+        save_screenshots()
     print("Play Store graphics prepared in store/")
 
 

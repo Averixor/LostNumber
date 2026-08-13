@@ -191,11 +191,16 @@ function verifyFirebaseGradleWiring() {
   );
   const gdapPath = join(root, 'godot/android/plugins/LostNumberFirebase.gdap');
   const exportHookPath = join(root, 'scripts/lib/firebase-android.sh');
-  for (const path of [pluginGradlePath, gdapPath, exportHookPath]) {
+  const wiringPaths = [pluginGradlePath, gdapPath, exportHookPath];
+  let missing = false;
+  for (const path of wiringPaths) {
     if (!existsSync(path)) {
       fail(`Firebase Gradle wiring file missing: ${path}`);
-      return;
+      missing = true;
     }
+  }
+  if (missing) {
+    return;
   }
 
   const pluginGradle = readFileSync(pluginGradlePath, 'utf8');
@@ -209,11 +214,13 @@ function verifyFirebaseGradleWiring() {
   if (!/implementation\s+['"]com\.google\.firebase:firebase-auth['"]/.test(pluginGradle)) {
     fail('Firebase plugin build.gradle must declare versionless firebase-auth via the BoM');
   }
-  if (!gdap.includes(`platform(${bomCoordinate})`)) {
-    fail(`LostNumberFirebase.gdap must expose Firebase BoM ${FIREBASE_BOM_VERSION}`);
+  // Godot .gdap remote[] entries are plain Maven coordinates — Gradle platform() is invalid here.
+  const gdapRemote = (gdap.match(/^remote=\[.*\]$/m) || [''])[0];
+  if (/platform\s*\(/.test(gdapRemote)) {
+    fail('LostNumberFirebase.gdap must not use Gradle platform(...) in remote dependencies');
   }
-  if (!gdap.includes('"com.google.firebase:firebase-auth"')) {
-    fail('LostNumberFirebase.gdap must expose versionless firebase-auth via the BoM');
+  if (!/"com\.google\.firebase:firebase-auth:\d+\.\d+\.\d+"/.test(gdapRemote)) {
+    fail('LostNumberFirebase.gdap must pin an explicit firebase-auth:x.y.z Maven coordinate');
   }
   if (
     !exportHook.includes(
@@ -227,7 +234,7 @@ function verifyFirebaseGradleWiring() {
   }
 
   ok(
-    `Firebase Gradle wiring: BoM ${FIREBASE_BOM_VERSION}, Auth only, ` +
+    `Firebase Gradle wiring: BoM ${FIREBASE_BOM_VERSION} (AAR), pinned Auth in .gdap, ` +
       `google-services ${GOOGLE_SERVICES_PLUGIN_VERSION}`,
   );
 }
