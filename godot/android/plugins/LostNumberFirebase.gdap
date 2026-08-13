@@ -6,7 +6,9 @@ binary="LostNumberFirebasePlugin/LostNumberFirebasePlugin-release.aar"
 
 [dependencies]
 
-remote=["com.google.firebase:firebase-auth:23.1.0", "androidx.credentials:credentials:1.3.0", "androidx.credentials:credentials-play-services-auth:1.3.0", "com.google.android.libraries.identity.googleid:googleid:1.1.1"]
+# Godot passes each remote entry as a Maven coordinate string — do NOT use Gradle platform(...).
+# BoM is applied in LostNumberFirebasePlugin/build.gradle for AAR compilation only.
+remote=["com.google.firebase:firebase-auth:24.2.0", "androidx.credentials:credentials:1.3.0", "androidx.credentials:credentials-play-services-auth:1.3.0", "com.google.android.libraries.identity.googleid:googleid:1.1.1"]
 
 [android]
 

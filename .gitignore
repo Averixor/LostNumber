@@ -7,6 +7,7 @@ tools/bundletool*.jar
 *.apks
 dummy.c
 libdummy.so
+.tmp/
 
 # Signing (never commit)
 android/keystore/
@@ -17,6 +18,11 @@ android/keystore.properties
 # Firebase google-services (real secrets — never commit)
 android/firebase/**/google-services.json
 !android/firebase/google-services.example.json
+/google-services.json
+/google-services*.json
+!android/firebase/google-services.example.json
+/client_secret*.json
+client_secret*.json
 
 # Backup / transient artifacts
 *.bak
