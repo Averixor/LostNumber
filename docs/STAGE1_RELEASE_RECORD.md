@@ -1,32 +1,32 @@
-# Stage 1 — Release record (Closed testing candidate)
+# Stage 1 — Release record (новий Play listing + Auth B2)
 
-Дата запису: **2026-08-12**  
-Статус: **готово до OWNER upload** — лише `lost-number.aab` з upload key SHA1 `43:93:42:63…` (не debug APK)
+Дата запису: **2026-08-13**  
+Статус: **Auth-capable source; CT NO-GO** до `google-services.json` + нового AAB + Sign-In smoke  
+Listing: **`com.Averixor.Lost_Number`**
 
 ## Git / версія
 
-| Поле                      | Значення                                   |
-| ------------------------- | ------------------------------------------ |
-| AAB source branch         | `main`                                     |
-| AAB source commit SHA     | `8f1a7c2376bef44dfcb875339138ea5afd4f3729` |
-| versionName               | **2.1.6**                                  |
-| versionCode               | **16**                                     |
-| Package (release)         | `com.averixor.lostnumber`                  |
-| Package (device QA debug) | `com.averixor.lostnumber.dev`              |
+| Поле                      | Значення                                      |
+| ------------------------- | --------------------------------------------- |
+| Package (release)         | **`com.Averixor.Lost_Number`**                |
+| Package (debug)           | **`com.Averixor.Lost_Number.dev`**            |
+| versionName               | **2.1.6**                                     |
+| versionCode               | **6**                                         |
+| Upload keystore           | `android/keystore/lostnumber-upload-2026.jks` |
+| Auth                      | Google Sign-In via `LostNumberFirebase`       |
+| Cloud Save                | **ні** (наступний PR)                         |
+| targetSdk                 | **36**                                        |
 
-**Version gate:** KEEP **16 / 2.1.6** до факту Console. Якщо VC16 уже uploaded → STOP і bump `17 / 2.1.7`. Див. [`PLAY_CONSOLE_RECON.md`](PLAY_CONSOLE_RECON.md).
+**Version gate:** VC **1–5** могли вже бути в Console → поточний код **6**. Далі: VC ≥ попереднього + 1.
 
-**Signing note (2026-08-12):** Play відхилив APK з SHA1 `00:D9:4E:BB…` (чужий keystore). Правильний upload key — нижче. Вантажити **тільки AAB** з цього record.
+**Signing note:** Play відхиляє APK/AAB з чужим cert (`00:D9:4E:BB…`). Upload key — лише `43:93:42:63…`. Вантажити **тільки AAB**.
 
-## AAB артефакт
+## Signing
 
-| Поле       | Значення                                                           |
-| ---------- | ------------------------------------------------------------------ |
-| Path       | `build/android/lost-number.aab`                                    |
-| Size       | **141355037** bytes (~135 MiB)                                     |
-| SHA-256    | `5c0530b0028d105be01332698092080044e92dd95934224c283b1789d5481104` |
-| Built      | 2026-08-12 18:19:35 +0300 (`npm run godot:verify:aab`)             |
-| Cert SHA-1 | `43:93:42:63:7F:1D:1B:26:F7:9A:DF:24:D8:34:31:58:FA:C2:AA:C3`      |
+| Роль                            | SHA-1                                                         |
+| ------------------------------- | ------------------------------------------------------------- |
+| App signing (Google deployment) | `37:FB:98:8C:A6:84:03:03:88:F0:5B:35:90:59:CD:87:6B:8C:C3:5E` |
+| Upload (локальний JKS / AAB)    | `43:93:42:63:7F:1D:1B:26:F7:9A:DF:24:D8:34:31:58:FA:C2:AA:C3` |
 
 ## Upload key fingerprints
 
@@ -35,27 +35,45 @@
 | SHA-1    | `43:93:42:63:7F:1D:1B:26:F7:9A:DF:24:D8:34:31:58:FA:C2:AA:C3`                                     |
 | SHA-256  | `35:B0:4D:F7:D7:CE:62:48:94:F8:83:FF:77:BB:51:69:2F:9B:DB:3A:C5:44:22:AF:6A:EC:87:8A:C3:A4:E8:97` |
 
+## AAB артефакт (поточний локальний — **не** CT)
+
+| Поле        | Значення                                                            |
+| ----------- | ------------------------------------------------------------------- |
+| Path        | `build/android/lost-number.aab`                                     |
+| SHA-256     | `1463fd4ccc164c569bbc3fde220bdb57ffe8e50e50d29397a81e1cafc615c111`  |
+| Package     | `com.Averixor.Lost_Number`                                          |
+| versionCode | **6**                                                               |
+| Built       | 2026-08-13 (Auth B2 bridge; **без** prod `google-services.json`)    |
+| CT status   | **REJECT** — немає Firebase resources; потрібен rebuild після JSON  |
+
 ## Verifier
 
-| Gate                              | Результат                                                                   |
-| --------------------------------- | --------------------------------------------------------------------------- |
-| `npm run godot:verify:aab`        | **OK** (tests + release:check + export + unzip + **upload-key SHA-1 gate**) |
-| Upload-key SHA-1 gate             | **OK** match `43:93:42:63…`                                                 |
-| `export_presets.cfg` after export | clean (no keystore passwords)                                               |
-| bundletool / aapt2 dump           | пропущено локально (`bundletool.jar` відсутній → warning)                   |
+| Gate                       | Очікування                                                                 |
+| -------------------------- | -------------------------------------------------------------------------- |
+| `npm run release:check`    | FAIL без Firebase resources у AAB (навмисно)                               |
+| Upload-key SHA-1 gate      | AAB cert має бути `43:93:42:63…` (`godot:verify:aab`)                      |
+| Firebase resource strings  | `google_app_id` + `default_web_client_id` + project id обовʼязкові для CT |
+
+## Owner upload notes
+
+1. Покласти gitignored `android/firebase/dev|prod/google-services.json`.
+2. Перезібрати debug + release → **новий** AAB SHA (не `1463fd4c…`).
+3. Device QA: [`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md) — positive Sign-In smoke.
+4. Privacy / Data safety: optional Google Sign-In (`privacy.html`).
+5. Старий `com.averixor.lostnumber` на девайсі — **інший** listing; не оновить новий.
 
 ## Historical (superseded — не upload)
 
-| Candidate               | SHA-256 / note                           |
-| ----------------------- | ---------------------------------------- |
-| Rejected wrong-cert APK | cert SHA1 `00:D9:4E:BB…` — **не** upload |
-| RC 2026-08-10           | AAB `727a4e74…` @ `67019bc…`             |
-| Stage1 2026-08-04       | AAB `398b83f3…` @ `2ef0fcdf…`            |
-| Local drift Aug 10      | AAB `d240b736…`                          |
+| Candidate                 | SHA-256 / note                                      |
+| ------------------------- | --------------------------------------------------- |
+| Auth B2 без JSON          | AAB `1463fd4c…` — **не** CT                         |
+| Legacy listing VC16       | AAB `5c0530b0…` @ `8f1a7c2…` / `com.averixor.lostnumber` |
+| Rejected wrong-cert APK   | cert SHA1 `00:D9:4E:BB…` — **не** upload            |
+| RC 2026-08-10             | AAB `727a4e74…` @ `67019bc…`                        |
+| Stage1 2026-08-04         | AAB `398b83f3…` @ `2ef0fcdf…`                       |
 
-## Owner upload
+## Owner upload (після нового AAB)
 
 1. Play Console → App integrity → **Upload key** SHA == таблиця вище
-2. Max versionCode: якщо ≥16 → bump VC17 перед upload
-3. Upload **тільки** `build/android/lost-number.aab` (не `lost-number-debug.apk`)
-4. Smoke: [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md) / [`CLOSED_TESTING_RUNBOOK.md`](CLOSED_TESTING_RUNBOOK.md)
+2. Upload **тільки** новий `build/android/lost-number.aab`
+3. Smoke: [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md) / [`CLOSED_TESTING_RUNBOOK.md`](CLOSED_TESTING_RUNBOOK.md)

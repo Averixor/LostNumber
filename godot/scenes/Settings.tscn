@@ -88,6 +88,21 @@ size_flags_horizontal = 3
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="AccountLabel" type="Label" parent="Scroll/VBox"]
+layout_mode = 2
+text = "Акаунт"
+
+[node name="AccountStatus" type="Label" parent="Scroll/VBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+autowrap_mode = 2
+text = "Гість"
+
+[node name="AccountButton" type="Button" parent="Scroll/VBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Увійти через Google"
+
 [node name="LeaderboardCheck" type="CheckButton" parent="Scroll/VBox"]
 layout_mode = 2
 text = "Таблиця лідерів"

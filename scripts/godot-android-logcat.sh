@@ -2,7 +2,7 @@
 # Stream Lost Number (Godot) logs from connected Android device.
 set -euo pipefail
 
-PKG_DEV="com.averixor.lostnumber.dev"
+PKG_DEV="com.Averixor.Lost_Number.dev"
 
 adb start-server >/dev/null 2>&1 || true
 

@@ -39,7 +39,7 @@ Export templates are downloaded automatically on first build if missing.
 
 | Field       | Value                                                    |
 | ----------- | -------------------------------------------------------- |
-| Package     | `com.averixor.lostnumber`                                |
+| Package     | `com.Averixor.Lost_Number`                               |
 | Version     | `2.1.6` (versionCode 16)                                 |
 | AAB         | `build/android/lost-number.aab`                          |
 | Privacy URL | `https://averixor.github.io/LostNumber/privacy.html`     |

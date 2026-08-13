@@ -144,6 +144,9 @@ fi
 
 if [[ -f "$GODOT_DIR/android/build/build.gradle" ]]; then
   echo "$ANDROID_BUILD_VERSION" > "$GODOT_DIR/android/.build_version"
+  # shellcheck source=scripts/lib/firebase-android.sh
+  source "$ROOT/scripts/lib/firebase-android.sh"
+  install_google_services_for_export "$ROOT" "$GODOT_DIR" "$MODE"
 fi
 
 if [[ ! -x "$HOME/Android/jbr/bin/java" && -x /opt/android-studio/jbr/bin/java ]]; then

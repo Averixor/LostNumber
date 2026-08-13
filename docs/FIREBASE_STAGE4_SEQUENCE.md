@@ -55,7 +55,7 @@ Stage 4 OWNER — порядок:
 | AAB source commit  | `2ef0fcdf2aaf5083cf79c88a41b989720e137b47`                         |
 | AAB SHA-256        | `398b83f33d79b878e71ca1262d6cfac2e0a981045d77299a5c0824c1dba848c4` |
 | versionName / Code | `2.1.6` / `16`                                                     |
-| Package            | `com.averixor.lostnumber`                                          |
+| Package            | `com.Averixor.Lost_Number`                                         |
 | Локальний файл     | `build/android/lost-number.aab` (SHA збігається з record)          |
 
 **Дії:** виконати всі 10 кроків у [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md). CT `pending` → `completed` **лише при GO**.
@@ -70,7 +70,7 @@ Stage 4 OWNER — порядок:
 
 **Дії:**
 
-1. Довга сесія на CT-збірці або debug APK (`com.averixor.lostnumber.dev`): сітка синхронна, немає помітного jank / UI регресій.
+1. Довга сесія на CT-збірці або debug APK (`com.Averixor.Lost_Number.dev`): сітка синхронна, немає помітного jank / UI регресій.
 2. Записати **дату + пристрій + build** (CT AAB або debug) у нотатку біля Phase 5 пункту в [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md) або short note в `PHASES.md`.
 3. Немає відкритих P0/P1 з CT feedback перед flip.
 
@@ -107,7 +107,7 @@ Stage 4 OWNER — порядок:
 **Документ:** [`FIREBASE_OWNER_RUNBOOK.md`](FIREBASE_OWNER_RUNBOOK.md).
 
 1. Створити проєкти `lost-number-dev` і `lost-number-prod`.
-2. Android apps: `com.averixor.lostnumber` + `com.averixor.lostnumber.dev`.
+2. Android apps: `com.Averixor.Lost_Number` + `com.Averixor.Lost_Number.dev`.
 3. Auth: **лише Google**.
 4. Firestore **після** підтвердження region (крок 6).
 5. Budget alerts; обмежений Console access.

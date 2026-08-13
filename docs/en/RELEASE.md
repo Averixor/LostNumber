@@ -13,20 +13,20 @@ Primary release path: **Godot 4 Android AAB** → Google Play. Web/JS/Capacitor 
 
 | Field       | Release                         | Debug                                 |
 | ----------- | ------------------------------- | ------------------------------------- |
-| Package     | `com.averixor.lostnumber`       | `com.averixor.lostnumber.dev`         |
-| versionName | `2.1.6`                         | `2.1.6-dev`                           |
-| versionCode | `16`                            | `16`                                  |
+| Package     | `com.Averixor.Lost_Number`      | `com.Averixor.Lost_Number.dev`        |
+| versionName | `2.1.6`                         | `dev`                                 |
+| versionCode | `6`                             | `6`                                   |
 | Format      | AAB                             | APK                                   |
 | Output      | `build/android/lost-number.aab` | `build/android/lost-number-debug.apk` |
 | minSdk      | 24                              | 24                                    |
-| targetSdk   | 35                              | 35                                    |
+| targetSdk   | 36                              | 36                                    |
 | ABI         | arm64-v8a, x86_64               | arm64-v8a, x86_64                     |
 
-**Next Play upload:** versionCode **17** (must exceed any previously uploaded code).
+**Next Play upload:** use a versionCode greater than the highest code already present in Play Console.
 
-### Versioning rule (code ≥ 15)
+### Versioning rule
 
-`versionName = 2.1.(versionCode - 10)` — e.g. code `16` → `2.1.6`. Debug builds append `-dev`.
+Release uses the product version (`2.1.6`); debug uses the fixed `versionName=dev`. The independent integer `versionCode` must increase for every Play upload.
 
 ABI note: `armeabi-v7a` intentionally excluded (~8k 32-bit-only devices in catalog).
 
@@ -81,7 +81,7 @@ npm run godot:android:release   # Play AAB
 
 ```bash
 npm run godot:android:debug
-adb uninstall com.averixor.lostnumber.dev 2>/dev/null || true
+adb uninstall com.Averixor.Lost_Number.dev 2>/dev/null || true
 adb install -r build/android/lost-number-debug.apk
 ```
 

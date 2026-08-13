@@ -1,6 +1,6 @@
 # Google Play — закрите тестування та публікація
 
-Підготовка для **Lost Number** (`com.averixor.lostnumber`). Повноцінна публікація в Production можлива після **завершення перевірки особи** в Google Play Console.
+Підготовка для **Lost Number** (`com.Averixor.Lost_Number`). Повноцінна публікація в Production можлива після **завершення перевірки особи** в Google Play Console.
 
 ## Швидкий статус
 

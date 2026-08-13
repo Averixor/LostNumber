@@ -189,11 +189,11 @@ Game scenes reference **`assets/ui/` only**, never `assets/store/*`.
 
 ## Versioning
 
-| Field         | Current     | Rule                                                |
-| ------------- | ----------- | --------------------------------------------------- |
-| `versionName` | `2.1.6`     | For code ≥ 15: `2.1.(versionCode - 10)`             |
-| `versionCode` | `16`        | Increment by 1 on every Play upload                 |
-| Debug suffix  | `2.1.6-dev` | Debug preset package: `com.averixor.lostnumber.dev` |
+| Field               | Current | Rule                                                 |
+| ------------------- | ------- | ---------------------------------------------------- |
+| Release versionName | `2.1.6` | Match the product version in `package.json`          |
+| `versionCode`       | `6`     | Must exceed the highest code in Play Console         |
+| Debug versionName   | `dev`   | Debug preset package: `com.Averixor.Lost_Number.dev` |
 
 ## Versioning note
 

@@ -26,7 +26,7 @@ npm run godot:android:install
 
 ### Чисте встановлення та перший запуск
 
-- [x] Clean/reinstall debug APK (`com.averixor.lostnumber.dev`) — Success
+- [x] Clean/reinstall debug APK (`com.Averixor.Lost_Number.dev`) — Success
 - [x] Boot splash → Main Menu без зависання / ANR (меню uk, v2.1.6, CTA + dock)
 
 ### Навігація

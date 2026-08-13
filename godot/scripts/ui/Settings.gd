@@ -18,6 +18,9 @@ const TILE_FONT_SCALES := [0.85, 1.0, 1.1, 1.2]
 @onready var bg_effects_check: CheckButton = get_node_or_null("Scroll/VBox/BgEffectsCheck") as CheckButton
 @onready var tile_font_size_option: OptionButton = get_node_or_null("Scroll/VBox/TileFontSizeOption") as OptionButton
 @onready var language_option: OptionButton = get_node_or_null("Scroll/VBox/LanguageOption") as OptionButton
+@onready var account_label: Label = get_node_or_null("Scroll/VBox/AccountLabel") as Label
+@onready var account_status: Label = get_node_or_null("Scroll/VBox/AccountStatus") as Label
+@onready var account_button: Button = get_node_or_null("Scroll/VBox/AccountButton") as Button
 @onready var leaderboard_check: CheckButton = get_node_or_null("Scroll/VBox/LeaderboardCheck") as CheckButton
 @onready var theme_button: Button = get_node_or_null("Scroll/VBox/ThemeButton") as Button
 @onready var skin_label: Label = get_node_or_null("Scroll/VBox/SkinLabel") as Label
@@ -42,6 +45,8 @@ func _ready() -> void:
 	_load_settings()
 	_style_controls()
 	_connect_signals()
+	_bind_auth()
+	_refresh_account_ui()
 	if theme_button != null:
 		theme_button.visible = false
 	call_deferred("_adapt_layout")
@@ -54,6 +59,88 @@ func _notification(what: int) -> void:
 
 func _autoload(name: String) -> Node:
 	return get_node_or_null("/root/" + name)
+
+
+func _auth() -> Node:
+	return _autoload("AuthManager")
+
+
+func _bind_auth() -> void:
+	var auth := _auth()
+	if auth != null and auth.has_signal("auth_state_changed"):
+		if not auth.auth_state_changed.is_connected(_on_auth_state_changed):
+			auth.auth_state_changed.connect(_on_auth_state_changed)
+	if auth != null and auth.has_signal("auth_error"):
+		if not auth.auth_error.is_connected(_on_auth_error):
+			auth.auth_error.connect(_on_auth_error)
+
+
+func _on_auth_state_changed(_state: String, _user: Dictionary) -> void:
+	_refresh_account_ui()
+
+
+func _on_auth_error(message: String) -> void:
+	_refresh_account_ui()
+	var key := "auth_error_%s" % message
+	var text := _i18n(key)
+	if text == key:
+		text = _i18n("auth_error_generic", [message])
+	LnUiLib.show_toast(self, text)
+
+
+func _refresh_account_ui() -> void:
+	var auth := _auth()
+	if account_label != null:
+		account_label.text = _i18n("settings_account_label")
+	if account_status == null or account_button == null:
+		return
+	if auth == null:
+		account_status.text = _i18n("auth_status_guest")
+		account_button.text = _i18n("btn_login_google")
+		account_button.disabled = true
+		return
+	var state := str(auth.get("state"))
+	if state == "signing_in":
+		account_status.text = _i18n("auth_status_signing_in")
+		account_button.text = _i18n("btn_login_google")
+		account_button.disabled = true
+		return
+	if auth.has_method("is_signed_in") and bool(auth.call("is_signed_in")):
+		var label := ""
+		if auth.has_method("get_display_label"):
+			label = str(auth.call("get_display_label"))
+		account_status.text = _i18n("auth_status_signed_in", [label if not label.is_empty() else _i18n("auth_status_user")])
+		account_button.text = _i18n("btn_logout")
+		account_button.disabled = false
+		return
+	if state == "error":
+		var err := str(auth.get("last_error"))
+		var err_key := "auth_error_%s" % err
+		var err_text := _i18n(err_key)
+		if err_text == err_key:
+			err_text = _i18n("auth_status_guest")
+		account_status.text = err_text
+	else:
+		account_status.text = _i18n("auth_status_guest")
+	account_button.text = _i18n("btn_login_google")
+	var available := true
+	if auth.has_method("is_android") and not bool(auth.call("is_android")):
+		available = false
+		account_status.text = _i18n("auth_android_only")
+	account_button.disabled = not available
+
+
+func _on_account_pressed() -> void:
+	var auth := _auth()
+	if auth == null:
+		return
+	if auth.has_method("is_signed_in") and bool(auth.call("is_signed_in")):
+		if auth.has_method("sign_out"):
+			auth.call("sign_out")
+		return
+	if auth.has_method("sign_in_google"):
+		auth.call("sign_in_google")
+
 
 
 func _i18n(key: String, args: Array = []) -> String:
@@ -125,6 +212,7 @@ func _setup_labels() -> void:
 		import_status.text = ""
 	if exit_button != null:
 		exit_button.text = _i18n("btn_exit")
+	_refresh_account_ui()
 
 	_ensure_option_label(sfx_volume_option, "settings_sfx_volume_label")
 	_ensure_option_label(music_volume_option, "settings_music_volume_label")
@@ -242,7 +330,7 @@ func _style_controls() -> void:
 	if title_label != null:
 		LnUiLib.apply_title(title_label, 24)
 
-	for btn in [back_button, theme_button, skin_pick_button, background_pick_button, gallery_pick_button, import_button, exit_button]:
+	for btn in [back_button, theme_button, skin_pick_button, background_pick_button, gallery_pick_button, import_button, exit_button, account_button]:
 		if btn != null:
 			LnUiLib.apply_button(btn, btn.disabled)
 
@@ -276,8 +364,8 @@ func _apply_unified_font() -> void:
 	var controls: Array = [
 		sound_check, music_check, bg_effects_check, leaderboard_check, background_auto_check,
 		sfx_volume_option, music_volume_option, music_track_option, tile_font_size_option, language_option,
-		theme_button, skin_pick_button, background_pick_button, gallery_pick_button, import_button, exit_button, back_button,
-		skin_label, background_label, gallery_status, import_status,
+		theme_button, skin_pick_button, background_pick_button, gallery_pick_button, import_button, exit_button, back_button, account_button,
+		skin_label, background_label, gallery_status, import_status, account_label, account_status,
 	]
 	if vbox != null:
 		for child in vbox.get_children():
@@ -310,6 +398,8 @@ func _connect_signals() -> void:
 		tile_font_size_option.item_selected.connect(_on_tile_font_size_selected)
 	if language_option != null:
 		language_option.item_selected.connect(_on_language_selected)
+	if account_button != null:
+		account_button.pressed.connect(_on_account_pressed)
 	if leaderboard_check != null:
 		leaderboard_check.toggled.connect(_on_leaderboard_toggled)
 	if theme_button != null:

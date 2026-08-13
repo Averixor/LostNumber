@@ -40,6 +40,7 @@
     "godot:verify:aab": "bash ./scripts/verify-godot-aab.sh",
     "godot:android:debug": "bash ./scripts/godot-android-export.sh debug",
     "godot:android:release": "bash ./scripts/godot-android-export.sh release",
+    "godot:android:firebase-aar": "bash ./godot/android/plugins/LostNumberFirebasePlugin/build-aar.sh",
     "godot:android:install": "bash ./scripts/godot-android-install.sh",
     "godot:android:adb-install": "bash ./scripts/godot-android-adb-install.sh",
     "godot:android:log": "bash ./scripts/godot-android-logcat.sh",

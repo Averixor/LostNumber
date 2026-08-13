@@ -14,10 +14,10 @@
 
 ## Android apps
 
-| Package                       | Призначення       |
-| ----------------------------- | ----------------- |
-| `com.averixor.lostnumber`     | Release / Play    |
-| `com.averixor.lostnumber.dev` | Debug / device QA |
+| Package                        | Призначення       |
+| ------------------------------ | ----------------- |
+| `com.Averixor.Lost_Number`     | Release / Play    |
+| `com.Averixor.Lost_Number.dev` | Debug / device QA |
 
 Додати **обидва** пакети в кожен потрібний Firebase project (або чітко розділити: debug → dev project, release → prod).
 

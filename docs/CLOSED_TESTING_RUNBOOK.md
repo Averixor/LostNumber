@@ -6,7 +6,7 @@
 
 | Поле                      | Значення                                                           |
 | ------------------------- | ------------------------------------------------------------------ |
-| Package                   | `com.averixor.lostnumber`                                          |
+| Package                   | `com.Averixor.Lost_Number`                                         |
 | versionName / versionCode | **2.1.6 / 16** (bump лише якщо Console покаже VC16 already used)   |
 | AAB                       | `build/android/lost-number.aab` з SHA `2ef0fcd…` (див. record)     |
 | AAB SHA-256               | `398b83f33d79b878e71ca1262d6cfac2e0a981045d77299a5c0824c1dba848c4` |

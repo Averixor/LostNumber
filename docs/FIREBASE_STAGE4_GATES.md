@@ -1,11 +1,12 @@
 # Stage 4 Firebase — hard gates (OWNER)
 
-| Поле             | Значення                                                    |
-| ---------------- | ----------------------------------------------------------- |
-| Статус runtime   | **BLOCKED** — не починати 4A / 4B / 4C код                  |
-| Kickoff docs     | Готово (цей файл + ADR / OWNER runbook / privacy delta)     |
-| Offline-first    | Залишається; Firebase **optional** після go                 |
-| `INTERNET` зараз | `false` в обох Android presets (`godot/export_presets.cfg`) |
+| Поле             | Значення                                                                                 |
+| ---------------- | ---------------------------------------------------------------------------------------- |
+| Статус runtime   | **Auth B2 (Sign-In only) у коді**; Cloud Save / 4B/4C **BLOCKED** до OWNER CT gates      |
+| Kickoff docs     | Готово (цей файл + ADR / OWNER runbook / privacy delta)                                  |
+| Offline-first    | Залишається; Google Sign-In optional; гра без акаунта                                    |
+| `INTERNET` зараз | `true` (Auth-capable) у обох Android presets (`godot/export_presets.cfg`)                |
+| Package          | `com.Averixor.Lost_Number` / `.dev` (новий listing; не старий `com.averixor.lostnumber`) |
 
 > **Правило:** Stage 3 hygiene / repo closeout **не** замінює Closed testing.  
 > Агент **не** відмічає OWNER-чекбокси з репо. Лише OWNER ставить `[x]` після факту.  
@@ -18,8 +19,8 @@
 | CT status                 | **`pending`** (Play opt-in / device smoke **не** виконано з репо)         | `docs/STAGE3_CLOSEOUT.md`  |
 | Release AAB source commit | `2ef0fcdf2aaf5083cf79c88a41b989720e137b47`                                | STAGE1 / STAGE3            |
 | Release AAB SHA-256       | `398b83f33d79b878e71ca1262d6cfac2e0a981045d77299a5c0824c1dba848c4`        | STAGE1 / STAGE3            |
-| versionName / versionCode | `2.1.6` / `16`                                                            | STAGE1                     |
-| Package (release / debug) | `com.averixor.lostnumber` / `com.averixor.lostnumber.dev`                 | SoT / STAGE1               |
+| versionName / versionCode | `2.1.6` / `6` (Auth-capable candidate; Confirm Console max VC)            | STAGE1                     |
+| Package (release / debug) | `com.Averixor.Lost_Number` / `com.Averixor.Lost_Number.dev`               | SoT / STAGE1               |
 | Docs sequence on main     | PR **#72** MERGED — `docs/FIREBASE_STAGE4_SEQUENCE.md` walkable path      | git                        |
 | main HEAD (docs)          | `de01730b295acf7f8dce2850d8d3121fb843aa27` (merge #72; **не** AAB source) | git                        |
 | **Негайний OWNER крок**   | **CT smoke** — [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)           | SEQUENCE §1 / CT checklist |
@@ -45,7 +46,7 @@ Upload key fingerprints (звірити з Console): [`docs/PLAY_CONSOLE_RECON.m
 ### Console / env (перед 4A)
 
 - [ ] Firebase проєкти `lost-number-dev` / `lost-number-prod` створені ([`FIREBASE_OWNER_RUNBOOK.md`](FIREBASE_OWNER_RUNBOOK.md))
-- [ ] Android apps: `com.averixor.lostnumber` + `.dev`; SHA-1/256 для debug / upload / Play App Signing зареєстровані
+- [ ] Android apps: `com.Averixor.Lost_Number` + `.dev`; SHA-1/256 для debug / upload / Play App Signing зареєстровані
 - [ ] Firestore region підтверджена OWNER (рекомендація kickoff: **`europe-west3`**)
 - [ ] Budget alerts налаштовані; secrets layout без commit реальних `google-services.json`
 

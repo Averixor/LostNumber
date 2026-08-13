@@ -2,10 +2,10 @@
 
 **Play Store release — без читів.** Для Android використовуй Godot debug preset.
 
-| Збірка  | Package ID                    | Чити                        |
-| ------- | ----------------------------- | --------------------------- |
-| Release | `com.averixor.lostnumber`     | вимкнено                    |
-| Debug   | `com.averixor.lostnumber.dev` | dev tools у Godot debug APK |
+| Збірка  | Package ID                     | Чити                        |
+| ------- | ------------------------------ | --------------------------- |
+| Release | `com.Averixor.Lost_Number`     | вимкнено                    |
+| Debug   | `com.Averixor.Lost_Number.dev` | dev tools у Godot debug APK |
 
 ## Godot debug APK
 
