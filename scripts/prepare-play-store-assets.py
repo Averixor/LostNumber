@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Prepare Google Play Console graphics in store/ (icon, feature graphic, phone screenshots)."""
+"""Prepare Google Play Console graphics without overwriting real phone captures."""
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
@@ -204,11 +205,30 @@ def save_screenshots() -> None:
     readme.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--overwrite-promo-screenshots",
+        action="store_true",
+        help="replace phone screenshots with generated promo drafts",
+    )
+    return parser.parse_args()
+
+
 def main() -> None:
+    args = parse_args()
     STORE.mkdir(parents=True, exist_ok=True)
     save_play_icon()
     save_feature_graphic()
-    save_screenshots()
+    phone_dir = STORE / "screenshots" / "phone"
+    existing_screenshots = sorted(phone_dir.glob("*.png"))
+    if args.overwrite_promo_screenshots or len(existing_screenshots) < 2:
+        save_screenshots()
+    else:
+        print(
+            "Preserved store/screenshots/phone/ "
+            "(use --overwrite-promo-screenshots to replace them with promo drafts)"
+        )
     print("Play Store graphics prepared in store/")
 
 

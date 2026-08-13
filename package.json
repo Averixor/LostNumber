@@ -27,6 +27,7 @@
     "privacy:package": "node ./scripts/package-privacy-host.mjs",
     "keystore:info": "node ./scripts/keystore-info.mjs",
     "store:prepare": "python3 ./scripts/prepare-play-store-assets.py && python3 ./scripts/generate-android-icons.py",
+    "store:prepare:promo": "python3 ./scripts/prepare-play-store-assets.py --overwrite-promo-screenshots && python3 ./scripts/generate-android-icons.py",
     "store:verify": "node ./scripts/verify-play-store.mjs",
     "godot:import": "bash ./scripts/run-godot-isolated.sh godot4 --path godot --import --headless",
     "godot:test": "bash ./scripts/run-godot-isolated.sh godot4 --path godot --headless --script res://scripts/tests/run_rules_tests.gd",

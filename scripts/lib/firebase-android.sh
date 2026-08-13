@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-# Copy google-services.json into Godot android/build and enable the Gradle plugin.
+# Copy google-services.json into Godot android/build and enable the Google services Gradle plugin.
+# Godot regenerates android/build/; we patch settings.gradle + build.gradle on each export.
+# Godot consumes the Auth BoM through LostNumberFirebase.gdap and the plugin AAR build.
+# Do not add the Firebase Console sample Analytics dependency; Analytics is intentionally absent.
 # shellcheck shell=bash
 
 _strip_google_services_gradle() {
@@ -75,6 +78,7 @@ install_google_services_for_export() {
 
   local settings="$build_dir/settings.gradle"
   local app_gradle="$build_dir/build.gradle"
+  # Match Firebase Console current plugin id/version; apply false at settings, apply in app module.
   if [[ -f "$settings" ]] && ! grep -q "com.google.gms.google-services" "$settings"; then
     python3 - "$settings" <<'PY'
 from pathlib import Path
@@ -82,17 +86,16 @@ import sys
 path = Path(sys.argv[1])
 text = path.read_text(encoding="utf-8")
 marker = "plugins {"
-# Prefer pluginManagement.plugins block
 pm = text.find("pluginManagement")
 idx = text.find(marker, pm if pm >= 0 else 0)
 if idx < 0:
     raise SystemExit("ERROR: plugins {} missing in settings.gradle")
 brace = text.find("{", idx)
 insert_at = brace + 1
-line = "\n        id 'com.google.gms.google-services' version '4.4.2'\n"
+line = "\n        id 'com.google.gms.google-services' version '4.5.0'\n"
 if "com.google.gms.google-services" not in text:
     path.write_text(text[:insert_at] + line + text[insert_at:], encoding="utf-8")
-    print("Patched android/build/settings.gradle: google-services plugin")
+    print("Patched android/build/settings.gradle: google-services 4.5.0")
 PY
   fi
 

@@ -12,6 +12,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const failures = [];
 const DEBUG_VERSION_NAME = 'dev';
 const ANDROID_TARGET_SDK = '36';
+const FIREBASE_BOM_VERSION = '34.17.0';
+const GOOGLE_SERVICES_PLUGIN_VERSION = '4.5.0';
 
 function fail(msg) {
   failures.push(msg);
@@ -180,6 +182,54 @@ function verifyPrivacyPolicyMatchesAuthBuild() {
     fail('privacy.html must state Firebase Analytics is not enabled');
   }
   ok('privacy policy matches Auth-capable INTERNET build (Sign-In only, no Analytics)');
+}
+
+function verifyFirebaseGradleWiring() {
+  const pluginGradlePath = join(
+    root,
+    'godot/android/plugins/LostNumberFirebasePlugin/build.gradle',
+  );
+  const gdapPath = join(root, 'godot/android/plugins/LostNumberFirebase.gdap');
+  const exportHookPath = join(root, 'scripts/lib/firebase-android.sh');
+  for (const path of [pluginGradlePath, gdapPath, exportHookPath]) {
+    if (!existsSync(path)) {
+      fail(`Firebase Gradle wiring file missing: ${path}`);
+      return;
+    }
+  }
+
+  const pluginGradle = readFileSync(pluginGradlePath, 'utf8');
+  const gdap = readFileSync(gdapPath, 'utf8');
+  const exportHook = readFileSync(exportHookPath, 'utf8');
+  const bomCoordinate = `com.google.firebase:firebase-bom:${FIREBASE_BOM_VERSION}`;
+
+  if (!pluginGradle.includes(`platform('${bomCoordinate}')`)) {
+    fail(`Firebase plugin build.gradle must import BoM ${FIREBASE_BOM_VERSION}`);
+  }
+  if (!/implementation\s+['"]com\.google\.firebase:firebase-auth['"]/.test(pluginGradle)) {
+    fail('Firebase plugin build.gradle must declare versionless firebase-auth via the BoM');
+  }
+  if (!gdap.includes(`platform(${bomCoordinate})`)) {
+    fail(`LostNumberFirebase.gdap must expose Firebase BoM ${FIREBASE_BOM_VERSION}`);
+  }
+  if (!gdap.includes('"com.google.firebase:firebase-auth"')) {
+    fail('LostNumberFirebase.gdap must expose versionless firebase-auth via the BoM');
+  }
+  if (
+    !exportHook.includes(
+      `com.google.gms.google-services' version '${GOOGLE_SERVICES_PLUGIN_VERSION}'`,
+    )
+  ) {
+    fail(`Firebase export hook must install google-services ${GOOGLE_SERVICES_PLUGIN_VERSION}`);
+  }
+  if (/firebase-analytics/.test(`${pluginGradle}\n${gdap}`)) {
+    fail('Firebase Analytics must not be added to the Auth-only build');
+  }
+
+  ok(
+    `Firebase Gradle wiring: BoM ${FIREBASE_BOM_VERSION}, Auth only, ` +
+      `google-services ${GOOGLE_SERVICES_PLUGIN_VERSION}`,
+  );
 }
 
 function resolveAapt2() {
@@ -430,6 +480,7 @@ function verifyAab(aabPath) {
 
 verifyExportPresetsNoSecrets();
 verifyPrivacyPolicyMatchesAuthBuild();
+verifyFirebaseGradleWiring();
 verifyAab(join(root, 'build/android/lost-number.aab'));
 
 if (failures.length) {

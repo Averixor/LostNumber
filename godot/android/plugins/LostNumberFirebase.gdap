@@ -6,7 +6,7 @@ binary="LostNumberFirebasePlugin/LostNumberFirebasePlugin-release.aar"
 
 [dependencies]
 
-remote=["com.google.firebase:firebase-auth:23.1.0", "androidx.credentials:credentials:1.3.0", "androidx.credentials:credentials-play-services-auth:1.3.0", "com.google.android.libraries.identity.googleid:googleid:1.1.1"]
+remote=["platform(com.google.firebase:firebase-bom:34.17.0)", "com.google.firebase:firebase-auth", "androidx.credentials:credentials:1.3.0", "androidx.credentials:credentials-play-services-auth:1.3.0", "com.google.android.libraries.identity.googleid:googleid:1.1.1"]
 
 [android]
 
