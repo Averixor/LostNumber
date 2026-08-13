@@ -2,7 +2,7 @@
 
 | Поле                | Значення                                                                |
 | ------------------- | ----------------------------------------------------------------------- |
-| Статус CT           | **Auth-ready AAB готовий** — потрібен OWNER Sign-In smoke + Play opt-in |
+| Статус CT           | **Auth smoke PASS (sideload)** — далі Play upload AAB + CT opt-in       |
 | Docs / source       | `main` @ `0739a18` (PR #84 merged)                                      |
 | Install джерело     | **Google Play** після opt-in (sideload лише для локального Auth QA)     |
 | Package (release)   | **`com.Averixor.Lost_Number`**                                          |
@@ -36,7 +36,7 @@ cert SHA-1: 43:93:42:63:7F:1D:1B:26:F7:9A:DF:24:D8:34:31:58:FA:C2:AA:C3
 | AAB upload cert SHA-1            | має match `43:93:42:63…` (`godot:verify:aab` / release gate)    |
 | Firebase resources у AAB         | потрібні `google_app_id` + `default_web_client_id` + project id |
 | Console Upload key == локальний? | ☐ OWNER (App integrity → **Upload** key only)                   |
-| Positive Google Sign-In smoke    | ☐ після JSON + rebuild (`AUTH_SIGNIN_QA.md`)                    |
+| Positive Google Sign-In smoke    | **PASS** sideload 2026-08-14 (`AUTH_SIGNIN_QA.md`)              |
 
 Локальні fingerprints (звірити з Console **Upload key**):
 
@@ -84,15 +84,15 @@ SMOKE:
 
 | Поле           | Значення                                       |
 | -------------- | ---------------------------------------------- |
-| Дата           | \_\_\_\_-\_\_-\_\_                             |
-| Пристрій       | \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |
-| AAB SHA-256    | \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |
-| AAB source SHA | \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |
-| Upload SHA OK  | ☐ так / ☐ ні                                   |
-| Auth smoke OK  | ☐ так / ☐ ні                                   |
-| Вердикт        | ☐ **GO** / ☐ **NO-GO**                         |
-| P0 / P1        | none / список: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  |
-| Нотатки        | \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |
+| Дата           | 2026-08-14                                     |
+| Пристрій       | Xiaomi 23117RA68G (emerald)                    |
+| AAB SHA-256    | `c85ee34032a0b0abfab78dbe4b50d2dd35e05fb14aa8d8a020c96104ee507d52` |
+| AAB source SHA | `main` @ `6099b68` (+ local Auth-ready AAB)    |
+| Upload SHA OK  | ☑ так (upload cert `43:93…`)                   |
+| Auth smoke OK  | ☑ так (sideload universal APK)                 |
+| Вердикт        | ☐ **GO** (після Play CT install) / ☐ **NO-GO** |
+| P0 / P1        | none                                           |
+| Нотатки        | Sideload Auth PASS; CT GO лише після install з Play |
 
 ### Після вердикту
 
