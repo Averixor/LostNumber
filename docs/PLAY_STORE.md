@@ -133,13 +133,13 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 
 **Policy → App content → Data safety** — відповідати **фактичній** Auth B2 політиці ([`FIREBASE_PRIVACY_DELTA.md`](./FIREBASE_PRIVACY_DELTA.md), `privacy.html`):
 
-| Питання                                       | Відповідь                                                                  |
-| --------------------------------------------- | -------------------------------------------------------------------------- |
-| Збирає або передає дані користувачів?         | **Так (опційно)** — лише якщо гравець обирає Google Sign-In                |
-| Типи даних                                    | Account / name / email (через Google); інакше локальний прогрес лише на девайсі |
-| Шифрування при передачі                       | Так (HTTPS / Google / Firebase Auth)                                       |
-| Видалення даних                               | Sign out у Settings + очищення даних застосунку в Android                  |
-| Privacy policy URL                            | `https://averixor.github.io/LostNumber/privacy.html`                       |
+| Питання                               | Відповідь                                                                       |
+| ------------------------------------- | ------------------------------------------------------------------------------- |
+| Збирає або передає дані користувачів? | **Так (опційно)** — лише якщо гравець обирає Google Sign-In                     |
+| Типи даних                            | Account / name / email (через Google); інакше локальний прогрес лише на девайсі |
+| Шифрування при передачі               | Так (HTTPS / Google / Firebase Auth)                                            |
+| Видалення даних                       | Sign out у Settings + очищення даних застосунку в Android                       |
+| Privacy policy URL                    | `https://averixor.github.io/LostNumber/privacy.html`                            |
 
 Локальний прогрес у `user://` **не синхронізується** в Cloud Save (ще не shipped).  
 Власний фон з системного picker → `user://custom_backgrounds/` локально.  
@@ -172,9 +172,9 @@ Android presets: **`permissions/internet=true`** (Auth-capable).
 
 Поточні значення:
 
-| Артефакт     | versionName | versionCode | Package                     |
-| ------------ | ----------- | ----------- | --------------------------- |
-| Godot (ship) | `2.1.6`     | `6`         | `com.Averixor.Lost_Number`  |
+| Артефакт     | versionName | versionCode | Package                        |
+| ------------ | ----------- | ----------- | ------------------------------ |
+| Godot (ship) | `2.1.6`     | `6`         | `com.Averixor.Lost_Number`     |
 | Debug        | `dev`       | `6`         | `com.Averixor.Lost_Number.dev` |
 
 Кожен новий upload потребує **versionCode більший за будь-який раніше завантажений** у **цьому** listing.

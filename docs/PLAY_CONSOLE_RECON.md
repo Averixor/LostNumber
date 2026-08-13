@@ -19,33 +19,33 @@ App signing (Google deployment): `37:FB:98:8C:A6:84:03:03:88:F0:5B:35:90:59:CD:8
 
 ## OWNER — обовʼязково заповнити в Console
 
-| #   | Питання                                              | Відповідь (власник)                 |
-| --- | ---------------------------------------------------- | ----------------------------------- |
-| 1   | Upload cert SHA збігається з таблицею вище?          | ☐ так / ☐ ні                        |
-| 2   | Max versionCode у Console для цього listing          | ______                              |
-| 3   | Identity verification                                | ☐ pending / ☐ approved / ☐ rejected |
-| 4   | Closed testing track існує?                          | ☐ так / ☐ ні                        |
-| 4b  | Назва трека / testers group                          | ______                              |
-| 5   | Firebase apps + SHA зареєстровані для Sign-In?       | ☐ так / ☐ ні                        |
+| #   | Питання                                        | Відповідь (власник)                 |
+| --- | ---------------------------------------------- | ----------------------------------- |
+| 1   | Upload cert SHA збігається з таблицею вище?    | ☐ так / ☐ ні                        |
+| 2   | Max versionCode у Console для цього listing    | ______                              |
+| 3   | Identity verification                          | ☐ pending / ☐ approved / ☐ rejected |
+| 4   | Closed testing track існує?                    | ☐ так / ☐ ні                        |
+| 4b  | Назва трека / testers group                    | ______                              |
+| 5   | Firebase apps + SHA зареєстровані для Sign-In? | ☐ так / ☐ ні                        |
 
 **Якщо п.1 = ні** — **не вантажити** AAB.
 
 ## Рішення по versionCode
 
-| Факт Console                         | Дія                                      |
-| ------------------------------------ | ---------------------------------------- |
-| Max VC у Console &lt; 6              | upload **6 / 2.1.6** OK                  |
-| Max VC ≥ 6                           | bump `export_presets` → max+1 + rebuild  |
+| Факт Console            | Дія                                     |
+| ----------------------- | --------------------------------------- |
+| Max VC у Console &lt; 6 | upload **6 / 2.1.6** OK                 |
+| Max VC ≥ 6              | bump `export_presets` → max+1 + rebuild |
 
 Не upload: `1463fd4c…`, `5c0530b0…`, `398b83f3…`.
 
 ## Автоматично перевірено (репо)
 
-| Перевірка             | Результат                                                                 |
-| --------------------- | ------------------------------------------------------------------------- |
-| Privacy URL           | https://averixor.github.io/LostNumber/privacy.html                        |
-| Upload key fingerprints | OK (`43:93:42:63…`)                                                     |
-| Auth B2 у source      | OK (`LostNumberFirebase`, `INTERNET=true`)                                |
-| `release:check`       | FAIL без Firebase resources у AAB (очікувано до JSON)                     |
+| Перевірка               | Результат                                             |
+| ----------------------- | ----------------------------------------------------- |
+| Privacy URL             | https://averixor.github.io/LostNumber/privacy.html    |
+| Upload key fingerprints | OK (`43:93:42:63…`)                                   |
+| Auth B2 у source        | OK (`LostNumberFirebase`, `INTERNET=true`)            |
+| `release:check`         | FAIL без Firebase resources у AAB (очікувано до JSON) |
 
 Далі: [`CLOSED_TESTING_RUNBOOK.md`](CLOSED_TESTING_RUNBOOK.md), [`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md).

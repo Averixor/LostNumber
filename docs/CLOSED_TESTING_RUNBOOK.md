@@ -4,25 +4,25 @@
 
 ## Ship target (канон = `export_presets.cfg`)
 
-| Поле                      | Значення                                                                 |
-| ------------------------- | ------------------------------------------------------------------------ |
-| Package                   | `com.Averixor.Lost_Number`                                               |
-| Debug                     | `com.Averixor.Lost_Number.dev`                                           |
-| versionName / versionCode | **2.1.6 / 6** (далі: VC ≥ max у Console + 1)                             |
-| targetSdk                 | **36**                                                                   |
-| Auth                      | Google Sign-In only (`LostNumberFirebase`); **немає** Cloud Save         |
+| Поле                      | Значення                                                                   |
+| ------------------------- | -------------------------------------------------------------------------- |
+| Package                   | `com.Averixor.Lost_Number`                                                 |
+| Debug                     | `com.Averixor.Lost_Number.dev`                                             |
+| versionName / versionCode | **2.1.6 / 6** (далі: VC ≥ max у Console + 1)                               |
+| targetSdk                 | **36**                                                                     |
+| Auth                      | Google Sign-In only (`LostNumberFirebase`); **немає** Cloud Save           |
 | CT status                 | **NO-GO / BLOCKED** до `google-services.json` + нового AAB + Sign-In smoke |
-| AAB                       | `build/android/lost-number.aab` — **лише після rebuild з prod JSON**     |
-| Privacy                   | [privacy.html](https://averixor.github.io/LostNumber/privacy.html)       |
+| AAB                       | `build/android/lost-number.aab` — **лише після rebuild з prod JSON**       |
+| Privacy                   | [privacy.html](https://averixor.github.io/LostNumber/privacy.html)         |
 
 ### Заборонено upload
 
-| SHA / artifact     | Причина                                      |
-| ------------------ | -------------------------------------------- |
-| `1463fd4c…`        | Auth bridge без Firebase resources           |
-| `5c0530b0…`        | Legacy listing / інший candidate             |
-| `398b83f3…`        | Старий Stage1 (`com.averixor.lostnumber`)    |
-| `lost-number-debug.apk` | Не CT smoke (лише device QA)            |
+| SHA / artifact          | Причина                                   |
+| ----------------------- | ----------------------------------------- |
+| `1463fd4c…`             | Auth bridge без Firebase resources        |
+| `5c0530b0…`             | Legacy listing / інший candidate          |
+| `398b83f3…`             | Старий Stage1 (`com.averixor.lostnumber`) |
+| `lost-number-debug.apk` | Не CT smoke (лише device QA)              |
 
 ## 1. Pre-upload gate (репо)
 
@@ -35,14 +35,14 @@ npm run release:check          # має PASS лише з Firebase resources у A
 sha256sum build/android/lost-number.aab
 ```
 
-| Крок                         | Статус                                              |
-| ---------------------------- | --------------------------------------------------- |
-| Identity VC6 / package       | ✅ presets + SoT                                    |
-| Auth B2 bridge + privacy     | ✅ source                                           |
-| Firebase JSON у AAB          | ☐ OWNER                                             |
-| Positive Sign-In smoke       | ☐ [`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md)          |
-| `release:check` PASS         | ☐ після rebuild                                     |
-| CT smoke з Play              | ☐ [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)  |
+| Крок                     | Статус                                             |
+| ------------------------ | -------------------------------------------------- |
+| Identity VC6 / package   | ✅ presets + SoT                                   |
+| Auth B2 bridge + privacy | ✅ source                                          |
+| Firebase JSON у AAB      | ☐ OWNER                                            |
+| Positive Sign-In smoke   | ☐ [`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md)         |
+| `release:check` PASS     | ☐ після rebuild                                    |
+| CT smoke з Play          | ☐ [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md) |
 
 ## 2. Device QA (до CT)
 

@@ -6,16 +6,16 @@ Listing: **`com.Averixor.Lost_Number`**
 
 ## Git / версія
 
-| Поле                      | Значення                                      |
-| ------------------------- | --------------------------------------------- |
-| Package (release)         | **`com.Averixor.Lost_Number`**                |
-| Package (debug)           | **`com.Averixor.Lost_Number.dev`**            |
-| versionName               | **2.1.6**                                     |
-| versionCode               | **6**                                         |
-| Upload keystore           | `android/keystore/lostnumber-upload-2026.jks` |
-| Auth                      | Google Sign-In via `LostNumberFirebase`       |
-| Cloud Save                | **ні** (наступний PR)                         |
-| targetSdk                 | **36**                                        |
+| Поле              | Значення                                      |
+| ----------------- | --------------------------------------------- |
+| Package (release) | **`com.Averixor.Lost_Number`**                |
+| Package (debug)   | **`com.Averixor.Lost_Number.dev`**            |
+| versionName       | **2.1.6**                                     |
+| versionCode       | **6**                                         |
+| Upload keystore   | `android/keystore/lostnumber-upload-2026.jks` |
+| Auth              | Google Sign-In via `LostNumberFirebase`       |
+| Cloud Save        | **ні** (наступний PR)                         |
+| targetSdk         | **36**                                        |
 
 **Version gate:** VC **1–5** могли вже бути в Console → поточний код **6**. Далі: VC ≥ попереднього + 1.
 
@@ -37,22 +37,22 @@ Listing: **`com.Averixor.Lost_Number`**
 
 ## AAB артефакт (поточний локальний — **не** CT)
 
-| Поле        | Значення                                                            |
-| ----------- | ------------------------------------------------------------------- |
-| Path        | `build/android/lost-number.aab`                                     |
-| SHA-256     | `1463fd4ccc164c569bbc3fde220bdb57ffe8e50e50d29397a81e1cafc615c111`  |
-| Package     | `com.Averixor.Lost_Number`                                          |
-| versionCode | **6**                                                               |
-| Built       | 2026-08-13 (Auth B2 bridge; **без** prod `google-services.json`)    |
-| CT status   | **REJECT** — немає Firebase resources; потрібен rebuild після JSON  |
+| Поле        | Значення                                                           |
+| ----------- | ------------------------------------------------------------------ |
+| Path        | `build/android/lost-number.aab`                                    |
+| SHA-256     | `1463fd4ccc164c569bbc3fde220bdb57ffe8e50e50d29397a81e1cafc615c111` |
+| Package     | `com.Averixor.Lost_Number`                                         |
+| versionCode | **6**                                                              |
+| Built       | 2026-08-13 (Auth B2 bridge; **без** prod `google-services.json`)   |
+| CT status   | **REJECT** — немає Firebase resources; потрібен rebuild після JSON |
 
 ## Verifier
 
-| Gate                       | Очікування                                                                 |
-| -------------------------- | -------------------------------------------------------------------------- |
-| `npm run release:check`    | FAIL без Firebase resources у AAB (навмисно)                               |
-| Upload-key SHA-1 gate      | AAB cert має бути `43:93:42:63…` (`godot:verify:aab`)                      |
-| Firebase resource strings  | `google_app_id` + `default_web_client_id` + project id обовʼязкові для CT |
+| Gate                      | Очікування                                                                |
+| ------------------------- | ------------------------------------------------------------------------- |
+| `npm run release:check`   | FAIL без Firebase resources у AAB (навмисно)                              |
+| Upload-key SHA-1 gate     | AAB cert має бути `43:93:42:63…` (`godot:verify:aab`)                     |
+| Firebase resource strings | `google_app_id` + `default_web_client_id` + project id обовʼязкові для CT |
 
 ## Owner upload notes
 
@@ -64,13 +64,13 @@ Listing: **`com.Averixor.Lost_Number`**
 
 ## Historical (superseded — не upload)
 
-| Candidate                 | SHA-256 / note                                      |
-| ------------------------- | --------------------------------------------------- |
-| Auth B2 без JSON          | AAB `1463fd4c…` — **не** CT                         |
-| Legacy listing VC16       | AAB `5c0530b0…` @ `8f1a7c2…` / `com.averixor.lostnumber` |
-| Rejected wrong-cert APK   | cert SHA1 `00:D9:4E:BB…` — **не** upload            |
-| RC 2026-08-10             | AAB `727a4e74…` @ `67019bc…`                        |
-| Stage1 2026-08-04         | AAB `398b83f3…` @ `2ef0fcdf…`                       |
+| Candidate               | SHA-256 / note                                           |
+| ----------------------- | -------------------------------------------------------- |
+| Auth B2 без JSON        | AAB `1463fd4c…` — **не** CT                              |
+| Legacy listing VC16     | AAB `5c0530b0…` @ `8f1a7c2…` / `com.averixor.lostnumber` |
+| Rejected wrong-cert APK | cert SHA1 `00:D9:4E:BB…` — **не** upload                 |
+| RC 2026-08-10           | AAB `727a4e74…` @ `67019bc…`                             |
+| Stage1 2026-08-04       | AAB `398b83f3…` @ `2ef0fcdf…`                            |
 
 ## Owner upload (після нового AAB)
 

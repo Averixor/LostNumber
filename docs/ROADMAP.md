@@ -1,12 +1,12 @@
 # Lost Number — Roadmap v1.1
 
-| Поле               | Значення                                                                                      |
-| ------------------ | --------------------------------------------------------------------------------------------- |
-| Версія документа   | **1.2** (2026-08-13)                                                                          |
-| Listing            | `com.Averixor.Lost_Number`                                                                    |
-| Ship version у git | **2.1.6 / versionCode 6**                                                                     |
-| Auth B2            | Shipped in source (Sign-In only); CT **NO-GO** до JSON + нового AAB                           |
-| Cloud Save         | Deferred — після CT GO ([`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md))         |
+| Поле               | Значення                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------- |
+| Версія документа   | **1.2** (2026-08-13)                                                                  |
+| Listing            | `com.Averixor.Lost_Number`                                                            |
+| Ship version у git | **2.1.6 / versionCode 6**                                                             |
+| Auth B2            | Shipped in source (Sign-In only); CT **NO-GO** до JSON + нового AAB                   |
+| Cloud Save         | Deferred — після CT GO ([`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md)) |
 
 ## Стратегія
 
@@ -84,12 +84,12 @@ VISUAL_TARGET, Settings Import stub UX, розмір AAB, фінальні 4 с�
 
 **Kickoff docs ready; runtime blocked.** Offline-first лишається; Firebase optional після OWNER go.
 
-| Статус           | Документ / гілка                                                                                                                                                                                                       |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **OWNER path**   | [`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md) — Auth-ready AAB → CT smoke → Cloud Save approve → gates                                                                                                  |
-| Docs / Auth B2   | [`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md), [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md), [`FIREBASE_PRIVACY_DELTA.md`](FIREBASE_PRIVACY_DELTA.md)                                                             |
-| Auth B2 runtime  | **Shipped** (Sign-In only); CT **NO-GO** до JSON + нового AAB                                                                                                                                                          |
-| Cloud Save 4B/4C | **BLOCKED** до CT GO + OWNER flip gates                                                                                                                                                                                |
+| Статус           | Документ / гілка                                                                                                                                           |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **OWNER path**   | [`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md) — Auth-ready AAB → CT smoke → Cloud Save approve → gates                                      |
+| Docs / Auth B2   | [`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md), [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md), [`FIREBASE_PRIVACY_DELTA.md`](FIREBASE_PRIVACY_DELTA.md) |
+| Auth B2 runtime  | **Shipped** (Sign-In only); CT **NO-GO** до JSON + нового AAB                                                                                              |
+| Cloud Save 4B/4C | **BLOCKED** до CT GO + OWNER flip gates                                                                                                                    |
 
 **Наступний OWNER крок:** `google-services.json` → rebuild → Sign-In smoke → CT ([`CLOSED_TESTING_RUNBOOK.md`](CLOSED_TESTING_RUNBOOK.md)).
 
@@ -100,7 +100,7 @@ VISUAL_TARGET, Settings Import stub UX, розмір AAB, фінальні 4 с�
 | `docs/roadmap-v1.1-sot-ci` | ROADMAP v1.1, SoT CI + audit index, audit narrative, Prettier AUDIT, recon/runbook **без** version bump |
 | `docs/android-device-qa`   | Повний device checklist                                                                                 |
 | `fix/repo-hygiene`         | Junk cleanup only                                                                                       |
-| `godot/release-vc-bump`    | Якщо Console max VC ≥ 6 — bump code + rebuild                                                                       |
+| `godot/release-vc-bump`    | Якщо Console max VC ≥ 6 — bump code + rebuild                                                           |
 
 ## Що свідомо не стверджуємо без перевірки
 

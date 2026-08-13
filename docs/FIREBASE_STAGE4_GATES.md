@@ -14,15 +14,15 @@
 
 ## Поточний факт Closed testing
 
-| Поле                      | Значення                                                                  | Джерело                    |
-| ------------------------- | ------------------------------------------------------------------------- | -------------------------- |
-| CT status                 | **NO-GO / BLOCKED** — потрібні JSON + новий AAB + Sign-In smoke           | STAGE1 / CT_SMOKE          |
-| Release AAB (CT)          | **pending rebuild** після `android/firebase/prod/google-services.json`    | STAGE1                     |
-| Rejected local AAB        | `1463fd4c…` (без Firebase resources) — **не** upload                      | STAGE1                     |
-| Legacy AAB (superseded)   | `398b83f3…` @ `2ef0fcd…` / old package — **не** upload                    | historical                 |
-| versionName / versionCode | `2.1.6` / `6`                                                             | SoT / presets              |
-| Package (release / debug) | `com.Averixor.Lost_Number` / `com.Averixor.Lost_Number.dev`               | SoT / STAGE1               |
-| **Негайний OWNER крок**   | Firebase JSON → rebuild → Auth QA → потім CT                              | AUTH_SIGNIN_QA / SEQUENCE  |
+| Поле                      | Значення                                                               | Джерело                   |
+| ------------------------- | ---------------------------------------------------------------------- | ------------------------- |
+| CT status                 | **NO-GO / BLOCKED** — потрібні JSON + новий AAB + Sign-In smoke        | STAGE1 / CT_SMOKE         |
+| Release AAB (CT)          | **pending rebuild** після `android/firebase/prod/google-services.json` | STAGE1                    |
+| Rejected local AAB        | `1463fd4c…` (без Firebase resources) — **не** upload                   | STAGE1                    |
+| Legacy AAB (superseded)   | `398b83f3…` @ `2ef0fcd…` / old package — **не** upload                 | historical                |
+| versionName / versionCode | `2.1.6` / `6`                                                          | SoT / presets             |
+| Package (release / debug) | `com.Averixor.Lost_Number` / `com.Averixor.Lost_Number.dev`            | SoT / STAGE1              |
+| **Негайний OWNER крок**   | Firebase JSON → rebuild → Auth QA → потім CT                           | AUTH_SIGNIN_QA / SEQUENCE |
 
 Upload key fingerprints (звірити з Console): [`docs/PLAY_CONSOLE_RECON.md`](PLAY_CONSOLE_RECON.md).
 
@@ -53,13 +53,13 @@ Upload key fingerprints (звірити з Console): [`docs/PLAY_CONSOLE_RECON.m
 
 Auth B2 (`LostNumberFirebase`, `AuthManager`, `INTERNET=true`) **вже в коді**. Нижче — що ще заборонено до OWNER flip gates для **Cloud Save**:
 
-| Заборонено                             | Примітка                                      |
-| -------------------------------------- | --------------------------------------------- |
-| Cloud Save / Firestore runtime         | Stage 4B після CT GO + OWNER approve          |
-| `CloudSyncManager` / cloud conflict UI | Після Cloud Save approve                      |
-| Commit реальних `google-services.json` | Gitignored; лише example у репо               |
-| Crashlytics / Analytics / Remote Config| Не вмикати «заодно»                           |
-| 4C leaderboards                        | Окремо після Cloud Save sign-off              |
+| Заборонено                              | Примітка                             |
+| --------------------------------------- | ------------------------------------ |
+| Cloud Save / Firestore runtime          | Stage 4B після CT GO + OWNER approve |
+| `CloudSyncManager` / cloud conflict UI  | Після Cloud Save approve             |
+| Commit реальних `google-services.json`  | Gitignored; лише example у репо      |
+| Crashlytics / Analytics / Remote Config | Не вмикати «заодно»                  |
+| 4C leaderboards                         | Окремо після Cloud Save sign-off     |
 
 ## Runtime workstreams (deferred — blocked)
 

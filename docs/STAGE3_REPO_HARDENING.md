@@ -1,6 +1,7 @@
 # Stage 3 — repo hardening baseline (після PR #58)
 
-Дата старту: **2026-08-04**  
+Дата старту: **2026-08-04**
+
 > **Historical.** Current ship identity: `com.Averixor.Lost_Number` / VC **6** — [`docs/en/SOURCE_OF_TRUTH.md`](en/SOURCE_OF_TRUTH.md), [`STAGE1_RELEASE_RECORD.md`](STAGE1_RELEASE_RECORD.md).
 
 ## Git / базова точка (на момент Stage 3)
@@ -16,11 +17,11 @@
 
 > Legacy Stage 3 candidate — **superseded**. Current CT = **NO-GO** ([`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)).
 
-| Поле                      | Значення                                                           |
-| ------------------------- | ------------------------------------------------------------------ |
-| Closed testing (Stage 3)  | `pending` → superseded                                             |
-| Legacy AAB SHA-256        | `398b83f3…` @ `2ef0fcd…` — **не** upload                           |
-| Current CT AAB            | pending rebuild after `google-services.json`                       |
+| Поле                     | Значення                                     |
+| ------------------------ | -------------------------------------------- |
+| Closed testing (Stage 3) | `pending` → superseded                       |
+| Legacy AAB SHA-256       | `398b83f3…` @ `2ef0fcd…` — **не** upload     |
+| Current CT AAB           | pending rebuild after `google-services.json` |
 
 ## Last verified CI (для base SHA)
 

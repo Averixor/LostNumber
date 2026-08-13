@@ -58,7 +58,7 @@ Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`.
 | Endless progression (40 + procedural)                     | `docs/GAME_RULES.md`, `LevelManager.gd`                                                                                                                            |
 | Architecture, autoloads, repo layout                      | `docs/en/ARCHITECTURE.md`                                                                                                                                          |
 | Accepted decisions (save, i18n, screens, compliance)      | `docs/en/DECISIONS.md`                                                                                                                                             |
-| Release / Play Console checklists                         | `docs/en/RELEASE.md`, `docs/CLOSED_TESTING_RUNBOOK.md`, `docs/STAGE1_RELEASE_RECORD.md` (HANDOFF-IDEAL superseded) |
+| Release / Play Console checklists                         | `docs/en/RELEASE.md`, `docs/CLOSED_TESTING_RUNBOOK.md`, `docs/STAGE1_RELEASE_RECORD.md` (HANDOFF-IDEAL superseded)                                                 |
 | JS → Godot parity checklist (historical)                  | `docs/archive/MIGRATION_FROM_JS.md`                                                                                                                                |
 | **Visual north star** (mockups, gaps, per-screen targets) | `docs/en/VISUAL_TARGET.md`                                                                                                                                         |
 | Web → Godot visual port status (historical)               | `docs/archive/VISUAL_PORT_MAP.md`                                                                                                                                  |
@@ -83,7 +83,7 @@ Dated technical audits capture static-analysis findings, test gaps, and release 
 | ------------------------------------------------------ | --------- | -------------------------------------------------------------------------------------------------------------------------- |
 | [AUDIT_MAIN_2026-07-10.md](./AUDIT_MAIN_2026-07-10.md) | `dd6300a` | LevelManager high-index risk, backup-only save, migration plugin path, Settings import stub, CI/`release:ideal` scope      |
 | [AUDIT_PLAY_360.md](../AUDIT_PLAY_360.md)              | `5e39937` | 360° Play readiness; gothic PR #48 already on main; CI jobs configured — confirm run per release SHA; VC16 Console unknown |
-| [ROADMAP.md](../ROADMAP.md)                            | v1.2      | Play-first; Auth B2 shipped; CT NO-GO until JSON + new AAB; Cloud Save later |
+| [ROADMAP.md](../ROADMAP.md)                            | v1.2      | Play-first; Auth B2 shipped; CT NO-GO until JSON + new AAB; Cloud Save later                                               |
 
 Update this table when a new dated audit lands on `main`.
 

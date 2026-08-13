@@ -79,10 +79,10 @@ npm run godot:test:all
 
 ## Version
 
-| Field       | Value                                      |
-| ----------- | ------------------------------------------ |
-| Package     | `com.Averixor.Lost_Number`                 |
-| Debug       | `com.Averixor.Lost_Number.dev`             |
-| versionName | `2.1.6` (debug: `dev`)                     |
-| versionCode | `6`                                        |
+| Field       | Value                                        |
+| ----------- | -------------------------------------------- |
+| Package     | `com.Averixor.Lost_Number`                   |
+| Debug       | `com.Averixor.Lost_Number.dev`               |
+| versionName | `2.1.6` (debug: `dev`)                       |
+| versionCode | `6`                                          |
 | Next upload | versionCode `>` Console max for this listing |

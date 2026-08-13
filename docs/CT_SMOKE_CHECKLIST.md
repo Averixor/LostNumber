@@ -1,11 +1,11 @@
 # Closed testing smoke — OWNER checklist
 
-| Поле                | Значення                                                                                      |
-| ------------------- | --------------------------------------------------------------------------------------------- |
-| Статус CT           | **BLOCKED / NO-GO** — потрібні Firebase JSON + новий Auth-ready AAB + Sign-In smoke          |
-| Docs / source       | `main` (Auth B2 + upload-key verify gate)                                                     |
-| Install джерело     | **Google Play** після opt-in (не sideload debug APK як CT smoke)                              |
-| Package (release)   | **`com.Averixor.Lost_Number`**                                                                |
+| Поле                | Значення                                                                                       |
+| ------------------- | ---------------------------------------------------------------------------------------------- |
+| Статус CT           | **BLOCKED / NO-GO** — потрібні Firebase JSON + новий Auth-ready AAB + Sign-In smoke            |
+| Docs / source       | `main` (Auth B2 + upload-key verify gate)                                                      |
+| Install джерело     | **Google Play** після opt-in (не sideload debug APK як CT smoke)                               |
+| Package (release)   | **`com.Averixor.Lost_Number`**                                                                 |
 | Firebase / INTERNET | Auth bridge у source є; **реальний Sign-In** — лише після `google-services.json` + rebuild AAB |
 
 Повний runbook: [`CLOSED_TESTING_RUNBOOK.md`](CLOSED_TESTING_RUNBOOK.md). Auth QA: [`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md). Recon: [`PLAY_CONSOLE_RECON.md`](PLAY_CONSOLE_RECON.md).
@@ -30,13 +30,13 @@ cert SHA-1: 43:93:42:63:7F:1D:1B:26:F7:9A:DF:24:D8:34:31:58:FA:C2:AA:C3
 
 ### Repo verification (агент — не замінює Console)
 
-| Перевірка                        | Результат                                                      |
-| -------------------------------- | -------------------------------------------------------------- |
-| Upload keystore SHA-1 / SHA-256  | **match** таблиці нижче / PLAY_CONSOLE_RECON                   |
-| AAB upload cert SHA-1            | має match `43:93:42:63…` (`godot:verify:aab` / release gate)   |
+| Перевірка                        | Результат                                                       |
+| -------------------------------- | --------------------------------------------------------------- |
+| Upload keystore SHA-1 / SHA-256  | **match** таблиці нижче / PLAY_CONSOLE_RECON                    |
+| AAB upload cert SHA-1            | має match `43:93:42:63…` (`godot:verify:aab` / release gate)    |
 | Firebase resources у AAB         | потрібні `google_app_id` + `default_web_client_id` + project id |
-| Console Upload key == локальний? | ☐ OWNER (App integrity → **Upload** key only)                  |
-| Positive Google Sign-In smoke    | ☐ після JSON + rebuild (`AUTH_SIGNIN_QA.md`)                   |
+| Console Upload key == локальний? | ☐ OWNER (App integrity → **Upload** key only)                   |
+| Positive Google Sign-In smoke    | ☐ після JSON + rebuild (`AUTH_SIGNIN_QA.md`)                    |
 
 Локальні fingerprints (звірити з Console **Upload key**):
 
@@ -96,9 +96,9 @@ SMOKE:
 
 ### Після вердикту
 
-| Вердикт   | Дія                                                                                                    |
-| --------- | ------------------------------------------------------------------------------------------------------ |
-| **GO**    | CT `pending` → `completed` у [`STAGE3_CLOSEOUT.md`](STAGE3_CLOSEOUT.md) + gates; далі Phase 5…         |
-| **NO-GO** | CT лишається `pending`; P0/P1 у нотатках; **не** flip Firebase Cloud Save gates                        |
+| Вердикт   | Дія                                                                                            |
+| --------- | ---------------------------------------------------------------------------------------------- |
+| **GO**    | CT `pending` → `completed` у [`STAGE3_CLOSEOUT.md`](STAGE3_CLOSEOUT.md) + gates; далі Phase 5… |
+| **NO-GO** | CT лишається `pending`; P0/P1 у нотатках; **не** flip Firebase Cloud Save gates                |
 
 Скопіюй заповнену таблицю в PR `docs/ct-smoke-result` або встав у closeout / gates notes.

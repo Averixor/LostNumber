@@ -46,9 +46,9 @@ npm run godot:android:install
 
 ## Результат (історичний gameplay — 2026-08-04)
 
-| Дата       | SHA / versionCode                           | Пристрій                                 | Тестер      | Примітка                                      |
-| ---------- | ------------------------------------------- | ---------------------------------------- | ----------- | --------------------------------------------- |
-| 2026-08-04 | `a6db8b29` / **16** (тодішній listing)      | Xiaomi `23117RA68G` / `6pwkydzdayxcfyu4` | agent + adb | Gameplay GO на **старому** package/VC — архів |
-| 2026-08-13 | `ee6af9e2…` / **6** / `.dev`                | той самий пристрій                       | agent + adb | Auth negative smoke PASS; CT **NO-GO**        |
+| Дата       | SHA / versionCode                      | Пристрій                                 | Тестер      | Примітка                                      |
+| ---------- | -------------------------------------- | ---------------------------------------- | ----------- | --------------------------------------------- |
+| 2026-08-04 | `a6db8b29` / **16** (тодішній listing) | Xiaomi `23117RA68G` / `6pwkydzdayxcfyu4` | agent + adb | Gameplay GO на **старому** package/VC — архів |
+| 2026-08-13 | `ee6af9e2…` / **6** / `.dev`           | той самий пристрій                       | agent + adb | Auth negative smoke PASS; CT **NO-GO**        |
 
 **Поточний вердикт:** gameplay debug OK; **Closed Testing = NO-GO** до Firebase JSON + нового AAB + positive Sign-In.

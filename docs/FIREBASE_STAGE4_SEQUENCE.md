@@ -1,13 +1,13 @@
 # Stage 4 — OWNER gate sequence (walkable)
 
-| Поле             | Значення                                                                                        |
-| ---------------- | ----------------------------------------------------------------------------------------------- |
-| Призначення      | Шлях від **Auth-ready AAB + CT smoke** до Cloud Save gates                                      |
-| Статус CT зараз  | **NO-GO** — JSON + rebuild + Sign-In smoke перед upload ([`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)) |
-| Auth B2 у коді   | **Shipped** (`LostNumberFirebase`, `INTERNET=true`) — див. [`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md) |
-| Runtime Cloud    | **BLOCKED** — не стартувати Firestore / CloudSync до flip gates                                 |
-| Flip gates       | OWNER у [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md) після CT GO + Cloud approve      |
-| Агент з репо     | Готує handoff; **не** ставить `[x]` у gates                                                     |
+| Поле            | Значення                                                                                                   |
+| --------------- | ---------------------------------------------------------------------------------------------------------- |
+| Призначення     | Шлях від **Auth-ready AAB + CT smoke** до Cloud Save gates                                                 |
+| Статус CT зараз | **NO-GO** — JSON + rebuild + Sign-In smoke перед upload ([`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)) |
+| Auth B2 у коді  | **Shipped** (`LostNumberFirebase`, `INTERNET=true`) — див. [`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md)        |
+| Runtime Cloud   | **BLOCKED** — не стартувати Firestore / CloudSync до flip gates                                            |
+| Flip gates      | OWNER у [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md) після CT GO + Cloud approve                 |
+| Агент з репо    | Готує handoff; **не** ставить `[x]` у gates                                                                |
 
 ```mermaid
 flowchart TD
@@ -50,13 +50,13 @@ Stage 4 OWNER — порядок:
 
 **Документи:** [`CLOSED_TESTING_RUNBOOK.md`](CLOSED_TESTING_RUNBOOK.md), AAB/SHA у [`STAGE1_RELEASE_RECORD.md`](STAGE1_RELEASE_RECORD.md) + [`STAGE3_CLOSEOUT.md`](STAGE3_CLOSEOUT.md), recon [`PLAY_CONSOLE_RECON.md`](PLAY_CONSOLE_RECON.md).
 
-| Поле (кандидат)    | Значення                                                               |
-| ------------------ | ---------------------------------------------------------------------- |
-| Package            | `com.Averixor.Lost_Number`                                             |
-| versionName / Code | `2.1.6` / `6`                                                          |
-| AAB SHA-256        | **pending** після `google-services.json` + rebuild                     |
-| Rejected           | `1463fd4c…`, `398b83f3…`, `5c0530b0…` — **не** upload                  |
-| Локальний файл     | `build/android/lost-number.aab`                                        |
+| Поле (кандидат)    | Значення                                              |
+| ------------------ | ----------------------------------------------------- |
+| Package            | `com.Averixor.Lost_Number`                            |
+| versionName / Code | `2.1.6` / `6`                                         |
+| AAB SHA-256        | **pending** після `google-services.json` + rebuild    |
+| Rejected           | `1463fd4c…`, `398b83f3…`, `5c0530b0…` — **не** upload |
+| Локальний файл     | `build/android/lost-number.aab`                       |
 
 **Дії:** виконати всі 10 кроків у [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md). CT `pending` → `completed` **лише при GO**.
 
@@ -160,12 +160,12 @@ Region: kickoff рекомендує **`europe-west3`** (Frankfurt) — OWNER **
 
 ## Що свідомо не робити зараз
 
-| Заборона                                      | Чому                                      |
-| --------------------------------------------- | ----------------------------------------- |
-| Upload AAB без Firebase resources / Sign-In   | CT NO-GO                                  |
-| Cloud Save / Firestore runtime до gates `[x]` | Auth B2 уже shipped; Cloud — окремо       |
-| Агент ставить `[x]` у `FIREBASE_STAGE4_GATES` | Лише OWNER після факту                    |
-| CT = completed без Play opt-in smoke          | Немає credentials / smoke з репо          |
+| Заборона                                      | Чому                                |
+| --------------------------------------------- | ----------------------------------- |
+| Upload AAB без Firebase resources / Sign-In   | CT NO-GO                            |
+| Cloud Save / Firestore runtime до gates `[x]` | Auth B2 уже shipped; Cloud — окремо |
+| Агент ставить `[x]` у `FIREBASE_STAGE4_GATES` | Лише OWNER після факту              |
+| CT = completed без Play opt-in smoke          | Немає credentials / smoke з репо    |
 
 ---
 
