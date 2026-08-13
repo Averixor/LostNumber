@@ -134,12 +134,13 @@ In-game graphics: `godot/assets/ui/` (gothic PNG icons, wheel PNGs, skins).
 
 ## Google Play Console checklist
 
-- [ ] Upload `lost-number.aab` (Godot 2.1.6, versionCode 16+)
+- [ ] Upload `lost-number.aab` (Godot 2.1.6, versionCode **6+** / > Console max)
 - [ ] Privacy URL: `https://averixor.github.io/LostNumber/privacy.html`
-- [ ] Data Safety: no collection, no sharing
+- [ ] Data Safety: optional Google Sign-In (no Cloud Save / Analytics)
 - [ ] IARC: puzzle, no violence/gambling/IAP/ads
 - [ ] Screenshots from **real Godot build** (replace menu drafts)
 - [ ] Listing copy: `store/PLAY_CONSOLE_LISTING.md` / `docs/PLAY_CONSOLE_LISTING.md`
+- [ ] Auth smoke PASS ([`docs/AUTH_SIGNIN_QA.md`](../AUTH_SIGNIN_QA.md))
 - [ ] Rollout: Internal → Closed → Production
 
 ## On-device QA checklist
@@ -195,4 +196,4 @@ Excludes: `node_modules`, keystores, `.godot`, generated `godot/android/`.
 | Q2 2026 | Play Games integration, wheel canvas animation polish                |
 | Y3+     | Optional opt-in cloud save                                           |
 
-Phase 6 Firebase (auth, Firestore) is **blocked** until Phase 5 performance is closed — see `docs/PHASES.md`.
+Phase 6 Cloud Save (Firestore) remains **blocked** until CT GO + OWNER gates — see `docs/PHASES.md`. **Auth B2 (Google Sign-In only)** is already in Android presets.

@@ -145,7 +145,7 @@ Lost Number — логическая головоломка с числами в
 | **Теги**                 | puzzle, numbers, logic, casual, offline |
 | **Цільова аудиторія**    | Everyone / 3+ (після IARC)              |
 | **Package name**         | `com.Averixor.Lost_Number`              |
-| **Версія**               | `2.1.6` (versionCode 16)                |
+| **Версія**               | `2.1.6` (versionCode **6**)             |
 
 ---
 
@@ -157,7 +157,7 @@ Lost Number — логическая головоломка с числами в
 
 - IARC — чесно: головоломка, без насильства / реклами / IAP
 - Target audience — **не** «переважно для дітей»
-- Data safety — **дані не збираються** (лише локальні файли застосунку на пристрої)
+- Data safety — **optional Google Sign-In** (див. `privacy.html` / FIREBASE_PRIVACY_DELTA); локальний прогрес без Cloud Save
 - Ads, IAP, Financial features — **No**
 
 ---

@@ -2,12 +2,12 @@
 
 | Поле             | Значення                                                                                        |
 | ---------------- | ----------------------------------------------------------------------------------------------- |
-| Призначення      | Один шлях від **CT smoke** до flip gates → лише потім runtime bridge                            |
-| Статус CT зараз  | **`pending`** — не стверджувати completed без Play opt-in smoke                                 |
-| Цей документ     | На `main` після merge **#72** (`de01730…`) — інструкції готові; **CT ще не виконано**           |
-| Runtime / bridge | **BLOCKED** — не стартувати `godot/firebase-android-bridge`, SDK, `INTERNET=true`               |
-| Flip gates       | Лише OWNER у [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md) після фактів нижче          |
-| Агент з репо     | Готує цей handoff; **не** ставить `[x]` у gates і **не** оголошує CT / Phase 5 / Console «done» |
+| Призначення      | Шлях від **Auth-ready AAB + CT smoke** до Cloud Save gates                                      |
+| Статус CT зараз  | **NO-GO** — JSON + rebuild + Sign-In smoke перед upload ([`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)) |
+| Auth B2 у коді   | **Shipped** (`LostNumberFirebase`, `INTERNET=true`) — див. [`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md) |
+| Runtime Cloud    | **BLOCKED** — не стартувати Firestore / CloudSync до flip gates                                 |
+| Flip gates       | OWNER у [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md) після CT GO + Cloud approve      |
+| Агент з репо     | Готує handoff; **не** ставить `[x]` у gates                                                     |
 
 ```mermaid
 flowchart TD
@@ -50,13 +50,13 @@ Stage 4 OWNER — порядок:
 
 **Документи:** [`CLOSED_TESTING_RUNBOOK.md`](CLOSED_TESTING_RUNBOOK.md), AAB/SHA у [`STAGE1_RELEASE_RECORD.md`](STAGE1_RELEASE_RECORD.md) + [`STAGE3_CLOSEOUT.md`](STAGE3_CLOSEOUT.md), recon [`PLAY_CONSOLE_RECON.md`](PLAY_CONSOLE_RECON.md).
 
-| Поле (кандидат)    | Значення (не змінювати з агента без перезбірки)                    |
-| ------------------ | ------------------------------------------------------------------ |
-| AAB source commit  | `2ef0fcdf2aaf5083cf79c88a41b989720e137b47`                         |
-| AAB SHA-256        | `398b83f33d79b878e71ca1262d6cfac2e0a981045d77299a5c0824c1dba848c4` |
-| versionName / Code | `2.1.6` / `16`                                                     |
-| Package            | `com.Averixor.Lost_Number`                                         |
-| Локальний файл     | `build/android/lost-number.aab` (SHA збігається з record)          |
+| Поле (кандидат)    | Значення                                                               |
+| ------------------ | ---------------------------------------------------------------------- |
+| Package            | `com.Averixor.Lost_Number`                                             |
+| versionName / Code | `2.1.6` / `6`                                                          |
+| AAB SHA-256        | **pending** після `google-services.json` + rebuild                     |
+| Rejected           | `1463fd4c…`, `398b83f3…`, `5c0530b0…` — **не** upload                  |
+| Локальний файл     | `build/android/lost-number.aab`                                        |
 
 **Дії:** виконати всі 10 кроків у [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md). CT `pending` → `completed` **лише при GO**.
 
@@ -160,12 +160,12 @@ Region: kickoff рекомендує **`europe-west3`** (Frankfurt) — OWNER **
 
 ## Що свідомо не робити зараз
 
-| Заборона                                      | Чому                             |
-| --------------------------------------------- | -------------------------------- |
-| Bridge / Firebase SDK / `INTERNET=true`       | Gates ще ☐; CT `pending`         |
-| Агент ставить `[x]` у `FIREBASE_STAGE4_GATES` | Лише OWNER після факту           |
-| CT = completed без Play opt-in smoke          | Немає credentials / smoke з репо |
-| Змішувати bridge з 4C / visual polish         | Scope control                    |
+| Заборона                                      | Чому                                      |
+| --------------------------------------------- | ----------------------------------------- |
+| Upload AAB без Firebase resources / Sign-In   | CT NO-GO                                  |
+| Cloud Save / Firestore runtime до gates `[x]` | Auth B2 уже shipped; Cloud — окремо       |
+| Агент ставить `[x]` у `FIREBASE_STAGE4_GATES` | Лише OWNER після факту                    |
+| CT = completed без Play opt-in smoke          | Немає credentials / smoke з репо          |
 
 ---
 

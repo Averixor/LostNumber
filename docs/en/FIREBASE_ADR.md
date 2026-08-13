@@ -15,7 +15,7 @@ runtime: blocked-until-FIREBASE_STAGE4_GATES
 
 ## Context
 
-Lost Number ships as a Godot 4.7 offline Android puzzle. Local saves use `SaveManager` (`user://` envelope + SHA-256 + `.bak`). There is no network permission today (`permissions/internet=false`). An existing Android plugin ([`LostNumberMigration`](../../godot/android/plugins/LostNumberMigration.gdap)) shows the supported pattern: Godot Android plugin → native AAR → GDScript bridge — for **legacy save import only**, not cloud.
+Lost Number ships as a Godot 4.7 Android puzzle. Local saves use `SaveManager` (`user://` envelope + SHA-256 + `.bak`). **Auth B2** already enables `permissions/internet=true` and optional Google Sign-In via `LostNumberFirebase` / `AuthManager` (no Cloud Save yet). An existing Android plugin ([`LostNumberMigration`](../../godot/android/plugins/LostNumberMigration.gdap)) shows the supported pattern: Godot Android plugin → native AAR → GDScript bridge — for **legacy save import**. This ADR covers **Cloud Save / Firestore** (Stage 4B), not Auth.
 
 ## Decision
 

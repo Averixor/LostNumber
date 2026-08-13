@@ -1,27 +1,26 @@
 # Stage 3 — repo hardening baseline (після PR #58)
 
-Дата старту: **2026-08-04**
+Дата старту: **2026-08-04**  
+> **Historical.** Current ship identity: `com.Averixor.Lost_Number` / VC **6** — [`docs/en/SOURCE_OF_TRUTH.md`](en/SOURCE_OF_TRUTH.md), [`STAGE1_RELEASE_RECORD.md`](STAGE1_RELEASE_RECORD.md).
 
-## Git / базова точка
+## Git / базова точка (на момент Stage 3)
 
 | Поле                                   | Значення                                   |
 | -------------------------------------- | ------------------------------------------ |
 | Stage 3 base SHA (main HEAD після #58) | `f2d69ddb08413c7f0746f5aff1bfb8d2dd32614d` |
-| Ship version                           | `2.1.6` / VC16                             |
-| Package                                | `com.averixor.lostnumber`                  |
-| Package (device QA debug)              | `com.averixor.lostnumber.dev`              |
+| Ship version (тоді)                    | `2.1.6` / VC16 (legacy listing)            |
+| Package (тоді)                         | `com.averixor.lostnumber`                  |
+| Current package (2026-08-13+)          | `com.Averixor.Lost_Number` / VC **6**      |
 
 ## Closed testing (AAB candidate)
 
-> Не позначаю як “completed”, доки не підтверджено реальний Play opt-in / device smoke.
+> Legacy Stage 3 candidate — **superseded**. Current CT = **NO-GO** ([`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)).
 
 | Поле                      | Значення                                                           |
 | ------------------------- | ------------------------------------------------------------------ |
-| Closed testing            | `pending`                                                          |
-| Release AAB source commit | `2ef0fcdf2aaf5083cf79c88a41b989720e137b47`                         |
-| Release AAB path          | `build/android/lost-number.aab`                                    |
-| Release AAB SHA-256       | `398b83f33d79b878e71ca1262d6cfac2e0a981045d77299a5c0824c1dba848c4` |
-| Superseded (не upload)    | `a6db8b29` / `c9e315af…`, `6aef26d6…`                              |
+| Closed testing (Stage 3)  | `pending` → superseded                                             |
+| Legacy AAB SHA-256        | `398b83f3…` @ `2ef0fcd…` — **не** upload                           |
+| Current CT AAB            | pending rebuild after `google-services.json`                       |
 
 ## Last verified CI (для base SHA)
 

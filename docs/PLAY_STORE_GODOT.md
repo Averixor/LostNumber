@@ -19,7 +19,7 @@ Entry flow: **`Boot.tscn`** (main_scene) → **`App.tscn`** → screens mounted 
 
 ## Android build
 
-Requirements: Godot 4.7+, JDK 17, Android SDK (API 35), `android/keystore.properties` for release.
+Requirements: Godot 4.7+, JDK 17, Android SDK (API **36**), `android/keystore.properties` for release.
 
 ```bash
 chmod +x scripts/godot-android-export.sh
@@ -40,7 +40,7 @@ Export templates are downloaded automatically on first build if missing.
 | Field       | Value                                                    |
 | ----------- | -------------------------------------------------------- |
 | Package     | `com.Averixor.Lost_Number`                               |
-| Version     | `2.1.6` (versionCode 16)                                 |
+| Version     | `2.1.6` (versionCode **6**)                              |
 | AAB         | `build/android/lost-number.aab`                          |
 | Privacy URL | `https://averixor.github.io/LostNumber/privacy.html`     |
 | Store texts | `docs/store-listing/` or `store/PLAY_CONSOLE_LISTING.md` |

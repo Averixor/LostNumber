@@ -131,40 +131,39 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 
 ## 7. Data safety
 
-**Policy → App content → Data safety** — вказати **фактичну** відсутність збору персональних даних:
+**Policy → App content → Data safety** — відповідати **фактичній** Auth B2 політиці ([`FIREBASE_PRIVACY_DELTA.md`](./FIREBASE_PRIVACY_DELTA.md), `privacy.html`):
 
-| Питання                                       | Відповідь                                            |
-| --------------------------------------------- | ---------------------------------------------------- |
-| Збирає або передає дані користувачів?         | **Ні**                                               |
-| Усі типи даних (ім'я, email, геолокація тощо) | **Не збирається**                                    |
-| Шифрування при передачі                       | Не застосовується                                    |
-| Видалення даних                               | Користувач очищає дані застосунку в Android          |
-| Privacy policy URL                            | `https://averixor.github.io/LostNumber/privacy.html` |
+| Питання                                       | Відповідь                                                                  |
+| --------------------------------------------- | -------------------------------------------------------------------------- |
+| Збирає або передає дані користувачів?         | **Так (опційно)** — лише якщо гравець обирає Google Sign-In                |
+| Типи даних                                    | Account / name / email (через Google); інакше локальний прогрес лише на девайсі |
+| Шифрування при передачі                       | Так (HTTPS / Google / Firebase Auth)                                       |
+| Видалення даних                               | Sign out у Settings + очищення даних застосунку в Android                  |
+| Privacy policy URL                            | `https://averixor.github.io/LostNumber/privacy.html`                       |
 
-Локальний прогрес у файлах Godot `user://` **не передається** на сервери розробника — у формі це «дані не збираються».
-Власний фон, який користувач добровільно обирає через системний image picker,
-копіюється в приватний `user://custom_backgrounds/` і також не передається.
-Поточний Android manifest не містить `android.permission.INTERNET`.
+Локальний прогрес у `user://` **не синхронізується** в Cloud Save (ще не shipped).  
+Власний фон з системного picker → `user://custom_backgrounds/` локально.  
+Android presets: **`permissions/internet=true`** (Auth-capable).
 
 Додатково в **App content**: Ads — No; In-app purchases — No.
 
 Потрібен успішний деплой privacy URL — див. [PRIVACY_HOSTING.md](./PRIVACY_HOSTING.md).
 
-Детальна таблиця відповідей для листингу: **`store/PLAY_CONSOLE_LISTING.md`**. Процедура нижче — канонічна.
+Детальна таблиця відповідей для листингу: **`store/PLAY_CONSOLE_LISTING.md`**.
 
 ## 8. Чекліст перед Production
 
 - [ ] Перевірка особи завершена
-- [ ] `npm run release:check` зелений
+- [ ] `npm run release:check` зелений (AAB з Firebase resources)
 - [ ] AAB зібраний з release flags (`cheatsEnabled=false`)
 - [ ] Скріншоти з реального APK на телефоні
 - [ ] Privacy policy опублікована (URL відкривається)
 - [ ] IARC (Content rating) заповнено чесно
 - [ ] Target audience — **не** «переважно для дітей»
-- [ ] Data safety — «дані не збираються»
+- [ ] Data safety — optional Google Sign-In (не «дані не збираються»)
 - [ ] Email підтримки вказано в Store listing
-- [ ] Closed testing пройдено без критичних багів
-- [ ] versionCode відповідає правилам Play: якщо VC16 вже був у Console → bump до code `17` / name `2.1.7`; інакше можна лишити `16` / `2.1.6` до підтвердження
+- [ ] Closed testing пройдено без критичних багів + Auth smoke
+- [ ] versionCode > max у Console (зараз у git **6 / 2.1.6**)
 
 ## 9. Версіонування
 
@@ -173,13 +172,12 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 
 Поточні значення:
 
-| Артефакт     | versionName | versionCode |
-| ------------ | ----------- | ----------- |
-| Godot (ship) | `2.1.6`     | `16`        |
+| Артефакт     | versionName | versionCode | Package                     |
+| ------------ | ----------- | ----------- | --------------------------- |
+| Godot (ship) | `2.1.6`     | `6`         | `com.Averixor.Lost_Number`  |
+| Debug        | `dev`       | `6`         | `com.Averixor.Lost_Number.dev` |
 
-Кожен новий upload потребує **versionCode більший за будь-який раніше завантажений**. Практичне правило: якщо Console підтверджує, що **VC16 вже використано**, робимо bump до `17` / `2.1.7`; інакше можна лишити `16` / `2.1.6` до підтвердження.
-
-> Правило іменування (code ≥ 15): `versionName = 2.1.(versionCode - 10)`.
+Кожен новий upload потребує **versionCode більший за будь-який раніше завантажений** у **цьому** listing.
 
 ABI: постачаються лише `arm64-v8a` + `x86_64`. Без `armeabi-v7a` 32-бітні пристрої (~8 тис. у каталозі) не підтримуються — свідоме рішення.
 

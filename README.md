@@ -24,7 +24,7 @@ npm run godot:android:debug     # build/android/lost-number-debug.apk
 npm run godot:android:release   # build/android/lost-number.aab
 ```
 
-Version: `2.1.6` / versionCode `16` (`godot/export_presets.cfg`).
+Version: `2.1.6` / versionCode `6` (`godot/export_presets.cfg`). Package: `com.Averixor.Lost_Number`.
 
 ## Privacy policy (Play Store)
 
