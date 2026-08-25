@@ -1,7 +1,7 @@
 # Stage 1 — Release record (новий Play listing + Auth B2)
 
 Дата запису: **2026-08-14**  
-Статус: **Auth-ready AAB локально** — CT ще потребує OWNER Sign-In smoke + Play upload  
+Статус: **Auth device smoke PASS** — далі Play Closed Testing upload AAB `c85ee340…`  
 Listing: **`com.Averixor.Lost_Number`**
 
 ## Git / версія
@@ -47,7 +47,7 @@ Listing: **`com.Averixor.Lost_Number`**
 | versionCode | **6**                                                              |
 | Built       | 2026-08-14 (prod `google-services.json` + oauth_client type 3)     |
 | Firebase    | `google_app_id` / `default_web_client_id` / project — **present**  |
-| CT status   | **READY for OWNER smoke** після USB/Play install + Sign-In QA      |
+| CT status   | **Auth smoke PASS** (sideload 2026-08-14) → upload AAB to Play CT  |
 
 ## Verifier
 
