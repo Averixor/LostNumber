@@ -20,4 +20,7 @@ public abstract class GodotPlugin {
 	}
 
 	public void onGodotSetupCompleted() {}
+
+	/** No-op stub: реальний GodotPlugin емітить сигнал у engine. */
+	protected void emitSignal(String signalName, Object... signalArgs) {}
 }

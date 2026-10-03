@@ -3,8 +3,8 @@ plugins {
 }
 
 def godotAar = file('../../build/libs/release/godot-lib.template_release.aar')
-def codeqlBuild = project.hasProperty('codeqlBuild')
-def useGodotStubs = codeqlBuild && !godotAar.exists()
+// Без godot-lib.aar — codeql-stubs (IDE + CodeQL). З AAR stubs не в sourceSets, щоб уникнути дублікатів.
+def useGodotStubs = !godotAar.exists()
 
 android {
     namespace 'com.averixor.lostnumber'
@@ -33,9 +33,5 @@ android {
 dependencies {
     if (godotAar.exists()) {
         compileOnly files(godotAar)
-    } else if (!useGodotStubs) {
-        throw new org.gradle.api.GradleException(
-            "Missing ${godotAar}. Run Godot Android export or pass -PcodeqlBuild=true."
-        )
     }
 }

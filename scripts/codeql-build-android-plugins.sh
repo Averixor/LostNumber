@@ -30,7 +30,6 @@ build_plugin() {
       chmod +x ./gradlew
     fi
     ./gradlew assembleRelease \
-      -PcodeqlBuild=true \
       -Pandroid.useAndroidX=true \
       --no-daemon
   )
