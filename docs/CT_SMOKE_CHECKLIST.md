@@ -21,13 +21,13 @@
 
 ```text
 build/android/lost-number.aab
-SHA-256: _pending_rebuild_after_merge_
+SHA-256: d10d3f2ea8170e005a67e7201ca27e777ea70f2a319e71f7b1829f3de10b45c1
 source:  account deletion release-fix; version 2.1.7 / VC 7
 version: 2.1.7 / VC 7
 package: com.Averixor.Lost_Number
 cert SHA-1: 43:93:42:63:7F:1D:1B:26:F7:9A:DF:24:D8:34:31:58:FA:C2:AA:C3
 plugin:  LostNumberFirebase.deleteAccount() present
-gates:   npm run release:check; npm run godot:verify:aab; keystore:info — after rebuild
+gates:   npm run release:check PASS; npm run godot:verify:aab PASS; keystore:info PASS
 ```
 
 ### Repo verification (агент — не замінює Console)
@@ -56,7 +56,7 @@ gates:   npm run release:check; npm run godot:verify:aab; keystore:info — afte
 ```text
 Closed testing smoke — Lost Number 2.1.7 / VC7
 package: com.Averixor.Lost_Number
-AAB SHA-256: _pending_rebuild_after_merge_
+AAB SHA-256: d10d3f2ea8170e005a67e7201ca27e777ea70f2a319e71f7b1829f3de10b45c1
 
 PRE-UPLOAD (обовʼязково):
 [x] 0a. Upload key SHA локально == таблиця вище (Console — OWNER)
@@ -85,17 +85,17 @@ SMOKE:
 
 ## Результат (заповнює OWNER)
 
-| Поле           | Значення                                                            |
-| -------------- | ------------------------------------------------------------------- |
-| Дата           | 2026-10-03                                                          |
-| Пристрій       | ☐ після Play install                                                |
-| AAB SHA-256    | `_pending_rebuild_after_merge_` (2.1.7 / 7)                         |
-| AAB source SHA | `main` after account-deletion merge                                 |
-| Upload SHA OK  | ☐ після rebuild (`godot:verify:aab`)                                |
-| Auth smoke OK  | ☐ Play CT / ☑ історичний sideload 2026-08-14                        |
-| Вердикт        | **NO-GO** (Play CT upload + install smoke ще не виконані)           |
-| P0 / P1        | OWNER: upload **2.1.7 / 7** AAB → opt-in → smoke 1–11 + delete acct |
-| Нотатки        | VC6 `93f72b58…` superseded; Pages delete-account URL before Console |
+| Поле           | Значення                                                                       |
+| -------------- | ------------------------------------------------------------------------------ |
+| Дата           | 2026-10-03                                                                     |
+| Пристрій       | ☐ після Play install                                                           |
+| AAB SHA-256    | `d10d3f2ea8170e005a67e7201ca27e777ea70f2a319e71f7b1829f3de10b45c1` (2.1.7 / 7) |
+| AAB source SHA | `main` after account-deletion merge                                            |
+| Upload SHA OK  | ☐ після rebuild (`godot:verify:aab`)                                           |
+| Auth smoke OK  | ☐ Play CT / ☑ історичний sideload 2026-08-14                                   |
+| Вердикт        | **NO-GO** (Play CT upload + install smoke ще не виконані)                      |
+| P0 / P1        | OWNER: upload **2.1.7 / 7** AAB → opt-in → smoke 1–11 + delete acct            |
+| Нотатки        | VC6 `93f72b58…` superseded; Pages delete-account URL before Console            |
 
 ### Після вердикту
 
