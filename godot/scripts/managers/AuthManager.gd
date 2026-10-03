@@ -78,9 +78,9 @@ func is_deleting_account() -> bool:
 func get_display_label() -> String:
 	if not is_signed_in() and state != STATE_DELETING:
 		return ""
-	var name := str(user.get("displayName", "")).strip_edges()
-	if not name.is_empty():
-		return name
+	var display_name := str(user.get("displayName", "")).strip_edges()
+	if not display_name.is_empty():
+		return display_name
 	var email := str(user.get("email", "")).strip_edges()
 	if not email.is_empty():
 		return email

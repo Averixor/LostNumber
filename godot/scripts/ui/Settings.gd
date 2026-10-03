@@ -60,8 +60,8 @@ func _notification(what: int) -> void:
 		_adapt_layout()
 
 
-func _autoload(name: String) -> Node:
-	return get_node_or_null("/root/" + name)
+func _autoload(autoload_name: String) -> Node:
+	return get_node_or_null("/root/" + autoload_name)
 
 
 func _auth() -> Node:
@@ -153,12 +153,12 @@ func _refresh_account_ui() -> void:
 	_set_delete_account_visible(false)
 
 
-func _set_delete_account_visible(visible: bool, busy: bool = false) -> void:
+func _set_delete_account_visible(show_button: bool, busy: bool = false) -> void:
 	if delete_account_button == null:
 		return
-	delete_account_button.visible = visible
-	delete_account_button.disabled = busy or not visible
-	if visible:
+	delete_account_button.visible = show_button
+	delete_account_button.disabled = busy or not show_button
+	if show_button:
 		delete_account_button.text = _i18n("btn_delete_account")
 
 
@@ -349,10 +349,12 @@ func _setup_options() -> void:
 			"settings_tile_font_120",
 		]
 		for i in TILE_FONT_SCALES.size():
-			var scale: float = TILE_FONT_SCALES[i]
+			var font_scale: float = TILE_FONT_SCALES[i]
 			var key: String = font_keys[i] if i < font_keys.size() else ""
-			var label := _i18n(key) if not key.is_empty() else "%d%%" % int(round(scale * 100.0))
-			tile_font_size_option.add_item(label if label != key else "%d%%" % int(round(scale * 100.0)))
+			var label := _i18n(key) if not key.is_empty() else "%d%%" % int(round(font_scale * 100.0))
+			tile_font_size_option.add_item(
+				label if label != key else "%d%%" % int(round(font_scale * 100.0))
+			)
 
 
 func _load_settings() -> void:
@@ -380,8 +382,8 @@ func _load_settings() -> void:
 		music_track_option.select(maxi(0, MUSIC_TRACKS.find(track)))
 
 	if tile_font_size_option != null:
-		var scale := float(_get_value(settings, "tile_font_scale", 1.0))
-		tile_font_size_option.select(_scale_to_index(scale))
+		var font_scale := float(_get_value(settings, "tile_font_scale", 1.0))
+		tile_font_size_option.select(_scale_to_index(font_scale))
 
 	if language_option != null:
 		var lang := str(_get_value(settings, "language", "uk"))
@@ -526,11 +528,11 @@ func _volume_to_index(volume: float) -> int:
 	return 3
 
 
-func _scale_to_index(scale: float) -> int:
+func _scale_to_index(font_scale: float) -> int:
 	var best := 1
 	var best_diff := 999.0
 	for i in range(TILE_FONT_SCALES.size()):
-		var diff := absf(TILE_FONT_SCALES[i] - scale)
+		var diff := absf(TILE_FONT_SCALES[i] - font_scale)
 		if diff < best_diff:
 			best = i
 			best_diff = diff
@@ -632,7 +634,8 @@ func _on_leaderboard_toggled(enabled: bool) -> void:
 	var settings = _settings()
 	if settings != null:
 		settings.set("leaderboard_opt_in", enabled)
-		settings.call("save_settings") if settings.has_method("save_settings") else null
+		if settings.has_method("save_settings"):
+			settings.call("save_settings")
 
 
 func _read_leaderboard_opt_in() -> bool:
