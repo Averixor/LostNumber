@@ -16,8 +16,23 @@ class NativeAuthStub:
 	extends RefCounted
 	var auth: Node
 	var fail := true
+	var delete_mode := "success" ## success | error | requires_recent_then_success | cancel_reauth
 	func signOut() -> void:
 		auth._on_plugin_auth_result(JSON.stringify({"status": "error" if fail else "logged_out", "error": "firebase_not_configured" if fail else ""}))
+	func deleteAccount() -> void:
+		auth._on_plugin_auth_result(JSON.stringify({"status": "deleting_account", "uid": "test-user", "displayName": "Test"}))
+		match delete_mode:
+			"error":
+				auth._on_plugin_auth_result(JSON.stringify({"status": "error", "error": "network_error", "uid": "test-user", "displayName": "Test"}))
+			"cancel_reauth":
+				auth._on_plugin_auth_result(JSON.stringify({"status": "error", "error": "delete_cancelled", "uid": "test-user", "displayName": "Test"}))
+			"requires_recent_then_success":
+				# Plugin handles re-auth internally; Godot only sees deleting → account_deleted.
+				auth._on_plugin_auth_result(JSON.stringify({"status": "account_deleted"}))
+			_:
+				auth._on_plugin_auth_result(JSON.stringify({"status": "account_deleted"}))
+	func has_java_method(method_name: String) -> bool:
+		return method_name in ["signOut", "deleteAccount", "isAvailable", "getLastError", "getUserJson", "signInGoogle"]
 
 class TransitionStub:
 	extends Node
@@ -28,6 +43,7 @@ class TransitionStub:
 
 var failed := 0
 var settings_events := 0
+var delete_account_events := 0
 
 func _init() -> void:
 	call_deferred("_run")
@@ -42,7 +58,9 @@ func _run() -> void:
 	_test_migration()
 	_test_settings_writes()
 	_test_sign_out()
+	_test_delete_account()
 	await _test_settings_opt_in()
+	await _test_delete_account_ui()
 	await _test_navigation()
 	await _test_live_merge_save()
 	await _test_wheel_exit()
@@ -203,6 +221,40 @@ func _test_sign_out() -> void:
 	check(not auth.is_signed_in() and not FileAccess.file_exists(auth.SESSION_PATH), "successful retry removes session cache")
 	auth.free()
 
+func _test_delete_account() -> void:
+	var auth := AndroidAuthProbe.new()
+	var plugin := NativeAuthStub.new()
+	plugin.auth = auth
+	auth._plugin = plugin
+	auth._apply_payload({"status": "logged_in", "uid": "test-user", "displayName": "Test"}, true)
+	check(FileAccess.file_exists(auth.SESSION_PATH), "delete tests start with session cache")
+
+	plugin.delete_mode = "error"
+	delete_account_events = 0
+	auth.account_deleted.connect(func(): delete_account_events += 1)
+	auth.delete_account()
+	check(auth.is_signed_in(), "failed delete keeps signed-in state")
+	check(auth.last_error == "network_error", "failed delete surfaces error")
+	check(delete_account_events == 0, "failed delete does not emit account_deleted")
+	check(FileAccess.file_exists(auth.SESSION_PATH), "failed delete keeps session cache")
+
+	plugin.delete_mode = "cancel_reauth"
+	auth.delete_account()
+	check(auth.is_signed_in(), "cancelled re-auth keeps account")
+	check(auth.last_error == "delete_cancelled", "cancelled re-auth is visible")
+
+	plugin.delete_mode = "requires_recent_then_success"
+	auth.delete_account()
+	check(not auth.is_signed_in(), "re-auth then delete logs out")
+	check(not FileAccess.file_exists(auth.SESSION_PATH), "successful delete clears session cache")
+	check(delete_account_events == 1, "successful delete emits account_deleted once")
+
+	auth._apply_payload({"status": "logged_in", "uid": "test-user-2", "displayName": "Test2"}, true)
+	plugin.delete_mode = "success"
+	auth.delete_account()
+	check(not auth.is_signed_in() and delete_account_events == 2, "direct delete success logs out")
+	auth.free()
+
 func _test_settings_opt_in() -> void:
 	var save := root.get_node("SaveManager")
 	var state := fresh()
@@ -221,6 +273,46 @@ func _test_settings_opt_in() -> void:
 	check(not screen.leaderboard_check.button_pressed, "failed opt-in write restores checkbox")
 	check(not save.load_game().progress.leaderboard.opt_in, "failed opt-in write preserves persisted consent")
 	save.clear_test_failure_point()
+	screen.queue_free()
+	await process_frame
+
+func _test_delete_account_ui() -> void:
+	var auth := root.get_node("AuthManager")
+	auth._clear_session()
+	auth.user = {}
+	auth.state = auth.STATE_LOGGED_OUT
+	auth.last_error = ""
+	auth._deleting_account = false
+	var screen = load("res://scenes/Settings.tscn").instantiate()
+	root.add_child(screen)
+	await process_frame
+	check(screen.delete_account_button != null, "delete account button exists in Settings")
+	screen._refresh_account_ui()
+	check(not screen.delete_account_button.visible, "delete button hidden for guest")
+
+	auth._apply_payload({"status": "logged_in", "uid": "ui-user", "displayName": "UI"}, true)
+	screen._refresh_account_ui()
+	check(screen.delete_account_button.visible, "delete button visible when signed in")
+	check(not screen.delete_account_button.disabled, "delete button enabled when signed in")
+
+	screen._show_delete_account_confirmation()
+	check(screen._delete_account_dialog != null and screen._delete_account_dialog.visible, "delete confirmation dialog opens")
+	screen._delete_account_dialog.hide()
+	check(auth.is_signed_in(), "cancelling confirmation leaves account intact")
+
+	## Desktop AuthManager has no Android plugin — must report error, not fake success.
+	screen._confirm_delete_account()
+	check(auth.is_signed_in(), "offline/desktop delete error keeps signed-in state")
+	check(auth.last_error in ["android_only", "delete_unavailable", "plugin_missing"], "offline delete surfaces an error")
+
+	auth._apply_payload({"status": "account_deleted"}, true)
+	screen._refresh_account_ui()
+	check(not auth.is_signed_in(), "account_deleted payload logs out")
+	check(not screen.delete_account_button.visible, "delete button hidden after logout")
+
+	auth._clear_session()
+	auth.user = {}
+	auth.state = auth.STATE_LOGGED_OUT
 	screen.queue_free()
 	await process_frame
 

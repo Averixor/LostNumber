@@ -7,14 +7,15 @@
 Після push у **`main`** workflow [`.github/workflows/pages.yml`](../.github/workflows/pages.yml) автоматично:
 
 1. Запускає `npm run privacy:package` → `privacy-host/`
-2. Публікує лише `privacy.html`, `index.html` (редirect) та `.nojekyll`
+2. Публікує `privacy.html`, `delete-account.html`, `index.html` (redirect) та `.nojekyll`
 
 **Не** деплоїться веб-гра (`index.html` гри, `js/`, `css/`).
 
-| URL                                                  | Призначення                     |
-| ---------------------------------------------------- | ------------------------------- |
-| `https://averixor.github.io/LostNumber/privacy.html` | Privacy Policy для Play Console |
-| `https://averixor.github.io/LostNumber/`             | Редirect на `privacy.html`      |
+| URL                                                         | Призначення                             |
+| ----------------------------------------------------------- | --------------------------------------- |
+| `https://averixor.github.io/LostNumber/privacy.html`        | Privacy Policy для Play Console         |
+| `https://averixor.github.io/LostNumber/delete-account.html` | Account deletion URL (Play declaration) |
+| `https://averixor.github.io/LostNumber/`                    | Redirect на `privacy.html`              |
 
 Потрібен публічний репозиторій і увімкнений GitHub Pages (джерело: **GitHub Actions**).
 
@@ -22,7 +23,7 @@
 
 ```bash
 npm run privacy:package
-# → privacy-host/ (index.html + privacy.html)
+# → privacy-host/ (index.html + privacy.html + delete-account.html)
 ```
 
 Завантажте вміст `privacy-host/` на будь-який статичний хост (Netlify Drop, Cloudflare Pages, S3 тощо), якщо не використовуєте GitHub Pages.

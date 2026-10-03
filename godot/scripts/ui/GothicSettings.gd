@@ -56,7 +56,7 @@ func _apply_gothic_control_chrome() -> void:
 		title_label.add_theme_font_size_override("font_size", 24)
 		title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
-	for btn in [back_button, theme_button, skin_pick_button, background_pick_button, gallery_pick_button, import_button, exit_button, account_button]:
+	for btn in [back_button, theme_button, skin_pick_button, background_pick_button, gallery_pick_button, import_button, exit_button, account_button, delete_account_button]:
 		if btn == null:
 			continue
 		btn.icon = null
@@ -67,6 +67,8 @@ func _apply_gothic_control_chrome() -> void:
 		back_button.custom_minimum_size = Vector2(180, 48)
 	if account_button != null:
 		account_button.custom_minimum_size.y = maxf(account_button.custom_minimum_size.y, 48.0)
+	if delete_account_button != null:
+		delete_account_button.custom_minimum_size.y = maxf(delete_account_button.custom_minimum_size.y, 48.0)
 	if gallery_pick_button != null:
 		gallery_pick_button.custom_minimum_size.y = maxf(gallery_pick_button.custom_minimum_size.y, 48.0)
 	if exit_button != null:
