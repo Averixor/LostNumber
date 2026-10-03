@@ -1,11 +1,12 @@
 # Play Console recon — Lost Number
 
-Дата оновлення: **2026-08-13**  
+Дата оновлення: **2026-10-03**  
 Listing: **`com.Averixor.Lost_Number`** (новий; не `com.averixor.lostnumber`)  
 Ship version у git: **2.1.6 / versionCode 6** (`godot/export_presets.cfg`)  
 CT status: **PRE-UPLOAD READY** (AAB `93f72b58…`, gates PASS 2026-10-03) — Play upload + smoke OWNER — [`STAGE1_RELEASE_RECORD.md`](STAGE1_RELEASE_RECORD.md), [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)  
 Локальний upload keystore: `android/keystore/lostnumber-upload-2026.jks`  
-Alias: `lostnumber_upload`
+Alias: `lostnumber_upload`  
+**Перед upload:** у Console перевірити max уже використаний `versionCode` для цього listing. Кандидат = **6**; якщо 6 вже був — bump до `max+1` і перезібрати AAB.
 
 ## Локальні fingerprints (звірити з Console)
 

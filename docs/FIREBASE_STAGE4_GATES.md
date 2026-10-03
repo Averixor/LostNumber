@@ -14,15 +14,15 @@
 
 ## Поточний факт Closed testing
 
-| Поле                      | Значення                                                               | Джерело                   |
-| ------------------------- | ---------------------------------------------------------------------- | ------------------------- |
-| CT status                 | **NO-GO / BLOCKED** — потрібні JSON + новий AAB + Sign-In smoke        | STAGE1 / CT_SMOKE         |
-| Release AAB (CT)          | **pending rebuild** після `android/firebase/prod/google-services.json` | STAGE1                    |
-| Rejected local AAB        | `1463fd4c…` (без Firebase resources) — **не** upload                   | STAGE1                    |
-| Legacy AAB (superseded)   | `398b83f3…` @ `2ef0fcd…` / old package — **не** upload                 | historical                |
-| versionName / versionCode | `2.1.6` / `6`                                                          | SoT / presets             |
-| Package (release / debug) | `com.Averixor.Lost_Number` / `com.Averixor.Lost_Number.dev`            | SoT / STAGE1              |
-| **Негайний OWNER крок**   | Firebase JSON → rebuild → Auth QA → потім CT                           | AUTH_SIGNIN_QA / SEQUENCE |
+| Поле                      | Значення                                                    | Джерело             |
+| ------------------------- | ----------------------------------------------------------- | ------------------- |
+| CT status                 | **PRE-UPLOAD READY** — Play upload + CT smoke ще OWNER      | STAGE1 / CT_SMOKE   |
+| Release AAB (CT)          | `93f72b58…` (`godot:verify:aab` PASS 2026-10-03)            | STAGE1              |
+| Rejected local AAB        | `1463fd4c…` (без Firebase resources) — **не** upload        | STAGE1              |
+| Legacy AAB (superseded)   | `398b83f3…` / `5c0530b0…` / `c85ee340…` — **не** upload     | historical          |
+| versionName / versionCode | `2.1.6` / `6` (якщо Console max ≥ 6 → bump перед upload)    | SoT / presets       |
+| Package (release / debug) | `com.Averixor.Lost_Number` / `com.Averixor.Lost_Number.dev` | SoT / STAGE1        |
+| **Негайний OWNER крок**   | Upload AAB `93f72b58…` → opt-in → CT smoke                  | CT_SMOKE / SEQUENCE |
 
 Upload key fingerprints (звірити з Console): [`docs/PLAY_CONSOLE_RECON.md`](PLAY_CONSOLE_RECON.md).
 

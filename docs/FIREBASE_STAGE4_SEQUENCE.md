@@ -1,13 +1,13 @@
 # Stage 4 — OWNER gate sequence (walkable)
 
-| Поле            | Значення                                                                                                   |
-| --------------- | ---------------------------------------------------------------------------------------------------------- |
-| Призначення     | Шлях від **Auth-ready AAB + CT smoke** до Cloud Save gates                                                 |
-| Статус CT зараз | **NO-GO** — JSON + rebuild + Sign-In smoke перед upload ([`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)) |
-| Auth B2 у коді  | **Shipped** (`LostNumberFirebase`, `INTERNET=true`) — див. [`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md)        |
-| Runtime Cloud   | **BLOCKED** — не стартувати Firestore / CloudSync до flip gates                                            |
-| Flip gates      | OWNER у [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md) після CT GO + Cloud approve                 |
-| Агент з репо    | Готує handoff; **не** ставить `[x]` у gates                                                                |
+| Поле            | Значення                                                                                                                |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Призначення     | Шлях від **Auth-ready AAB + CT smoke** до Cloud Save gates                                                              |
+| Статус CT зараз | **PRE-UPLOAD READY** — AAB `93f72b58…`; Play upload + CT smoke OWNER ([`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)) |
+| Auth B2 у коді  | **Shipped** (`LostNumberFirebase`, `INTERNET=true`) — див. [`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md)                     |
+| Runtime Cloud   | **BLOCKED** — не стартувати Firestore / CloudSync до flip gates                                                         |
+| Flip gates      | OWNER у [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md) після CT GO + Cloud approve                              |
+| Агент з репо    | Готує handoff; **не** ставить `[x]` у gates                                                                             |
 
 ```mermaid
 flowchart TD
@@ -22,7 +22,7 @@ flowchart TD
   ct --> p5 --> priv --> approve --> console --> sha --> gates --> bridge
 ```
 
-> **Негайний OWNER крок:** крок **1 (CT smoke)**. Усе нижче блокується, доки він не зелений.
+> **Негайний OWNER крок:** Play Console upload AAB `93f72b58…` → opt-in → крок **1 (CT smoke)**. Усе нижче блокується, доки CT не **GO**. Перед upload сверити max `versionCode` у listing (кандидат VC **6**).
 
 ---
 
@@ -50,15 +50,15 @@ Stage 4 OWNER — порядок:
 
 **Документи:** [`CLOSED_TESTING_RUNBOOK.md`](CLOSED_TESTING_RUNBOOK.md), AAB/SHA у [`STAGE1_RELEASE_RECORD.md`](STAGE1_RELEASE_RECORD.md) + [`STAGE3_CLOSEOUT.md`](STAGE3_CLOSEOUT.md), recon [`PLAY_CONSOLE_RECON.md`](PLAY_CONSOLE_RECON.md).
 
-| Поле (кандидат)    | Значення                                              |
-| ------------------ | ----------------------------------------------------- |
-| Package            | `com.Averixor.Lost_Number`                            |
-| versionName / Code | `2.1.6` / `6`                                         |
-| AAB SHA-256        | **pending** після `google-services.json` + rebuild    |
-| Rejected           | `1463fd4c…`, `398b83f3…`, `5c0530b0…` — **не** upload |
-| Локальний файл     | `build/android/lost-number.aab`                       |
+| Поле (кандидат)    | Значення                                                           |
+| ------------------ | ------------------------------------------------------------------ |
+| Package            | `com.Averixor.Lost_Number`                                         |
+| versionName / Code | `2.1.6` / `6`                                                      |
+| AAB SHA-256        | `93f72b58943f108de6197d1b7934f8f8713f482eebd81ca822cf6d560b423ad3` |
+| Rejected           | `1463fd4c…`, `398b83f3…`, `5c0530b0…`, `c85ee340…` — **не** upload |
+| Локальний файл     | `build/android/lost-number.aab` (gates PASS 2026-10-03)            |
 
-**Дії:** виконати всі 10 кроків у [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md). CT `pending` → `completed` **лише при GO**.
+**Дії:** upload у Closed testing → opt-in → усі кроки smoke в [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md). CT `pending` → `completed` **лише при GO**.
 
 **Не робити:** оголошувати CT completed з репо / без Play install / без force-stop restore.
 
