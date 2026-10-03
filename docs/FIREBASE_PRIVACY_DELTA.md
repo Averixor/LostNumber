@@ -36,6 +36,16 @@
 1. Opt-in — Sign in with Google (Settings).
 2. Sign out — без wipe локального сейву.
 3. Гра повністю без акаунта.
+4. **Видалити акаунт** (Settings) — Firebase Auth `delete()` + re-auth за потреби; локальний прогрес лишається.
+5. Публічний запит: `https://averixor.github.io/LostNumber/delete-account.html` (email, ручна обробка ≤7 днів).
+
+## Play Console — Account deletion declaration (OWNER)
+
+| Поле                                   | Значення                                                           |
+| -------------------------------------- | ------------------------------------------------------------------ |
+| URL видалення акаунта                  | `https://averixor.github.io/LostNumber/delete-account.html`        |
+| Видалення даних без видалення акаунта? | **Ні** (окремої функції немає)                                     |
+| Термін «до 90 днів»                    | **Не** ставити — in-app миттєво; web-запит ≤7 днів (ручна обробка) |
 
 ## Документи оновлені в цій хвилі
 

@@ -52,6 +52,11 @@ If `INSTALL_FAILED_USER_RESTRICTED`: phone Settings → Developer options → **
 - [x] AAB has Firebase resources (`release:check` PASS)
 - [x] Positive Sign-In with Google on device (release sideload, 2026-08-14)
 - [x] Sign out → Guest (FirebaseAuth sign-out event; UI «Гість»)
+- [ ] Delete account button visible only when signed in
+- [ ] Delete confirmation cancel leaves account intact
+- [ ] Delete account → Firebase user removed → Guest; local progress kept
+- [ ] requires-recent-login → Google Sign-In → delete succeeds
+- [ ] Offline/error during delete shows toast; stays signed in
 - [ ] Offline play while signed in/out
 
 ### Device smoke record (2026-08-14)

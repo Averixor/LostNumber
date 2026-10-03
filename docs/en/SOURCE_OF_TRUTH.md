@@ -1,7 +1,7 @@
 ---
 language: en
 title: Lost Number — Source of Truth
-version: 2.1.6
+version: 2.1.7
 last_updated: 2026-10-03
 ---
 
@@ -9,22 +9,22 @@ Single canonical reference for PO-approved decisions. When docs disagree with th
 
 ## Version snapshot
 
-| Field               | Value                                                              |
-| ------------------- | ------------------------------------------------------------------ |
-| Package             | `com.Averixor.Lost_Number`                                         |
-| Debug package       | `com.Averixor.Lost_Number.dev`                                     |
-| versionName         | `2.1.6`                                                            |
-| versionCode         | `6`                                                                |
-| Next Play upload    | after CT of `2.1.6` / `6`: bump **both** versionName + versionCode |
-| Engine              | Godot **4.7**                                                      |
-| npm package version | `2.1.6`                                                            |
+| Field               | Value                                                           |
+| ------------------- | --------------------------------------------------------------- |
+| Package             | `com.Averixor.Lost_Number`                                      |
+| Debug package       | `com.Averixor.Lost_Number.dev`                                  |
+| versionName         | `2.1.7`                                                         |
+| versionCode         | `7`                                                             |
+| Next Play upload    | versionCode `>` Console max; bump **versionName + versionCode** |
+| Engine              | Godot **4.7**                                                   |
+| npm package version | `2.1.7`                                                         |
 
 **Versioning rule:**
 
 - Debug: fixed `versionName=dev`; `versionCode` follows the release integer in presets.
 - Play compares **versionCode** only — it must be `>` max already uploaded for `com.Averixor.Lost_Number`.
-- **Current CT candidate:** keep `2.1.6` / `6` (do not rename this series mid-upload).
-- **From the next Play series onward (PO 2026-10-03):** bump **versionName** and **versionCode** together on every new upload series (typically patch `2.1.6` → `2.1.7`, and `versionCode` → Console max + 1). Keep `package.json` `version` and `godot/project.godot` `config/version` in sync with release `versionName`.
+- **Current CT candidate:** `2.1.7` / `7` (account deletion + Play compliance). Supersedes `2.1.6` / `6` (`93f72b58…` — **do not upload**).
+- On every new Play upload series: bump **versionName** and **versionCode** together; sync `package.json` and `godot/project.godot` `config/version` with release `versionName`.
 
 Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`.
 
@@ -36,9 +36,10 @@ Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`.
 | **Entry flow**        | `Boot.tscn` → `App.tscn` → screens via `ScreenRouter` autoload                                                                                                                                                                  | `godot/project.godot`, `ScreenRouter.gd`                           |
 | **Autoloads**         | SaveManager, SettingsManager, AudioManager, I18nManager, ThemeManager, LeaderboardService, AuthManager, ScreenRouter, LegacySaveMigration                                                                                       | `project.godot` `[autoload]`                                       |
 | **Network**           | `permissions/internet=true` for **optional** Google Sign-In (Firebase Auth). Offline play without account remains the default. No Cloud Save yet.                                                                               | `godot/export_presets.cfg`, `AuthManager.gd`, `LostNumberFirebase` |
-| **Cloud / Firebase**  | **Auth-only (B2)** shipped; local `android/firebase/{dev,prod}/google-services.json` restored (gitignored). CT candidate AAB `93f72b58…` **PRE-UPLOAD READY**. Cloud Save / Firestore still deferred.                           | `docs/FIREBASE_PRIVACY_DELTA.md`, `docs/AUTH_SIGNIN_QA.md`, STAGE1 |
+| **Cloud / Firebase**  | **Auth-only (B2)** + in-app account deletion; local `android/firebase/{dev,prod}/google-services.json` (gitignored). CT candidate **2.1.7 / 7**. Cloud Save / Firestore still deferred.                                         | `docs/FIREBASE_PRIVACY_DELTA.md`, `docs/AUTH_SIGNIN_QA.md`, STAGE1 |
+| **Account deletion**  | Settings → **Видалити акаунт** (Firebase `delete` + Google re-auth). Local saves kept. Web: `https://averixor.github.io/LostNumber/delete-account.html` (manual ≤7 days). No “delete data without account”.                     | `AuthManager.gd`, Firebase plugin, `delete-account.html`, privacy  |
 | **Save**              | `user://` envelope v1 + SHA-256 + `.bak`; legacy import via `LegacySaveMigration`                                                                                                                                               | `SaveManager.gd`, `LegacySaveMigration.gd`                         |
-| **i18n**              | uk / ru / en — **330 keys** each                                                                                                                                                                                                | `godot/assets/i18n/*.json`, `run_i18n_tests.gd`                    |
+| **i18n**              | uk / ru / en — **341 keys** each                                                                                                                                                                                                | `godot/assets/i18n/*.json`, `run_i18n_tests.gd`                    |
 | **Levels**            | First **40** configs algorithmically generated at init (`_generate_manual_levels(40)`); from index 40+ separate procedural branch                                                                                               | `LevelManager.gd`                                                  |
 | **Visual authority**  | **PO mockups + [VISUAL_TARGET.md](./VISUAL_TARGET.md)** = acceptance; gothic fantasy integration over flat neon                                                                                                                 | `VISUAL_TARGET.md`, `docs/archive/VISUAL_PORT_MAP.md`              |
 | **Legacy import UI**  | Settings **Import** stub demoted below gallery CTA (`settings_import_legacy_stub`): no save mutation; startup migration + `LegacySaveMigration` remain                                                                          | `Settings.gd`, `LegacySaveMigration.gd`, `Boot.gd`                 |
@@ -88,7 +89,7 @@ Dated technical audits capture static-analysis findings, test gaps, and release 
 | ------------------------------------------------------ | --------- | -------------------------------------------------------------------------------------------------------------------------- |
 | [AUDIT_MAIN_2026-07-10.md](./AUDIT_MAIN_2026-07-10.md) | `dd6300a` | LevelManager high-index risk, backup-only save, migration plugin path, Settings import stub, CI/`release:ideal` scope      |
 | [AUDIT_PLAY_360.md](../AUDIT_PLAY_360.md)              | `5e39937` | 360° Play readiness; gothic PR #48 already on main; CI jobs configured — confirm run per release SHA; VC16 Console unknown |
-| [ROADMAP.md](../ROADMAP.md)                            | v1.2      | Play-first; Auth B2 shipped; CT **PRE-UPLOAD READY** (AAB `93f72b58…`); Cloud Save later                                   |
+| [ROADMAP.md](../ROADMAP.md)                            | v1.2      | Play-first; Auth B2 + account deletion; CT candidate **2.1.7 / 7**; Cloud Save later                                       |
 
 Update this table when a new dated audit lands on `main`.
 

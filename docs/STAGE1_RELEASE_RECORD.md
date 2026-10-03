@@ -1,7 +1,7 @@
 # Stage 1 — Release record (новий Play listing + Auth B2)
 
-Дата запису: **2026-10-03** (оновлено AAB candidate)  
-Статус: **PRE-UPLOAD READY** — Play Closed Testing upload AAB `93f72b58…`  
+Дата запису: **2026-10-03** (2.1.7 / VC7 account deletion)  
+Статус: **PRE-UPLOAD READY** — CT candidate **2.1.7 / 7**; AAB SHA після rebuild (див. нижче). `93f72b58…` (VC6) — **superseded**  
 Listing: **`com.Averixor.Lost_Number`**
 
 ## Git / версія
@@ -10,15 +10,15 @@ Listing: **`com.Averixor.Lost_Number`**
 | ----------------- | --------------------------------------------- |
 | Package (release) | **`com.Averixor.Lost_Number`**                |
 | Package (debug)   | **`com.Averixor.Lost_Number.dev`**            |
-| versionName       | **2.1.6**                                     |
-| versionCode       | **6**                                         |
+| versionName       | **2.1.7**                                     |
+| versionCode       | **7**                                         |
 | Upload keystore   | `android/keystore/lostnumber-upload-2026.jks` |
 | Auth              | Google Sign-In via `LostNumberFirebase`       |
 | Cloud Save        | **ні** (наступний PR)                         |
 | targetSdk         | **36**                                        |
 | Git (main)        | `cac9cfe` (docs/LFS/ideal + Auth B2 source)   |
 
-**Version gate:** VC **1–5** могли вже бути в Console → поточний код **6**. Далі: VC ≥ попереднього + 1.
+**Version gate:** Console max був **5**; VC6 (`93f72b58…`) superseded. Поточний код **7**. Далі: VC ≥ попереднього + 1.
 
 **Signing note:** Upload key — лише `43:93:42:63…`. Вантажити **тільки AAB**.
 
@@ -39,15 +39,16 @@ Listing: **`com.Averixor.Lost_Number`**
 
 ## AAB артефакт (Auth-ready candidate)
 
-| Поле        | Значення                                                           |
-| ----------- | ------------------------------------------------------------------ |
-| Path        | `build/android/lost-number.aab`                                    |
-| SHA-256     | `93f72b58943f108de6197d1b7934f8f8713f482eebd81ca822cf6d560b423ad3` |
-| Package     | `com.Averixor.Lost_Number`                                         |
-| versionCode | **6**                                                              |
-| Built       | 2026-10-03 (prod `google-services.json` + oauth_client type 3)     |
-| Firebase    | `google_app_id` / `default_web_client_id` / project — **present**  |
-| CT status   | **PRE-UPLOAD READY** → OWNER upload to Play CT                     |
+| Поле        | Значення                                                 |
+| ----------- | -------------------------------------------------------- |
+| Path        | `build/android/lost-number.aab`                          |
+| SHA-256     | `_pending_rebuild_after_merge_`                          |
+| Package     | `com.Averixor.Lost_Number`                               |
+| versionCode | **7**                                                    |
+| versionName | **2.1.7**                                                |
+| Built       | pending `npm run godot:android:release` after merge      |
+| Firebase    | Auth + `deleteAccount()` in `LostNumberFirebase` plugin  |
+| CT status   | **PRE-UPLOAD READY** → rebuild → OWNER upload to Play CT |
 
 ## Verifier
 
@@ -72,6 +73,7 @@ Listing: **`com.Averixor.Lost_Number`**
 | Candidate               | SHA-256 / note                                           |
 | ----------------------- | -------------------------------------------------------- |
 | Auth B2 без JSON        | AAB `1463fd4c…` — **не** CT                              |
+| VC6 Auth-ready          | AAB `93f72b58…` — **superseded** by 2.1.7 / 7            |
 | Pre-oauth empty client  | rebuild до `c85ee340…`                                   |
 | Legacy listing VC16     | AAB `5c0530b0…` @ `8f1a7c2…` / `com.averixor.lostnumber` |
 | Rejected wrong-cert APK | cert SHA1 `00:D9:4E:BB…` — **не** upload                 |
@@ -79,5 +81,5 @@ Listing: **`com.Averixor.Lost_Number`**
 ## Owner upload
 
 1. Play Console → Upload key SHA == таблиця вище
-2. Upload **`93f72b58…`** `lost-number.aab` (або новіший після наступної перезбірки)
+2. Upload **2.1.7 / VC7** `lost-number.aab` (SHA після rebuild; **не** `93f72b58…`)
 3. Smoke: [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)

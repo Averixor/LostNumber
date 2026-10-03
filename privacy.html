@@ -131,7 +131,7 @@
       <header>
         <h1>Lost Number — Політика конфіденційності</h1>
         <p class="updated">
-          <time datetime="2026-08-13">Останнє оновлення: 13 серпня 2026 року</time>
+          <time datetime="2026-10-03">Останнє оновлення: 3 жовтня 2026 року</time>
         </p>
       </header>
 
@@ -243,7 +243,43 @@
       </section>
 
       <section>
-        <h2>6. Керування локальними даними</h2>
+        <h2>6. Google Sign-In та видалення акаунта</h2>
+
+        <p>
+          Вхід через Google (Firebase Auth) є <strong>опційним</strong>. Після входу Google /
+          Firebase можуть обробляти ідентифікатор користувача та (для відображення статусу) email /
+          ім’я. Lost Number зберігає лише мінімальний локальний кеш сесії
+          (<code>user://auth_session.json</code>: UID / відображуване ім’я) — без паролів і токенів
+          поза SDK.
+        </p>
+
+        <p>
+          Локальні save-файли гри (прогрес, XP, налаштування)
+          <strong>не є хмарними даними акаунта</strong>: у поточній версії немає Cloud Save /
+          Firestore ігрового прогресу.
+        </p>
+
+        <p><strong>Як видалити акаунт:</strong></p>
+        <ul>
+          <li>
+            у застосунку: <strong>Налаштування → Акаунт Google → Видалити акаунт</strong>
+            (підтвердження; за потреби повторний Google Sign-In / re-auth, потім delete);
+          </li>
+          <li>
+            або через публічну сторінку запиту:
+            <a href="./delete-account.html">delete-account.html</a>
+            (email-запит обробляється вручну, зазвичай до 7 днів).
+          </li>
+        </ul>
+
+        <p>
+          Після успішного видалення акаунта Firebase Auth локальна auth-сесія очищається. Локальний
+          прогрес на пристрої може залишитися — його можна видалити окремо (див. нижче).
+        </p>
+      </section>
+
+      <section>
+        <h2>7. Керування локальними даними</h2>
 
         <p>
           Ви можете видалити всі локальні дані гри, очистивши сховище застосунку в налаштуваннях
@@ -254,7 +290,7 @@
       </section>
 
       <section>
-        <h2>7. Зміни до політики</h2>
+        <h2>8. Зміни до політики</h2>
 
         <p>
           Ми можемо оновлювати цю політику у разі зміни функцій гри або способів обробки даних. Дату
@@ -263,7 +299,7 @@
       </section>
 
       <section>
-        <h2>8. Контактна інформація</h2>
+        <h2>9. Контактна інформація</h2>
 
         <p>
           З питаннями щодо конфіденційності та обробки даних звертайтеся за електронною адресою
@@ -323,6 +359,15 @@
           do not collect personal data for advertising or analytics. The only optional case is
           <strong>Sign in with Google</strong> (Firebase Auth): Google / Firebase then process
           account data for authentication; otherwise progress stays local on the device only.
+        </p>
+
+        <p>
+          <strong>Google Sign-In / account deletion:</strong> Sign-in is optional (Firebase Auth).
+          Local game save files are <strong>not</strong> cloud account data (no Cloud Save in this
+          version). Delete the account in-app via Settings → Google account → Delete account, or use
+          <a href="./delete-account.html">delete-account.html</a> (manual email requests, typically
+          within 7 days). Successful deletion clears the in-app auth session; device-local progress
+          may remain until you clear app storage or uninstall.
         </p>
 
         <p>

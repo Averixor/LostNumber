@@ -58,12 +58,14 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 
 **Важливо:** поточні скріншоти в `store/screenshots/phone/` — **чернетки з фонів меню**. Перед публічним релізом замініть на реальні знімки з телефона (меню з UI, гра, налаштування). Див. `store/screenshots/phone/README.md`.
 
-## 3. Privacy Policy
+## 3. Privacy Policy / Account deletion
 
-- Файл: `privacy.html` (корінь репозиторію)
-- Хостинг: GitHub Pages автоматично після push у `main` (`.github/workflows/pages.yml`, лише privacy)
-- Альтернатива: `npm run privacy:package` → `privacy-host/` (Netlify Drop, Cloudflare Pages тощо)
-- URL для Play Console: `https://averixor.github.io/LostNumber/privacy.html`
+- Файли: `privacy.html`, `delete-account.html` (корінь репозиторію)
+- Хостинг: GitHub Pages автоматично після push у `main` (`.github/workflows/pages.yml`)
+- Альтернатива: `npm run privacy:package` → `privacy-host/`
+- Privacy URL: `https://averixor.github.io/LostNumber/privacy.html`
+- **Account deletion URL (Play declaration):** `https://averixor.github.io/LostNumber/delete-account.html`
+- Data safety: видалення даних **без** видалення акаунта = **Ні**; не ставити «до 90 днів» (in-app одразу; web ≤7 днів вручну) — див. [`FIREBASE_PRIVACY_DELTA.md`](FIREBASE_PRIVACY_DELTA.md)
 
 ## 4. Заповнення сторінки застосунку
 
