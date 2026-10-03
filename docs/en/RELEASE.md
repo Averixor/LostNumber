@@ -22,11 +22,13 @@ Primary release path: **Godot 4 Android AAB** → Google Play. Web/JS/Capacitor 
 | targetSdk   | 36                              | 36                                    |
 | ABI         | arm64-v8a, x86_64               | arm64-v8a, x86_64                     |
 
-**Next Play upload:** use a versionCode greater than the highest code already present in Play Console.
+**Next Play upload after this CT:** bump **versionName + versionCode** together (see SoT). This CT keeps `2.1.6` / `6`.
 
 ### Versioning rule
 
-Release uses the product version (`2.1.6`); debug uses the fixed `versionName=dev`. The independent integer `versionCode` must increase for every Play upload.
+- Debug: fixed `versionName=dev`.
+- Play: `versionCode` must be `>` Console max for `com.Averixor.Lost_Number`.
+- **From the next series (after `2.1.6` / `6`):** raise `versionName` and `versionCode` on every new Play upload series; sync `package.json` and `project.godot` `config/version` with release `versionName`.
 
 ABI note: `armeabi-v7a` intentionally excluded (~8k 32-bit-only devices in catalog).
 
