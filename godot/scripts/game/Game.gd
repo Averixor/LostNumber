@@ -313,7 +313,7 @@ func _on_chain_finished(path: Array[Vector2i]) -> void:
 	var float_pos := Vector2.INF
 	if not path.is_empty():
 		float_pos = board_view.get_cell_center_local(path.back())
-	var result := state.merge_current_chain(true)
+	var result := state.merge_current_chain()
 	if not result.ok:
 		_release_chain_input_lock()
 		_play_sfx("invalid")
@@ -325,12 +325,13 @@ func _on_chain_finished(path: Array[Vector2i]) -> void:
 	_maybe_vibrate(55)
 	var removed: Array = result.get("removed", [])
 	var anchor: Vector2i = result.get("anchor", Vector2i.ZERO)
-	await board_view.animate_merge_settle(removed, anchor)
+	_daily.on_chain_merged(chain_len)
+	if result.get("level_complete", false):
+		_daily.on_level_complete()
+	await board_view.animate_merge_settle(removed, anchor, int(result.result))
 	var xp_earned := int(result.get("xp", 0)) + int(result.get("surplus", 0))
 	if xp_earned > 0 and float_pos.is_finite():
 		LnUiLib.show_floating_text(board_view, "+%d XP" % xp_earned, float_pos, LnUiLib.XP)
-	_daily.on_chain_merged(chain_len)
-	_daily.on_session_xp_changed()
 	_refresh_hud()
 	board_view.reset_all_highlights()
 	_save_game()
@@ -338,7 +339,6 @@ func _on_chain_finished(path: Array[Vector2i]) -> void:
 	if leaderboard != null and leaderboard.has_method("queue_best_scores"):
 		leaderboard.call("queue_best_scores", state.progress)
 	if result.get("level_complete", false):
-		_daily.on_level_complete()
 		_play_sfx("level_up")
 		_play_sfx("victory")
 		level_complete_panel.visible = state.should_show_level_complete()

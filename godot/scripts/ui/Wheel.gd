@@ -127,6 +127,7 @@ func _on_spin() -> void:
 		_show_message(_wheel_error_text(str(prep.get("reason", ""))))
 		_refresh_ui()
 		return
+	_persist_result()
 	_play_sfx("wheel_spin")
 	spin_button.disabled = true
 	spin_button.text = _i18n("wheel_spinning")
@@ -138,15 +139,16 @@ func _on_spin_animation_done(sector: Dictionary, _index: int) -> void:
 	if _invalid_session or _state == null or _wheel == null or _daily == null:
 		return
 	_wheel.finish_spin(sector)
-	_daily.on_wheel_spun()
 	_play_sfx("wheel_reward")
 	_show_result(_sector_label(sector))
+	_refresh_ui()
+
+func _persist_result() -> void:
 	var save := _autoload("SaveManager")
 	if save != null and save.has_method("save_game"):
 		var saved := bool(save.call("save_game", _state))
 		if not saved:
-			push_warning("Wheel: failed to save wheel result")
-	_refresh_ui()
+			LnUiLib.show_toast(self, _i18n("save_failed"))
 
 func _style_result_modal() -> void:
 	if result_dim != null:
@@ -240,11 +242,17 @@ func _sector_label(sector: Dictionary) -> String:
 			return translated
 	return str(sector.get("label", ""))
 
+func handle_back() -> bool:
+	_on_back()
+	return true
+
+
 func _on_back() -> void:
 	var save := _autoload("SaveManager")
 	if _state != null and save != null and save.has_method("save_game"):
 		var saved := bool(save.call("save_game", _state))
 		if not saved:
-			push_warning("Wheel: failed to save before leaving")
+			LnUiLib.show_toast(self, _i18n("save_failed"))
+			return
 	_play_sfx("button_click")
 	_navigate_back()

@@ -135,6 +135,7 @@ const KEY_ALIASES := {
 	"btn_resume": "btn_resume",
 	"save_indicator": "save_indicator",
 	"save_failed": "save_failed",
+	"settings_save_failed": "settings_save_failed",
 	"chain_status_valid": "chain_status_valid",
 	"chain_status_invalid": "chain_status_invalid",
 	"chain_status_continue": "chain_status_continue",
@@ -213,6 +214,11 @@ const STATIC_FALLBACKS := {
 		"uk": "Збережено",
 		"ru": "Сохранено",
 		"en": "Saved",
+	},
+	"settings_save_failed": {
+		"uk": "Не вдалося зберегти налаштування. Спробуйте ще раз.",
+		"ru": "Не удалось сохранить настройки. Попробуйте ещё раз.",
+		"en": "Could not save settings. Please try again.",
 	},
 	"save_failed": {
 		"uk": "Не вдалося зберегти прогрес. Гру можна продовжити.",
