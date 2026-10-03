@@ -13,11 +13,11 @@
     "all:release": "npm run all:checks && npm run all:android && npm run pack:unified",
     "all:full": "npm run all:checks && npm run all:godot && npm run all:android && npm run pack:unified",
     "all:deploy": "npm run all:release",
-    "format": "node ./node_modules/prettier/bin/prettier.cjs --write .",
-    "format:check": "node ./node_modules/prettier/bin/prettier.cjs --check .",
-    "lint": "node ./node_modules/eslint/bin/eslint.js .",
-    "lint:fix": "node ./node_modules/eslint/bin/eslint.js . --fix",
-    "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit -p tsconfig.json",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "check": "node ./scripts/check.mjs",
     "verify:tagline": "node ./scripts/verify-tagline.mjs",
     "test": "node ./scripts/smoke-tests.mjs",
@@ -36,7 +36,7 @@
     "godot:test:smoke": "bash ./scripts/run-godot-isolated.sh godot4 --path godot --headless --script res://scripts/tests/run_smoke_tests.gd",
     "godot:test:i18n": "bash ./scripts/run-godot-isolated.sh godot4 --path godot --headless --script res://scripts/tests/run_i18n_tests.gd",
     "godot:test:visual": "bash ./scripts/run-godot-isolated.sh godot4 --path godot --headless --script res://scripts/tests/run_visual_skin_tests.gd",
-    "godot:test:perf": "timeout 60s bash ./scripts/run-godot-isolated.sh godot4 --path godot --resolution 420x920 --audio-driver Dummy --script res://scripts/tests/run_long_chain_perf_tests.gd -- \"$PWD/build/qa/godot-long-chain-perf.json\"",
+    "godot:test:perf": "bash ./scripts/run-with-timeout.sh 60s bash ./scripts/run-godot-isolated.sh godot4 --path godot --resolution 420x920 --audio-driver Dummy --script res://scripts/tests/run_long_chain_perf_tests.gd -- \"$PWD/build/qa/godot-long-chain-perf.json\"",
     "godot:test:transactions": "bash ./scripts/run-godot-isolated.sh godot4 --path godot --headless --script res://scripts/tests/run_transaction_tests.gd",
     "godot:test:all": "npm run godot:import && npm run godot:test && npm run godot:test:levels && npm run godot:test:save && npm run godot:test:smoke && npm run godot:test:i18n && npm run godot:test:visual && npm run godot:test:transactions",
     "godot:verify:aab": "bash ./scripts/verify-godot-aab.sh",
@@ -55,15 +55,14 @@
     "@cursor/sdk": "^1.0.32",
     "eslint": "^10.11.0",
     "globals": "^17.12.0",
-    "prettier": "3.9.9",
+    "prettier": "^3.9.9",
     "typescript": "^5.9.3"
   },
   "engines": {
     "node": ">=20.19.0"
   },
   "overrides": {
-    "@connectrpc/connect-node": {
-      "undici": "6.28.0"
-    }
-  }
+    "undici": "6.28.1"
+  },
+  "type": "module"
 }
