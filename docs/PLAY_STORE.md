@@ -17,7 +17,7 @@
 ## 1. Збірка AAB
 
 ```bash
-cd ~/Desktop/LostNumber
+cd /path/to/LostNumber   # корінь репо з package.json
 npm run release:check
 npm run godot:android:release
 ```
@@ -41,7 +41,7 @@ npm run keystore:info
 
 Скрипт читає `android/keystore.properties` і викликає `keytool` з правильним шляхом.
 
-Після збірки завантажте **app-release.aab** у Play Console.
+Після збірки завантажте **`build/android/lost-number.aab`** у Play Console.
 
 ## 2. Графіка для Play Console
 
@@ -87,12 +87,13 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 1. [Google Play Console](https://play.google.com/console) → **Lost Number**
 2. **Testing → Closed testing** → Create track (наприклад `closed-beta`)
 3. **Testers** → список email (Google-акаунти) або Google Group
-4. **Releases** → Create new release → завантажити `app-release.aab`
+4. **Releases** → Create new release → завантажити `build/android/lost-number.aab`
 5. Release notes (укр.):
 
    ```
-   Перший закритий тест Lost Number 1.0.
+   Закритий тест Lost Number 2.1.6.
    Офлайн головоломка з числами, рівнями, бонусами та локальним збереженням.
+   Опційний Google Sign-In (без cloud save).
    ```
 
 6. **Review and roll out** (після завершення identity verification)

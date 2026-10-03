@@ -84,7 +84,7 @@ Core gameplay rules above are MVP; the following meta systems **are implemented*
 | Achievements                          | `Achievements.tscn`, save via `PlayerProgress`              |
 | Stats / About                         | `Stats.tscn`, `About.tscn`                                  |
 | Themes (dawn/dusk)                    | `ThemeManager.gd` (twilight in code, hidden from UI toggle) |
-| i18n (UA / RU / EN)                   | `I18nManager.gd` — 285 keys per locale                      |
+| i18n (UA / RU / EN)                   | `I18nManager.gd` — 330 keys per locale                      |
 
 ## Intentionally deferred
 

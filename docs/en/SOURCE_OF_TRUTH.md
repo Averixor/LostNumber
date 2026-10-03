@@ -2,7 +2,7 @@
 language: en
 title: Lost Number — Source of Truth
 version: 2.1.6
-last_updated: 2026-08-13
+last_updated: 2026-10-03
 ---
 
 Single canonical reference for PO-approved decisions. When docs disagree with this file, **update the other doc** (or escalate to PO if the code is wrong).
@@ -33,7 +33,7 @@ Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`.
 | **Network**           | `permissions/internet=true` for **optional** Google Sign-In (Firebase Auth). Offline play without account remains the default. No Cloud Save yet.                                                                                                | `godot/export_presets.cfg`, `AuthManager.gd`, `LostNumberFirebase` |
 | **Cloud / Firebase**  | **Auth-only (B2)** shipped in code; Cloud Save / Firestore still deferred. OWNER must supply `android/firebase/{dev,prod}/google-services.json`.                                                                                                 | `docs/FIREBASE_PRIVACY_DELTA.md`, `docs/AUTH_SIGNIN_QA.md`         |
 | **Save**              | `user://` envelope v1 + SHA-256 + `.bak`; legacy import via `LegacySaveMigration`                                                                                                                                                                | `SaveManager.gd`, `LegacySaveMigration.gd`                         |
-| **i18n**              | uk / ru / en — **285 keys** each                                                                                                                                                                                                                 | `godot/assets/i18n/*.json`, `run_i18n_tests.gd`                    |
+| **i18n**              | uk / ru / en — **330 keys** each                                                                                                                                                                                                                 | `godot/assets/i18n/*.json`, `run_i18n_tests.gd`                    |
 | **Levels**            | First **40** configs algorithmically generated at init (`_generate_manual_levels(40)`); from index 40+ separate procedural branch                                                                                                                | `LevelManager.gd`                                                  |
 | **Visual authority**  | **PO mockups + [VISUAL_TARGET.md](./VISUAL_TARGET.md)** = acceptance; gothic fantasy integration over flat neon                                                                                                                                  | `VISUAL_TARGET.md`, `docs/archive/VISUAL_PORT_MAP.md`              |
 | **Legacy import UI**  | Settings **Import** stub demoted below gallery CTA (`settings_import_legacy_stub`): no save mutation; startup migration + `LegacySaveMigration` remain                                                                                           | `Settings.gd`, `LegacySaveMigration.gd`, `Boot.gd`                 |

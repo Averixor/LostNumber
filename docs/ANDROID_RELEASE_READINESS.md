@@ -37,8 +37,8 @@ ABI note: only `arm64-v8a` + `x86_64` are shipped. Dropping `armeabi-v7a` exclud
 ## Icons
 
 - Launcher: `godot/assets/icons/icon-1024.png` (referenced in export preset)
-- Project icon: `godot/icon.svg`
-- Adaptive icons: not configured yet (optional for Play)
+- Project icon: `godot/icon.png` (`project.godot` → `config/icon`)
+- Adaptive icons: `godot/assets/icons/adaptive-icon-{foreground,background}.png` (wired in `export_presets.cfg`)
 
 ## Signing (release only)
 
@@ -98,8 +98,7 @@ Then create `android/keystore.properties` following the pattern above with match
 Pinned версія: `bundletool-all-1.18.3.jar`
 
 1. Завантаж: [bundletool 1.18.3 release](https://github.com/google/bundletool/releases/tag/1.18.3)
-2. Поклади файл у корінь репозиторію з іменем `bundletool.jar`:
-   - `/home/averixor/Desktop/LostNumber/bundletool.jar`
+2. Поклади файл у **корінь репозиторію** з іменем `bundletool.jar` (наприклад `$PWD/bundletool.jar`).
 3. Альтернатива: вказати шлях через змінну `BUNDLETOOL_JAR`:
    - `BUNDLETOOL_JAR=/abs/path/bundletool-all-1.18.3.jar npm run godot:verify:aab`
 
@@ -125,7 +124,7 @@ npm run godot:verify:aab       # full pre-upload gate (tests + release:check + A
 - Settings: scroll layout, **Back** pinned at bottom; theme toggle cycles dawn/dusk only (`UI_CYCLE_THEMES`; twilight hidden)
 - DailyQuests: scroll + Back at bottom; card layout refresh (`DailyQuestCard.tscn`)
 - Game HUD: bonus/crown visuals; tile crown rendering
-- i18n: **285** keys per locale (uk/ru/en)
+- i18n: **330** keys per locale (uk/ru/en)
 
 Pre-upload gate: `npm run godot:verify:aab` (tests + release:check + AAB manifest). Requires existing AAB at `build/android/lost-number.aab`. **Не комітити** keystore-поля, які export-скрипт може дописати в `export_presets.cfg` — `verify-godot-release.mjs` їх відхиляє.
 

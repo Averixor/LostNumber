@@ -2,7 +2,7 @@
 language: en
 title: Lost Number — Architecture & Repository Layout
 version: 2.1.6
-last_updated: 2026-07-10
+last_updated: 2026-10-03
 ---
 
 ## Architecture & Repository Layout
@@ -16,18 +16,18 @@ High-level technical architecture for Lost Number **2.1.6**. Godot 4.7 is the so
 │  Google Play  ←  lost-number.aab (Godot)                │
 ├─────────────────────────────────────────────────────────┤
 │  godot/          Boot→App shell, ScreenRouter, gameplay │
-│  android/        Release keystore only                  │
+│  android/        firebase/ + local keystore (gitignored)│
 │  store/          Play Console listing + graphics        │
 │  privacy.html    Play Store privacy policy (static)     │
 └─────────────────────────────────────────────────────────┘
 ```
 
-| Layer           | Stack                  | Role                                        |
-| --------------- | ---------------------- | ------------------------------------------- |
-| Gameplay (ship) | Godot 4.7 GDScript     | Boot → App → screens; back-stack navigation |
-| Save            | `user://` JSON (Godot) | Checksum + `.bak` rollback                  |
-| Network         | None                   | Offline-only; no PII                        |
-| CI              | GitHub Actions         | `release:check` on push/PR                  |
+| Layer           | Stack                  | Role                                                                 |
+| --------------- | ---------------------- | -------------------------------------------------------------------- |
+| Gameplay (ship) | Godot 4.7 GDScript     | Boot → App → screens; back-stack navigation                          |
+| Save            | `user://` JSON (Godot) | Checksum + `.bak` rollback                                           |
+| Network         | Optional               | Offline play by default; optional Google Sign-In (Firebase Auth B2)  |
+| CI              | GitHub Actions         | `release:check` **and** `godot:test:all` (Godot 4.7.1) on push/PR    |
 
 ### Godot runtime architecture
 
@@ -41,6 +41,7 @@ High-level technical architecture for Lost Number **2.1.6**. Godot 4.7 is the so
 | `I18nManager`         | uk/ru/en JSON dictionaries                         |
 | `ThemeManager`        | dawn/dusk/twilight, background rotation            |
 | `LeaderboardService`  | Offline queue stub                                 |
+| `AuthManager`         | Optional Google Sign-In (Firebase Auth)            |
 | `ScreenRouter`        | Screen navigation, back-stack, transitions         |
 | `LegacySaveMigration` | Capacitor → Godot save import                      |
 
@@ -55,13 +56,13 @@ Boot.tscn (main_scene)
     └── ScreenTransition.tscn   fade/slide cover-uncover
 ```
 
-Registered screens (`ScreenRouter.SCREENS`): MainMenu, Game, Settings, Achievements, DailyQuests, Wheel, Stats, About, SkinPreview.
+Registered screens (`ScreenRouter.SCREENS`): MainMenu, Game, Settings, Achievements, DailyQuests, Wheel, Stats, About, SkinPreview, BackgroundPreview.
 
 #### Core gameplay modules
 
 | Module          | Path                             | Role                                                                            |
 | --------------- | -------------------------------- | ------------------------------------------------------------------------------- |
-| Rules           | `scripts/core/Rules.gd`          | Chain validation (1:1 with `rules.js`)                                          |
+| Rules           | `scripts/core/Rules.gd`          | Chain validation (historical parity: `docs/archive/js-reference/rules.js`)      |
 | Board logic     | `scripts/core/BoardLogic.gd`     | Merge, gravity, spawn                                                           |
 | Level manager   | `scripts/core/LevelManager.gd`   | 40 algorithmically generated initial configs + procedural branch from index 40+ |
 | Game state      | `scripts/core/GameState.gd`      | Session state                                                                   |
@@ -105,10 +106,11 @@ LostNumber/                      ← canonical project root
 │   ├── scenes/                  # Boot, App, screens, components
 │   ├── scripts/                 # core, game, ui, managers, meta, tests
 │   ├── assets/ui/               # In-game graphics (icons, backgrounds)
-│   ├── assets/i18n/             # uk.json, ru.json, en.json (285 keys)
+│   ├── assets/i18n/             # uk.json, ru.json, en.json (330 keys)
 │   ├── themes/                  # lost_number_theme.tres
-│   └── android/plugins/         # LostNumberMigration AAR + .gdap
-├── android/keystore/            # Release signing (gitignored)
+│   └── android/plugins/         # LostNumberMigration + LostNumberFirebase AAR/.gdap
+├── android/firebase/            # google-services.json (dev/prod)
+├── android/keystore/            # Release signing (gitignored; local)
 ├── store/                       # Play Console listing assets (not in AAB)
 ├── build/android/               # Prebuilt APK/AAB (gitignored)
 ├── docs/                        # Project docs (uk + docs/en/ + archive/)
@@ -130,7 +132,7 @@ LostNumber/                      ← canonical project root
 | Visual source         | PO mockups + [VISUAL_TARGET.md](./VISUAL_TARGET.md)           | Gothic fantasy integration; archive map in `docs/archive/VISUAL_PORT_MAP.md` |
 | Low performance       | `bg_effects_enabled`                                          | Mirrors web `low-performance.css`; disables particles + slide                |
 | Floating numbers      | Removed (Phase 5.6)                                           | FPS regression on weak devices                                               |
-| Firebase / cloud      | Stage 4 docs kickoff; runtime blocked                         | OWNER gates + Phase 5; ADR `docs/en/FIREBASE_ADR.md`                         |
+| Firebase / cloud      | Auth-only (B2) shipped; Cloud Save still deferred             | `AuthManager` + `LostNumberFirebase`; ADR `docs/en/FIREBASE_ADR.md`          |
 
 ### Approved plans
 
@@ -150,30 +152,35 @@ Tracker: [docs/archive/VISUAL_PORT_MAP.md](../archive/VISUAL_PORT_MAP.md) (histo
 
 #### Phase 6 — Firebase (Stage 4)
 
-- Docs kickoff ready; **runtime blocked** on [`FIREBASE_STAGE4_GATES.md`](../FIREBASE_STAGE4_GATES.md)
-- Google Auth only; Kotlin Android plugin bridge (not WebView/Capacitor)
-- Firestore `users/{uid}/save/current`; SaveManager-first upload
-- Conflicts: `revision` + checksum + dialog (no field-merge)
-- Fallback: local save; offline play without account
+- **Auth-only (B2)** shipped in code (`AuthManager` + `LostNumberFirebase` plugin)
+- Cloud Save / Firestore still deferred — OWNER gates in [`FIREBASE_STAGE4_GATES.md`](../FIREBASE_STAGE4_GATES.md)
+- Planned later: Firestore `users/{uid}/save/current`; SaveManager-first upload
+- Offline play without account remains the default
 
-See [`FIREBASE_ADR.md`](./FIREBASE_ADR.md). Do not implement runtime until OWNER flips gates.
+See [`FIREBASE_ADR.md`](./FIREBASE_ADR.md) and [`SOURCE_OF_TRUTH.md`](./SOURCE_OF_TRUTH.md).
 
 ### CI / automation
 
-| Workflow                   | Purpose                                                        |
-| -------------------------- | -------------------------------------------------------------- |
-| `.github/workflows/ci.yml` | `npm run release:check` on push/PR (no `godot:test:all` in CI) |
+| Workflow                   | Purpose                                                                              |
+| -------------------------- | ------------------------------------------------------------------------------------ |
+| `.github/workflows/ci.yml` | `npm run release:check` **and** `npm run godot:test:all` (Godot **4.7.1** pinned)    |
 
 Local full gate: `npm run release:ideal` (format + lint + repo checks + Godot rules/save; skips if no `godot4`). Pre-upload: `npm run godot:verify:aab`.
 
 ### Android plugin architecture
 
-`LostNumberMigration` plugin (`godot/android/plugins/`):
+Two plugins under `godot/android/plugins/` (enabled in `export_presets.cfg`):
 
-- `.gdap` at `android/plugins/` top level (Godot 4.5 requirement)
+**`LostNumberMigration`**
+
+- `.gdap` at `android/plugins/` top level (Godot 4.5+ requirement)
 - Scans files dir, shared_prefs, WebView LevelDB for `lostNumberSave`
 - Caches export to `files/lostnumber_legacy_export.json`
-- Enabled in `export_presets.cfg`: `plugins/LostNumberMigration=true`
+
+**`LostNumberFirebase`**
+
+- Kotlin bridge for optional Google Sign-In / Firebase Auth
+- Requires OWNER-supplied `android/firebase/{dev,prod}/google-services.json`
 
 ### Navigation sequence (reference)
 
