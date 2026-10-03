@@ -49,14 +49,19 @@ func record_merge(chain_len: int, current_level: int) -> void:
 		_unlock_progress("chain_5", 1)
 	if chain_len >= 10:
 		_unlock_progress("chain_10", 1)
-	record_earned_xp(xp)
-	_update_leaderboard_peaks(current_level + 1, int(stats["total_xp"]), int(stats["longest_chain"]))
+	_update_leaderboard_peaks(current_level + 1, int(stats["total_xp"]), chain_len)
 
 
-## XP з колеса та нагород квестів: баланс HUD і статистика мають рости разом.
+static func local_day_key() -> String:
+	var dt := Time.get_datetime_dict_from_system()
+	return "%04d-%02d-%02d" % [int(dt.year), int(dt.month), int(dt.day)]
+
+
+## XP сесії/ачівок: викликається з GameState.grant_xp, квестів і колеса.
 func record_earned_xp(amount: int) -> void:
 	if amount <= 0:
 		return
+	reset_daily_session_if_needed(local_day_key())
 	stats["total_xp"] = int(stats["total_xp"]) + amount
 	stats["session_xp_today"] = int(stats.get("session_xp_today", 0)) + amount
 	_unlock_progress("xp_1000", int(stats["total_xp"]))
@@ -68,19 +73,9 @@ func record_earned_xp(amount: int) -> void:
 	)
 
 
-static func local_day_key() -> String:
-	var dt := Time.get_datetime_dict_from_system()
-	return "%04d-%02d-%02d" % [int(dt.year), int(dt.month), int(dt.day)]
-
-
+## Аліас для GameState.grant_xp().
 func record_xp(amount: int) -> void:
-	reset_daily_session_if_needed(Time.get_date_string_from_system())
-	amount = maxi(0, amount)
-	stats["total_xp"] = int(stats["total_xp"]) + amount
-	stats["session_xp_today"] = get_session_xp_today() + amount
-	_unlock_progress("xp_1000", int(stats["total_xp"]))
-	_unlock_progress("xp_5000", int(stats["total_xp"]))
-	_update_leaderboard_peaks(int(stats["highest_level"]), int(stats["total_xp"]), int(stats["longest_chain"]))
+	record_earned_xp(amount)
 
 
 func record_level_complete(current_level: int) -> void:

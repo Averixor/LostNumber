@@ -68,6 +68,7 @@ func prepare_spin() -> Dictionary:
 func finish_spin(_sector: Dictionary = {}) -> void:
 	is_spinning = false
 
+## Синхронний спін без анімації (тести). UI має викликати prepare_spin + finish_spin.
 func spin() -> Dictionary:
 	var prep := prepare_spin()
 	if not prep.ok:
@@ -78,9 +79,7 @@ func spin() -> Dictionary:
 func _apply_sector(sector: Dictionary) -> void:
 	match str(sector.get("effect", "")):
 		"xp":
-			var amount := int(sector.get("value", 0))
-			state.xp = maxi(0, state.xp + amount)
-			state.progress.record_earned_xp(amount)
+			state.grant_xp(int(sector.get("value", 0)))
 		"bonus":
 			state.grant_bonus(str(sector.get("value", "")), 1)
 		"multiplier":

@@ -150,8 +150,8 @@ func merge_current_chain(defer_settle: bool = false) -> Dictionary:
 		xp_multiplier_turns -= 1
 		if xp_multiplier_turns <= 0:
 			xp_multiplier = 1
-	progress.record_merge(chain_len, current_level)
 	grant_xp(xp_earned + surplus)
+	progress.record_merge(chain_len, current_level)
 
 	selected_path.clear()
 

@@ -175,9 +175,7 @@ func _give_reward(id: String) -> void:
 		var reward: Dictionary = quest.reward
 		match reward.get("type", ""):
 			"xp":
-				var amount := int(reward.get("amount", 0))
-				state.xp += amount
-				state.progress.record_earned_xp(amount)
+				state.grant_xp(int(reward.get("amount", 0)))
 				on_session_xp_changed()
 			"bonus":
 				state.grant_bonus(str(reward.get("bonus", "")), int(reward.get("amount", 1)))
