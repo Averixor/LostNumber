@@ -3,7 +3,7 @@
 Дата оновлення: **2026-08-13**  
 Listing: **`com.Averixor.Lost_Number`** (новий; не `com.averixor.lostnumber`)  
 Ship version у git: **2.1.6 / versionCode 6** (`godot/export_presets.cfg`)  
-CT status: **NO-GO** до Firebase JSON + нового AAB + Sign-In smoke — [`STAGE1_RELEASE_RECORD.md`](STAGE1_RELEASE_RECORD.md), [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)  
+CT status: **PRE-UPLOAD READY** (AAB `93f72b58…`, gates PASS 2026-10-03) — Play upload + smoke OWNER — [`STAGE1_RELEASE_RECORD.md`](STAGE1_RELEASE_RECORD.md), [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)  
 Локальний upload keystore: `android/keystore/lostnumber-upload-2026.jks`  
 Alias: `lostnumber_upload`
 
@@ -41,11 +41,13 @@ App signing (Google deployment): `37:FB:98:8C:A6:84:03:03:88:F0:5B:35:90:59:CD:8
 
 ## Автоматично перевірено (репо)
 
-| Перевірка               | Результат                                             |
-| ----------------------- | ----------------------------------------------------- |
-| Privacy URL             | https://averixor.github.io/LostNumber/privacy.html    |
-| Upload key fingerprints | OK (`43:93:42:63…`)                                   |
-| Auth B2 у source        | OK (`LostNumberFirebase`, `INTERNET=true`)            |
-| `release:check`         | FAIL без Firebase resources у AAB (очікувано до JSON) |
+| Перевірка               | Результат                                                          |
+| ----------------------- | ------------------------------------------------------------------ |
+| Privacy URL             | https://averixor.github.io/LostNumber/privacy.html                 |
+| Upload key fingerprints | OK (`43:93:42:63…`)                                                |
+| Auth B2 у source        | OK (`LostNumberFirebase`, `INTERNET=true`)                         |
+| `release:check`         | **PASS** 2026-10-03 (Firebase resources у AAB)                     |
+| `godot:verify:aab`      | **PASS** 2026-10-03 (cert `43:93…`, VC6, targetSdk 36)             |
+| Candidate AAB SHA-256   | `93f72b58943f108de6197d1b7934f8f8713f482eebd81ca822cf6d560b423ad3` |
 
 Далі: [`CLOSED_TESTING_RUNBOOK.md`](CLOSED_TESTING_RUNBOOK.md), [`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md).

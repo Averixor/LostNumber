@@ -1,7 +1,7 @@
 # Stage 1 — Release record (новий Play listing + Auth B2)
 
-Дата запису: **2026-08-14**  
-Статус: **Auth device smoke PASS** — далі Play Closed Testing upload AAB `c85ee340…`  
+Дата запису: **2026-10-03** (оновлено AAB candidate)  
+Статус: **PRE-UPLOAD READY** — Play Closed Testing upload AAB `93f72b58…`  
 Listing: **`com.Averixor.Lost_Number`**
 
 ## Git / версія
@@ -16,7 +16,7 @@ Listing: **`com.Averixor.Lost_Number`**
 | Auth              | Google Sign-In via `LostNumberFirebase`       |
 | Cloud Save        | **ні** (наступний PR)                         |
 | targetSdk         | **36**                                        |
-| Git (main)        | `0739a18` (PR #84 Firebase BoM wiring)        |
+| Git (main)        | `cac9cfe` (docs/LFS/ideal + Auth B2 source)   |
 
 **Version gate:** VC **1–5** могли вже бути в Console → поточний код **6**. Далі: VC ≥ попереднього + 1.
 
@@ -42,20 +42,22 @@ Listing: **`com.Averixor.Lost_Number`**
 | Поле        | Значення                                                           |
 | ----------- | ------------------------------------------------------------------ |
 | Path        | `build/android/lost-number.aab`                                    |
-| SHA-256     | `c85ee34032a0b0abfab78dbe4b50d2dd35e05fb14aa8d8a020c96104ee507d52` |
+| SHA-256     | `93f72b58943f108de6197d1b7934f8f8713f482eebd81ca822cf6d560b423ad3` |
 | Package     | `com.Averixor.Lost_Number`                                         |
 | versionCode | **6**                                                              |
-| Built       | 2026-08-14 (prod `google-services.json` + oauth_client type 3)     |
+| Built       | 2026-10-03 (prod `google-services.json` + oauth_client type 3)     |
 | Firebase    | `google_app_id` / `default_web_client_id` / project — **present**  |
-| CT status   | **Auth smoke PASS** (sideload 2026-08-14) → upload AAB to Play CT  |
+| CT status   | **PRE-UPLOAD READY** → OWNER upload to Play CT                     |
 
 ## Verifier
 
-| Gate                      | Результат (2026-08-14)              |
-| ------------------------- | ----------------------------------- |
-| `npm run release:check`   | **PASS** з Firebase resources у AAB |
-| Upload-key SHA-1          | `43:93:42:63…`                      |
-| Firebase resource strings | PASS                                |
+| Gate                       | Результат (2026-10-03)                           |
+| -------------------------- | ------------------------------------------------ |
+| `npm run release:check`    | **PASS** з Firebase resources у AAB              |
+| `npm run godot:verify:aab` | **PASS** (upload cert + Firebase + targetSdk 36) |
+| `npm run keystore:info`    | **PASS** SHA-1 `43:93:42:63…`                    |
+| Upload-key SHA-1           | `43:93:42:63…`                                   |
+| Firebase resource strings  | PASS                                             |
 
 ## Owner upload notes
 
@@ -77,5 +79,5 @@ Listing: **`com.Averixor.Lost_Number`**
 ## Owner upload
 
 1. Play Console → Upload key SHA == таблиця вище
-2. Upload **`c85ee340…`** `lost-number.aab` (або новіший після наступної перезбірки)
+2. Upload **`93f72b58…`** `lost-number.aab` (або новіший після наступної перезбірки)
 3. Smoke: [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)

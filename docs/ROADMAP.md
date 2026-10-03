@@ -5,7 +5,7 @@
 | Версія документа   | **1.2** (2026-08-13)                                                                  |
 | Listing            | `com.Averixor.Lost_Number`                                                            |
 | Ship version у git | **2.1.6 / versionCode 6**                                                             |
-| Auth B2            | Shipped in source (Sign-In only); CT **NO-GO** до JSON + нового AAB                   |
+| Auth B2            | Shipped; AAB `93f72b58…` **PRE-UPLOAD READY**; CT GO після Play upload + smoke        |
 | Cloud Save         | Deferred — після CT GO ([`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md)) |
 
 ## Стратегія

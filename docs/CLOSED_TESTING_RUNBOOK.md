@@ -4,16 +4,16 @@
 
 ## Ship target (канон = `export_presets.cfg`)
 
-| Поле                      | Значення                                                                   |
-| ------------------------- | -------------------------------------------------------------------------- |
-| Package                   | `com.Averixor.Lost_Number`                                                 |
-| Debug                     | `com.Averixor.Lost_Number.dev`                                             |
-| versionName / versionCode | **2.1.6 / 6** (далі: VC ≥ max у Console + 1)                               |
-| targetSdk                 | **36**                                                                     |
-| Auth                      | Google Sign-In only (`LostNumberFirebase`); **немає** Cloud Save           |
-| CT status                 | **NO-GO / BLOCKED** до `google-services.json` + нового AAB + Sign-In smoke |
-| AAB                       | `build/android/lost-number.aab` — **лише після rebuild з prod JSON**       |
-| Privacy                   | [privacy.html](https://averixor.github.io/LostNumber/privacy.html)         |
+| Поле                      | Значення                                                               |
+| ------------------------- | ---------------------------------------------------------------------- |
+| Package                   | `com.Averixor.Lost_Number`                                             |
+| Debug                     | `com.Averixor.Lost_Number.dev`                                         |
+| versionName / versionCode | **2.1.6 / 6** (далі: VC ≥ max у Console + 1)                           |
+| targetSdk                 | **36**                                                                 |
+| Auth                      | Google Sign-In only (`LostNumberFirebase`); **немає** Cloud Save       |
+| CT status                 | **PRE-UPLOAD READY** (AAB `93f72b58…`); Play upload + CT smoke — OWNER |
+| AAB                       | `build/android/lost-number.aab` — **лише після rebuild з prod JSON**   |
+| Privacy                   | [privacy.html](https://averixor.github.io/LostNumber/privacy.html)     |
 
 ### Заборонено upload
 
@@ -35,14 +35,14 @@ npm run release:check          # має PASS лише з Firebase resources у A
 sha256sum build/android/lost-number.aab
 ```
 
-| Крок                     | Статус                                             |
-| ------------------------ | -------------------------------------------------- |
-| Identity VC6 / package   | ✅ presets + SoT                                   |
-| Auth B2 bridge + privacy | ✅ source                                          |
-| Firebase JSON у AAB      | ☐ OWNER                                            |
-| Positive Sign-In smoke   | ☐ [`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md)         |
-| `release:check` PASS     | ☐ після rebuild                                    |
-| CT smoke з Play          | ☐ [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md) |
+| Крок                     | Статус                                                                         |
+| ------------------------ | ------------------------------------------------------------------------------ |
+| Identity VC6 / package   | ✅ presets + SoT                                                               |
+| Auth B2 bridge + privacy | ✅ source                                                                      |
+| Firebase JSON у AAB      | ✅ 2026-10-03 (`release:check` / `godot:verify:aab`)                           |
+| Positive Sign-In smoke   | ☐ Play CT ([`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md)); sideload 2026-08-14 PASS |
+| `release:check` PASS     | ✅ 2026-10-03                                                                  |
+| CT smoke з Play          | ☐ [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)                             |
 
 ## 2. Device QA (до CT)
 
@@ -69,8 +69,8 @@ sha256sum build/android/lost-number.aab
 
 ## OWNER blockers (зараз)
 
-1. Покласти `android/firebase/{dev,prod}/google-services.json`.
-2. Перезібрати debug + release → новий SHA.
-3. Positive Google Sign-In smoke.
-4. Лише тоді Closed Testing upload.
+1. ~~Покласти `android/firebase/{dev,prod}/google-services.json`.~~ ✅ локально 2026-10-03
+2. ~~Перезібрати release → новий SHA.~~ ✅ `93f72b58…` + `godot:verify:aab` PASS
+3. Play Console: Upload key check + upload AAB `93f72b58…` + opt-in.
+4. Positive Google Sign-In smoke **з Play install**.
 5. Cloud Save / 4B — окремо після CT GO ([`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md)).
