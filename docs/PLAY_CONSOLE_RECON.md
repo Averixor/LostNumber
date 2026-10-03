@@ -6,7 +6,8 @@ Ship version у git: **2.1.6 / versionCode 6** (`godot/export_presets.cfg`)
 CT status: **PRE-UPLOAD READY** (AAB `93f72b58…`, gates PASS 2026-10-03) — Play upload + smoke OWNER — [`STAGE1_RELEASE_RECORD.md`](STAGE1_RELEASE_RECORD.md), [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)  
 Локальний upload keystore: `android/keystore/lostnumber-upload-2026.jks`  
 Alias: `lostnumber_upload`  
-**Перед upload:** у Console перевірити max уже використаний `versionCode` для цього listing. Кандидат = **6**; якщо 6 вже був — bump до `max+1` і перезібрати AAB.
+**Перед upload:** у Console перевірити max уже використаний `versionCode` для цього listing. Кандидат = **6**; якщо 6 вже був — bump до `max+1` і перезібрати AAB.  
+**Після цієї CT-серії:** наступний upload bumpить **versionName + versionCode** разом (див. [`SOURCE_OF_TRUTH.md`](en/SOURCE_OF_TRUTH.md)).
 
 ## Локальні fingerprints (звірити з Console)
 
@@ -33,10 +34,11 @@ App signing (Google deployment): `37:FB:98:8C:A6:84:03:03:88:F0:5B:35:90:59:CD:8
 
 ## Рішення по versionCode
 
-| Факт Console                                 | Дія                                     |
-| -------------------------------------------- | --------------------------------------- |
-| Max VC у **новому** listing = **5** (&lt; 6) | upload **6 / 2.1.6** OK (`93f72b58…`)   |
-| Max VC у **новому** listing ≥ 6              | bump `export_presets` → max+1 + rebuild |
+| Факт Console                                 | Дія                                            |
+| -------------------------------------------- | ---------------------------------------------- |
+| Max VC у **новому** listing = **5** (&lt; 6) | upload **6 / 2.1.6** OK (`93f72b58…`)          |
+| Max VC у **новому** listing ≥ 6              | bump `versionCode` → max+1 + rebuild           |
+| **Next series after this CT**                | bump **versionName + versionCode** разом (SoT) |
 
 ### Legacy listing (не CT target)
 
