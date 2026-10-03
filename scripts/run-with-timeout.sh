@@ -18,5 +18,5 @@ if command -v gtimeout >/dev/null 2>&1; then
   exec gtimeout "$DURATION" "$@"
 fi
 
-echo "warn: neither 'timeout' nor 'gtimeout' found; running without timeout" >&2
-exec "$@"
+echo "error: neither 'timeout' nor 'gtimeout' found; cannot enforce timeout" >&2
+exit 1
