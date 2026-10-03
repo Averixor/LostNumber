@@ -20,6 +20,7 @@ const SECTORS := [
 
 var state: GameState
 var is_spinning: bool = false
+## Публічний RNG — тести задають seed для детермінізму (як BoardLogic.rng).
 var rng := RandomNumberGenerator.new()
 
 func _init(game_state: GameState) -> void:
@@ -27,7 +28,7 @@ func _init(game_state: GameState) -> void:
 	rng.randomize()
 
 func check_daily_reset() -> void:
-	var today := _today_key()
+	var today := PlayerProgress.local_day_key()
 	if state.last_wheel_day != today:
 		state.last_wheel_day = today
 		state.wheel_spins_today = 0
@@ -58,23 +59,23 @@ func prepare_spin() -> Dictionary:
 	state.wheel_spins_today += 1
 	var idx := rng.randi_range(0, SECTORS.size() - 1)
 	var sector: Dictionary = SECTORS[idx]
-	is_spinning = true
-	# Payment and reward are one synchronous transaction; animation only reveals it.
+	## Нагорода фіксується до анімації, щоб вихід під час обертання не з’їдав спіни.
 	_apply_sector(sector)
 	state.progress.record_wheel_spin()
 	DailyQuestManager.new(state).on_wheel_spun()
+	is_spinning = true
 	return {"ok": true, "sector": sector, "index": idx, "cost": cost}
 
-func finish_spin(_sector: Dictionary) -> void:
+func finish_spin(_sector: Dictionary = {}) -> void:
 	is_spinning = false
 
+## Синхронний спін без анімації (тести). UI має викликати prepare_spin + finish_spin.
 func spin() -> Dictionary:
 	var prep := prepare_spin()
 	if not prep.ok:
 		return prep
-	var sector: Dictionary = prep.sector
-	finish_spin(sector)
-	return {"ok": true, "sector": sector, "index": prep.index}
+	finish_spin()
+	return {"ok": true, "sector": prep.sector, "index": prep.index}
 
 func _apply_sector(sector: Dictionary) -> void:
 	match str(sector.get("effect", "")):
@@ -85,6 +86,3 @@ func _apply_sector(sector: Dictionary) -> void:
 		"multiplier":
 			state.xp_multiplier = int(sector.get("multiplier", 2))
 			state.xp_multiplier_turns = int(sector.get("turns", 3))
-
-func _today_key() -> String:
-	return Time.get_date_string_from_system()

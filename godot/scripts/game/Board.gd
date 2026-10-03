@@ -412,6 +412,7 @@ func animate_merge_settle(removed: Array, anchor: Vector2i, result_number: int) 
 		for cell in removed:
 			if cell is Vector2i:
 				(_tiles[cell.x][cell.y] as TileView).set_value(0)
+		state.settle_pending_merge()
 		for x in GRID_W:
 			for y in GRID_H:
 				var static_tile := _tiles[x][y] as TileView
@@ -473,6 +474,10 @@ func animate_merge_settle(removed: Array, anchor: Vector2i, result_number: int) 
 	else:
 		fall_tween.kill()
 
+	if state != null:
+		state.settle_pending_merge()
+	if not is_inside_tree():
+		return
 
 	for x in GRID_W:
 		for y in GRID_H:
@@ -598,6 +603,7 @@ func _extend_drag_at_local(local_pos: Vector2) -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_WINDOW_FOCUS_OUT and _dragging:
 		_finish_drag(false)
+
 
 func _collect_cells_along_pointer_path(local_pos: Vector2) -> Array[Vector2i]:
 	var cells: Array[Vector2i] = []
@@ -877,3 +883,4 @@ func _update_chain_visual() -> void:
 	if path_len >= 2:
 		line_state = "valid" if can_finish else "invalid"
 	_chain_layer.set_chain_points(pts, line_state)
+  

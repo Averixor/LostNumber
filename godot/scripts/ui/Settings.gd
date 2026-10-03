@@ -329,6 +329,9 @@ func _load_settings() -> void:
 	if background_auto_check != null:
 		background_auto_check.button_pressed = bool(_get_value(theme_mgr, "skin_auto", false))
 
+	if leaderboard_check != null:
+		leaderboard_check.set_pressed_no_signal(_read_leaderboard_opt_in())
+
 	_refresh_theme_button()
 
 
@@ -548,19 +551,52 @@ func _on_language_selected(index: int) -> void:
 		_load_settings()
 
 
+## Leaderboard opt-in lives in the save file (per-profile), not in device settings.
+## Settings key is kept as a mirror for the no-save case; the save is authoritative.
 func _on_leaderboard_toggled(enabled: bool) -> void:
-	var save := _autoload("SaveManager")
-	var saved_state: GameState = save.call("load_game") if save != null else null
-	if saved_state == null:
-		leaderboard_check.set_pressed_no_signal(false)
-		return
-	var previous := bool(saved_state.progress.leaderboard.get("opt_in", false))
-	saved_state.progress.leaderboard["opt_in"] = enabled
-	if not enabled:
-		saved_state.progress.leaderboard["pending_submits"] = []
-	if not bool(save.call("save_game", saved_state)):
-		leaderboard_check.set_pressed_no_signal(previous)
+	var previous := _read_leaderboard_opt_in()
+	if not _write_leaderboard_opt_in(enabled):
+		if leaderboard_check != null:
+			leaderboard_check.set_pressed_no_signal(previous)
 		LnUiLib.show_toast(self, _i18n("settings_save_failed"))
+		return
+	var settings = _settings()
+	if settings != null:
+		settings.set("leaderboard_opt_in", enabled)
+		settings.call("save_settings") if settings.has_method("save_settings") else null
+
+
+func _read_leaderboard_opt_in() -> bool:
+	var loaded = _load_saved_state()
+	if loaded != null:
+		return bool(loaded.progress.leaderboard.get("opt_in", false))
+	var settings = _settings()
+	return settings != null and bool(settings.get("leaderboard_opt_in"))
+
+
+func _write_leaderboard_opt_in(enabled: bool) -> bool:
+	var save := _autoload("SaveManager")
+	if save == null or not save.has_method("has_save") or not bool(save.call("has_save")):
+		return true
+	if not save.has_method("load_game") or not save.has_method("save_game"):
+		return false
+	var loaded = save.call("load_game")
+	if loaded == null:
+		return true
+	loaded.progress.leaderboard["opt_in"] = enabled
+	if not enabled:
+		# Privacy: drop any queued submissions the moment the user opts out.
+		loaded.progress.leaderboard["pending_submits"] = []
+	return bool(save.call("save_game", loaded))
+
+
+func _load_saved_state():
+	var save := _autoload("SaveManager")
+	if save == null or not save.has_method("has_save") or not bool(save.call("has_save")):
+		return null
+	if not save.has_method("load_game"):
+		return null
+	return save.call("load_game")
 
 
 func _on_theme_cycle() -> void:
@@ -660,3 +696,4 @@ func _on_back() -> void:
 			router.call("replace", "main_menu")
 	else:
 		get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+    

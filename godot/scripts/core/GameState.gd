@@ -25,6 +25,8 @@ var active_bonus: String = ""
 var daily_quests: Dictionary = {}
 var wheel_spins_today: int = 0
 var last_wheel_day: String = ""
+## Мердж уже застосований, гравітація і досипка ще попереду.
+var merge_settle_pending: bool = false
 
 
 func _init() -> void:
@@ -46,6 +48,7 @@ func start_new_game(seed_value: int = -1) -> void:
 	phase = Phase.PLAYING
 	bonus_inventory = {"destroy": 0, "shuffle": 0, "explosion": 0}
 	active_bonus = ""
+	merge_settle_pending = false
 	var preserved_daily := daily_quests.duplicate(true)
 	daily_quests = preserved_daily
 	progress.record_new_game()
@@ -113,7 +116,10 @@ func can_finish_current_chain() -> bool:
 	return Rules.can_finish_chain(numbers)
 
 
-func merge_current_chain() -> Dictionary:
+## Merge the currently selected chain into a single cell.
+## If defer_settle is true, gravity and respawn are postponed — call
+## settle_pending_merge() later (e.g. after the merge animation finishes).
+func merge_current_chain(defer_settle: bool = false) -> Dictionary:
 	var validation: Dictionary = Rules.validate_chain(selected_path, board.grid, board.grid_w, board.grid_h)
 	if not validation.valid:
 		return {"ok": false, "reason": validation.get("reason", "invalid")}
@@ -134,9 +140,9 @@ func merge_current_chain() -> Dictionary:
 		removed.append(selected_path[i])
 
 	board.apply_merge(anchor, removed, result_number)
-	# Commit the complete board before any presentation can yield or save.
-	board.apply_gravity()
-	board.spawn_new_cells(current_level, carry_number, max_reached_number)
+	merge_settle_pending = true
+	if not defer_settle:
+		settle_pending_merge()
 
 	var chain_len: int = selected_path.size()
 	var xp_earned := _calculate_xp(chain_len)
@@ -144,8 +150,8 @@ func merge_current_chain() -> Dictionary:
 		xp_multiplier_turns -= 1
 		if xp_multiplier_turns <= 0:
 			xp_multiplier = 1
-	progress.record_merge(chain_len, current_level)
 	grant_xp(xp_earned + surplus)
+	progress.record_merge(chain_len, current_level)
 
 	selected_path.clear()
 
@@ -163,6 +169,16 @@ func merge_current_chain() -> Dictionary:
 		"anchor": anchor,
 		"removed": removed,
 	}
+
+
+## Closes a deferred merge before any save or at the end of an animation.
+## Commit the complete board before any presentation can yield or save.
+func settle_pending_merge() -> void:
+	if not merge_settle_pending:
+		return
+	board.apply_gravity()
+	board.spawn_new_cells(current_level, carry_number, max_reached_number)
+	merge_settle_pending = false
 
 
 func grant_xp(amount: int) -> void:
@@ -284,6 +300,8 @@ func load_from_save_dict(data: Dictionary) -> bool:
 	board.apply_gravity()
 	board.spawn_new_cells(current_level, carry_number, max_reached_number)
 	selected_path.clear()
+	# Board state is fully settled here — clear any transient pending flag.
+	merge_settle_pending = false
 	_sanitize_loaded_state()
 	_sanitize_win_phase()
 	return true
@@ -322,3 +340,4 @@ func should_show_level_complete() -> bool:
 
 func _is_valid_cell(cell: Vector2i) -> bool:
 	return cell.x >= 0 and cell.x < board.grid_w and cell.y >= 0 and cell.y < board.grid_h
+  

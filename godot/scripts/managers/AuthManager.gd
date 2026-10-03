@@ -198,8 +198,13 @@ func _apply_payload(data: Dictionary, persist: bool) -> void:
 
 
 func _set_error(message: String) -> void:
-	state = STATE_ERROR
+	## Зберігати сесію лише при невдалому sign-out (_apply_payload + was_signing_out).
+	## Інші auth-помилки скидають локальну сесію — інакше is_signed_in() лишається true
+	## після відхиленого бекендом credentials.
 	last_error = message
+	user = {}
+	state = STATE_ERROR
+	_clear_session()
 	auth_error.emit(message)
 	auth_state_changed.emit(state, user.duplicate(true))
 
