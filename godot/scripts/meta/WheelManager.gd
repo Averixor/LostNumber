@@ -20,11 +20,12 @@ const SECTORS := [
 
 var state: GameState
 var is_spinning: bool = false
-var _rng := RandomNumberGenerator.new()
+## Публічний RNG — тести задають seed для детермінізму (як BoardLogic.rng).
+var rng := RandomNumberGenerator.new()
 
 func _init(game_state: GameState) -> void:
 	state = game_state
-	_rng.randomize()
+	rng.randomize()
 
 func check_daily_reset() -> void:
 	var today := PlayerProgress.local_day_key()
@@ -56,7 +57,7 @@ func prepare_spin() -> Dictionary:
 	var cost := int(check.cost)
 	state.xp = maxi(0, state.xp - cost)
 	state.wheel_spins_today += 1
-	var idx := _rng.randi_range(0, SECTORS.size() - 1)
+	var idx := rng.randi_range(0, SECTORS.size() - 1)
 	var sector: Dictionary = SECTORS[idx]
 	## Нагорода фіксується до анімації, щоб вихід під час обертання не з’їдав спіни.
 	_apply_sector(sector)
