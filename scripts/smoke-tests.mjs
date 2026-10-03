@@ -3,8 +3,8 @@
  * Lightweight repo smoke tests (no godot4 required): Godot project layout + privacy page.
  */
 import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -48,22 +48,37 @@ if (existsSync(projectGodot)) {
   }
 }
 
-// Git LFS: аудіо не повинно лишатися pointer-файлами після clone без `git lfs pull`.
-const lfsAudioSamples = [
-  'godot/assets/audio/music/Neon Drift.mp3',
-  'godot/assets/audio/sfx/error.mp3',
-  'godot/assets/audio/sfx/button.mp3',
-];
+// Git LFS: усі mp3 під godot/assets/audio/ мають бути матеріализовані (не pointer).
 const lfsPointerPrefix = 'version https://git-lfs.github.com/spec/v1';
-for (const rel of lfsAudioSamples) {
-  const full = join(root, rel);
-  if (!existsSync(full)) {
-    failures.push(`Missing LFS audio sample: ${rel}`);
-    continue;
+const audioRoot = join(root, 'godot/assets/audio');
+
+function listMp3Files(dir) {
+  const out = [];
+  if (!existsSync(dir)) {
+    return out;
   }
-  const head = readFileSync(full).subarray(0, 64).toString('utf8');
-  if (head.startsWith(lfsPointerPrefix)) {
-    failures.push(`${rel} is still a Git LFS pointer — run: git lfs pull`);
+  for (const name of readdirSync(dir)) {
+    const full = join(dir, name);
+    const st = statSync(full);
+    if (st.isDirectory()) {
+      out.push(...listMp3Files(full));
+    } else if (name.toLowerCase().endsWith('.mp3')) {
+      out.push(full);
+    }
+  }
+  return out;
+}
+
+const audioMp3 = listMp3Files(audioRoot);
+if (audioMp3.length === 0) {
+  failures.push('Missing godot/assets/audio/**/*.mp3 (expected music + sfx via Git LFS)');
+} else {
+  for (const full of audioMp3) {
+    const rel = relative(root, full);
+    const head = readFileSync(full).subarray(0, 64).toString('utf8');
+    if (head.startsWith(lfsPointerPrefix)) {
+      failures.push(`${rel} is still a Git LFS pointer — run: git lfs pull`);
+    }
   }
 }
 
