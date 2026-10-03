@@ -20,9 +20,11 @@ const SECTORS := [
 
 var state: GameState
 var is_spinning: bool = false
+var rng := RandomNumberGenerator.new()
 
 func _init(game_state: GameState) -> void:
 	state = game_state
+	rng.randomize()
 
 func check_daily_reset() -> void:
 	var today := _today_key()
@@ -54,14 +56,16 @@ func prepare_spin() -> Dictionary:
 	var cost := int(check.cost)
 	state.xp = maxi(0, state.xp - cost)
 	state.wheel_spins_today += 1
-	var idx := state.board.rng.randi_range(0, SECTORS.size() - 1)
+	var idx := rng.randi_range(0, SECTORS.size() - 1)
 	var sector: Dictionary = SECTORS[idx]
 	is_spinning = true
-	return {"ok": true, "sector": sector, "index": idx, "cost": cost}
-
-func finish_spin(sector: Dictionary) -> void:
+	# Payment and reward are one synchronous transaction; animation only reveals it.
 	_apply_sector(sector)
 	state.progress.record_wheel_spin()
+	DailyQuestManager.new(state).on_wheel_spun()
+	return {"ok": true, "sector": sector, "index": idx, "cost": cost}
+
+func finish_spin(_sector: Dictionary) -> void:
 	is_spinning = false
 
 func spin() -> Dictionary:
@@ -75,7 +79,7 @@ func spin() -> Dictionary:
 func _apply_sector(sector: Dictionary) -> void:
 	match str(sector.get("effect", "")):
 		"xp":
-			state.xp = maxi(0, state.xp + int(sector.get("value", 0)))
+			state.grant_xp(int(sector.get("value", 0)))
 		"bonus":
 			state.grant_bonus(str(sector.get("value", "")), 1)
 		"multiplier":
@@ -83,5 +87,4 @@ func _apply_sector(sector: Dictionary) -> void:
 			state.xp_multiplier_turns = int(sector.get("turns", 3))
 
 func _today_key() -> String:
-	var dt := Time.get_datetime_dict_from_system()
-	return "%04d-%02d-%02d" % [dt.year, dt.month, dt.day]
+	return Time.get_date_string_from_system()

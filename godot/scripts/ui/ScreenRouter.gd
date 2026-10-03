@@ -7,6 +7,7 @@ extends Node
 ## run standalone via F6), navigation falls back to change_scene_to_file.
 
 signal screen_changed(screen_id: String)
+signal transition_finished
 
 const SCREENS := {
 	"main_menu": "res://scenes/MainMenu.tscn",
@@ -57,7 +58,8 @@ func get_current_screen() -> Node:
 
 
 func push(screen_id: String) -> void:
-	if not SCREENS.has(screen_id) or _busy:
+	await wait_until_idle()
+	if not SCREENS.has(screen_id):
 		return
 	if not is_registered():
 		_fallback_change(screen_id)
@@ -68,7 +70,8 @@ func push(screen_id: String) -> void:
 
 
 func replace(screen_id: String) -> void:
-	if not SCREENS.has(screen_id) or _busy:
+	await wait_until_idle()
+	if not SCREENS.has(screen_id):
 		return
 	if not is_registered():
 		_fallback_change(screen_id)
@@ -77,7 +80,8 @@ func replace(screen_id: String) -> void:
 
 
 func reload_current() -> void:
-	if current_screen_id.is_empty() or _busy or not is_registered():
+	await wait_until_idle()
+	if current_screen_id.is_empty() or not is_registered():
 		return
 	await _swap(current_screen_id)
 
@@ -89,13 +93,17 @@ func can_go_back() -> bool:
 
 
 func go_back() -> bool:
-	if _busy:
-		return true
+	await wait_until_idle()
 	if not is_registered() or _back_stack.is_empty():
 		return false
 	var screen_id: String = _back_stack.pop_back()
 	await _swap(screen_id)
 	return true
+
+
+func wait_until_idle() -> void:
+	while _busy:
+		await transition_finished
 
 
 func _swap(screen_id: String) -> void:
@@ -117,6 +125,7 @@ func _swap(screen_id: String) -> void:
 	if _transition != null and _transition.has_method("uncover"):
 		await _transition.call("uncover", FADE_DURATION, slide)
 	_busy = false
+	transition_finished.emit()
 
 
 func _effects_enabled() -> bool:

@@ -60,12 +60,14 @@ func get_quests() -> Array:
 
 
 func on_level_complete() -> void:
+	ensure_loaded()
 	_add_progress("completeLevel", 1)
 	if _get_progress("completeLevel") >= _progress_max("completeLevel"):
 		complete("completeLevel")
 
 
 func on_chain_merged(chain_len: int) -> void:
+	ensure_loaded()
 	if chain_len >= 5:
 		_add_progress("chain5", 1)
 		if _get_progress("chain5") >= _progress_max("chain5"):
@@ -73,18 +75,21 @@ func on_chain_merged(chain_len: int) -> void:
 
 
 func on_bonus_used() -> void:
+	ensure_loaded()
 	_add_progress("useBonus", 1)
 	if _get_progress("useBonus") >= _progress_max("useBonus"):
 		complete("useBonus")
 
 
 func on_wheel_spun() -> void:
+	ensure_loaded()
 	_add_progress("spinWheel", 1)
 	if _get_progress("spinWheel") >= _progress_max("spinWheel"):
 		complete("spinWheel")
 
 
 func on_session_xp_changed() -> void:
+	ensure_loaded()
 	var cur := state.progress.get_session_xp_today()
 	_set_progress("xp100", mini(cur, 100))
 	if cur >= 100:
@@ -170,11 +175,11 @@ func _give_reward(id: String) -> void:
 		var reward: Dictionary = quest.reward
 		match reward.get("type", ""):
 			"xp":
-				state.xp += int(reward.get("amount", 0))
+				state.grant_xp(int(reward.get("amount", 0)))
 			"bonus":
 				state.grant_bonus(str(reward.get("bonus", "")), int(reward.get("amount", 1)))
 		return
 
 
 func _today_key() -> String:
-	return Time.get_date_string_from_system(true)
+	return Time.get_date_string_from_system()

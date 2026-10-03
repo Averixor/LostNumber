@@ -113,7 +113,7 @@ func can_finish_current_chain() -> bool:
 	return Rules.can_finish_chain(numbers)
 
 
-func merge_current_chain(defer_settle: bool = false) -> Dictionary:
+func merge_current_chain() -> Dictionary:
 	var validation: Dictionary = Rules.validate_chain(selected_path, board.grid, board.grid_w, board.grid_h)
 	if not validation.valid:
 		return {"ok": false, "reason": validation.get("reason", "invalid")}
@@ -134,9 +134,9 @@ func merge_current_chain(defer_settle: bool = false) -> Dictionary:
 		removed.append(selected_path[i])
 
 	board.apply_merge(anchor, removed, result_number)
-	if not defer_settle:
-		board.apply_gravity()
-		board.spawn_new_cells(current_level, carry_number, max_reached_number)
+	# Commit the complete board before any presentation can yield or save.
+	board.apply_gravity()
+	board.spawn_new_cells(current_level, carry_number, max_reached_number)
 
 	var chain_len: int = selected_path.size()
 	var xp_earned := _calculate_xp(chain_len)
@@ -144,8 +144,8 @@ func merge_current_chain(defer_settle: bool = false) -> Dictionary:
 		xp_multiplier_turns -= 1
 		if xp_multiplier_turns <= 0:
 			xp_multiplier = 1
-	xp += xp_earned + surplus
-	progress.record_merge(chain_len, xp_earned + surplus, current_level)
+	progress.record_merge(chain_len, current_level)
+	grant_xp(xp_earned + surplus)
 
 	selected_path.clear()
 
@@ -163,6 +163,16 @@ func merge_current_chain(defer_settle: bool = false) -> Dictionary:
 		"anchor": anchor,
 		"removed": removed,
 	}
+
+
+func grant_xp(amount: int) -> void:
+	if amount <= 0:
+		return
+	var daily := DailyQuestManager.new(self)
+	daily.ensure_loaded()
+	xp += amount
+	progress.record_xp(amount)
+	daily.on_session_xp_changed()
 
 
 func level_xp_mult() -> float:
@@ -271,6 +281,8 @@ func load_from_save_dict(data: Dictionary) -> bool:
 	else:
 		progress.ensure_defaults()
 	board.load_from_arrays(data.get("grid", []))
+	board.apply_gravity()
+	board.spawn_new_cells(current_level, carry_number, max_reached_number)
 	selected_path.clear()
 	_sanitize_loaded_state()
 	_sanitize_win_phase()

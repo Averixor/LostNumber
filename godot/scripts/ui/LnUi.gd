@@ -850,7 +850,11 @@ static func animate_entrance(items: Array, stagger: float = 0.05, duration: floa
 			continue
 		ctrl.modulate.a = 0.0
 	await host.get_tree().process_frame
+	if not is_instance_valid(host) or not host.is_inside_tree():
+		return
 	for i in items.size():
+		if not is_instance_valid(items[i]):
+			continue
 		var ctrl := items[i] as Control
 		if ctrl == null or not ctrl.is_inside_tree():
 			continue

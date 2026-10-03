@@ -122,6 +122,15 @@ func _test_save_failure_languages() -> void:
 			"%s failed-save feedback is localized and non-blocking" % lang
 		)
 
+	var settings_expected := {
+		"uk": "Не вдалося зберегти налаштування. Спробуйте ще раз.",
+		"ru": "Не удалось сохранить настройки. Попробуйте ещё раз.",
+		"en": "Could not save settings. Please try again.",
+	}
+	for lang in settings_expected:
+		_settings.set("language", lang)
+		_assert_eq(str(_i18n.call("t", "settings_save_failed")), settings_expected[lang], "%s settings failure is localized" % lang)
+
 
 func _test_visual_skin_languages() -> void:
 	var keys := [

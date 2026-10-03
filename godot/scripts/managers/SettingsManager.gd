@@ -225,7 +225,7 @@ func load_settings() -> void:
 	sync_active_theme_from_manager()
 
 
-func save_settings() -> void:
+func save_settings() -> bool:
 	sync_active_theme_from_manager()
 	var data := {
 		"sound_enabled": sound_enabled,
@@ -242,10 +242,21 @@ func save_settings() -> void:
 		"selected_background_twilight": selected_background_twilight,
 		"custom_backgrounds": custom_backgrounds,
 	}
-	var file := FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
-	if file:
-		file.store_string(JSON.stringify(data))
+	# Stage first so an open/write failure cannot truncate the previous settings.
+	var temp_path := SETTINGS_PATH + ".tmp"
+	var file := FileAccess.open(temp_path, FileAccess.WRITE)
+	if file == null:
+		return false
+	file.store_string(JSON.stringify(data))
+	file.flush()
+	var error := file.get_error()
+	file.close()
+	if error != OK:
+		return false
+	if DirAccess.rename_absolute(ProjectSettings.globalize_path(temp_path), ProjectSettings.globalize_path(SETTINGS_PATH)) != OK:
+		return false
 	settings_saved.emit()
+	return true
 
 
 func _load_custom_backgrounds(raw: Variant) -> Dictionary:

@@ -402,7 +402,7 @@ func _board_max_value() -> int:
 	return max_val
 
 
-func animate_merge_settle(removed: Array, anchor: Vector2i) -> void:
+func animate_merge_settle(removed: Array, anchor: Vector2i, result_number: int) -> void:
 	if state == null:
 		return
 
@@ -412,8 +412,6 @@ func animate_merge_settle(removed: Array, anchor: Vector2i) -> void:
 		for cell in removed:
 			if cell is Vector2i:
 				(_tiles[cell.x][cell.y] as TileView).set_value(0)
-		state.board.apply_gravity()
-		state.board.spawn_new_cells(state.current_level, state.carry_number, state.max_reached_number)
 		for x in GRID_W:
 			for y in GRID_H:
 				var static_tile := _tiles[x][y] as TileView
@@ -440,7 +438,7 @@ func animate_merge_settle(removed: Array, anchor: Vector2i) -> void:
 			pop_tween.tween_property(tile, "scale", Vector2(0.2, 0.2), 0.12)
 	if anchor.x >= 0:
 		var anchor_tile: TileView = _tiles[anchor.x][anchor.y] as TileView
-		anchor_tile.set_value(state.board.grid[anchor.x][anchor.y])
+		anchor_tile.set_value(result_number)
 		pop_tween.tween_property(anchor_tile, "scale", Vector2(1.12, 1.12), 0.1)
 		pop_tween.tween_property(anchor_tile, "scale", Vector2.ONE, 0.12).set_delay(0.1)
 
@@ -475,8 +473,6 @@ func animate_merge_settle(removed: Array, anchor: Vector2i) -> void:
 	else:
 		fall_tween.kill()
 
-	state.board.apply_gravity()
-	state.board.spawn_new_cells(state.current_level, state.carry_number, state.max_reached_number)
 
 	for x in GRID_W:
 		for y in GRID_H:
