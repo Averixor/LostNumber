@@ -402,7 +402,7 @@ func _board_max_value() -> int:
 	return max_val
 
 
-func animate_merge_settle(removed: Array, anchor: Vector2i) -> void:
+func animate_merge_settle(removed: Array, anchor: Vector2i, result_number: int) -> void:
 	if state == null:
 		return
 
@@ -439,7 +439,7 @@ func animate_merge_settle(removed: Array, anchor: Vector2i) -> void:
 			pop_tween.tween_property(tile, "scale", Vector2(0.2, 0.2), 0.12)
 	if anchor.x >= 0:
 		var anchor_tile: TileView = _tiles[anchor.x][anchor.y] as TileView
-		anchor_tile.set_value(state.board.grid[anchor.x][anchor.y])
+		anchor_tile.set_value(result_number)
 		pop_tween.tween_property(anchor_tile, "scale", Vector2(1.12, 1.12), 0.1)
 		pop_tween.tween_property(anchor_tile, "scale", Vector2.ONE, 0.12).set_delay(0.1)
 
@@ -603,6 +603,7 @@ func _extend_drag_at_local(local_pos: Vector2) -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_WINDOW_FOCUS_OUT and _dragging:
 		_finish_drag(false)
+
 
 func _collect_cells_along_pointer_path(local_pos: Vector2) -> Array[Vector2i]:
 	var cells: Array[Vector2i] = []
@@ -882,3 +883,4 @@ func _update_chain_visual() -> void:
 	if path_len >= 2:
 		line_state = "valid" if can_finish else "invalid"
 	_chain_layer.set_chain_points(pts, line_state)
+  

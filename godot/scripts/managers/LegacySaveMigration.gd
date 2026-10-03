@@ -155,10 +155,15 @@ func _map_legacy_to_godot(raw: Dictionary) -> Dictionary:
 	var bonus_raw: Variant = raw.get("bonus_inventory", raw.get("bonusInventory", {}))
 	var pending_raw: Variant = raw.get("pending_transition", raw.get("pendingTransition", {}))
 
+	var daily := _map_daily_quests(raw.get("daily_quests", raw.get("dailyQuests", {})))
 	var progress := {
-		"stats": _coerce_dict(raw.get("stats", {})),
+		"stats": _coerce_dict(raw.get("stats", {})).duplicate(true),
+		"daily_date": str(daily.get("date", "")),
 		"achievements": _map_achievements(_coerce_dict(raw.get("achievements", {}))),
 	}
+
+	if not daily.is_empty():
+		progress.stats["session_xp_today"] = maxi(int(progress.stats.get("session_xp_today", 0)), int(daily.progress.get("xp100", 0)))
 
 	var carry_val: Variant = raw.get("carry_number", raw.get("carryNumber", 0))
 	var carry := 0
@@ -177,10 +182,31 @@ func _map_legacy_to_godot(raw: Dictionary) -> Dictionary:
 		"xp_multiplier_turns": maxi(0, _int_field(raw, "xp_multiplier_turns", "xpMultiplierTurns", 0)),
 		"bonus_inventory": _map_bonus_inventory(bonus_raw),
 		"active_bonus": "",
-		"daily_quests": _map_daily_quests(raw),
+		"daily_quests": daily,
 		"wheel_spins_today": maxi(0, _int_field(raw, "wheel_spins_today", "wheelSpinsToday", 0)),
 		"last_wheel_day": str(raw.get("last_wheel_day", raw.get("lastWheelDay", ""))),
 		"progress": progress,
+	}
+
+
+func _map_daily_quests(raw: Variant) -> Dictionary:
+	var source := _coerce_dict(raw)
+	if source.is_empty():
+		return {}
+	var completed := {}
+	var quest_progress := {}
+	var old_completed := _coerce_dict(source.get("completed", {}))
+	var old_progress := _coerce_dict(source.get("progress", {}))
+	for quest in DailyQuestManager.QUEST_DEFS:
+		var id := str(quest.id)
+		var maximum := 100 if id == "xp100" else 1
+		completed[id] = bool(old_completed.get(id, false))
+		quest_progress[id] = maximum if completed[id] else clampi(int(old_progress.get(id, 0)), 0, maximum)
+	return {
+		"date": str(source.get("date", "")),
+		"completed": completed,
+		"progress": quest_progress,
+		"list": DailyQuestManager.QUEST_DEFS.duplicate(true),
 	}
 
 
@@ -211,20 +237,6 @@ func _cell_value(cell: Variant) -> int:
 	if typeof(cell) == TYPE_FLOAT or typeof(cell) == TYPE_INT:
 		return maxi(0, int(cell))
 	return 0
-
-
-func _map_daily_quests(raw: Dictionary) -> Dictionary:
-	var src := _coerce_dict(raw.get("daily_quests", raw.get("dailyQuests", {})))
-	if src.is_empty():
-		return {}
-	var mapped := src.duplicate(true)
-	if mapped.has("completedQuests") and not mapped.has("completed"):
-		mapped["completed"] = _coerce_dict(mapped["completedQuests"])
-	if typeof(mapped.get("completed", {})) != TYPE_DICTIONARY:
-		mapped["completed"] = {}
-	if typeof(mapped.get("progress", {})) != TYPE_DICTIONARY:
-		mapped["progress"] = {}
-	return mapped
 
 
 func _map_bonus_inventory(raw: Variant) -> Dictionary:
@@ -303,3 +315,4 @@ func _archive_source(path: String) -> void:
 	)
 	if err != OK:
 		push_warning("LegacySaveMigration: could not archive %s (err %s)" % [path, err])
+    

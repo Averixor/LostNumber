@@ -245,14 +245,18 @@ func save_settings() -> bool:
 		"selected_background_twilight": selected_background_twilight,
 		"custom_backgrounds": custom_backgrounds,
 	}
-	var file := FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
+	# Stage first so an open/write failure cannot truncate the previous settings.
+	var temp_path := SETTINGS_PATH + ".tmp"
+	var file := FileAccess.open(temp_path, FileAccess.WRITE)
 	if file == null:
-		push_error("SettingsManager: cannot write %s" % SETTINGS_PATH)
 		return false
-	var written := file.store_string(JSON.stringify(data))
+	file.store_string(JSON.stringify(data))
+	file.flush()
+	var error := file.get_error()
 	file.close()
-	if not written:
-		push_error("SettingsManager: write failed for %s" % SETTINGS_PATH)
+	if error != OK:
+		return false
+	if DirAccess.rename_absolute(ProjectSettings.globalize_path(temp_path), ProjectSettings.globalize_path(SETTINGS_PATH)) != OK:
 		return false
 	settings_saved.emit()
 	return true
@@ -326,3 +330,4 @@ func tile_font_scale_to_index(scale: float = tile_font_scale) -> int:
 
 func tile_font_scale_from_index(index: int) -> float:
 	return TILE_FONT_SCALES[clampi(index, 0, TILE_FONT_SCALES.size() - 1)]
+  

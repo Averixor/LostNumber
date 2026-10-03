@@ -116,6 +116,9 @@ func can_finish_current_chain() -> bool:
 	return Rules.can_finish_chain(numbers)
 
 
+## Merge the currently selected chain into a single cell.
+## If defer_settle is true, gravity and respawn are postponed — call
+## settle_pending_merge() later (e.g. after the merge animation finishes).
 func merge_current_chain(defer_settle: bool = false) -> Dictionary:
 	var validation: Dictionary = Rules.validate_chain(selected_path, board.grid, board.grid_w, board.grid_h)
 	if not validation.valid:
@@ -147,8 +150,8 @@ func merge_current_chain(defer_settle: bool = false) -> Dictionary:
 		xp_multiplier_turns -= 1
 		if xp_multiplier_turns <= 0:
 			xp_multiplier = 1
-	xp += xp_earned + surplus
-	progress.record_merge(chain_len, xp_earned + surplus, current_level)
+	progress.record_merge(chain_len, current_level)
+	grant_xp(xp_earned + surplus)
 
 	selected_path.clear()
 
@@ -168,13 +171,24 @@ func merge_current_chain(defer_settle: bool = false) -> Dictionary:
 	}
 
 
-## Закриває відкладений мердж перед збереженням або в кінці анімації.
+## Closes a deferred merge before any save or at the end of an animation.
+## Commit the complete board before any presentation can yield or save.
 func settle_pending_merge() -> void:
 	if not merge_settle_pending:
 		return
 	board.apply_gravity()
 	board.spawn_new_cells(current_level, carry_number, max_reached_number)
 	merge_settle_pending = false
+
+
+func grant_xp(amount: int) -> void:
+	if amount <= 0:
+		return
+	var daily := DailyQuestManager.new(self)
+	daily.ensure_loaded()
+	xp += amount
+	progress.record_xp(amount)
+	daily.on_session_xp_changed()
 
 
 func level_xp_mult() -> float:
@@ -283,7 +297,11 @@ func load_from_save_dict(data: Dictionary) -> bool:
 	else:
 		progress.ensure_defaults()
 	board.load_from_arrays(data.get("grid", []))
+	board.apply_gravity()
+	board.spawn_new_cells(current_level, carry_number, max_reached_number)
 	selected_path.clear()
+	# Board state is fully settled here — clear any transient pending flag.
+	merge_settle_pending = false
 	_sanitize_loaded_state()
 	_sanitize_win_phase()
 	return true
@@ -322,3 +340,4 @@ func should_show_level_complete() -> bool:
 
 func _is_valid_cell(cell: Vector2i) -> bool:
 	return cell.x >= 0 and cell.x < board.grid_w and cell.y >= 0 and cell.y < board.grid_h
+  

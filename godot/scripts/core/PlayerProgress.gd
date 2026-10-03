@@ -41,7 +41,7 @@ func record_new_game() -> void:
 	_unlock_progress("first_game", 1)
 
 
-func record_merge(chain_len: int, xp: int, current_level: int) -> void:
+func record_merge(chain_len: int, current_level: int) -> void:
 	stats["total_merges"] = int(stats["total_merges"]) + 1
 	stats["longest_chain"] = maxi(int(stats["longest_chain"]), chain_len)
 	stats["highest_level"] = maxi(int(stats["highest_level"]), current_level + 1)
@@ -71,6 +71,16 @@ func record_earned_xp(amount: int) -> void:
 static func local_day_key() -> String:
 	var dt := Time.get_datetime_dict_from_system()
 	return "%04d-%02d-%02d" % [int(dt.year), int(dt.month), int(dt.day)]
+
+
+func record_xp(amount: int) -> void:
+	reset_daily_session_if_needed(Time.get_date_string_from_system())
+	amount = maxi(0, amount)
+	stats["total_xp"] = int(stats["total_xp"]) + amount
+	stats["session_xp_today"] = get_session_xp_today() + amount
+	_unlock_progress("xp_1000", int(stats["total_xp"]))
+	_unlock_progress("xp_5000", int(stats["total_xp"]))
+	_update_leaderboard_peaks(int(stats["highest_level"]), int(stats["total_xp"]), int(stats["longest_chain"]))
 
 
 func record_level_complete(current_level: int) -> void:
@@ -126,6 +136,8 @@ func queue_leaderboard_submit(board_id: String, payload: Dictionary) -> void:
 
 
 func flush_leaderboard_queue() -> void:
+	if not bool(leaderboard.get("opt_in", false)):
+		return
 	var pending: Array = leaderboard.get("pending_submits", [])
 	if pending.is_empty():
 		return

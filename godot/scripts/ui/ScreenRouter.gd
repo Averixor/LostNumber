@@ -7,6 +7,7 @@ extends Node
 ## run standalone via F6), navigation falls back to change_scene_to_file.
 
 signal screen_changed(screen_id: String)
+signal transition_finished
 
 const SCREENS := {
 	"main_menu": "res://scenes/MainMenu.tscn",
@@ -61,6 +62,10 @@ func get_current_screen() -> Node:
 	return _screen_root.get_child(0)
 
 
+## Navigation requests made while a transition is in flight are queued
+## (single-slot, last writer wins) and replayed by _flush_pending_action()
+## once the current swap completes. Call sites stay synchronous — no await
+## needed — and rapid taps don't stack transitions.
 func push(screen_id: String) -> void:
 	if not SCREENS.has(screen_id):
 		return
@@ -104,6 +109,10 @@ func can_go_back() -> bool:
 
 func go_back() -> bool:
 	if _busy:
+		# Queue only if the stack can actually satisfy the back later.
+		# Otherwise report false now so the Android back handler can quit.
+		if _back_stack.is_empty():
+			return false
 		_pending_action = "back"
 		return true
 	if not is_registered() or _back_stack.is_empty():
@@ -111,6 +120,11 @@ func go_back() -> bool:
 	var screen_id: String = _back_stack.pop_back()
 	await _swap(screen_id)
 	return true
+
+
+func wait_until_idle() -> void:
+	while _busy:
+		await transition_finished
 
 
 func _swap(screen_id: String) -> void:
@@ -132,6 +146,7 @@ func _swap(screen_id: String) -> void:
 	if _transition != null and _transition.has_method("uncover"):
 		await _transition.call("uncover", FADE_DURATION, slide)
 	_busy = false
+	transition_finished.emit()
 	await _flush_pending_action()
 
 
@@ -166,3 +181,4 @@ func _fallback_change(screen_id: String) -> void:
 	var tree := get_tree()
 	if tree != null:
 		tree.change_scene_to_file(SCREENS[screen_id])
+    

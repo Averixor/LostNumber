@@ -171,12 +171,16 @@ func _audio():
 	return _autoload("AudioManager")
 
 
-func _save():
+func _save() -> bool:
 	## Silent success: autosave must not flash a toast after every toggle.
 	## Surface feedback only when a real failure path needs it (callers use show_toast).
 	var settings = _settings()
 	if settings != null and settings.has_method("save_settings"):
-		settings.call("save_settings")
+		if not bool(settings.call("save_settings")):
+			LnUiLib.show_toast(self, _i18n("settings_save_failed"))
+			return false
+		return true
+	return false
 
 
 func _setup_labels() -> void:
@@ -286,6 +290,11 @@ func _setup_options() -> void:
 
 func _load_settings() -> void:
 	var settings = _settings()
+	if leaderboard_check != null:
+		var save := _autoload("SaveManager")
+		var saved_state: GameState = save.call("load_game") if save != null else null
+		leaderboard_check.disabled = saved_state == null
+		leaderboard_check.set_pressed_no_signal(saved_state != null and bool(saved_state.progress.leaderboard.get("opt_in", false)))
 
 	if sound_check != null:
 		sound_check.button_pressed = bool(_get_value(settings, "sound_enabled", true))
@@ -542,19 +551,19 @@ func _on_language_selected(index: int) -> void:
 		_load_settings()
 
 
+## Leaderboard opt-in lives in the save file (per-profile), not in device settings.
+## Settings key is kept as a mirror for the no-save case; the save is authoritative.
 func _on_leaderboard_toggled(enabled: bool) -> void:
+	var previous := _read_leaderboard_opt_in()
+	if not _write_leaderboard_opt_in(enabled):
+		if leaderboard_check != null:
+			leaderboard_check.set_pressed_no_signal(previous)
+		LnUiLib.show_toast(self, _i18n("settings_save_failed"))
+		return
 	var settings = _settings()
 	if settings != null:
 		settings.set("leaderboard_opt_in", enabled)
-		if settings.has_method("save_settings"):
-			settings.call("save_settings")
-	if not _write_leaderboard_opt_in(enabled) and settings != null:
-		var previous := not enabled
-		settings.set("leaderboard_opt_in", previous)
-		if settings.has_method("save_settings"):
-			settings.call("save_settings")
-		if leaderboard_check != null:
-			leaderboard_check.set_pressed_no_signal(previous)
+		settings.call("save_settings") if settings.has_method("save_settings") else null
 
 
 func _read_leaderboard_opt_in() -> bool:
@@ -575,6 +584,9 @@ func _write_leaderboard_opt_in(enabled: bool) -> bool:
 	if loaded == null:
 		return true
 	loaded.progress.leaderboard["opt_in"] = enabled
+	if not enabled:
+		# Privacy: drop any queued submissions the moment the user opts out.
+		loaded.progress.leaderboard["pending_submits"] = []
 	return bool(save.call("save_game", loaded))
 
 
@@ -649,6 +661,9 @@ func _on_gallery_pick_pressed() -> void:
 		theme_mgr.call("apply_background_path", imported)
 	elif settings.has_method("apply_background_for_active_theme"):
 		settings.call("apply_background_for_active_theme", imported)
+	if not _save():
+		_set_gallery_status(_i18n("settings_save_failed"))
+		return
 	_set_gallery_status(_i18n("settings_gallery_bg_applied"))
 	LnUiLib.show_toast(self, _i18n("settings_gallery_bg_applied"))
 
@@ -681,3 +696,4 @@ func _on_back() -> void:
 			router.call("replace", "main_menu")
 	else:
 		get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+    

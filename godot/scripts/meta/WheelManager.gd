@@ -61,6 +61,7 @@ func prepare_spin() -> Dictionary:
 	## Нагорода фіксується до анімації, щоб вихід під час обертання не з’їдав спіни.
 	_apply_sector(sector)
 	state.progress.record_wheel_spin()
+	DailyQuestManager.new(state).on_wheel_spun()
 	is_spinning = true
 	return {"ok": true, "sector": sector, "index": idx, "cost": cost}
 

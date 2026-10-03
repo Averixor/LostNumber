@@ -129,9 +129,10 @@ func _on_spin() -> void:
 		_show_message(_wheel_error_text(str(prep.get("reason", ""))))
 		_refresh_ui()
 		return
+	# spinWheel daily progress is advanced inside WheelManager.prepare_spin();
+	# here we only need to refresh the XP-driven quest after _apply_sector awarded XP.
 	if _daily != null:
 		_daily.on_session_xp_changed()
-		_daily.on_wheel_spun()
 	_persist_state()
 	_play_sfx("wheel_spin")
 	spin_button.disabled = true
@@ -149,12 +150,18 @@ func _on_spin_animation_done(sector: Dictionary, _index: int) -> void:
 	_persist_state()
 	_refresh_ui()
 
-func _persist_state() -> void:
+
+## Saves the current GameState. Returns false and shows a toast on failure.
+## Callers that must not lose the reward (back navigation) should abort on false.
+func _persist_state() -> bool:
 	var save := _autoload("SaveManager")
-	if _state != null and save != null and save.has_method("save_game"):
-		var saved := bool(save.call("save_game", _state))
-		if not saved:
-			push_warning("Wheel: failed to save wheel result")
+	if _state == null or save == null or not save.has_method("save_game"):
+		return false
+	if not bool(save.call("save_game", _state)):
+		LnUiLib.show_toast(self, _i18n("save_failed"))
+		return false
+	return true
+
 
 func _style_result_modal() -> void:
 	if result_dim != null:
@@ -248,7 +255,16 @@ func _sector_label(sector: Dictionary) -> String:
 			return translated
 	return str(sector.get("label", ""))
 
+func handle_back() -> bool:
+	_on_back()
+	return true
+
+
 func _on_back() -> void:
-	_persist_state()
+	# Abort navigation if the save did not go through — otherwise the player
+	# walks away from a spin reward that only exists in memory.
+	if not _persist_state():
+		return
 	_play_sfx("button_click")
 	_navigate_back()
+  
