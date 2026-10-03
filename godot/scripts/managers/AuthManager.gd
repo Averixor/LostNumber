@@ -17,6 +17,7 @@ var user: Dictionary = {}
 var last_error: String = ""
 
 var _plugin = null
+var _signing_out := false
 
 
 func _ready() -> void:
@@ -111,6 +112,7 @@ func sign_out() -> void:
 		return
 	_bind_plugin()
 	if _plugin != null and _plugin_has("signOut"):
+		_signing_out = true
 		_plugin_call("signOut")
 		return
 	_clear_session()
@@ -145,9 +147,17 @@ func _refresh_from_plugin_or_cache() -> void:
 
 
 func _apply_payload(data: Dictionary, persist: bool) -> void:
+	var was_signing_out := _signing_out
+	_signing_out = false
 	var status := str(data.get("status", STATE_LOGGED_OUT))
 	var err := str(data.get("error", ""))
 	if status == "error" or (status == STATE_ERROR):
+		if was_signing_out:
+			last_error = err if not err.is_empty() else "auth_failed"
+			state = STATE_LOGGED_IN if not str(user.get("uid", "")).is_empty() else STATE_LOGGED_OUT
+			auth_error.emit(last_error)
+			auth_state_changed.emit(state, user.duplicate(true))
+			return
 		_set_error(err if not err.is_empty() else "auth_failed")
 		return
 	if status == "cancelled":

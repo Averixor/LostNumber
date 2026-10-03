@@ -97,6 +97,8 @@ func _handle_android_back() -> void:
 		get_viewport().set_input_as_handled()
 		return
 
+	if router.has_method("wait_until_idle"):
+		await router.wait_until_idle()
 	var screen_id: String = str(router.get("current_screen_id"))
 	if _delegate_back_to_current_screen(router):
 		get_viewport().set_input_as_handled()

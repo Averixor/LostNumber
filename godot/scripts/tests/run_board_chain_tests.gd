@@ -8,12 +8,15 @@ var failed := 0
 
 
 func _init() -> void:
+	call_deferred("_run")
+
+
+func _run() -> void:
 	print("Lost Number Board chain tests...")
 	var board: BoardView = BoardView.new()
 	board.cell_size = Vector2(72, 72)
 	board.cell_gap = 6.0
 	root.add_child(board)
-	board.call("_build_grid")
 	board.set_size(board.custom_minimum_size)
 
 	var state := GameState.new()
@@ -24,6 +27,8 @@ func _init() -> void:
 	_test_collect_diagonal_span(board, state)
 	_test_collect_mixed_diagonal(board, state)
 
+	board.queue_free()
+	await process_frame
 	if failed > 0:
 		push_error("Board chain tests failed: %s" % failed)
 		quit(1)
