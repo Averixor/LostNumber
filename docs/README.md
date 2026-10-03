@@ -52,11 +52,11 @@
 
 ## CI
 
-| Workflow                   | Призначення                        |
-| -------------------------- | ---------------------------------- |
-| `.github/workflows/ci.yml` | `npm run release:check` на push/PR |
+| Workflow                   | Призначення                                                                 |
+| -------------------------- | --------------------------------------------------------------------------- |
+| `.github/workflows/ci.yml` | `npm run release:check` **і** `npm run godot:test:all` (Godot **4.7.1**) на push/PR `main` |
 
-Godot headless tests (`npm run godot:test:all`) — локально перед upload.
+Перед релізним рішенням окремо підтвердити successful run для цільового commit SHA.
 
 ## Архів
 

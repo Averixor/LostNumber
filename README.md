@@ -46,7 +46,8 @@ Static page **`privacy.html`** at repo root — not part of the game. Host separ
 
 ```
 godot/                 # Game: scenes, GDScript, assets, Android export
-android/keystore/      # Release signing (gitignored)
+android/firebase/      # google-services.json (dev/prod) for Firebase Auth
+android/keystore/      # Release signing (gitignored; create locally)
 build/android/         # APK/AAB output (gitignored)
 store/                 # Play Console listing + graphics
 scripts/               # npm tooling, Godot export helpers

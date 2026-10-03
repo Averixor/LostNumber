@@ -108,7 +108,7 @@ Implemented in Godot with varying visual polish:
 | Achievements                          | Save via `PlayerProgress`; UI partial                       |
 | Stats / About                         | Minimal screens with back-stack navigation                  |
 | Themes (dawn/dusk)                    | `ThemeManager.gd`; twilight in code, hidden from UI toggle  |
-| i18n (UA / RU / EN)                   | 285 keys per locale — `I18nManager.gd`                      |
+| i18n (UA / RU / EN)                   | 330 keys per locale — `I18nManager.gd`                      |
 
 ## Not in scope (deferred)
 

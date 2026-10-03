@@ -68,27 +68,27 @@ scenes/
   components/          BackgroundLayer, NeonButton, MenuDockButton, MenuQuickChip, FeatureStubOverlay, ScreenTransition
 scripts/
   App.gd               registers ScreenRouter, Android back
-  core/                Rules, BoardLogic, GameState, LevelManager (40 preset + endless), …
+  core/                Rules, BoardLogic, GameState, LevelManager (40 + endless), …
   game/                Game, Board, Tile, ChainLineLayer, BonusManager
-  ui/                  GameHud, SkinPreview, ImagePickerHelper, WheelCanvas, AchievementCard, DailyQuestCard, …
-  assets/i18n/         uk.json, ru.json, en.json — 285 keys each
-  managers/            SaveManager, SettingsManager, AudioManager, ThemeManager, I18nManager, …
-  ui/                  ScreenRouter, Boot, MainMenu, ThemeTokens, …
+  ui/                  ScreenRouter, Boot, MainMenu, GameHud, SkinPreview, ThemeTokens, …
+  managers/            SaveManager, SettingsManager, AudioManager, ThemeManager, I18nManager, AuthManager, …
   meta/                WheelManager, DailyQuestManager
 themes/
   lost_number_theme.tres   global GUI theme (tokens-based)
   title_gradient.gdshader  menu/boot title gradient
 assets/
-  ui/backgrounds/{dark,light}/   menu art (from web assets/)
-  ui/icons/gothic/               gothic PNG HUD/dock icons; ui/icons/wheel/ for wheel art
-  audio/{music,sfx}/             mp3 via git LFS
+  i18n/                        uk.json, ru.json, en.json — 330 keys each
+  ui/backgrounds/{dark,light}/ menu art
+  ui/icons/gothic/             gothic PNG HUD/dock icons; ui/icons/wheel/ for wheel art
+  audio/{music,sfx}/           mp3 via git LFS
+  icons/                       launcher + adaptive icons
 docs/
-  README.md              → docs/ (canonical documentation)
+  README.md              redirect → ../docs/ (canonical documentation)
 ```
 
 ## Visual foundation (Sprint 1)
 
-- `ThemeTokens.gd` + `lost_number_theme.tscn` — colors/radii from web CSS
+- `ThemeTokens.gd` + `lost_number_theme.tres` — colors/radii from web CSS
 - `BackgroundLayer` — theme art, dim overlay, optional particles (`SettingsManager.bg_effects_enabled`)
 - `NeonButton` — primary / secondary / ghost (no default grey Godot buttons on MainMenu)
 - MainMenu: gradient title, primary actions, quick-row chips, bottom dock, SVG icons, feature stubs, bg cycle (tagline double-tap; theme toggle dawn/dusk only — twilight hidden in UI)
