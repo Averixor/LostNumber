@@ -88,7 +88,7 @@ VISUAL_TARGET, Settings Import stub UX, розмір AAB, фінальні 4 с�
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **OWNER path**   | [`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md) — Auth-ready AAB → CT smoke → Cloud Save approve → gates                                      |
 | Docs / Auth B2   | [`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md), [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md), [`FIREBASE_PRIVACY_DELTA.md`](FIREBASE_PRIVACY_DELTA.md) |
-| Auth B2 runtime  | **Shipped** (Sign-In only); CT **NO-GO** до JSON + нового AAB                                                                                              |
+| Auth B2 runtime  | **Shipped**; CT **PRE-UPLOAD READY** (AAB `93f72b58…`); Play upload + smoke OWNER                                                                          |
 | Cloud Save 4B/4C | **BLOCKED** до CT GO + OWNER flip gates                                                                                                                    |
 
 **Наступний OWNER крок:** `google-services.json` → rebuild → Sign-In smoke → CT ([`CLOSED_TESTING_RUNBOOK.md`](CLOSED_TESTING_RUNBOOK.md)).

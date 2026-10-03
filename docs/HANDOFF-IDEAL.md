@@ -1,7 +1,7 @@
 # Lost Number — Production Handoff (Ideal Build)
 
 > **SUPERSEDED (2026-08-13).** Canonical identity / Auth / CT: [`docs/en/SOURCE_OF_TRUTH.md`](en/SOURCE_OF_TRUTH.md), [`STAGE1_RELEASE_RECORD.md`](STAGE1_RELEASE_RECORD.md), [`CLOSED_TESTING_RUNBOOK.md`](CLOSED_TESTING_RUNBOOK.md).  
-> Current package: **`com.Averixor.Lost_Number`** / VC **6** / Auth B2 (Sign-In only). CT **NO-GO** until Firebase JSON + new AAB.
+> Current package: **`com.Averixor.Lost_Number`** / VC **6** / Auth B2 (Sign-In only). CT **PRE-UPLOAD READY** (AAB `93f72b58…`); Play upload + smoke — OWNER.
 
 **Package (historical text below):** `com.averixor.lostnumber`  
 **Version (historical):** `2.1.6` (versionCode `16`)  
