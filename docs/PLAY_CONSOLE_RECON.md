@@ -24,20 +24,19 @@ App signing (Google deployment): `37:FB:98:8C:A6:84:03:03:88:F0:5B:35:90:59:CD:8
 | --- | --------------------------------------------------------------- | -------------------------------------------------- |
 | 1   | Upload cert SHA збігається з таблицею вище?                     | ☐ так / ☐ ні                                       |
 | 2   | Max versionCode у **новому** listing `com.Averixor.Lost_Number` | **5** (OWNER 2026-10-03; `5.aab` / 2.1.6 Internal) |
-
-| 3 | Identity verification | ☐ pending / ☐ approved / ☐ rejected |
-| 4 | Closed testing track існує? | ☐ так / ☐ ні |
-| 4b | Назва трека / testers group | ______ |
-| 5 | Firebase apps + SHA зареєстровані для Sign-In? | ☐ так / ☐ ні |
+| 3   | Identity verification                                           | ☐ pending / ☐ approved / ☐ rejected                |
+| 4   | Closed testing track існує?                                     | ☐ так / ☐ ні                                       |
+| 4b  | Назва трека / testers group                                     | ______                                             |
+| 5   | Firebase apps + SHA зареєстровані для Sign-In?                  | ☐ так / ☐ ні                                       |
 
 **Якщо п.1 = ні** — **не вантажити** AAB.
 
 ## Рішення по versionCode
 
-| Факт Console                       | Дія                                     |
-| ---------------------------------- | --------------------------------------- |
-| Max VC у **новому** listing &lt; 6 | upload **6 / 2.1.6** OK                 |
-| Max VC у **новому** listing ≥ 6    | bump `export_presets` → max+1 + rebuild |
+| Факт Console                                 | Дія                                     |
+| -------------------------------------------- | --------------------------------------- |
+| Max VC у **новому** listing = **5** (&lt; 6) | upload **6 / 2.1.6** OK (`93f72b58…`)   |
+| Max VC у **новому** listing ≥ 6              | bump `export_presets` → max+1 + rebuild |
 
 ### Legacy listing (не CT target)
 
