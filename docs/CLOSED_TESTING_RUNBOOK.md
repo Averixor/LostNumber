@@ -73,7 +73,7 @@ sha256sum build/android/lost-number.aab
 ## OWNER blockers (зараз)
 
 1. ~~Покласти `android/firebase/{dev,prod}/google-services.json`.~~ ✅ локально 2026-10-03
-2. Перезібрати release → SHA для **2.1.7 / 7** + `godot:verify:aab` (після merge).
+2. ~~Перезібрати release → SHA для **2.1.7 / 7**.~~ ✅ `d10d3f2e…` + verify PASS
 3. Play Console: Upload key check + Account deletion URL + upload AAB **2.1.7 / 7** + opt-in.
 4. Positive Google Sign-In smoke **з Play install**.
 5. Cloud Save / 4B — окремо після CT GO ([`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md)).

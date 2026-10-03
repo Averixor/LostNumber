@@ -3,7 +3,7 @@
 Дата оновлення: **2026-10-03**  
 Listing: **`com.Averixor.Lost_Number`** (новий; не `com.averixor.lostnumber`)  
 Ship version у git: **2.1.7 / versionCode 7** (`godot/export_presets.cfg`)  
-CT status: **PRE-UPLOAD READY** (2.1.7 / 7; SHA після rebuild) — Play upload + smoke OWNER — [`STAGE1_RELEASE_RECORD.md`](STAGE1_RELEASE_RECORD.md), [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)  
+CT status: **PRE-UPLOAD READY** (AAB `d10d3f2e…`, 2.1.7 / 7) — Play upload + smoke OWNER — [`STAGE1_RELEASE_RECORD.md`](STAGE1_RELEASE_RECORD.md), [`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)  
 Локальний upload keystore: `android/keystore/lostnumber-upload-2026.jks`  
 Alias: `lostnumber_upload`  
 **Перед upload:** max VC у новому listing був **5**; VC6 superseded. Кандидат = **7 / 2.1.7**. Якщо 7 вже був — bump до `max+1`.  
@@ -48,13 +48,13 @@ OWNER 2026-10-03: Play Console для **`com.averixor.lostnumber`** (opt-in URL 
 
 ## Автоматично перевірено (репо)
 
-| Перевірка               | Результат                                              |
-| ----------------------- | ------------------------------------------------------ |
-| Privacy URL             | https://averixor.github.io/LostNumber/privacy.html     |
-| Upload key fingerprints | OK (`43:93:42:63…`)                                    |
-| Auth B2 у source        | OK (`LostNumberFirebase`, `INTERNET=true`)             |
-| `release:check`         | **PASS** 2026-10-03 (Firebase resources у AAB)         |
-| `godot:verify:aab`      | **PASS** 2026-10-03 (cert `43:93…`, VC6, targetSdk 36) |
-| Candidate AAB SHA-256   | `_pending_rebuild_after_merge_` (2.1.7 / 7)            |
+| Перевірка               | Результат                                                                      |
+| ----------------------- | ------------------------------------------------------------------------------ |
+| Privacy URL             | https://averixor.github.io/LostNumber/privacy.html                             |
+| Upload key fingerprints | OK (`43:93:42:63…`)                                                            |
+| Auth B2 у source        | OK (`LostNumberFirebase`, `INTERNET=true`)                                     |
+| `release:check`         | **PASS** 2026-10-03 (Firebase resources у AAB)                                 |
+| `godot:verify:aab`      | **PASS** 2026-10-03 (cert `43:93…`, VC6, targetSdk 36)                         |
+| Candidate AAB SHA-256   | `d10d3f2ea8170e005a67e7201ca27e777ea70f2a319e71f7b1829f3de10b45c1` (2.1.7 / 7) |
 
 Далі: [`CLOSED_TESTING_RUNBOOK.md`](CLOSED_TESTING_RUNBOOK.md), [`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md).
