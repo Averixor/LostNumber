@@ -52,9 +52,11 @@
 
 ## CI
 
-| Workflow                   | Призначення                                                                                |
-| -------------------------- | ------------------------------------------------------------------------------------------ |
-| `.github/workflows/ci.yml` | `npm run release:check` **і** `npm run godot:test:all` (Godot **4.7.1**) на push/PR `main` |
+| Workflow                          | Призначення                                                                                                  |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `.github/workflows/ci.yml`        | `npm run release:check` **і** `npm run godot:test:all` (Godot **4.7.1**) на push/PR `main`                   |
+| `.github/workflows/pages.yml`     | Deploy `privacy.html` на GitHub Pages                                                                        |
+| CodeQL (GitHub Advanced Security) | Default setup активний; ручний Java-build шаблон — [`docs/ci/codeql.workflow.yml`](./ci/codeql.workflow.yml) |
 
 Перед релізним рішенням окремо підтвердити successful run для цільового commit SHA.
 

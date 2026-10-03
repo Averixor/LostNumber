@@ -117,7 +117,7 @@ python3 scripts/prepare-play-store-assets.py # store/ для Console
 | Gambling                    | Ні (колесо фортуни — ігровий XP, не реальні гроші) |
 | IAP / paid random items     | Ні                                                 |
 | User-generated content      | Ні                                                 |
-| Online interaction          | Ні (офлайн)                                        |
+| Online interaction          | Опційно: Google Sign-In; геймплей офлайн           |
 | Реклама                     | Ні                                                 |
 
 Очікуваний результат: **Everyone / 3+**.

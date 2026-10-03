@@ -82,7 +82,7 @@ VISUAL_TARGET, Settings Import stub UX, розмір AAB, фінальні 4 с�
 
 ## Етап 4 — Phase 6 Firebase
 
-**Kickoff docs ready; runtime blocked.** Offline-first лишається; Firebase optional після OWNER go.
+**Auth B2 shipped; Cloud Save runtime blocked.** Offline-first лишається; Cloud Save optional після OWNER go.
 
 | Статус           | Документ / гілка                                                                                                                                           |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |

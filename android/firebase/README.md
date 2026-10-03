@@ -14,6 +14,14 @@ android/firebase/
 
 ## Install (локально)
 
+```bash
+mkdir -p android/firebase/dev android/firebase/prod
+cp /path/to/downloaded-dev/google-services.json android/firebase/dev/google-services.json
+cp /path/to/downloaded-prod/google-services.json android/firebase/prod/google-services.json
+```
+
+PowerShell:
+
 ```powershell
 New-Item -ItemType Directory -Force -Path android/firebase/dev, android/firebase/prod | Out-Null
 Copy-Item path\to\downloaded-dev\google-services.json android/firebase/dev/google-services.json
