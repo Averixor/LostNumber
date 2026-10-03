@@ -25,6 +25,8 @@ var active_bonus: String = ""
 var daily_quests: Dictionary = {}
 var wheel_spins_today: int = 0
 var last_wheel_day: String = ""
+## Мердж уже застосований, гравітація і досипка ще попереду.
+var merge_settle_pending: bool = false
 
 
 func _init() -> void:
@@ -46,6 +48,7 @@ func start_new_game(seed_value: int = -1) -> void:
 	phase = Phase.PLAYING
 	bonus_inventory = {"destroy": 0, "shuffle": 0, "explosion": 0}
 	active_bonus = ""
+	merge_settle_pending = false
 	var preserved_daily := daily_quests.duplicate(true)
 	daily_quests = preserved_daily
 	progress.record_new_game()
@@ -134,9 +137,9 @@ func merge_current_chain(defer_settle: bool = false) -> Dictionary:
 		removed.append(selected_path[i])
 
 	board.apply_merge(anchor, removed, result_number)
+	merge_settle_pending = true
 	if not defer_settle:
-		board.apply_gravity()
-		board.spawn_new_cells(current_level, carry_number, max_reached_number)
+		settle_pending_merge()
 
 	var chain_len: int = selected_path.size()
 	var xp_earned := _calculate_xp(chain_len)
@@ -163,6 +166,15 @@ func merge_current_chain(defer_settle: bool = false) -> Dictionary:
 		"anchor": anchor,
 		"removed": removed,
 	}
+
+
+## Закриває відкладений мердж перед збереженням або в кінці анімації.
+func settle_pending_merge() -> void:
+	if not merge_settle_pending:
+		return
+	board.apply_gravity()
+	board.spawn_new_cells(current_level, carry_number, max_reached_number)
+	merge_settle_pending = false
 
 
 func level_xp_mult() -> float:

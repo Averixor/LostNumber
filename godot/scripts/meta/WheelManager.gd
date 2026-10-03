@@ -20,12 +20,14 @@ const SECTORS := [
 
 var state: GameState
 var is_spinning: bool = false
+var _rng := RandomNumberGenerator.new()
 
 func _init(game_state: GameState) -> void:
 	state = game_state
+	_rng.randomize()
 
 func check_daily_reset() -> void:
-	var today := _today_key()
+	var today := PlayerProgress.local_day_key()
 	if state.last_wheel_day != today:
 		state.last_wheel_day = today
 		state.wheel_spins_today = 0
@@ -54,34 +56,32 @@ func prepare_spin() -> Dictionary:
 	var cost := int(check.cost)
 	state.xp = maxi(0, state.xp - cost)
 	state.wheel_spins_today += 1
-	var idx := state.board.rng.randi_range(0, SECTORS.size() - 1)
+	var idx := _rng.randi_range(0, SECTORS.size() - 1)
 	var sector: Dictionary = SECTORS[idx]
+	## Нагорода фіксується до анімації, щоб вихід під час обертання не з’їдав спіни.
+	_apply_sector(sector)
+	state.progress.record_wheel_spin()
 	is_spinning = true
 	return {"ok": true, "sector": sector, "index": idx, "cost": cost}
 
-func finish_spin(sector: Dictionary) -> void:
-	_apply_sector(sector)
-	state.progress.record_wheel_spin()
+func finish_spin(_sector: Dictionary = {}) -> void:
 	is_spinning = false
 
 func spin() -> Dictionary:
 	var prep := prepare_spin()
 	if not prep.ok:
 		return prep
-	var sector: Dictionary = prep.sector
-	finish_spin(sector)
-	return {"ok": true, "sector": sector, "index": prep.index}
+	finish_spin()
+	return {"ok": true, "sector": prep.sector, "index": prep.index}
 
 func _apply_sector(sector: Dictionary) -> void:
 	match str(sector.get("effect", "")):
 		"xp":
-			state.xp = maxi(0, state.xp + int(sector.get("value", 0)))
+			var amount := int(sector.get("value", 0))
+			state.xp = maxi(0, state.xp + amount)
+			state.progress.record_earned_xp(amount)
 		"bonus":
 			state.grant_bonus(str(sector.get("value", "")), 1)
 		"multiplier":
 			state.xp_multiplier = int(sector.get("multiplier", 2))
 			state.xp_multiplier_turns = int(sector.get("turns", 3))
-
-func _today_key() -> String:
-	var dt := Time.get_datetime_dict_from_system()
-	return "%04d-%02d-%02d" % [dt.year, dt.month, dt.day]

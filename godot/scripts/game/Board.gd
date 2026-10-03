@@ -412,8 +412,7 @@ func animate_merge_settle(removed: Array, anchor: Vector2i) -> void:
 		for cell in removed:
 			if cell is Vector2i:
 				(_tiles[cell.x][cell.y] as TileView).set_value(0)
-		state.board.apply_gravity()
-		state.board.spawn_new_cells(state.current_level, state.carry_number, state.max_reached_number)
+		state.settle_pending_merge()
 		for x in GRID_W:
 			for y in GRID_H:
 				var static_tile := _tiles[x][y] as TileView
@@ -475,8 +474,10 @@ func animate_merge_settle(removed: Array, anchor: Vector2i) -> void:
 	else:
 		fall_tween.kill()
 
-	state.board.apply_gravity()
-	state.board.spawn_new_cells(state.current_level, state.carry_number, state.max_reached_number)
+	if state != null:
+		state.settle_pending_merge()
+	if not is_inside_tree():
+		return
 
 	for x in GRID_W:
 		for y in GRID_H:

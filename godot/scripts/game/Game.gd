@@ -25,6 +25,13 @@ var _daily: DailyQuestManager
 func _autoload(name: String) -> Node:
 	return get_node_or_null("/root/" + name)
 
+
+func _apply_leaderboard_preference() -> void:
+	var settings := _autoload("SettingsManager")
+	if settings == null or state == null:
+		return
+	state.progress.leaderboard["opt_in"] = bool(settings.get("leaderboard_opt_in"))
+
 func _ready() -> void:
 	LnUiLib.apply_screen_background(self, "game", 0.62)
 	_bind_theme_updates()
@@ -56,8 +63,10 @@ func _ready() -> void:
 			state = loaded_state
 		else:
 			state.start_new_game()
+			_apply_leaderboard_preference()
 	else:
 		state.start_new_game()
+		_apply_leaderboard_preference()
 	_bonus = BonusManager.new(state)
 	_daily = DailyQuestManager.new(state)
 	_daily.ensure_loaded()
@@ -209,6 +218,8 @@ func _maybe_vibrate(duration_ms: int = 35) -> void:
 func _save_game() -> bool:
 	if bool(get_meta("visual_capture_no_persistence", false)):
 		return true
+	if state != null:
+		state.settle_pending_merge()
 	var save := _autoload("SaveManager")
 	if save == null or not save.has_method("save_game"):
 		push_error("Game: SaveManager.save_game is unavailable; progress remains in memory")
@@ -307,6 +318,8 @@ func _on_chain_finished(path: Array[Vector2i]) -> void:
 	## already gates Board._gui_input and BonusManager; it was never set on this path.
 	if state.phase != GameState.Phase.PLAYING:
 		return
+	if _daily != null:
+		_daily.ensure_loaded()
 	state.phase = GameState.Phase.ANIMATING
 
 	var chain_len := path.size()

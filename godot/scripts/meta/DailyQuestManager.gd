@@ -21,7 +21,7 @@ func _init(game_state: GameState) -> void:
 
 
 func ensure_loaded() -> void:
-	var today := _today_key()
+	var today := PlayerProgress.local_day_key()
 	state.progress.reset_daily_session_if_needed(today)
 	if state.daily_quests.get("date", "") == today:
 		_ensure_progress_dict()
@@ -170,11 +170,10 @@ func _give_reward(id: String) -> void:
 		var reward: Dictionary = quest.reward
 		match reward.get("type", ""):
 			"xp":
-				state.xp += int(reward.get("amount", 0))
+				var amount := int(reward.get("amount", 0))
+				state.xp += amount
+				state.progress.record_earned_xp(amount)
+				on_session_xp_changed()
 			"bonus":
 				state.grant_bonus(str(reward.get("bonus", "")), int(reward.get("amount", 1)))
 		return
-
-
-func _today_key() -> String:
-	return Time.get_date_string_from_system(true)

@@ -24,6 +24,7 @@ var music_track: String = "ambient"
 var language: String = "uk"
 var bg_effects_enabled: bool = true
 var tile_font_scale: float = 1.0
+var leaderboard_opt_in: bool = false
 
 ## Mirrors ThemeManager.theme_id ("dawn" | "dusk" | "twilight").
 var active_theme: String = "dusk"
@@ -212,6 +213,7 @@ func load_settings() -> void:
 	language = str(data.get("language", "uk"))
 	bg_effects_enabled = bool(data.get("bg_effects_enabled", true))
 	tile_font_scale = normalize_tile_font_scale(data.get("tile_font_scale", 1.0))
+	leaderboard_opt_in = bool(data.get("leaderboard_opt_in", false))
 	active_theme = str(data.get("active_theme", "dusk"))
 	var theme_mgr := get_node_or_null("/root/ThemeManager")
 	if theme_mgr != null and theme_mgr.has_method("normalize_release_theme_id"):
@@ -225,7 +227,7 @@ func load_settings() -> void:
 	sync_active_theme_from_manager()
 
 
-func save_settings() -> void:
+func save_settings() -> bool:
 	sync_active_theme_from_manager()
 	var data := {
 		"sound_enabled": sound_enabled,
@@ -236,6 +238,7 @@ func save_settings() -> void:
 		"language": language,
 		"bg_effects_enabled": bg_effects_enabled,
 		"tile_font_scale": tile_font_scale,
+		"leaderboard_opt_in": leaderboard_opt_in,
 		"active_theme": active_theme,
 		"selected_background_dark": selected_background_dark,
 		"selected_background_light": selected_background_light,
@@ -243,9 +246,16 @@ func save_settings() -> void:
 		"custom_backgrounds": custom_backgrounds,
 	}
 	var file := FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
-	if file:
-		file.store_string(JSON.stringify(data))
+	if file == null:
+		push_error("SettingsManager: cannot write %s" % SETTINGS_PATH)
+		return false
+	var written := file.store_string(JSON.stringify(data))
+	file.close()
+	if not written:
+		push_error("SettingsManager: write failed for %s" % SETTINGS_PATH)
+		return false
 	settings_saved.emit()
+	return true
 
 
 func _load_custom_backgrounds(raw: Variant) -> Dictionary:

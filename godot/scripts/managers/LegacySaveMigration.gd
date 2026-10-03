@@ -177,7 +177,7 @@ func _map_legacy_to_godot(raw: Dictionary) -> Dictionary:
 		"xp_multiplier_turns": maxi(0, _int_field(raw, "xp_multiplier_turns", "xpMultiplierTurns", 0)),
 		"bonus_inventory": _map_bonus_inventory(bonus_raw),
 		"active_bonus": "",
-		"daily_quests": {},
+		"daily_quests": _map_daily_quests(raw),
 		"wheel_spins_today": maxi(0, _int_field(raw, "wheel_spins_today", "wheelSpinsToday", 0)),
 		"last_wheel_day": str(raw.get("last_wheel_day", raw.get("lastWheelDay", ""))),
 		"progress": progress,
@@ -211,6 +211,20 @@ func _cell_value(cell: Variant) -> int:
 	if typeof(cell) == TYPE_FLOAT or typeof(cell) == TYPE_INT:
 		return maxi(0, int(cell))
 	return 0
+
+
+func _map_daily_quests(raw: Dictionary) -> Dictionary:
+	var src := _coerce_dict(raw.get("daily_quests", raw.get("dailyQuests", {})))
+	if src.is_empty():
+		return {}
+	var mapped := src.duplicate(true)
+	if mapped.has("completedQuests") and not mapped.has("completed"):
+		mapped["completed"] = _coerce_dict(mapped["completedQuests"])
+	if typeof(mapped.get("completed", {})) != TYPE_DICTIONARY:
+		mapped["completed"] = {}
+	if typeof(mapped.get("progress", {})) != TYPE_DICTIONARY:
+		mapped["progress"] = {}
+	return mapped
 
 
 func _map_bonus_inventory(raw: Variant) -> Dictionary:

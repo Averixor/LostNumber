@@ -320,6 +320,9 @@ func _load_settings() -> void:
 	if background_auto_check != null:
 		background_auto_check.button_pressed = bool(_get_value(theme_mgr, "skin_auto", false))
 
+	if leaderboard_check != null:
+		leaderboard_check.set_pressed_no_signal(_read_leaderboard_opt_in())
+
 	_refresh_theme_button()
 
 
@@ -539,8 +542,49 @@ func _on_language_selected(index: int) -> void:
 		_load_settings()
 
 
-func _on_leaderboard_toggled(_enabled: bool) -> void:
-	pass
+func _on_leaderboard_toggled(enabled: bool) -> void:
+	var settings = _settings()
+	if settings != null:
+		settings.set("leaderboard_opt_in", enabled)
+		if settings.has_method("save_settings"):
+			settings.call("save_settings")
+	if not _write_leaderboard_opt_in(enabled) and settings != null:
+		var previous := not enabled
+		settings.set("leaderboard_opt_in", previous)
+		if settings.has_method("save_settings"):
+			settings.call("save_settings")
+		if leaderboard_check != null:
+			leaderboard_check.set_pressed_no_signal(previous)
+
+
+func _read_leaderboard_opt_in() -> bool:
+	var loaded = _load_saved_state()
+	if loaded != null:
+		return bool(loaded.progress.leaderboard.get("opt_in", false))
+	var settings = _settings()
+	return settings != null and bool(settings.get("leaderboard_opt_in"))
+
+
+func _write_leaderboard_opt_in(enabled: bool) -> bool:
+	var save := _autoload("SaveManager")
+	if save == null or not save.has_method("has_save") or not bool(save.call("has_save")):
+		return true
+	if not save.has_method("load_game") or not save.has_method("save_game"):
+		return false
+	var loaded = save.call("load_game")
+	if loaded == null:
+		return true
+	loaded.progress.leaderboard["opt_in"] = enabled
+	return bool(save.call("save_game", loaded))
+
+
+func _load_saved_state():
+	var save := _autoload("SaveManager")
+	if save == null or not save.has_method("has_save") or not bool(save.call("has_save")):
+		return null
+	if not save.has_method("load_game"):
+		return null
+	return save.call("load_game")
 
 
 func _on_theme_cycle() -> void:

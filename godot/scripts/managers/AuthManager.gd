@@ -188,8 +188,10 @@ func _apply_payload(data: Dictionary, persist: bool) -> void:
 
 
 func _set_error(message: String) -> void:
-	state = STATE_ERROR
 	last_error = message
+	## Невдалий вихід не скидає активну сесію: інакше екран показує гостя, а файл лишається.
+	var keep_session := state == STATE_LOGGED_IN and not str(user.get("uid", "")).is_empty()
+	state = STATE_LOGGED_IN if keep_session else STATE_ERROR
 	auth_error.emit(message)
 	auth_state_changed.emit(state, user.duplicate(true))
 
