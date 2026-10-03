@@ -6,31 +6,31 @@
 
 ## Корінь репозиторію
 
-| Шлях                | Призначення                                                                  |
-| ------------------- | ---------------------------------------------------------------------------- |
-| `godot/`            | Гра: сцени, GDScript, assets, Android export                                 |
-| `privacy.html`      | Privacy Policy (UK + EN) для Google Play — не гра                            |
-| `android/firebase/` | `google-services.json` (dev/prod) для Firebase Auth                          |
-| `android/keystore/` | Release keystore (gitignored; створюється локально)                          |
-| `store/`            | Графіка та тексти Google Play (`PLAY_CONSOLE_LISTING.md`)                    |
-| `scripts/`          | npm-скрипти: export, verify, store:prepare                                   |
-| `docs/`             | Документація — індекс у **`docs/README.md`**                                 |
+| Шлях                | Призначення                                               |
+| ------------------- | --------------------------------------------------------- |
+| `godot/`            | Гра: сцени, GDScript, assets, Android export              |
+| `privacy.html`      | Privacy Policy (UK + EN) для Google Play — не гра         |
+| `android/firebase/` | `google-services.json` (dev/prod) для Firebase Auth       |
+| `android/keystore/` | Release keystore (gitignored; створюється локально)       |
+| `store/`            | Графіка та тексти Google Play (`PLAY_CONSOLE_LISTING.md`) |
+| `scripts/`          | npm-скрипти: export, verify, store:prepare                |
+| `docs/`             | Документація — індекс у **`docs/README.md`**              |
 
 ## `godot/`
 
-| Шлях                                                                        | Призначення                                                                                                                                                                        |
-| --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Шлях                                                                        | Призначення                                                                                                                                                                                         |
+| --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `project.godot`                                                             | `main_scene` → `scenes/Boot.tscn`; autoloads: SaveManager, SettingsManager, AudioManager, I18nManager, ThemeManager, LeaderboardService, **AuthManager**, **ScreenRouter**, **LegacySaveMigration** |
-| `scenes/Boot.tscn`                                                          | Splash: preload App, fade                                                                                                                                                                            |
-| `scenes/App.tscn`                                                           | Shell: BackgroundLayer, ScreenRoot, OverlayRoot (Toast/Modal/Transition), AudioRoot                                                                                                                  |
-| `scenes/MainMenu.tscn`, `Game.tscn`, `Settings.tscn`, `SkinPreview.tscn`, … | Екрани; монтуються в ScreenRoot через ScreenRouter                                                                                                                                                   |
-| `scripts/ui/ScreenRouter.gd`                                                | Autoload: push/replace/go_back, back-stack, fade                                                                                                                                                     |
-| `scripts/core/LevelManager.gd`                                              | 40 algorithmically generated levels + procedural endless                                                                                                                                             |
-| `assets/ui/backgrounds/{dark,light}/`                                       | 6+6 фонів у rotation pool (додаткові PNG можуть лежати в тих самих теках)                                                                                                                            |
-| `assets/ui/icons/`                                                          | Gothic PNG pack (`icons/gothic/`), wheel PNGs, shared `tile-crown.png`                                                                                                                               |
-| `assets/audio/{music,sfx}/`                                                 | mp3 (git LFS)                                                                                                                                                                                        |
-| `assets/i18n/{uk,ru,en}.json`                                               | 330 ключів кожна локаль                                                                                                                                                                              |
-| `export_presets.cfg`                                                        | Android AAB/APK, version 2.1.6 / code 6                                                                                                                                                               |
+| `scenes/Boot.tscn`                                                          | Splash: preload App, fade                                                                                                                                                                           |
+| `scenes/App.tscn`                                                           | Shell: BackgroundLayer, ScreenRoot, OverlayRoot (Toast/Modal/Transition), AudioRoot                                                                                                                 |
+| `scenes/MainMenu.tscn`, `Game.tscn`, `Settings.tscn`, `SkinPreview.tscn`, … | Екрани; монтуються в ScreenRoot через ScreenRouter                                                                                                                                                  |
+| `scripts/ui/ScreenRouter.gd`                                                | Autoload: push/replace/go_back, back-stack, fade                                                                                                                                                    |
+| `scripts/core/LevelManager.gd`                                              | 40 algorithmically generated levels + procedural endless                                                                                                                                            |
+| `assets/ui/backgrounds/{dark,light}/`                                       | 6+6 фонів у rotation pool (додаткові PNG можуть лежати в тих самих теках)                                                                                                                           |
+| `assets/ui/icons/`                                                          | Gothic PNG pack (`icons/gothic/`), wheel PNGs, shared `tile-crown.png`                                                                                                                              |
+| `assets/audio/{music,sfx}/`                                                 | mp3 (git LFS)                                                                                                                                                                                       |
+| `assets/i18n/{uk,ru,en}.json`                                               | 330 ключів кожна локаль                                                                                                                                                                             |
+| `export_presets.cfg`                                                        | Android AAB/APK, version 2.1.6 / code 6                                                                                                                                                             |
 
 Потік запуску: **Boot → App → MainMenu** (`ScreenRouter.replace("main_menu")`). Збірка: `npm run godot:android:release` → `build/android/lost-number.aab`.
 

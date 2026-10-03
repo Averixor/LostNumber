@@ -22,12 +22,12 @@ High-level technical architecture for Lost Number **2.1.6**. Godot 4.7 is the so
 └─────────────────────────────────────────────────────────┘
 ```
 
-| Layer           | Stack                  | Role                                                                 |
-| --------------- | ---------------------- | -------------------------------------------------------------------- |
-| Gameplay (ship) | Godot 4.7 GDScript     | Boot → App → screens; back-stack navigation                          |
-| Save            | `user://` JSON (Godot) | Checksum + `.bak` rollback                                           |
-| Network         | Optional               | Offline play by default; optional Google Sign-In (Firebase Auth B2)  |
-| CI              | GitHub Actions         | `release:check` **and** `godot:test:all` (Godot 4.7.1) on push/PR    |
+| Layer           | Stack                  | Role                                                                |
+| --------------- | ---------------------- | ------------------------------------------------------------------- |
+| Gameplay (ship) | Godot 4.7 GDScript     | Boot → App → screens; back-stack navigation                         |
+| Save            | `user://` JSON (Godot) | Checksum + `.bak` rollback                                          |
+| Network         | Optional               | Offline play by default; optional Google Sign-In (Firebase Auth B2) |
+| CI              | GitHub Actions         | `release:check` **and** `godot:test:all` (Godot 4.7.1) on push/PR   |
 
 ### Godot runtime architecture
 
@@ -161,9 +161,9 @@ See [`FIREBASE_ADR.md`](./FIREBASE_ADR.md) and [`SOURCE_OF_TRUTH.md`](./SOURCE_O
 
 ### CI / automation
 
-| Workflow                   | Purpose                                                                              |
-| -------------------------- | ------------------------------------------------------------------------------------ |
-| `.github/workflows/ci.yml` | `npm run release:check` **and** `npm run godot:test:all` (Godot **4.7.1** pinned)    |
+| Workflow                   | Purpose                                                                           |
+| -------------------------- | --------------------------------------------------------------------------------- |
+| `.github/workflows/ci.yml` | `npm run release:check` **and** `npm run godot:test:all` (Godot **4.7.1** pinned) |
 
 Local full gate: `npm run release:ideal` (format + lint + repo checks + Godot rules/save; skips if no `godot4`). Pre-upload: `npm run godot:verify:aab`.
 

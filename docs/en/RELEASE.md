@@ -126,10 +126,10 @@ In-game graphics: `godot/assets/ui/` (gothic PNG icons, wheel PNGs, skins).
 
 ## Icons
 
-| Asset           | Path                                |
-| --------------- | ----------------------------------- |
-| Launcher (1024) | `godot/assets/icons/icon-1024.png`  |
-| Project icon    | `godot/icon.png`                    |
+| Asset           | Path                                                           |
+| --------------- | -------------------------------------------------------------- |
+| Launcher (1024) | `godot/assets/icons/icon-1024.png`                             |
+| Project icon    | `godot/icon.png`                                               |
 | Adaptive icons  | `godot/assets/icons/adaptive-icon-{foreground,background}.png` |
 
 ## Google Play Console checklist
