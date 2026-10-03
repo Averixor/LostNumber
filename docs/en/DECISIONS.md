@@ -70,7 +70,7 @@ Manual import: **Settings → Import legacy save** (desktop file picker or Andro
 | Rule             | Detail                                                                            |
 | ---------------- | --------------------------------------------------------------------------------- |
 | Locales          | Ukrainian (default), Russian, English                                             |
-| Source of truth  | `godot/assets/i18n/{uk,ru,en}.json` — **285 keys** each                           |
+| Source of truth  | `godot/assets/i18n/{uk,ru,en}.json` — **330 keys** each                           |
 | Origin           | Ported from `js/system/i18n/i18n.js`                                              |
 | API              | `I18nManager` autoload; screens call `tr()` / manager helpers                     |
 | Fallback chain   | uk → ru → en                                                                      |

@@ -48,7 +48,7 @@ Lost Number **2.1.6** ships on **Godot 4.7** / GDScript only. The former browser
 | Daily quests                                                                                   | Done    |
 | Wheel (logic; canvas animation partial)                                                        | Partial |
 | Achievements UI + save via `PlayerProgress`                                                    | Done    |
-| i18n UA/RU/EN (285 keys)                                                                       | Done    |
+| i18n UA/RU/EN (330 keys)                                                                       | Done    |
 | Themes dawn/dusk tokens                                                                        | Done    |
 | Leaderboard stub + offline queue in save                                                       | Done    |
 | Tile merge pulse tween                                                                         | Done    |
