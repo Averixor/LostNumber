@@ -63,14 +63,14 @@ func get_current_screen() -> Node:
 
 
 ## Navigation requests made while a transition is in flight are queued
-## (single-slot, last writer wins) and replayed by _flush_pending_action()
-## once the current swap completes. Call sites stay synchronous — no await
-## needed — and rapid taps don't stack transitions.
+## (single-slot, last writer wins). Awaiters wait until the full chain —
+## current swap plus any queued action — finishes.
 func push(screen_id: String) -> void:
 	if not SCREENS.has(screen_id):
 		return
 	if _busy:
 		_pending_action = "push:" + screen_id
+		await wait_until_idle()
 		return
 	if not is_registered():
 		_fallback_change(screen_id)
@@ -85,6 +85,7 @@ func replace(screen_id: String) -> void:
 		return
 	if _busy:
 		_pending_action = "replace:" + screen_id
+		await wait_until_idle()
 		return
 	if not is_registered():
 		_fallback_change(screen_id)
@@ -97,6 +98,7 @@ func reload_current() -> void:
 		return
 	if _busy:
 		_pending_action = "reload"
+		await wait_until_idle()
 		return
 	await _swap(current_screen_id)
 
@@ -114,6 +116,7 @@ func go_back() -> bool:
 		if _back_stack.is_empty():
 			return false
 		_pending_action = "back"
+		await wait_until_idle()
 		return true
 	if not is_registered() or _back_stack.is_empty():
 		return false
@@ -129,6 +132,46 @@ func wait_until_idle() -> void:
 
 func _swap(screen_id: String) -> void:
 	_busy = true
+	await _run_transition(screen_id)
+	## Обробити чергу, поки ще «в навігації», щоб await wait_until_idle
+	## не прокидався між swap і flush.
+	while not _pending_action.is_empty():
+		var action := _pending_action
+		_pending_action = ""
+		await _apply_queued_action(action)
+	_busy = false
+	transition_finished.emit()
+
+
+func _apply_queued_action(action: String) -> void:
+	if action == "back":
+		if _back_stack.is_empty():
+			if current_screen_id != "main_menu" and not current_screen_id.is_empty():
+				await _run_transition("main_menu")
+			return
+		var screen_id: String = _back_stack.pop_back()
+		await _run_transition(screen_id)
+		return
+	if action == "reload":
+		if not current_screen_id.is_empty():
+			await _run_transition(current_screen_id)
+		return
+	if action.begins_with("push:"):
+		var push_id := action.substr(5)
+		if not SCREENS.has(push_id):
+			return
+		if not current_screen_id.is_empty():
+			_back_stack.append(current_screen_id)
+		await _run_transition(push_id)
+		return
+	if action.begins_with("replace:"):
+		var replace_id := action.substr(8)
+		if not SCREENS.has(replace_id):
+			return
+		await _run_transition(replace_id)
+
+
+func _run_transition(screen_id: String) -> void:
 	var slide := use_slide_transition and _effects_enabled()
 	if _transition != null and _transition.has_method("cover"):
 		await _transition.call("cover", FADE_DURATION, slide)
@@ -145,29 +188,6 @@ func _swap(screen_id: String) -> void:
 
 	if _transition != null and _transition.has_method("uncover"):
 		await _transition.call("uncover", FADE_DURATION, slide)
-	_busy = false
-	transition_finished.emit()
-	await _flush_pending_action()
-
-
-func _flush_pending_action() -> void:
-	if _pending_action.is_empty() or _busy:
-		return
-	var action := _pending_action
-	_pending_action = ""
-	if action == "back":
-		var handled := await go_back()
-		if not handled and current_screen_id != "main_menu" and not current_screen_id.is_empty():
-			await replace("main_menu")
-		return
-	if action == "reload":
-		await reload_current()
-		return
-	if action.begins_with("push:"):
-		await push(action.substr(5))
-		return
-	if action.begins_with("replace:"):
-		await replace(action.substr(8))
 
 
 func _effects_enabled() -> bool:
@@ -181,4 +201,3 @@ func _fallback_change(screen_id: String) -> void:
 	var tree := get_tree()
 	if tree != null:
 		tree.change_scene_to_file(SCREENS[screen_id])
-    
