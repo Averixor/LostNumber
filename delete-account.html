@@ -194,7 +194,10 @@
         <h2>Які дані видаляються</h2>
         <ul>
           <li>обліковий запис Firebase Auth (Google Sign-In) для Lost Number;</li>
-          <li>локальний кеш сесії входу в застосунку (<code>auth_session.json</code>) після in-app delete або після наступного запуску без акаунта.</li>
+          <li>
+            локальний кеш сесії входу в застосунку (<code>auth_session.json</code>) після in-app
+            delete або після наступного запуску без акаунта.
+          </li>
         </ul>
         <p>
           У поточній версії <strong>немає Cloud Save / Firestore</strong> ігрового прогресу на
@@ -212,8 +215,8 @@
             деінсталяцією.
           </li>
           <li>
-            Дані, які Google / Firebase зберігають як постачальник автентифікації, регулюються їхніми
-            політиками; ми видаляємо запис користувача в проєкті Firebase Auth Lost Number.
+            Дані, які Google / Firebase зберігають як постачальник автентифікації, регулюються
+            їхніми політиками; ми видаляємо запис користувача в проєкті Firebase Auth Lost Number.
           </li>
         </ul>
       </section>
@@ -221,7 +224,10 @@
       <section>
         <h2>Строки</h2>
         <ul>
-          <li><strong>У застосунку:</strong> видалення Firebase Auth user — одразу після успішного підтвердження (і re-auth, якщо потрібно).</li>
+          <li>
+            <strong>У застосунку:</strong> видалення Firebase Auth user — одразу після успішного
+            підтвердження (і re-auth, якщо потрібно).
+          </li>
           <li><strong>Email-запит:</strong> ручна обробка, зазвичай до 7 днів.</li>
         </ul>
       </section>
@@ -279,7 +285,7 @@
               email +
               '\n' +
               (notes ? 'Додатково: ' + notes + '\n' : '') +
-              '\nРозробник: Averixor\n'
+              '\nРозробник: Averixor\n',
           );
           window.location.href =
             'mailto:ryabinin.sergei.alekseevich@gmail.com?subject=' + subject + '&body=' + body;

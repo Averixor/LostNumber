@@ -85,15 +85,15 @@ SMOKE:
 
 ## Результат (заповнює OWNER)
 
-| Поле           | Значення                                                           |
-| -------------- | ------------------------------------------------------------------ |
-| Дата           | 2026-10-03                                                         |
-| Пристрій       | ☐ після Play install                                               |
-| AAB SHA-256    | `_pending_rebuild_after_merge_` (2.1.7 / 7)                        |
-| AAB source SHA | `main` after account-deletion merge                                |
-| Upload SHA OK  | ☐ після rebuild (`godot:verify:aab`)                               |
-| Auth smoke OK  | ☐ Play CT / ☑ історичний sideload 2026-08-14                       |
-| Вердикт        | **NO-GO** (Play CT upload + install smoke ще не виконані)          |
+| Поле           | Значення                                                            |
+| -------------- | ------------------------------------------------------------------- |
+| Дата           | 2026-10-03                                                          |
+| Пристрій       | ☐ після Play install                                                |
+| AAB SHA-256    | `_pending_rebuild_after_merge_` (2.1.7 / 7)                         |
+| AAB source SHA | `main` after account-deletion merge                                 |
+| Upload SHA OK  | ☐ після rebuild (`godot:verify:aab`)                                |
+| Auth smoke OK  | ☐ Play CT / ☑ історичний sideload 2026-08-14                        |
+| Вердикт        | **NO-GO** (Play CT upload + install smoke ще не виконані)           |
 | P0 / P1        | OWNER: upload **2.1.7 / 7** AAB → opt-in → smoke 1–11 + delete acct |
 | Нотатки        | VC6 `93f72b58…` superseded; Pages delete-account URL before Console |
 
