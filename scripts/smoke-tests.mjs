@@ -48,6 +48,25 @@ if (existsSync(projectGodot)) {
   }
 }
 
+// Git LFS: аудіо не повинно лишатися pointer-файлами після clone без `git lfs pull`.
+const lfsAudioSamples = [
+  'godot/assets/audio/music/Neon Drift.mp3',
+  'godot/assets/audio/sfx/error.mp3',
+  'godot/assets/audio/sfx/button.mp3',
+];
+const lfsPointerPrefix = 'version https://git-lfs.github.com/spec/v1';
+for (const rel of lfsAudioSamples) {
+  const full = join(root, rel);
+  if (!existsSync(full)) {
+    failures.push(`Missing LFS audio sample: ${rel}`);
+    continue;
+  }
+  const head = readFileSync(full).subarray(0, 64).toString('utf8');
+  if (head.startsWith(lfsPointerPrefix)) {
+    failures.push(`${rel} is still a Git LFS pointer — run: git lfs pull`);
+  }
+}
+
 // Guard: небезпечні npm git/GAS ops мають блокуватися без CONFIRM_*.
 // Порожній рядок залишає ключ у env; для «unset» треба delete.
 function envWithoutGitOpConfirms() {

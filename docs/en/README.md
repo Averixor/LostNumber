@@ -14,7 +14,7 @@ Professional technical documentation for the Lost Number project. **Godot 4** is
 | Document                                               | Description                                                             |
 | ------------------------------------------------------ | ----------------------------------------------------------------------- |
 | **[SOURCE_OF_TRUTH.md](./SOURCE_OF_TRUTH.md)**         | **Canonical reference** — decisions, version, doc index                 |
-| [FIREBASE_ADR.md](./FIREBASE_ADR.md)                   | Firebase Cloud Save ADR (Kotlin bridge; runtime blocked on gates)       |
+| [FIREBASE_ADR.md](./FIREBASE_ADR.md)                   | Firebase ADR — Auth B2 shipped; Cloud Save blocked on OWNER gates       |
 | [AUDIT_MAIN_2026-07-10.md](./AUDIT_MAIN_2026-07-10.md) | Dated main-branch technical audit (ref `dd6300a`)                       |
 | [GAME.md](./GAME.md)                                   | Game description, goal, mechanics, controls, progression                |
 | [MIGRATION_GODOT.md](./MIGRATION_GODOT.md)             | Godot 4 migration: completed work, remaining tasks                      |
@@ -33,7 +33,7 @@ Professional technical documentation for the Lost Number project. **Godot 4** is
 | [docs/PHASES.md](../PHASES.md)                                       | Development phases (performance, Firebase roadmap) |
 | [docs/CT_SMOKE_CHECKLIST.md](../CT_SMOKE_CHECKLIST.md)               | Closed testing smoke (OWNER) — GO/NO-GO            |
 | [docs/FIREBASE_STAGE4_SEQUENCE.md](../FIREBASE_STAGE4_SEQUENCE.md)   | Stage 4 OWNER walkable path (CT → gates → bridge)  |
-| [docs/FIREBASE_STAGE4_GATES.md](../FIREBASE_STAGE4_GATES.md)         | Stage 4 OWNER hard gates (runtime blocked)         |
+| [docs/FIREBASE_STAGE4_GATES.md](../FIREBASE_STAGE4_GATES.md)         | Stage 4 OWNER hard gates (Cloud Save blocked)      |
 | [docs/FIREBASE_OWNER_RUNBOOK.md](../FIREBASE_OWNER_RUNBOOK.md)       | Firebase Console / SHA / secrets setup             |
 | [docs/FIREBASE_PRIVACY_DELTA.md](../FIREBASE_PRIVACY_DELTA.md)       | Privacy / Data safety changes when cloud lands     |
 | [docs/ANDROID.md](../ANDROID.md)                                     | Godot Android build                                |

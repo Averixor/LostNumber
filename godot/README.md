@@ -7,6 +7,7 @@ Native Godot port — **ship target for Google Play**.
 - Godot **4.7+** (4.7 tested)
 - Portrait 420×920 (`project.godot`)
 - Node.js ≥ 20.19 for npm scripts
+- Git LFS — після clone: `git lfs pull` (mp3 у `assets/audio/`)
 
 ## Entry flow
 

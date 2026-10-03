@@ -7,14 +7,19 @@
 - Godot **4.7+** (4.7 tested; `config/features` у `project.godot`)
 - Portrait 420×920 (`godot/project.godot`)
 - Node.js ≥ 20.19 for npm scripts
+- **Git LFS** (`git lfs install`) — аудіо в `godot/assets/audio/`
 
 ## Quick start
 
 ```bash
+cd /path/to/LostNumber        # корінь репо з package.json
+git lfs pull                  # реальні mp3 (не pointer-файли)
+npm ci
 npm run godot:import          # first-time import
 godot4 --path godot           # editor
 npm run godot:test:all        # headless tests (requires godot4)
 npm run release:check         # CI gate
+npm run release:ideal         # повніший локальний gate
 ```
 
 ## Android
