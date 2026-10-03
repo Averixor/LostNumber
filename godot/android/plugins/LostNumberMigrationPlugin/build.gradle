@@ -2,6 +2,10 @@ plugins {
     id 'com.android.library' version '8.6.1'
 }
 
+def godotAar = file('../../build/libs/release/godot-lib.template_release.aar')
+// Без godot-lib.aar — codeql-stubs (IDE + CodeQL). З AAR stubs не в sourceSets, щоб уникнути дублікатів.
+def useGodotStubs = !godotAar.exists()
+
 android {
     namespace 'com.averixor.lostnumber'
     compileSdk 35
@@ -16,8 +20,18 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+
+    sourceSets {
+        main {
+            if (useGodotStubs) {
+                java.srcDir "${rootDir}/../codeql-stubs/java"
+            }
+        }
+    }
 }
 
 dependencies {
-    compileOnly files('../../build/libs/release/godot-lib.template_release.aar')
+    if (godotAar.exists()) {
+        compileOnly files(godotAar)
+    }
 }

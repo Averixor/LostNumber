@@ -8,3 +8,7 @@ android/.build_version
 # Plugin sources are tracked; local Gradle caches/outputs are not.
 android/plugins/**/.gradle/
 android/plugins/**/build/
+# Після !android/plugins/** знову виключаємо згенерований wrapper (CodeQL/CI).
+android/plugins/**/gradlew
+android/plugins/**/gradlew.bat
+android/plugins/**/gradle/
