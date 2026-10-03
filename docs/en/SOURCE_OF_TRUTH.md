@@ -9,17 +9,22 @@ Single canonical reference for PO-approved decisions. When docs disagree with th
 
 ## Version snapshot
 
-| Field               | Value                                       |
-| ------------------- | ------------------------------------------- |
-| Package             | `com.Averixor.Lost_Number`                  |
-| Debug package       | `com.Averixor.Lost_Number.dev`              |
-| versionName         | `2.1.6`                                     |
-| versionCode         | `6`                                         |
-| Next Play upload    | versionCode `≥` previous Console upload + 1 |
-| Engine              | Godot **4.7**                               |
-| npm package version | `2.1.6`                                     |
+| Field               | Value                                                              |
+| ------------------- | ------------------------------------------------------------------ |
+| Package             | `com.Averixor.Lost_Number`                                         |
+| Debug package       | `com.Averixor.Lost_Number.dev`                                     |
+| versionName         | `2.1.6`                                                            |
+| versionCode         | `6`                                                                |
+| Next Play upload    | after CT of `2.1.6` / `6`: bump **both** versionName + versionCode |
+| Engine              | Godot **4.7**                                                      |
+| npm package version | `2.1.6`                                                            |
 
-**Versioning rule:** release uses the product version (`2.1.6`); debug uses the fixed `versionName=dev`. The independent integer `versionCode` must exceed the highest code already uploaded to Play Console.
+**Versioning rule:**
+
+- Debug: fixed `versionName=dev`; `versionCode` follows the release integer in presets.
+- Play compares **versionCode** only — it must be `>` max already uploaded for `com.Averixor.Lost_Number`.
+- **Current CT candidate:** keep `2.1.6` / `6` (do not rename this series mid-upload).
+- **From the next Play series onward (PO 2026-10-03):** bump **versionName** and **versionCode** together on every new upload series (typically patch `2.1.6` → `2.1.7`, and `versionCode` → Console max + 1). Keep `package.json` `version` and `godot/project.godot` `config/version` in sync with release `versionName`.
 
 Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`.
 
