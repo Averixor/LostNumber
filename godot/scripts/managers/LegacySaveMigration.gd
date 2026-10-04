@@ -37,8 +37,8 @@ func _get_save_manager() -> Node:
 	return _autoload("SaveManager")
 
 
-func _autoload(name: String) -> Node:
-	return get_node_or_null("/root/" + name)
+func _autoload(autoload_name: String) -> Node:
+	return get_node_or_null("/root/" + autoload_name)
 
 
 func try_migrate_on_startup() -> bool:
