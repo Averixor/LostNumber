@@ -145,7 +145,7 @@ func _test_wheel() -> void:
 func _test_merge_snapshot() -> void:
 	for winning in [false, true]:
 		var state := fresh()
-		var value := state.get_target() / 2 if winning else 2
+		var value := int(state.get_target() / 2.0) if winning else 2
 		state.board.grid[0][0] = value
 		state.board.grid[1][0] = value
 		state.selected_path = [Vector2i(0, 0), Vector2i(1, 0)]
