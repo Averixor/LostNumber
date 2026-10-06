@@ -1,207 +1,626 @@
-# Visual Port Map — legacy Web → Godot
+# Visual Port Map — Godot visual implementation status
 
-> **Note (2026-07):** The browser/JS game (`index.html`, `js/`, `css/`) has been removed from the repo. This document is kept as a **historical migration map** only.
+> Historical note: the former browser/JS implementation has been removed from the
+> repository. References to Web/CSS/JS below are retained only to document migration
+> history and provenance of behavior or assets.
+>
+> **Web parity is not a visual acceptance criterion.**
+>
+> Canonical visual acceptance target:
+> `docs/en/VISUAL_TARGET.md`
+>
+> When this tracker conflicts with `VISUAL_TARGET.md`, the visual target wins.
+> Current Godot code remains the technical source of truth for what is actually
+> implemented.
 
-Карта переносу візуалу з колишньої Web-версії у Godot 4.5.
+---
 
-Статуси:
+## Purpose
 
-- **TODO** — у Godot ще нічого немає або є тільки логіка без візуалу.
-- **PARTIAL** — сцена/скрипт існує (MVP), але візуал не відповідає web-еталону.
-- **DONE** — перенесено і візуально відповідає web-версії.
+This file tracks the implementation state of visual systems in the active Godot
+version of Lost Number.
 
-## Gothic Crystal — перший вертикальний зріз
+It answers two separate questions:
 
-Технічний зріз інтегровано як окремий runtime-комплект, без зміни правил гри або
-формату збережень:
+1. Has the functionality / presentation been migrated into Godot?
+2. Does the current Godot presentation meet the approved visual target?
 
-- `VisualSkin.gd` описує фон, palette, семантичні `StyleBox` для поля, панелей,
-  HUD і кнопок, а також текстурні рамки п'яти рівнів плиток;
-- `gothic_crystal.tres` є реєстровим комплектом, а `ThemeManager.visual_skin_id`
-  вибирає його незалежно від `dawn`/`dusk`, background variant і low-effects;
-- темний-only Gothic рендерить власну Game palette у dark mode, але не змінює
-  глобальний `theme_id`: MainMenu і Settings зберігають обраний користувачем dawn/dusk;
-- `LnUi` спочатку запитує семантичний стиль активного комплекту, а старий
-  процедурний `StyleBoxFlat` лишається fallback `procedural_neon`;
-- `BackgroundLayer` є єдиним фоном у `App`; Gothic Crystal явно підключається
-  тільки на `Game`, тому незатверджені meta-екрани не отримують його palette,
-  overlay або декор випадково;
-- `Tile` зберігає `Label` і всі публічні стани, але додає `MaterialBackground`
-  та статичні crystal accents: 2–8 common, 16–64 uncommon, 128–512 rare,
-  1024–4096 epic, 8192+ legendary;
-- 5×8 поле, HUD, бонуси, ланцюг, pause і level-complete використовують той самий
-  комплект. У low-effects прибираються частинки, багатопрохідний glow і gameplay
-  tweens, але рамки та читабельні стани лишаються;
-- `SkinPreview` будує картки з реєстру і показує фон, panel, плитки 2/16/128
-  та кнопку. Apply змінює тільки component kit; brightness і background лишаються
-  окремими налаштуваннями.
+These are intentionally separate.
 
-З PO reference pack у runtime взято один чистий blank master
-`frames/gothic_stone_tile.webp`, перенесений як
-`assets/ui/skins/gothic_crystal/tiles/stone_frame.webp`. Його спокійна рамка
-масштабується через `StyleBoxTexture`, а значення, колір матеріалу, кристали,
-корона та selection лишаються окремими runtime-шарами. Панельні masters з
-нерівними краями не використовуються: pause/HUD/кнопки збираються чистими
-семантичними стилями комплекту, доки не буде підготовлений придатний NinePatch.
-Існуючий `menu-bg-3.png` перевикористано як game-фон. Макети із запеченим
-текстом, fake transparency, component sheets і fixed 4×4 grid не підключені.
-Усі runtime-написи лишаються `Label` та i18n uk/ru/en.
+A screen may be fully migrated and still require substantial visual work.
 
-## Екрани
+---
 
-| Web source                                         | Godot target                                | Scene             | Status  |
-| -------------------------------------------------- | ------------------------------------------- | ----------------- | ------- |
-| `index.html` `#mainMenuScreen` + `css/ui.css`      | `godot/scenes/MainMenu.tscn`                | MainMenu          | DONE    |
-| `index.html` `#gameScreen` (HUD, goal-box, xp)     | `godot/scenes/Game.tscn` + `GameHud.tscn`   | Game              | PARTIAL |
-| `index.html` `#settingsScreen`                     | `godot/scenes/Settings.tscn`                | Settings          | PARTIAL |
-| Settings → visual kit preview                      | `godot/scenes/SkinPreview.tscn`             | SkinPreview       | PARTIAL |
-| Settings → background picker/import                | `godot/scenes/BackgroundPreview.tscn`       | BackgroundPreview | PARTIAL |
-| `index.html` `#aboutScreen`                        | `godot/scenes/About.tscn`                   | About             | DONE    |
-| `index.html` `#achievementsScreen`                 | `godot/scenes/Achievements.tscn`            | Achievement       | PARTIAL |
-| `index.html` `#statsScreen`                        | `godot/scenes/Stats.tscn`                   | Stats             | DONE    |
-| `index.html` `#dailyQuestsScreen`                  | `godot/scenes/DailyQuests.tscn`             | DailyQuests       | PARTIAL |
-| `index.html` `.wheel-overlay` + `css/overlays.css` | `godot/scenes/Wheel.tscn`                   | Wheel             | PARTIAL |
-| `index.html` `#appSplash` + `css/critical.css`     | `godot/scenes/Boot.tscn`                    | Boot              | DONE    |
-| app shell + переходи між екранами                  | `godot/scenes/App.tscn` + `ScreenRouter.gd` | App               | DONE    |
+## Status model
 
-Примітки:
+### Implementation status
 
-- MainMenu: web parity — gradient title, primary Play/Continue, quick-row chips (Settings,
-  Stats, About) **DONE**, bottom dock (Premium/Tournaments/Achievements/Daily/Bonuses) **DONE**,
-  SVG icons **DONE**, FeatureStubOverlay for premium/tournaments/bonuses **DONE**,
-  tagline double-tap → `ThemeManager.cycle_background()`, staggered fade+slide entrance.
-- Settings: scroll + **Back** pinned at bottom (offset −72 px on Scroll); theme toggle cycles **dawn/dusk only** (`ThemeManager.UI_CYCLE_THEMES`; twilight in code but hidden from UI). Visual kit and background are independent controls: kit → `SkinPreview`, background → `BackgroundPreview`.
-- SkinPreview: full-screen cards for registered component kits with explicit apply/cancel; preview does not mutate the active kit.
-- BackgroundPreview: built-in and user background carousel with explicit apply/cancel; custom import uses `ImagePickerHelper.gd` (not MobileImagePicker) and does not replace the component kit.
-- DailyQuests: scroll list + **Back** at bottom (same layout as Settings); card layout in `DailyQuestCard.tscn`.
-- Game/Achievements — MVP; chain-sum HUD і preview bubble — **PARTIAL** (логіка в `GameHud.gd` / `Board.gd`; візуальна прийняття pending).
-- Stats/About — мінімальні екрани з back-stack навігацією.
-- Boot: фон з токенів, glow-шар під логотипом (`LnUi.wire_logo_glow`), ProgressBar,
-  неонова пульсація (AnimationPlayer), реальний прогрів (SaveManager + preload App), fade у App.
-- Навігація: `ScreenRouter` (autoload) з back-stack (push/pop/go_back),
-  fade-переходи через `components/ScreenTransition.tscn`; Android back
-  обробляє `App.gd` (NOTIFICATION_WM_GO_BACK_REQUEST → go_back()).
+- **TODO** — no meaningful Godot implementation yet.
+- **PARTIAL** — Godot implementation exists but is incomplete.
+- **DONE** — required runtime functionality exists in Godot.
 
-## Поле, плитки, ланцюг
+### Visual acceptance
 
-| Web source                                        | Godot target                        | Scene      | Status  |
-| ------------------------------------------------- | ----------------------------------- | ---------- | ------- |
-| `css/grid.css` `.grid` (5×8, radius 14, panel)    | `godot/scripts/game/Board.gd`       | Game/Board | PARTIAL |
-| `css/grid.css` `.cell` (radius 9, тіні)           | `godot/scenes/components/Tile.tscn` | Tile       | DONE    |
-| `css/grid.css` `.cell[data-number]` палітра 2…2M  | `godot/scripts/ui/ThemeTokens.gd`   | Tile       | PARTIAL |
-| `css/grid.css` selected/valid/invalid стани       | `godot/scripts/game/Tile.gd`        | Tile       | PARTIAL |
-| `css/grid.css` анімації pop/bubbleOut/carryIn     | Godot tween в `Tile.gd`             | Tile       | PARTIAL |
-| `css/grid.css` `.cell.frozen` + `.freeze-counter` | `godot/scripts/game/Board.gd`       | Tile       | PARTIAL |
-| `css/ui.css` `.chain-sum-hud` (+valid/invalid)    | `GameHud.gd` / `GameHud.tscn`       | Game       | PARTIAL |
-| `css/ui.css` `.preview-bubble`                    | `Board.gd` PreviewBubble            | Game       | PARTIAL |
+- **NOT REVIEWED** — visual result has not been evaluated against
+  `docs/en/VISUAL_TARGET.md`.
+- **NEEDS POLISH** — usable implementation exists but does not yet meet the
+  approved visual language.
+- **TARGET PARTIAL** — meaningful target styling is present, but one or more
+  acceptance requirements remain.
+- **ACCEPTED** — passes the current PO visual target at device scale.
 
-Примітки:
+`DONE` implementation does not imply `ACCEPTED` visual quality.
 
-- `Tile.tscn` + `Tile.gd`: ThemeTokens палітра, chain highlight, carry badge, pop tween.
-- `ChainLineLayer.tscn`: 3-pass neon glow для ланцюга.
-- Максимальний 40-комірковий ланцюжок не накопичує вузли; незмінний selection state
-  не перебудовує текстурний стиль плитки повторно. У low-effects ланцюг лишається
-  статичною single-pass лінією.
-- `GameHud.tscn`: top bar, XP bar, target panel, bonus row з іконками; active/available bonus glow.
-- Навігація: `ScreenRouter` з back-stack; slide+fade через `ScreenTransition` (low effects → fade only).
-- i18n: `godot/assets/i18n/{uk,ru,en}.json` з `js/system/i18n/i18n.js`, fallback uk→ru→en.
-- Audio: семантичні події в `AudioManager` (`button_click`, `tile_select`, `wheel_spin`, …).
+---
 
-## Тема, кольори, фони
+## Canonical visual rule
 
-| Web source                                     | Godot target                                   | Scene        | Status  |
-| ---------------------------------------------- | ---------------------------------------------- | ------------ | ------- |
-| `css/variables.css` (dawn/dusk токени)         | `godot/scripts/ui/ThemeTokens.gd`              | Global Theme | DONE    |
-| `css/base.css` + `css/ui.css` (radius, шрифти) | `godot/themes/lost_number_theme.tres`          | Global Theme | DONE    |
-| `css/ui.css` `.main-menu` skin-токени          | `godot/scripts/ui/ThemeTokens.gd`              | MainMenu     | DONE    |
-| `assets/images/dark/menu-bg-*.png` (6 шт.)     | `godot/assets/ui/backgrounds/dark/`            | MainMenu     | DONE    |
-| `assets/images/light/bg-light-*.png` (6 шт.)   | `godot/assets/ui/backgrounds/light/`           | MainMenu     | DONE    |
-| `js/system/platform/background.js` (ротація)   | `godot/scripts/managers/ThemeManager.gd`       | Global Theme | DONE    |
-| `css/background.css` (фон + overlay)           | `godot/scenes/components/BackgroundLayer.tscn` | App          | DONE    |
-| `css/ui.css` `.menu-btn` / `.primary` / ghost  | `godot/scenes/components/NeonButton.tscn`      | Components   | DONE    |
-| `css/low-performance.css`                      | `SettingsManager.bg_effects_enabled`           | Settings     | DONE    |
-| `css/critical.css` (error screen, спінер)      | Godot error handling / Boot                    | Boot         | PARTIAL |
+Lost Number uses world-integrated gothic-fantasy UI.
 
-Примітки:
+Final UI should appear physically connected to the current environment through:
 
-- `ThemeManager.gd`: `THEMES` = dawn/dusk/twilight; user-facing toggle uses **`UI_CYCLE_THEMES` = dawn/dusk only** (twilight hidden until art ships). `background_index` (6 PNG per bucket), `cycle_background()` (MainMenu tagline double-tap). Menu skin tokens (titleFrame arc/diamond, chip shapes) — TODO.
-- Global background path: `ThemeManager.get_background_texture_path()` → `LnUi.current_background_path()`; `BackgroundLayer` (App shell) and per-screen fallbacks read from there.
-- `BackgroundLayer`: арт з `assets/ui/backgrounds/{dark,light,twilight}/`, dim-overlay,
-  неонове свічення, повільні частинки. Частинки будуються тільки якщо
-  `bg_effects_enabled` (перемикач у Settings, low effects mode).
-- `css/critical.css`: спінер/лоадер закрито Boot-екраном; error screen — TODO.
+- carved stone;
+- forged / aged metal;
+- bronze or gold trim;
+- horns;
+- chains;
+- spikes;
+- engraved ornament;
+- gothic framing;
+- inset panels;
+- pedestals;
+- gems / magical cores;
+- controlled inner or environmental glow.
 
-## Store graphics vs in-game assets
+Flat neon rectangles floating over castle, lava, or royal artwork are not an
+accepted final style.
 
-| Призначення          | Шлях                   | У AAB?                                                           |
-| -------------------- | ---------------------- | ---------------------------------------------------------------- |
-| Play Console listing | `store/` (корінь репо) | Ні                                                               |
-| Godot store copies   | `godot/assets/store/`  | **Ні** — `exclude_filter=assets/store/*` у `export_presets.cfg`  |
-| Test/capture helpers | `godot/scripts/tests/` | **Ні** — `exclude_filter=scripts/tests/*` у всіх Android presets |
-| In-game UI           | `godot/assets/ui/`     | Так — підключено з `.tscn`                                       |
+Glow is an accent and state-feedback mechanism, not the structural language of
+the interface.
 
-Не посилайся на `assets/store/*` з ігрових сцен; тільки `assets/ui/`.
+---
 
-## Legacy save migration
+## Gothic Crystal — first vertical slice
 
-| Web source                      | Godot target                                         | Status |
-| ------------------------------- | ---------------------------------------------------- | ------ |
-| `localStorage` `lostNumberSave` | `LegacySaveMigration.gd` + Android plugin + Settings | DONE   |
+The Gothic Crystal runtime kit is a Godot-native visual implementation.
 
-Деталі: `docs/LEGACY_SAVE_MIGRATION.md`.
+Current architecture:
 
-## Іконки та аудіо
+- `VisualSkin.gd` defines background/palette and semantic UI styles;
+- `gothic_crystal.tres` registers the component kit;
+- `ThemeManager.visual_skin_id` selects the kit independently from background
+  brightness/profile state;
+- `LnUi` queries semantic styles from the active kit;
+- procedural `StyleBoxFlat` rendering remains a fallback, not the visual target;
+- `BackgroundLayer` remains the single App-shell background layer;
+- Gothic Crystal is currently scoped intentionally to approved runtime areas;
+- `Tile` keeps runtime labels and states while adding material/frame layers;
+- low-effects mode removes expensive particles, multi-pass glow and optional
+  tweens while preserving frame readability and state communication;
+- all runtime text remains real Godot `Label` content using uk/ru/en i18n.
 
-| Web source                                      | Godot target                            | Scene        | Status |
-| ----------------------------------------------- | --------------------------------------- | ------------ | ------ |
-| `assets/icons/neon/icons/*.svg` (41 шт.)        | `godot/assets/ui/icons/neon/`           | UI           | DONE   |
-| `assets/icons/neon/sprite/lostnumber-icons.svg` | — (у Godot окремі SVG)                  | UI           | —      |
-| `js/ui/icons.js` (мапінг icon → slot)           | MenuDock, GameHud, MainMenu, back btns  | UI           | DONE   |
-| `public/audio/music/*.mp3` (5 треків)           | `godot/assets/audio/music/`             | AudioManager | DONE   |
-| `public/audio/sfx/*.mp3` (8 звуків)             | `godot/assets/audio/sfx/`               | AudioManager | DONE   |
-| `js/system/platform/audio.js`                   | `scripts/managers/AudioManager.gd`      | AudioManager | DONE   |
-| `assets/icons/icon.png`, `icon-1024.png`        | `godot/icon.png`, `godot/icon-1024.png` | Export       | DONE   |
+The current Gothic Crystal slice is useful as an architectural foundation, but
+it is not permission to treat generic procedural neon controls as visually
+finished.
 
-Примітки:
+---
 
-- Аудіо вже розкладено по `music/` та `sfx/` — шляхи в `AudioManager.gd` актуальні.
-- Канонічне дерево neon-іконок: `godot/assets/ui/icons/neon/`; legacy fallback для crown —
-  `godot/assets/ui/icons/tile-crown.png`.
-- Копія `godot/assets/icons/neon/` видалена; Android export виключає `assets/store/*`
-  і `scripts/tests/*`.
-- Store-графіка (`assets/store/*`) лишається виключеною з експорту; не дублювати в `assets/ui/store/`.
+## Screen status
 
-## Оверлеї, модалки, тости
+| Screen | Godot target | Implementation | Visual acceptance |
+| --- | --- | ---: | ---: |
+| Main Menu | `godot/scenes/MainMenu.tscn` | DONE | TARGET PARTIAL |
+| Game | `Game.tscn` + `GameHud.tscn` | DONE | TARGET PARTIAL |
+| Settings | `Settings.tscn` | DONE | TARGET PARTIAL |
+| Skin Preview | `SkinPreview.tscn` | PARTIAL | TARGET PARTIAL |
+| Background Preview | `BackgroundPreview.tscn` | PARTIAL | TARGET PARTIAL |
+| About | `About.tscn` | DONE | TARGET PARTIAL |
+| Achievements | `Achievements.tscn` | DONE | TARGET PARTIAL |
+| Stats | `Stats.tscn` | DONE | TARGET PARTIAL |
+| Daily Quests | `DailyQuests.tscn` | DONE | TARGET PARTIAL |
+| Wheel | `Wheel.tscn` | DONE | TARGET PARTIAL |
+| Boot | `Boot.tscn` | DONE | TARGET PARTIAL |
+| App shell / navigation | `App.tscn` + `ScreenRouter.gd` | DONE | N/A |
 
-| Web source                                       | Godot target                       | Scene | Status  |
-| ------------------------------------------------ | ---------------------------------- | ----- | ------- |
-| `css/overlays.css` `.victory-overlay`            | компонент VictoryOverlay           | Game  | TODO    |
-| `css/overlays.css` `.level-overlay`              | компонент LevelOverlay             | Game  | PARTIAL |
-| `css/overlays.css` `.wheel-overlay` + `wheel.js` | `godot/scenes/Wheel.tscn`          | Wheel | PARTIAL |
-| `css/overlays.css` `.confirm-overlay`            | компонент ConfirmDialog            | UI    | TODO    |
-| `css/ui.css` `.system-toast`                     | компонент Toast                    | UI    | TODO    |
-| `index.html` feature-stub dialog                 | `FeatureStubOverlay.tscn`          | UI    | DONE    |
-| fade між екранами (ScreenRouter)                 | `components/ScreenTransition.tscn` | App   | DONE    |
+---
 
-Примітки:
+## Main Menu
 
-- Wheel: canvas spin animation (`WheelCanvas.gd`), result modal з dim + scale-in.
-  Web arrow/highlight polish — PARTIAL.
-- Компоненти складати в `godot/scenes/components/`.
+### Runtime state
 
-## Механіки з візуальною частиною
+Existing Godot implementation includes:
 
-| Web source                                    | Godot target                      | Scene       | Status  |
-| --------------------------------------------- | --------------------------------- | ----------- | ------- |
-| `js/game/mechanics/bonuses.js` (кнопки HUD)   | `GameHud.gd` + `BonusManager.gd`  | Game        | DONE    |
-| `js/game/mechanics/wheel.js`                  | `scripts/meta/WheelManager.gd`    | Wheel       | PARTIAL |
-| `js/game/meta/achievements.js` (grid-картки)  | `scripts/ui/Achievements.gd`      | Achievement | PARTIAL |
-| `js/game/meta/daily.js` (список квестів)      | `scripts/ui/DailyQuests.gd`       | DailyQuests | PARTIAL |
-| `js/app/ui/i18n-theme.js` + `js/system/i18n/` | `scripts/managers/I18nManager.gd` | I18n        | PARTIAL |
-| `js/game/grid/grid-animations.js`             | Godot tween/AnimationPlayer       | Game        | PARTIAL |
+- primary Play / Continue flow;
+- Settings / Stats / About navigation;
+- bottom navigation/dock functionality;
+- SVG icon support;
+- feature-stub overlays;
+- background cycling;
+- entrance animation;
+- ScreenRouter navigation.
 
-Примітки:
+This means the menu functionality is migrated.
 
-- I18nManager: UA/RU/EN JSON по **305 ключів** (`godot/assets/i18n/{uk,ru,en}.json`);
-  runtime-контракти Game/SkinPreview/BackgroundPreview перевіряються в усіх трьох
-  мовах, а key parity — через `npm run godot:test:i18n`.
+### Visual target
+
+The menu is **not considered visually complete merely because web parity was
+reached**.
+
+Target composition:
+
+- centered Lost Number logo as the main visual anchor;
+- no more than 1–2 dominant primary CTAs;
+- primary buttons built as substantial stone / metal fantasy controls;
+- secondary actions presented as a compact bottom row;
+- round controls, medallions, sigils or pedestal-based navigation;
+- Exit integrated into chrome rather than competing as a large button;
+- UI materials matching the active environment/theme family.
+
+Legacy-style flat `NeonButton` bars are fallback / transitional presentation,
+not final acceptance.
+
+#### Current visual status
+
+Status: TARGET PARTIAL
+
+---
+
+## Wheel — Колесо фортуни
+
+### Wheel: Runtime state
+
+Current Godot implementation includes:
+
+- `Wheel.tscn`;
+- canvas-based wheel rendering;
+- spin animation;
+- result flow;
+- dimmed result presentation;
+- `WheelManager` runtime integration.
+
+Implementation remains **PARTIAL** because presentation work is still being
+iterated.
+
+### Canonical visual target
+
+The Wheel is the hero object of this screen.
+
+It must feel like a physical fantasy mechanism placed inside the scene, not a
+generic circular chart.
+
+Required direction:
+
+#### Rim
+
+- large, substantial outer construction;
+- carved / forged depth;
+- bronze, gold, dark metal or stone depending on profile;
+- theme-specific spikes, horns, chains, runes, filigree or gems;
+- no thin generic circle acting as the entire frame.
+
+#### Hub
+
+- visually dominant central boss;
+- crystal, demonic core, metal boss, rune mechanism or equivalent;
+- same material language as the rim.
+
+#### Pointer
+
+- visually substantial;
+- integrated with the wheel construction;
+- not a generic floating triangle.
+
+#### Segments
+
+Segments may use different colors, but must not resemble flat pie-chart wedges.
+
+Prefer:
+
+- inset material surfaces;
+- subtle texture;
+- engraved or metal separators;
+- theme-derived color variation;
+- controlled gradients;
+- integrated lighting.
+
+#### Reward content
+
+Each segment must contain:
+
+Required content: large reward icon + short localized label
+
+Examples:
+
+- `+25 XP`;
+- `+50 XP`;
+- `+75 XP`;
+- `+100 XP`;
+- `×2`;
+- localized shuffle / break / explosion label.
+
+Approved gothic reward PNGs remain valid.
+
+The problem to solve is primarily:
+
+- scale;
+- layout;
+- framing;
+- integration.
+
+Do not replace approved reward art merely because previous implementations
+displayed it too small.
+
+#### Spin action
+
+Spin must use the same material language as the wheel and surrounding scene.
+
+A generic rounded gold or neon rectangle is not sufficient final styling.
+
+#### Limit indicator
+
+A compact limit badge is acceptable when framed and styled as part of the same
+visual system.
+
+It must not read as a modern mobile-app pill pasted below the wheel.
+
+#### Functional boundary
+
+Wheel polish must not change:
+
+- reward table;
+- payout economy;
+- daily limit behavior;
+- `WheelManager`;
+- save behavior.
+
+#### Wheel visual status
+
+Status: TARGET PARTIAL
+
+---
+
+## Game / HUD
+
+Current Godot implementation contains:
+
+- top HUD;
+- XP progress;
+- target panel;
+- bonus row;
+- chain feedback;
+- board;
+- tiles;
+- chain rendering.
+
+The implementation is functional but visually mixed.
+
+### Target
+
+- stone / metal framed level, target and XP sections;
+- progress fill inside a carved/inset channel;
+- bonus controls using icon + short label inside the same frame;
+- chain feedback allowed to use stronger magical/neon color;
+- glow must live inside or around physical UI structure;
+- no bare dashboard-style bars as final presentation.
+
+#### Game HUD visual status
+
+Status: TARGET PARTIAL
+
+---
+
+## Board and Tiles
+
+### Existing runtime
+
+Current implementation includes:
+
+- 5×8 board;
+- tile palette;
+- selected / valid / invalid states;
+- chain line rendering;
+- carry state;
+- tile animation;
+- frozen-state presentation;
+- preview bubble;
+- chain-sum logic.
+
+### Board and Tiles: Target
+
+Board:
+
+- inset stone slab / altar / game-table impression;
+- clear separation from the background;
+- not a plain rectangular panel.
+
+Tile:
+
+- visible depth;
+- inner shadow;
+- edge highlight;
+- stone, metal, crystal or gem-inset material impression;
+- centered number;
+- high-value inner glow where appropriate.
+
+States:
+
+- selection and validity should modify the tile's own chrome;
+- use border, inner glow, rune light or material change;
+- avoid unrelated floating overlays.
+
+---
+
+## Theme integration
+
+Current runtime theme/background architecture and the future visual-profile
+target are separate concepts.
+
+Current systems must not be misrepresented as though the full
+`VisualThemeProfile` architecture already exists.
+
+### Long-term target profiles
+
+#### Hell / Lava
+
+Background language:
+
+- volcanic;
+- infernal;
+- ember-lit.
+
+Chrome:
+
+- burnt bronze;
+- scorched stone;
+- blackened metal;
+- heated gold;
+- restrained red/orange inner light;
+- horns / chains / cracks where appropriate.
+
+#### Gothic Purple
+
+Background language:
+
+- dark castle;
+- cathedral;
+- violet atmosphere.
+
+Chrome:
+
+- dark metal;
+- stone;
+- bronze filigree;
+- amethyst;
+- violet inner or edge light;
+- gothic arches / chains / restrained spikes.
+
+#### Royal Purple
+
+Background language:
+
+- regal dark fantasy;
+- deep violet;
+- richer decoration.
+
+Chrome:
+
+- gold / brass;
+- polished dark metal;
+- jewel tones;
+- heraldic forms;
+- royal purple material accents.
+
+A component should not remain visually identical across all three families
+except where deliberate reuse is approved.
+
+---
+
+## Settings
+
+Runtime functionality currently includes:
+
+- scrolling settings;
+- pinned Back control;
+- dawn/dusk user theme cycle;
+- component kit preview;
+- background preview;
+- custom image import.
+
+### Settings: Visual target
+
+- controls grouped inside stone / metal panels;
+- custom theme-integrated toggles;
+- visible theme previews;
+- clear background / skin thumbnails;
+- Back control consistent with other scene-integrated navigation.
+
+Generic neon rows are transitional UI.
+
+#### Settings visual status
+
+Status: TARGET PARTIAL
+
+---
+
+## Background and visual-kit separation
+
+Component kit and background selection are intentionally separate concerns.
+
+A component kit may define:
+
+- panel frame;
+- button frame;
+- tile material;
+- HUD chrome;
+- wheel chrome;
+- semantic styling.
+
+A background choice selects the environment variant.
+
+Future profile architecture may pair these more strongly, but current runtime
+behavior must not be silently changed during visual polish.
+
+---
+
+## Store graphics vs runtime assets
+
+| Purpose | Path | Runtime export |
+| --- | --- | ---: |
+| Store / listing graphics | repository `store/` | No |
+| Godot store copies | `godot/assets/store/` | No |
+| Test helpers | `godot/scripts/tests/` | No |
+| Runtime game UI | `godot/assets/ui/` | Yes |
+
+Runtime scenes must not reference `assets/store/*`.
+
+Only runtime UI assets belong under `godot/assets/ui/`.
+
+---
+
+## Icons
+
+Current runtime icon sources include the Godot UI icon tree.
+
+Existing gothic Wheel reward images are approved as source artwork.
+
+Final visual acceptance depends on:
+
+- adequate rendered size;
+- silhouette readability;
+- correct framing;
+- proper contrast;
+- integration with the active material profile.
+
+A good icon displayed as a tiny sticker is still a visual failure.
+
+---
+
+## i18n
+
+All visible runtime labels remain real localized UI text.
+
+Supported locales:
+
+- Ukrainian;
+- Russian;
+- English.
+
+Visual polish must preserve:
+
+- localization keys;
+- placeholder behavior;
+- readable text width;
+- readable labels at phone scale.
+
+Do not bake user-facing language into decorative art.
+
+The current tracker reports **305 keys per locale**. Treat this as a repository
+snapshot and re-check current locale files before quoting it as a release fact.
+
+---
+
+## Overlays and modal components
+
+| Component | Runtime status | Visual acceptance |
+| --- | ---: | ---: |
+| Victory Overlay | TODO | NOT REVIEWED |
+| Level Overlay | PARTIAL | NEEDS POLISH |
+| Wheel result flow | PARTIAL | TARGET PARTIAL |
+| Confirm Dialog | TODO | NOT REVIEWED |
+| System Toast | TODO | NOT REVIEWED |
+| Feature Stub Overlay | DONE | TARGET PARTIAL |
+| Screen Transition | DONE | NOT REVIEWED |
+
+New overlay components should use the same world-integrated visual rules.
+
+Do not introduce generic modal cards as final styling.
+
+Reusable UI components belong under:
+
+`godot/scenes/components/`
+
+---
+
+## Low-effects requirements
+
+Low-effects mode may disable or simplify:
+
+- particles;
+- repeated glow passes;
+- expensive shader effects;
+- optional gameplay tweens;
+- decorative motion.
+
+It must preserve:
+
+- material framing;
+- readable text;
+- icon readability;
+- state distinction;
+- functional hierarchy.
+
+Performance mode must not fall back to visually broken or unstyled default
+controls.
+
+---
+
+## Acceptance gate
+
+A screen may be marked **ACCEPTED** only after comparison against
+`docs/en/VISUAL_TARGET.md` on a real phone-scale layout.
+
+### Global
+
+- [ ] UI feels integrated with the environment.
+- [ ] No dominant generic flat-neon rectangles.
+- [ ] Material/chrome matches the active theme family.
+- [ ] Icons are readable without zooming.
+- [ ] uk/ru/en text remains readable.
+- [ ] Touch targets remain usable.
+- [ ] Visual polish does not change gameplay or saves.
+
+### Acceptance gate: Main Menu
+
+- [ ] Centered logo is the visual anchor.
+- [ ] No more than 1–2 large primary CTAs.
+- [ ] Primary controls use carved stone/metal construction.
+- [ ] Secondary actions use compact pedestal/medallion navigation.
+- [ ] Exit does not visually compete with Play / Continue.
+
+### Wheel
+
+- [ ] Wheel dominates the screen composition.
+- [ ] Ornate outer rim has real visual mass.
+- [ ] Hub and pointer belong to the same construction.
+- [ ] Segments do not resemble a generic pie chart.
+- [ ] Reward icons are large and readable.
+- [ ] Every sector has a short localized label.
+- [ ] Icon + text form one composition.
+- [ ] Wheel feels physically present in the environment.
+- [ ] Spin control uses matching material language.
+- [ ] Wheel economy remains unchanged.
+
+### Game
+
+- [ ] HUD uses integrated frames.
+- [ ] Board feels inset into the scene.
+- [ ] Tiles have visible material depth.
+- [ ] Bonus controls contain icon + text.
+- [ ] Chain feedback remains immediately readable.
+
+### Acceptance gate: Settings
+
+- [ ] Controls are grouped into integrated panels.
+- [ ] Theme/background previews are visible.
+- [ ] Skin/background thumbnails remain touch-friendly.
+
+---
+
+## Final visual question
+
+For every major UI element ask:
+
+> Does this look like an object that belongs inside this exact fantasy
+> environment, or like an app control placed on top of a background?
+
+If it looks like the second, visual work is not finished.

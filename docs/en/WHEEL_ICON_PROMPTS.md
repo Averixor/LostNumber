@@ -7,12 +7,12 @@ Style: **dark gothic fantasy**, purple-neon accents on stone/bronze, cohesive wi
 
 ## Shared style (prepend to every prompt)
 
-```
+````text
 Dark gothic fantasy game icon for Lost Number puzzle game, muted amethyst and violet tones,
 antique bronze rim accents, subtle purple neon edge glow, candlelit stone atmosphere,
 painted illustration, bold readable silhouette at 64px, centered subject,
 transparent background, square 128x128, no text, no watermark, no UI frame
-```
+```text
 
 ---
 
@@ -20,59 +20,59 @@ transparent background, square 128x128, no text, no watermark, no UI frame
 
 ### 1. Explosion 3×3 (`explosion`)
 
-```
+```text
 {SHARED STYLE}, magical blast erupting from a 3x3 grid of cracked stone tiles,
 arcane purple shockwave and ember shards, board explosion bonus emblem
-```
+```text
 
 ### 2. Shuffle (`shuffle`)
 
-```
+```text
 {SHARED STYLE}, two curved gothic arrows forming a reshuffle sigil over dark slate,
 tiles mixing motif, elegant minimal shuffle bonus emblem
-```
+```text
 
 ### 3. Break / Destroy (`destroy`)
 
-```
+```text
 {SHARED STYLE}, single stone tile shattered by a dark crystal strike or bronze chisel,
 break-destroy bonus emblem, sharp high-contrast silhouette
-```
+```text
 
 ### 4. +25 XP (`xp25`)
 
-```
+```text
 {SHARED STYLE}, small amethyst crystal shard with faint gold sparkle,
 modest XP reward jewel for fortune wheel segment
-```
+```text
 
 ### 5. +50 XP (`xp50`)
 
-```
+```text
 {SHARED STYLE}, polished amethyst crystal cluster with thin bronze filigree,
 medium XP reward jewel for fortune wheel segment
-```
+```text
 
 ### 6. +75 XP (`xp75`)
 
-```
+```text
 {SHARED STYLE}, radiant ruby-violet gem in a small bronze bezel,
 rich XP reward jewel for fortune wheel segment
-```
+```text
 
 ### 7. +100 XP (`xp100`)
 
-```
+```text
 {SHARED STYLE}, large royal purple-gold faceted gem, ornate but readable at small size,
 top-tier XP bounty emblem for fortune wheel segment
-```
+```text
 
 ### 8. ×2 XP multiplier (`xp_multiplier`)
 
-```
+```text
 {SHARED STYLE}, twin overlapping crystal shards with golden ring halo suggesting double power,
 XP multiplier charm emblem, no literal text characters
-```
+```text
 
 ---
 
@@ -95,3 +95,4 @@ XP multiplier charm emblem, no literal text characters
 |            5 | Explosion 3×3   | `wheel-explosion.png` (source `1-transparent.png`) |
 |            6 | Shuffle         | `wheel-shuffle.png` (source `2-transparent.png`)   |
 |            7 | Break / Destroy | `wheel-break.png` (source `3-transparent.png`)     |
+````

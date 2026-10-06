@@ -1,8 +1,111 @@
 ---
-description: Visual north star — gothic integration, not flat neon stickers
+description: Visual north star — world-integrated gothic fantasy UI, never flat neon overlays
 alwaysApply: true
 ---
 
-# Lost Number — visual reminder
+# Lost Number — Visual North Star
 
-Canonical target: `docs/en/VISUAL_TARGET.md`. UI must integrate with the scene (stone/metal frames, horns, chains) — not flat neon rectangles on castle/lava backgrounds. Wheel: ornate rim, large readable segment icons + i18n labels. Main menu: centered logo, 1–2 stone-framed CTAs, bottom pedestal icon row. Match UI chrome to active theme profile (hell/lava, gothic purple, royal purple).
+Canonical reference: `docs/en/VISUAL_TARGET.md`.
+
+Lost Number UI must feel physically integrated into the game world. Interface elements should look like crafted parts of the active environment — stone, forged metal, carved frames, horns, chains, ornaments, pedestals, engraved surfaces, and theme-specific materials.
+
+Do not use generic flat neon rectangles, floating modern panels, or unrelated glowing buttons placed on top of castle, gothic, lava, or royal backgrounds.
+
+## Core rule
+
+If a UI element could be moved unchanged onto a completely different theme and still look correct, it is too generic.
+
+The UI chrome must visually belong to the active theme profile.
+
+## Theme integration
+
+### Hell / Lava
+
+Use:
+
+- scorched stone;
+- blackened or forged metal;
+- ember and magma accents;
+- horns, spikes, chains, cracks, and heat-lit edges;
+- restrained red/orange glow as environmental light, not as flat UI decoration.
+
+### Gothic Purple
+
+Use:
+
+- dark stone and cold metal;
+- cathedral/gothic ornament;
+- pointed arches, carved details, chains, and restrained spikes;
+- deep violet magical light integrated into materials and edges.
+
+### Royal Purple
+
+Use:
+
+- polished dark metal and carved stone;
+- gold or brass trim;
+- royal purple fabrics, enamel, gems, or heraldic ornament;
+- richer and more refined decoration while preserving the dark-fantasy identity.
+
+## Wheel of Fortune
+
+The Wheel must be a strong fantasy object, not a flat circular chart.
+
+Required direction:
+
+- large ornate outer rim;
+- substantial metal/stone construction;
+- theme-specific ornament around the rim;
+- strong central hub and pointer;
+- large, immediately readable reward icons;
+- localized reward labels with high contrast;
+- clear separation between segments without turning them into flat colored wedges;
+- supporting decoration may include chains, horns, spikes, runes, gems, engraved markings, or carved separators depending on the active theme.
+
+The Wheel should look like an object that physically exists inside the current environment.
+
+## Main Menu
+
+Target composition:
+
+- centered Lost Number logo;
+- only 1–2 dominant primary CTA buttons;
+- primary CTAs framed as substantial stone/metal fantasy controls;
+- secondary navigation moved into a bottom icon row;
+- bottom navigation visually anchored to a pedestal, platform, carved base, or similar scene-integrated structure.
+
+Avoid filling the screen with multiple large rectangular buttons.
+
+## Buttons and Panels
+
+Primary controls should use:
+
+- sculpted or carved silhouettes;
+- material depth;
+- borders, bevels, ornament, and controlled highlights;
+- theme-specific construction.
+
+Neon glow is an accent and lighting effect, not the main shape of the UI.
+
+Avoid:
+
+- generic rounded rectangles;
+- flat translucent cards;
+- bright neon outlines around every element;
+- modern mobile-dashboard aesthetics;
+- identical chrome across all themes.
+
+## Visual hierarchy
+
+Fantasy decoration must not reduce usability.
+
+Always preserve:
+
+- readable Ukrainian, Russian, and English text;
+- strong contrast;
+- clear primary/secondary actions;
+- comfortable Android touch targets;
+- readable reward icons and labels;
+- uncluttered composition.
+
+The target is **dark gothic fantasy interface integrated with the environment**, not **modern neon UI placed over fantasy artwork**.

@@ -50,7 +50,7 @@ OWNER 2026-10-03: Play Console для **`com.averixor.lostnumber`** (opt-in URL 
 
 | Перевірка               | Результат                                                                      |
 | ----------------------- | ------------------------------------------------------------------------------ |
-| Privacy URL             | https://averixor.github.io/LostNumber/privacy.html                             |
+| Privacy URL             | <https://averixor.github.io/LostNumber/privacy.html>                           |
 | Upload key fingerprints | OK (`43:93:42:63…`)                                                            |
 | Auth B2 у source        | OK (`LostNumberFirebase`, `INTERNET=true`)                                     |
 | `release:check`         | **PASS** 2026-10-03 (Firebase resources у AAB)                                 |

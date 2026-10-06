@@ -17,17 +17,17 @@ func _ready() -> void:
 	focus_mode = Control.FOCUS_ALL
 	_apply_style()
 	refresh_enabled_visual()
-	var theme := get_node_or_null("/root/ThemeManager")
-	if theme != null and theme.has_signal("theme_changed"):
-		theme.theme_changed.connect(_on_theme_changed)
+	var theme_mgr := get_node_or_null("/root/ThemeManager")
+	if theme_mgr != null and theme_mgr.has_signal("theme_changed"):
+		theme_mgr.theme_changed.connect(_on_theme_changed)
 
 
-func setup(text: String, icon_path: String) -> void:
-	caption.text = text
+func setup(caption_text: String, icon_path: String) -> void:
+	caption.text = caption_text
 	if ResourceLoader.exists(icon_path):
 		var tex: Texture2D = load(icon_path)
 		icon_rect.texture = tex
-	icon_rect.custom_minimum_size = Vector2(28, 28)
+	icon_rect.custom_minimum_size = Vector2(34, 34)
 	_fit_caption_font()
 	refresh_enabled_visual()
 
@@ -71,12 +71,12 @@ func _fit_caption_font() -> void:
 
 
 func _uses_visual_skin() -> bool:
-	var theme := get_node_or_null("/root/ThemeManager")
-	if theme == null:
+	var theme_mgr := get_node_or_null("/root/ThemeManager")
+	if theme_mgr == null:
 		return false
-	if theme.has_method("uses_visual_skin"):
-		return bool(theme.call("uses_visual_skin"))
-	return theme.has_method("get_visual_skin") and theme.call("get_visual_skin") != null
+	if theme_mgr.has_method("uses_visual_skin"):
+		return bool(theme_mgr.call("uses_visual_skin"))
+	return theme_mgr.has_method("get_visual_skin") and theme_mgr.call("get_visual_skin") != null
 
 
 func _apply_style() -> void:
@@ -94,17 +94,20 @@ func _apply_gothic_style() -> void:
 	caption.add_theme_color_override("font_color", Color(GothicVisualsLib.TEXT_IVORY, 0.92))
 	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	caption.autowrap_mode = TextServer.AUTOWRAP_OFF
+	if icon_rect != null:
+		icon_rect.custom_minimum_size = Vector2(34, 34)
 
-	var radius := 36
+	## Pedestal medallion: darker stone base + thicker bronze rim (not a flat neon disc).
+	var radius := 38
 	var normal := StyleBoxFlat.new()
-	normal.bg_color = Color(GothicVisualsLib.STONE_MID, 0.88)
+	normal.bg_color = Color(GothicVisualsLib.STONE_DEEP.lerp(GothicVisualsLib.STONE_MID, 0.55), 0.94)
 	normal.set_corner_radius_all(radius)
-	normal.set_border_width_all(2)
-	normal.border_color = Color(GothicVisualsLib.BRONZE.lerp(rim, 0.45), 0.82)
+	normal.set_border_width_all(3)
+	normal.border_color = Color(GothicVisualsLib.BRONZE.lerp(rim, 0.55), 0.90)
 	normal.set_content_margin_all(8)
-	normal.shadow_color = Color(GothicVisualsLib.STONE_BLACK, 0.40)
-	normal.shadow_size = 5
-	normal.shadow_offset = Vector2(0, 2)
+	normal.shadow_color = Color(GothicVisualsLib.STONE_BLACK, 0.50)
+	normal.shadow_size = 7
+	normal.shadow_offset = Vector2(0, 3)
 	add_theme_stylebox_override("normal", normal)
 
 	var hover := normal.duplicate() as StyleBoxFlat
@@ -115,11 +118,11 @@ func _apply_gothic_style() -> void:
 	add_theme_stylebox_override("hover", hover)
 	add_theme_stylebox_override("focus", hover.duplicate())
 
-	var pressed := normal.duplicate() as StyleBoxFlat
-	pressed.bg_color = Color(GothicVisualsLib.STONE_BLACK, 0.94)
-	pressed.border_color = Color(rim.darkened(0.12), 0.88)
-	pressed.shadow_size = 2
-	add_theme_stylebox_override("pressed", pressed)
+	var pressed_style := normal.duplicate() as StyleBoxFlat
+	pressed_style.bg_color = Color(GothicVisualsLib.STONE_BLACK, 0.94)
+	pressed_style.border_color = Color(rim.darkened(0.12), 0.88)
+	pressed_style.shadow_size = 2
+	add_theme_stylebox_override("pressed", pressed_style)
 
 	var disabled_style := normal.duplicate() as StyleBoxFlat
 	disabled_style.bg_color = Color(GothicVisualsLib.STONE_BLACK, 0.55)
@@ -131,12 +134,12 @@ func _apply_gothic_style() -> void:
 
 func _apply_neon_style() -> void:
 	var text_color := ThemeTokensLib.COLOR_TEXT
-	var theme := get_node_or_null("/root/ThemeManager")
+	var theme_mgr := get_node_or_null("/root/ThemeManager")
 	var is_dark := true
-	if theme != null and theme.has_method("is_dark"):
-		is_dark = bool(theme.call("is_dark"))
-	if theme != null and theme.has_method("get_text_color"):
-		text_color = theme.call("get_text_color", false)
+	if theme_mgr != null and theme_mgr.has_method("is_dark"):
+		is_dark = bool(theme_mgr.call("is_dark"))
+	if theme_mgr != null and theme_mgr.has_method("get_text_color"):
+		text_color = theme_mgr.call("get_text_color", false)
 	elif not is_dark:
 		text_color = ThemeTokensLib.DAWN_COLOR_TEXT
 	caption.add_theme_color_override("font_color", Color(text_color, 0.92 if is_dark else 1.0))
