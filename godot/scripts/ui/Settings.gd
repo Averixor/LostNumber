@@ -5,15 +5,14 @@ const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 const ImagePickerHelperLib := preload("res://scripts/ui/ImagePickerHelper.gd")
 
 const MUSIC_TRACKS := ["ambient", "crystal_flow", "digital_horizon", "neon_drift", "stellar_logic"]
-const VOLUME_LEVELS := [0.25, 0.5, 0.75, 1.0]
 const TILE_FONT_SCALES := [0.85, 1.0, 1.1, 1.2]
 
 @onready var scroll: ScrollContainer = get_node_or_null("Scroll") as ScrollContainer
 @onready var vbox: VBoxContainer = get_node_or_null("Scroll/VBox") as VBoxContainer
 @onready var sound_check: CheckButton = get_node_or_null("Scroll/VBox/SoundCheck") as CheckButton
 @onready var music_check: CheckButton = get_node_or_null("Scroll/VBox/MusicCheck") as CheckButton
-@onready var sfx_volume_option: OptionButton = get_node_or_null("Scroll/VBox/SfxVolumeOption") as OptionButton
-@onready var music_volume_option: OptionButton = get_node_or_null("Scroll/VBox/MusicVolumeOption") as OptionButton
+@onready var sfx_volume_slider: HSlider = get_node_or_null("Scroll/VBox/SfxVolumeSlider") as HSlider
+@onready var music_volume_slider: HSlider = get_node_or_null("Scroll/VBox/MusicVolumeSlider") as HSlider
 @onready var music_track_option: OptionButton = get_node_or_null("Scroll/VBox/MusicTrackOption") as OptionButton
 @onready var bg_effects_check: CheckButton = get_node_or_null("Scroll/VBox/BgEffectsCheck") as CheckButton
 @onready var tile_font_size_option: OptionButton = get_node_or_null("Scroll/VBox/TileFontSizeOption") as OptionButton
@@ -50,8 +49,7 @@ func _ready() -> void:
 	_connect_signals()
 	_bind_auth()
 	_refresh_account_ui()
-	if theme_button != null:
-		theme_button.visible = false
+	_refresh_theme_button()
 	call_deferred("_adapt_layout")
 
 
@@ -285,24 +283,26 @@ func _setup_labels() -> void:
 		exit_button.text = _i18n("btn_exit")
 	_refresh_account_ui()
 
-	_ensure_option_label(sfx_volume_option, "settings_sfx_volume_label")
-	_ensure_option_label(music_volume_option, "settings_music_volume_label")
-	_ensure_option_label(music_track_option, "settings_music_track_label")
-	_ensure_option_label(tile_font_size_option, "settings_tile_font_size_label")
-	_ensure_option_label(language_option, "settings_language_label")
+	_ensure_control_label(sfx_volume_slider, "settings_sfx_volume_label")
+	_ensure_control_label(music_volume_slider, "settings_music_volume_label")
+	_ensure_control_label(music_track_option, "settings_music_track_label")
+	_ensure_control_label(tile_font_size_option, "settings_tile_font_size_label")
+	_ensure_control_label(language_option, "settings_language_label")
+	_refresh_volume_labels()
 
 
-func _ensure_option_label(option: OptionButton, key: String) -> void:
-	if option == null or option.get_parent() == null:
+func _ensure_control_label(control: Control, key: String) -> void:
+	if control == null or control.get_parent() == null:
 		return
-	var parent := option.get_parent()
-	var label_name := "Label_%s" % option.name
+	var parent := control.get_parent()
+	var label_name := "Label_%s" % control.name
 	var label := parent.get_node_or_null(label_name) as Label
 	if label == null:
 		label = Label.new()
 		label.name = label_name
 		parent.add_child(label)
-		parent.move_child(label, option.get_index())
+		parent.move_child(label, control.get_index())
+	label.set_meta("i18n_key", key)
 	label.text = _i18n(key)
 	label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_BODY)
 	label.add_theme_color_override("font_color", ThemeTokensLib.COLOR_TEXT)
@@ -314,24 +314,41 @@ func _ensure_option_label(option: OptionButton, key: String) -> void:
 		label.add_theme_font_override("font", font)
 
 
+func _volume_label_for(slider: HSlider) -> Label:
+	if slider == null or slider.get_parent() == null:
+		return null
+	return slider.get_parent().get_node_or_null("Label_%s" % slider.name) as Label
+
+
+func _refresh_volume_labels() -> void:
+	_refresh_volume_label(sfx_volume_slider, "settings_sfx_volume_label")
+	_refresh_volume_label(music_volume_slider, "settings_music_volume_label")
+
+
+func _refresh_volume_label(slider: HSlider, key: String) -> void:
+	var label := _volume_label_for(slider)
+	if label == null or slider == null:
+		return
+	label.text = "%s %d%%" % [_i18n(key), int(round(clampf(slider.value, 0.0, 1.0) * 100.0))]
+
+
+func _configure_volume_slider(slider: HSlider, value: float) -> void:
+	if slider == null:
+		return
+	slider.min_value = 0.0
+	slider.max_value = 1.0
+	slider.step = 0.01
+	slider.scrollable = false
+	slider.custom_minimum_size.y = maxf(slider.custom_minimum_size.y, 48.0)
+	slider.set_value_no_signal(clampf(value, 0.0, 1.0))
+
+
 func _setup_options() -> void:
 	if language_option != null:
 		language_option.clear()
 		language_option.add_item(_i18n("settings_language_ua"))
 		language_option.add_item(_i18n("settings_language_ru"))
 		language_option.add_item(_i18n("settings_language_en"))
-
-	if sfx_volume_option != null:
-		sfx_volume_option.clear()
-	if music_volume_option != null:
-		music_volume_option.clear()
-
-	for level in VOLUME_LEVELS:
-		var pct := int(round(level * 100.0))
-		if sfx_volume_option != null:
-			sfx_volume_option.add_item("%d%%" % pct)
-		if music_volume_option != null:
-			music_volume_option.add_item("%d%%" % pct)
 
 	if music_track_option != null:
 		music_track_option.clear()
@@ -372,10 +389,15 @@ func _load_settings() -> void:
 	if bg_effects_check != null:
 		bg_effects_check.button_pressed = bool(_get_value(settings, "bg_effects_enabled", true))
 
-	if sfx_volume_option != null:
-		sfx_volume_option.select(_volume_to_index(float(_get_value(settings, "sfx_volume", 0.5))))
-	if music_volume_option != null:
-		music_volume_option.select(_volume_to_index(float(_get_value(settings, "music_volume", 0.5))))
+	if sfx_volume_slider != null:
+		_configure_volume_slider(
+			sfx_volume_slider, float(_get_value(settings, "sfx_volume", 0.5))
+		)
+	if music_volume_slider != null:
+		_configure_volume_slider(
+			music_volume_slider, float(_get_value(settings, "music_volume", 0.3))
+		)
+	_refresh_volume_labels()
 
 	if music_track_option != null:
 		var track := str(_get_value(settings, "music_track", "ambient"))
@@ -422,7 +444,7 @@ func _style_controls() -> void:
 		if check != null:
 			LnUiLib.apply_toggle_switch(check, false)
 
-	for option in [sfx_volume_option, music_volume_option, music_track_option, tile_font_size_option, language_option]:
+	for option in [music_track_option, tile_font_size_option, language_option]:
 		if option != null:
 			LnUiLib.apply_option_row_style(option, false)
 
@@ -444,7 +466,7 @@ func _apply_unified_font() -> void:
 
 	var controls: Array = [
 		sound_check, music_check, bg_effects_check, leaderboard_check, background_auto_check,
-		sfx_volume_option, music_volume_option, music_track_option, tile_font_size_option, language_option,
+		music_track_option, tile_font_size_option, language_option,
 		theme_button, skin_pick_button, background_pick_button, gallery_pick_button, import_button, exit_button, back_button, account_button, delete_account_button,
 		skin_label, background_label, gallery_status, import_status, account_label, account_status,
 	]
@@ -469,10 +491,12 @@ func _connect_signals() -> void:
 		music_check.toggled.connect(_on_music_toggled)
 	if bg_effects_check != null:
 		bg_effects_check.toggled.connect(_on_bg_effects_toggled)
-	if sfx_volume_option != null:
-		sfx_volume_option.item_selected.connect(_on_sfx_volume_selected)
-	if music_volume_option != null:
-		music_volume_option.item_selected.connect(_on_music_volume_selected)
+	if sfx_volume_slider != null:
+		sfx_volume_slider.value_changed.connect(_on_sfx_volume_changed)
+		sfx_volume_slider.drag_ended.connect(_on_volume_drag_ended)
+	if music_volume_slider != null:
+		music_volume_slider.value_changed.connect(_on_music_volume_changed)
+		music_volume_slider.drag_ended.connect(_on_volume_drag_ended)
 	if music_track_option != null:
 		music_track_option.item_selected.connect(_on_music_track_selected)
 	if tile_font_size_option != null:
@@ -517,17 +541,6 @@ func _adapt_layout() -> void:
 				(child as Control).size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 
-func _volume_to_index(volume: float) -> int:
-	var pct := int(round(clampf(volume, 0.0, 1.0) * 100.0))
-	if pct <= 25:
-		return 0
-	elif pct <= 50:
-		return 1
-	elif pct <= 75:
-		return 2
-	return 3
-
-
 func _scale_to_index(font_scale: float) -> int:
 	var best := 1
 	var best_diff := 999.0
@@ -542,10 +555,12 @@ func _scale_to_index(font_scale: float) -> int:
 func _refresh_theme_button() -> void:
 	if theme_button == null:
 		return
-	# Dark-only release: hide brightness cycle entirely (do not leave a dead control).
+	## Light theme removed — hide the dead brightness control.
 	theme_button.visible = false
 	theme_button.disabled = true
+	theme_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	theme_button.tooltip_text = ""
+	theme_button.text = ""
 
 
 func _apply_audio() -> void:
@@ -580,19 +595,24 @@ func _on_bg_effects_toggled(enabled: bool) -> void:
 		theme_mgr.call("notify_visual_settings_changed")
 
 
-func _on_sfx_volume_selected(index: int) -> void:
+func _on_sfx_volume_changed(value: float) -> void:
 	var settings = _settings()
 	if settings != null:
-		settings.set("sfx_volume", VOLUME_LEVELS[clampi(index, 0, VOLUME_LEVELS.size() - 1)])
-	_save()
-
-
-func _on_music_volume_selected(index: int) -> void:
-	var settings = _settings()
-	if settings != null:
-		settings.set("music_volume", VOLUME_LEVELS[clampi(index, 0, VOLUME_LEVELS.size() - 1)])
-	_save()
+		settings.set("sfx_volume", clampf(value, 0.0, 1.0))
+	_refresh_volume_label(sfx_volume_slider, "settings_sfx_volume_label")
 	_apply_audio()
+
+
+func _on_music_volume_changed(value: float) -> void:
+	var settings = _settings()
+	if settings != null:
+		settings.set("music_volume", clampf(value, 0.0, 1.0))
+	_refresh_volume_label(music_volume_slider, "settings_music_volume_label")
+	_apply_audio()
+
+
+func _on_volume_drag_ended(_value_changed: bool) -> void:
+	_save()
 
 
 func _on_music_track_selected(index: int) -> void:

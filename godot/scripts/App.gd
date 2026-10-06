@@ -62,6 +62,8 @@ func _refresh_current_screen_background() -> void:
 	LnUiLib.set_background(screen as Control, LnUiLib.screen_bg(screen_id))
 	if screen.has_method("_apply_theme"):
 		screen.call("_apply_theme")
+	elif screen.has_method("_apply_gothic_visuals"):
+		screen.call("_apply_gothic_visuals")
 	elif screen.has_method("_apply_background"):
 		screen.call("_apply_background")
 

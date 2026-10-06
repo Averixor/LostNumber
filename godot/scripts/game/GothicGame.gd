@@ -8,6 +8,9 @@ const GothicScreenMixinLib := preload("res://scripts/ui/GothicScreenMixin.gd")
 
 
 func _apply_theme() -> void:
+	if not GothicScreenMixinLib.uses_gothic_chrome(self):
+		super._apply_theme()
+		return
 	GothicScreenMixinLib.apply_background(self, "", 0.28, &"game")
 	if background != null:
 		background.color = Color.TRANSPARENT

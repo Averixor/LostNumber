@@ -9,7 +9,7 @@ const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 const VisualSkinLib := preload("res://scripts/ui/VisualSkin.gd")
 
 const THEMES := ["dawn", "dusk", "twilight"]
-## Release lock: only dusk is user-facing. dawn/twilight assets stay in repo.
+## Dark-only release: dusk is the only user-facing brightness. dawn/twilight assets stay in repo.
 const RELEASE_THEME_ID := "dusk"
 const UI_CYCLE_THEMES := ["dusk"]
 const BACKGROUND_COUNT := 6
@@ -74,7 +74,8 @@ var _visual_skin_cache: Dictionary = {}
 
 
 func is_dark() -> bool:
-	return theme_id != "dawn"
+	## Dark-only release — always dark presentation.
+	return true
 
 
 func get_visual_skin(id: String = "") -> VisualSkin:
@@ -413,17 +414,13 @@ func path_to_index(path: String, bucket: String = theme_bucket()) -> int:
 
 
 func normalize_release_theme_id(raw: String) -> String:
-	## Map legacy dawn/twilight (and unknown ids) onto the release-locked dusk theme.
-	var requested := str(raw)
-	if requested == RELEASE_THEME_ID:
-		return RELEASE_THEME_ID
-	if requested in THEMES:
-		return RELEASE_THEME_ID
+	## Map dawn/twilight (and unknown ids) onto dusk — light theme is not shipped.
+	var _requested := str(raw)
 	return RELEASE_THEME_ID
 
 
 func cycle_theme() -> void:
-	## Dark-only release: cycling is a no-op that re-asserts dusk.
+	## Dark-only: cycling re-asserts dusk (no light mode).
 	theme_id = RELEASE_THEME_ID
 	if skin_auto:
 		background_index = get_daily_index()
@@ -547,9 +544,9 @@ func _default_visual_skin_for_install() -> String:
 
 func _resolve_saved_visual_skin_id(data: Dictionary) -> String:
 	var requested := str(data.get("visual_skin_id", DEFAULT_VISUAL_SKIN_ID))
-	## Legacy saves that still carry the pre-foundation procedural id migrate to gothic.
+	## procedural_neon is a valid Skin Preview choice — persist it.
 	if requested == PROCEDURAL_VISUAL_SKIN_ID:
-		return DEFAULT_VISUAL_SKIN_ID
+		return PROCEDURAL_VISUAL_SKIN_ID
 	return requested if has_visual_skin_id(requested) else DEFAULT_VISUAL_SKIN_ID
 
 
@@ -578,7 +575,7 @@ func _normalize_index(index: int) -> int:
 
 
 func set_theme_mode(_dark_mode: bool) -> void:
-	## Dark-only release: ignore light requests and keep dusk.
+	## Dark-only: ignore light requests.
 	theme_id = RELEASE_THEME_ID
 	_sync_settings_theme()
 	_save()

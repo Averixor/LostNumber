@@ -9,6 +9,36 @@ class_name GothicScreenMixin
 const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
 const DEFAULT_BACKDROP := "res://assets/ui/skins/gothic_crystal/game-backdrop.png"
+const DEFAULT_VISUAL_SKIN_ID := "gothic_crystal"
+const PROCEDURAL_VISUAL_SKIN_ID := "procedural_neon"
+
+
+static func visual_skin_id(host: Node) -> String:
+	if host == null:
+		return DEFAULT_VISUAL_SKIN_ID
+	var theme := host.get_node_or_null("/root/ThemeManager")
+	if theme == null:
+		return DEFAULT_VISUAL_SKIN_ID
+	return str(theme.get("visual_skin_id"))
+
+
+static func uses_gothic_chrome(host: Node) -> bool:
+	## procedural_neon is the intentional non-gothic kit from Skin Preview.
+	return visual_skin_id(host) != PROCEDURAL_VISUAL_SKIN_ID
+
+
+static func ensure_default_visual_skin(host: Node, default_id: String = DEFAULT_VISUAL_SKIN_ID) -> void:
+	## Only fill missing/invalid ids. Never overwrite an explicit Skin Preview choice
+	## (including procedural_neon).
+	if host == null:
+		return
+	var theme := host.get_node_or_null("/root/ThemeManager")
+	if theme == null or not theme.has_method("set_visual_skin_id"):
+		return
+	var current := str(theme.get("visual_skin_id"))
+	if theme.has_method("has_visual_skin_id") and bool(theme.call("has_visual_skin_id", current)):
+		return
+	theme.call("set_visual_skin_id", default_id)
 
 
 static func apply_background(

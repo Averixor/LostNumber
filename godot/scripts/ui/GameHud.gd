@@ -53,7 +53,7 @@ func _ready() -> void:
 	menu_button.pressed.connect(func(): menu_pressed.emit())
 	sound_button.pressed.connect(func(): sound_pressed.emit())
 	save_button.pressed.connect(func(): save_pressed.emit())
-	# Keep emit path for Game.gd (theme_pressed); button stays hidden in dark-only.
+	# Keep emit path for Game.gd; ThemeButton stays hidden (dark-only, no light theme).
 	if theme_button != null:
 		theme_button.pressed.connect(func(): theme_pressed.emit())
 		theme_button.visible = false
@@ -210,8 +210,13 @@ func _panel_stylebox() -> StyleBoxFlat:
 
 func _style_icon_buttons() -> void:
 	for btn in [menu_button, save_button, sound_button]:
+		if btn == null:
+			continue
 		btn.custom_minimum_size = Vector2.ONE * ThemeTokensLib.TOUCH_TARGET_MIN
 		btn.focus_mode = Control.FOCUS_NONE
+		btn.visible = true
+		btn.disabled = false
+		btn.mouse_filter = Control.MOUSE_FILTER_STOP
 		btn.text = ""
 		btn.expand_icon = true
 		btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
