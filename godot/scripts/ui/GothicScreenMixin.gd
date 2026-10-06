@@ -152,9 +152,9 @@ static func style_cta_button(host: Node, button: Button) -> void:
 	button.add_theme_stylebox_override("pressed", pressed)
 	button.add_theme_stylebox_override("disabled", disabled)
 	button.add_theme_stylebox_override("focus", hover.duplicate(true) if hover != null else GothicVisualsLib.cta_button(colors, "hover"))
-	button.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
-	button.add_theme_color_override("font_hover_color", GothicVisualsLib.GOLD_LIGHT)
-	button.add_theme_color_override("font_pressed_color", GothicVisualsLib.TEXT_IVORY)
+	button.add_theme_color_override("font_color", GothicVisualsLib.STONE_BLACK)
+	button.add_theme_color_override("font_hover_color", GothicVisualsLib.STONE_DEEP)
+	button.add_theme_color_override("font_pressed_color", GothicVisualsLib.STONE_BLACK)
 	button.add_theme_color_override("font_disabled_color", GothicVisualsLib.TEXT_MUTED)
 	button.add_theme_font_size_override("font_size", 16)
 

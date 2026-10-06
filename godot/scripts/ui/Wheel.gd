@@ -5,7 +5,8 @@ const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 
 @onready var wheel_canvas: WheelCanvas = $Layout/VBox/WheelCanvas
 @onready var spin_button: NeonButton = $Layout/VBox/SpinButton
-@onready var cost_label: Label = $Layout/VBox/CostLabel
+@onready var cost_pill: PanelContainer = $Layout/VBox/CostPill
+@onready var cost_label: Label = $Layout/VBox/CostPill/CostLabel
 @onready var back_button: NeonButton = $Layout/VBox/BackButton
 @onready var title_label: Label = $Layout/VBox/Title
 @onready var result_panel: PanelContainer = $ResultModal
@@ -14,14 +15,15 @@ const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 @onready var result_label: Label = $ResultModal/Center/ResultCard/VBox/ResultLabel
 @onready var result_close: NeonButton = $ResultModal/Center/ResultCard/VBox/CloseButton
 @onready var background: ColorRect = $Background
+@onready var vignette: TextureRect = $Vignette
 
 var _state: GameState
 var _wheel: WheelManager
 var _daily: DailyQuestManager
 var _invalid_session := false
 
-func _autoload(name: String) -> Node:
-	return get_node_or_null("/root/" + name)
+func _autoload(autoload_name: String) -> Node:
+	return get_node_or_null("/root/" + autoload_name)
 
 func _i18n(key: String, args: Array = []) -> String:
 	var i18n := _autoload("I18nManager")
@@ -29,10 +31,10 @@ func _i18n(key: String, args: Array = []) -> String:
 		return str(i18n.call("t", key, args))
 	return key
 
-func _play_sfx(name: String) -> void:
+func _play_sfx(sfx_name: String) -> void:
 	var audio := _autoload("AudioManager")
 	if audio != null and audio.has_method("play_sfx"):
-		audio.call("play_sfx", name)
+		audio.call("play_sfx", sfx_name)
 
 func _navigate_back() -> void:
 	var router := _autoload("ScreenRouter")
@@ -45,9 +47,9 @@ func _navigate_back() -> void:
 
 func _ready() -> void:
 	LnUiLib.set_background(self, LnUiLib.screen_bg("wheel"))
-	var theme := _autoload("ThemeManager")
-	if background != null and theme != null and theme.has_method("get_background_color"):
-		background.color = Color(theme.call("get_background_color"), 0.6)
+	var theme_mgr := _autoload("ThemeManager")
+	if background != null and theme_mgr != null and theme_mgr.has_method("get_background_color"):
+		background.color = Color(theme_mgr.call("get_background_color"), 0.6)
 
 	title_label.text = _i18n("wheel_title")
 	LnUiLib.apply_title(title_label, ThemeTokensLib.FONT_SIZE_TITLE)
@@ -59,7 +61,7 @@ func _ready() -> void:
 	back_button.pressed.connect(_on_back)
 	result_close.pressed.connect(_hide_result)
 	wheel_canvas.spin_finished.connect(_on_spin_animation_done)
-	var use_skin := theme != null and theme.has_method("get_visual_skin") and theme.call("get_visual_skin") != null
+	var use_skin := theme_mgr != null and theme_mgr.has_method("get_visual_skin") and theme_mgr.call("get_visual_skin") != null
 	# Never stamp neon StyleBoxes onto gothic NeonButtons — GothicWheel owns chrome.
 	if not use_skin:
 		LnUiLib.apply_button(back_button, false, false)
@@ -85,13 +87,14 @@ func _ready() -> void:
 
 
 func _animate_entrance() -> void:
-	await LnUiLib.animate_entrance([title_label, wheel_canvas, spin_button, cost_label, back_button])
+	await LnUiLib.animate_entrance([title_label, wheel_canvas, cost_pill, spin_button, back_button])
 
 
 func _refresh_ui() -> void:
 	if _invalid_session or _state == null or _wheel == null:
 		_disable_invalid_session()
 		return
+	_style_cost_pill()
 	cost_label.add_theme_color_override("font_color", LnUiLib.TEXT_MUTED)
 	cost_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_SMALL)
 	var cost := _wheel.get_cost()
@@ -112,6 +115,14 @@ func _refresh_ui() -> void:
 	_style_action_buttons()
 	cost_label.text = _i18n("wheel_daily_limit", [_state.wheel_spins_today, WheelManager.MAX_DAILY_SPINS])
 
+
+func _style_cost_pill() -> void:
+	if cost_pill == null:
+		return
+	var border := Color("#d6ad58")
+	border.a = 0.65
+	var pill := LnUiLib.small_pill(Color(0.08, 0.05, 0.12, 0.88), border)
+	cost_pill.add_theme_stylebox_override("panel", pill)
 
 func _style_action_buttons() -> void:
 	pass
@@ -177,8 +188,8 @@ func _style_result_modal() -> void:
 	result_label.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_BODY)
 	result_close.icon = null
 	# GothicWheel / NeonButton own chrome when visual skin is active.
-	var theme := _autoload("ThemeManager")
-	var use_skin := theme != null and theme.has_method("get_visual_skin") and theme.call("get_visual_skin") != null
+	var theme_mgr := _autoload("ThemeManager")
+	var use_skin := theme_mgr != null and theme_mgr.has_method("get_visual_skin") and theme_mgr.call("get_visual_skin") != null
 	if not use_skin:
 		LnUiLib.apply_button(result_close)
 

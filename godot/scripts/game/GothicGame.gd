@@ -63,11 +63,15 @@ func _style_level_complete_overlay() -> void:
 func _style_action_button(button: Button, primary: bool) -> void:
 	if primary:
 		GothicScreenMixinLib.style_cta_button(self, button)
+		# Gold CTA fill needs dark type — ivory/gold-light is unreadable on gold.
+		button.add_theme_color_override("font_color", GothicVisualsLib.STONE_BLACK)
+		button.add_theme_color_override("font_hover_color", GothicVisualsLib.STONE_DEEP)
+		button.add_theme_color_override("font_pressed_color", GothicVisualsLib.STONE_BLACK)
 	else:
 		GothicScreenMixinLib.style_button(self, button)
-	button.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
-	button.add_theme_color_override("font_hover_color", GothicVisualsLib.GOLD_LIGHT)
-	button.add_theme_color_override("font_pressed_color", GothicVisualsLib.TEXT_IVORY)
+		button.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
+		button.add_theme_color_override("font_hover_color", GothicVisualsLib.GOLD_LIGHT)
+		button.add_theme_color_override("font_pressed_color", GothicVisualsLib.TEXT_IVORY)
 	# Drop legacy neon/crystal button icons — text labels carry meaning.
 	button.icon = null
 	if primary:
