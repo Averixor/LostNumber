@@ -33,17 +33,17 @@ High-level technical architecture for Lost Number **2.1.7**. Godot 4.7 is the so
 
 #### Autoloads (`project.godot`)
 
-| Autoload              | Responsibility                                     |
-| --------------------- | -------------------------------------------------- |
-| `SaveManager`         | Persist/load game state, checksum envelope, backup |
-| `SettingsManager`     | User preferences, `bg_effects_enabled`, locale     |
-| `AudioManager`        | SFX pool, music, semantic event mapping            |
-| `I18nManager`         | uk/ru/en JSON dictionaries                         |
+| Autoload              | Responsibility                                        |
+| --------------------- | ----------------------------------------------------- |
+| `SaveManager`         | Persist/load game state, checksum envelope, backup    |
+| `SettingsManager`     | User preferences, `bg_effects_enabled`, locale        |
+| `AudioManager`        | SFX pool, music, semantic event mapping               |
+| `I18nManager`         | uk/ru/en JSON dictionaries                            |
 | `ThemeManager`        | Release dusk-only brightness; VisualSkin; backgrounds |
-| `LeaderboardService`  | Offline queue stub                                 |
-| `AuthManager`         | Optional Google Sign-In (Firebase Auth)            |
-| `ScreenRouter`        | Screen navigation, back-stack, transitions         |
-| `LegacySaveMigration` | Capacitor → Godot save import                      |
+| `LeaderboardService`  | Offline queue stub                                    |
+| `AuthManager`         | Optional Google Sign-In (Firebase Auth)               |
+| `ScreenRouter`        | Screen navigation, back-stack, transitions            |
+| `LegacySaveMigration` | Capacitor → Godot save import                         |
 
 #### Scene graph
 
@@ -74,16 +74,16 @@ Registered screens (`ScreenRouter.SCREENS`): MainMenu, Game, Settings, Achieveme
 
 #### Meta / UI modules
 
-| Module            | Path                                | Role                                           |
-| ----------------- | ----------------------------------- | ---------------------------------------------- |
-| GameHud           | `scripts/ui/GameHud.gd`             | XP, target, bonus row                          |
+| Module            | Path                                | Role                                                            |
+| ----------------- | ----------------------------------- | --------------------------------------------------------------- |
+| GameHud           | `scripts/ui/GameHud.gd`             | XP, target, bonus row                                           |
 | ThemeTokens       | `scripts/ui/ThemeTokens.gd`         | Dark fantasy palette tokens (legacy dawn tokens remain in code) |
-| VisualSkin        | `scripts/ui/VisualSkin.gd`          | Skin kits: `gothic_crystal` \| `procedural_neon` |
-| LnUi              | `scripts/ui/LnUi.gd`                | Shared UI helpers, backgrounds, entrance anims |
-| NeonButton        | `scenes/components/NeonButton.tscn` | Primary/ghost menu buttons                     |
-| WheelManager      | `scripts/meta/WheelManager.gd`      | Spin logic                                     |
-| DailyQuestManager | `scripts/meta/DailyQuestManager.gd` | Quest progress                                 |
-| Achievements      | `scripts/ui/Achievements.gd`        | Achievement grid                               |
+| VisualSkin        | `scripts/ui/VisualSkin.gd`          | Skin kits: `gothic_crystal` \| `procedural_neon`                |
+| LnUi              | `scripts/ui/LnUi.gd`                | Shared UI helpers, backgrounds, entrance anims                  |
+| NeonButton        | `scenes/components/NeonButton.tscn` | Primary/ghost menu buttons                                      |
+| WheelManager      | `scripts/meta/WheelManager.gd`      | Spin logic                                                      |
+| DailyQuestManager | `scripts/meta/DailyQuestManager.gd` | Quest progress                                                  |
+| Achievements      | `scripts/ui/Achievements.gd`        | Achievement grid                                                |
 
 #### Visual system (gothic fantasy + VisualSkin)
 

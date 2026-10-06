@@ -147,11 +147,11 @@ Applied across `ThemeTokens.gd`, `LnUi.gd`, `NeonButton.tscn`, `lost_number_them
 
 ### Themes
 
-| Theme    | UI exposure                                                               |
-| -------- | ------------------------------------------------------------------------- |
-| Dusk     | **Only** user-facing release brightness; `is_dark()` always true          |
-| Dawn     | Legacy light tokens/assets — normalized to dusk; not selectable in UI     |
-| Twilight | In `ThemeManager.THEMES`; normalized to dusk; not selectable in UI        |
+| Theme    | UI exposure                                                           |
+| -------- | --------------------------------------------------------------------- |
+| Dusk     | **Only** user-facing release brightness; `is_dark()` always true      |
+| Dawn     | Legacy light tokens/assets — normalized to dusk; not selectable in UI |
+| Twilight | In `ThemeManager.THEMES`; normalized to dusk; not selectable in UI    |
 
 Release lock: **`UI_CYCLE_THEMES` = `["dusk"]`**. ThemeButton is hidden. MainMenu tagline double-tap calls `ThemeManager.cycle_background()` (6 PNGs in the dark bucket). **VisualSkin:** `gothic_crystal` (default) \| `procedural_neon` via Skin Preview.
 

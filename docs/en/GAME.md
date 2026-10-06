@@ -100,15 +100,15 @@ Low-FPS Android devices use path interpolation during drag to keep chain selecti
 
 Implemented in Godot with varying visual polish:
 
-| Feature                               | Status                                                      |
-| ------------------------------------- | ----------------------------------------------------------- |
-| Bonuses (shuffle, destroy, explosion) | Logic + HUD — `BonusManager.gd`                             |
-| Daily quests                          | Logic + screen — `DailyQuestManager.gd`, `DailyQuests.tscn` |
-| Wheel of fortune                      | Logic — `WheelManager.gd`; canvas animation partial         |
-| Achievements                          | Save via `PlayerProgress`; UI partial                       |
-| Stats / About                         | Minimal screens with back-stack navigation                  |
+| Feature                               | Status                                                              |
+| ------------------------------------- | ------------------------------------------------------------------- |
+| Bonuses (shuffle, destroy, explosion) | Logic + HUD — `BonusManager.gd`                                     |
+| Daily quests                          | Logic + screen — `DailyQuestManager.gd`, `DailyQuests.tscn`         |
+| Wheel of fortune                      | Logic — `WheelManager.gd`; canvas animation partial                 |
+| Achievements                          | Save via `PlayerProgress`; UI partial                               |
+| Stats / About                         | Minimal screens with back-stack navigation                          |
 | Themes (dusk-only)                    | `ThemeManager.gd`; VisualSkin gothic/procedural; ThemeButton hidden |
-| i18n (UA / RU / EN)                   | 330 keys per locale — `I18nManager.gd`                      |
+| i18n (UA / RU / EN)                   | 330 keys per locale — `I18nManager.gd`                              |
 
 ## Not in scope (deferred)
 
