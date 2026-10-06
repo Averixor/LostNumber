@@ -21,7 +21,10 @@ const TILE_FONT_SCALES := [0.85, 1.0, 1.1, 1.2]
 @onready var account_label: Label = get_node_or_null("Scroll/VBox/AccountLabel") as Label
 @onready var account_status: Label = get_node_or_null("Scroll/VBox/AccountStatus") as Label
 @onready var account_button: Button = get_node_or_null("Scroll/VBox/AccountButton") as Button
+@onready var delete_account_button: Button = get_node_or_null("Scroll/VBox/DeleteAccountButton") as Button
 @onready var leaderboard_check: CheckButton = get_node_or_null("Scroll/VBox/LeaderboardCheck") as CheckButton
+
+var _delete_account_dialog: ConfirmationDialog = null
 @onready var theme_button: Button = get_node_or_null("Scroll/VBox/ThemeButton") as Button
 @onready var skin_label: Label = get_node_or_null("Scroll/VBox/SkinLabel") as Label
 @onready var skin_pick_button: Button = get_node_or_null("Scroll/VBox/SkinPickButton") as Button
@@ -57,8 +60,8 @@ func _notification(what: int) -> void:
 		_adapt_layout()
 
 
-func _autoload(name: String) -> Node:
-	return get_node_or_null("/root/" + name)
+func _autoload(autoload_name: String) -> Node:
+	return get_node_or_null("/root/" + autoload_name)
 
 
 func _auth() -> Node:
@@ -73,6 +76,9 @@ func _bind_auth() -> void:
 	if auth != null and auth.has_signal("auth_error"):
 		if not auth.auth_error.is_connected(_on_auth_error):
 			auth.auth_error.connect(_on_auth_error)
+	if auth != null and auth.has_signal("account_deleted"):
+		if not auth.account_deleted.is_connected(_on_account_deleted):
+			auth.account_deleted.connect(_on_account_deleted)
 
 
 func _on_auth_state_changed(_state: String, _user: Dictionary) -> void:
@@ -88,22 +94,37 @@ func _on_auth_error(message: String) -> void:
 	LnUiLib.show_toast(self, text)
 
 
+func _on_account_deleted() -> void:
+	_refresh_account_ui()
+	LnUiLib.show_toast(self, _i18n("auth_account_deleted"))
+
+
 func _refresh_account_ui() -> void:
 	var auth := _auth()
 	if account_label != null:
 		account_label.text = _i18n("settings_account_label")
+	if delete_account_button != null:
+		delete_account_button.text = _i18n("btn_delete_account")
 	if account_status == null or account_button == null:
 		return
 	if auth == null:
 		account_status.text = _i18n("auth_status_guest")
 		account_button.text = _i18n("btn_login_google")
 		account_button.disabled = true
+		_set_delete_account_visible(false)
 		return
 	var state := str(auth.get("state"))
+	if state == "deleting_account":
+		account_status.text = _i18n("auth_status_deleting_account")
+		account_button.text = _i18n("btn_logout")
+		account_button.disabled = true
+		_set_delete_account_visible(true, true)
+		return
 	if state == "signing_in":
 		account_status.text = _i18n("auth_status_signing_in")
 		account_button.text = _i18n("btn_login_google")
 		account_button.disabled = true
+		_set_delete_account_visible(false)
 		return
 	if auth.has_method("is_signed_in") and bool(auth.call("is_signed_in")):
 		var label := ""
@@ -112,6 +133,7 @@ func _refresh_account_ui() -> void:
 		account_status.text = _i18n("auth_status_signed_in", [label if not label.is_empty() else _i18n("auth_status_user")])
 		account_button.text = _i18n("btn_logout")
 		account_button.disabled = false
+		_set_delete_account_visible(true, false)
 		return
 	if state == "error":
 		var err := str(auth.get("last_error"))
@@ -128,11 +150,23 @@ func _refresh_account_ui() -> void:
 		available = false
 		account_status.text = _i18n("auth_android_only")
 	account_button.disabled = not available
+	_set_delete_account_visible(false)
+
+
+func _set_delete_account_visible(show_button: bool, busy: bool = false) -> void:
+	if delete_account_button == null:
+		return
+	delete_account_button.visible = show_button
+	delete_account_button.disabled = busy or not show_button
+	if show_button:
+		delete_account_button.text = _i18n("btn_delete_account")
 
 
 func _on_account_pressed() -> void:
 	var auth := _auth()
 	if auth == null:
+		return
+	if auth.has_method("is_deleting_account") and bool(auth.call("is_deleting_account")):
 		return
 	if auth.has_method("is_signed_in") and bool(auth.call("is_signed_in")):
 		if auth.has_method("sign_out"):
@@ -140,6 +174,39 @@ func _on_account_pressed() -> void:
 		return
 	if auth.has_method("sign_in_google"):
 		auth.call("sign_in_google")
+
+
+func _on_delete_account_pressed() -> void:
+	var auth := _auth()
+	if auth == null:
+		return
+	if auth.has_method("is_deleting_account") and bool(auth.call("is_deleting_account")):
+		return
+	if not (auth.has_method("is_signed_in") and bool(auth.call("is_signed_in"))):
+		return
+	_show_delete_account_confirmation()
+
+
+func _show_delete_account_confirmation() -> void:
+	if _delete_account_dialog == null or not is_instance_valid(_delete_account_dialog):
+		_delete_account_dialog = ConfirmationDialog.new()
+		_delete_account_dialog.name = "DeleteAccountConfirmation"
+		_delete_account_dialog.dialog_autowrap = true
+		_delete_account_dialog.confirmed.connect(_confirm_delete_account)
+		add_child(_delete_account_dialog)
+	_delete_account_dialog.title = _i18n("confirm_delete_account_title")
+	_delete_account_dialog.dialog_text = _i18n("confirm_delete_account_text")
+	_delete_account_dialog.ok_button_text = _i18n("btn_delete_account")
+	_delete_account_dialog.cancel_button_text = _i18n("cancel")
+	_delete_account_dialog.popup_centered(Vector2i(420, 0))
+
+
+func _confirm_delete_account() -> void:
+	var auth := _auth()
+	if auth == null:
+		return
+	if auth.has_method("delete_account"):
+		auth.call("delete_account")
 
 
 
@@ -282,10 +349,12 @@ func _setup_options() -> void:
 			"settings_tile_font_120",
 		]
 		for i in TILE_FONT_SCALES.size():
-			var scale: float = TILE_FONT_SCALES[i]
+			var font_scale: float = TILE_FONT_SCALES[i]
 			var key: String = font_keys[i] if i < font_keys.size() else ""
-			var label := _i18n(key) if not key.is_empty() else "%d%%" % int(round(scale * 100.0))
-			tile_font_size_option.add_item(label if label != key else "%d%%" % int(round(scale * 100.0)))
+			var label := _i18n(key) if not key.is_empty() else "%d%%" % int(round(font_scale * 100.0))
+			tile_font_size_option.add_item(
+				label if label != key else "%d%%" % int(round(font_scale * 100.0))
+			)
 
 
 func _load_settings() -> void:
@@ -313,8 +382,8 @@ func _load_settings() -> void:
 		music_track_option.select(maxi(0, MUSIC_TRACKS.find(track)))
 
 	if tile_font_size_option != null:
-		var scale := float(_get_value(settings, "tile_font_scale", 1.0))
-		tile_font_size_option.select(_scale_to_index(scale))
+		var font_scale := float(_get_value(settings, "tile_font_scale", 1.0))
+		tile_font_size_option.select(_scale_to_index(font_scale))
 
 	if language_option != null:
 		var lang := str(_get_value(settings, "language", "uk"))
@@ -342,7 +411,7 @@ func _style_controls() -> void:
 	if title_label != null:
 		LnUiLib.apply_title(title_label, 24)
 
-	for btn in [back_button, theme_button, skin_pick_button, background_pick_button, gallery_pick_button, import_button, exit_button, account_button]:
+	for btn in [back_button, theme_button, skin_pick_button, background_pick_button, gallery_pick_button, import_button, exit_button, account_button, delete_account_button]:
 		if btn != null:
 			LnUiLib.apply_button(btn, btn.disabled)
 
@@ -376,7 +445,7 @@ func _apply_unified_font() -> void:
 	var controls: Array = [
 		sound_check, music_check, bg_effects_check, leaderboard_check, background_auto_check,
 		sfx_volume_option, music_volume_option, music_track_option, tile_font_size_option, language_option,
-		theme_button, skin_pick_button, background_pick_button, gallery_pick_button, import_button, exit_button, back_button, account_button,
+		theme_button, skin_pick_button, background_pick_button, gallery_pick_button, import_button, exit_button, back_button, account_button, delete_account_button,
 		skin_label, background_label, gallery_status, import_status, account_label, account_status,
 	]
 	if vbox != null:
@@ -412,6 +481,8 @@ func _connect_signals() -> void:
 		language_option.item_selected.connect(_on_language_selected)
 	if account_button != null:
 		account_button.pressed.connect(_on_account_pressed)
+	if delete_account_button != null:
+		delete_account_button.pressed.connect(_on_delete_account_pressed)
 	if leaderboard_check != null:
 		leaderboard_check.toggled.connect(_on_leaderboard_toggled)
 	if theme_button != null:
@@ -457,11 +528,11 @@ func _volume_to_index(volume: float) -> int:
 	return 3
 
 
-func _scale_to_index(scale: float) -> int:
+func _scale_to_index(font_scale: float) -> int:
 	var best := 1
 	var best_diff := 999.0
 	for i in range(TILE_FONT_SCALES.size()):
-		var diff := absf(TILE_FONT_SCALES[i] - scale)
+		var diff := absf(TILE_FONT_SCALES[i] - font_scale)
 		if diff < best_diff:
 			best = i
 			best_diff = diff
@@ -563,7 +634,8 @@ func _on_leaderboard_toggled(enabled: bool) -> void:
 	var settings = _settings()
 	if settings != null:
 		settings.set("leaderboard_opt_in", enabled)
-		settings.call("save_settings") if settings.has_method("save_settings") else null
+		if settings.has_method("save_settings"):
+			settings.call("save_settings")
 
 
 func _read_leaderboard_opt_in() -> bool:

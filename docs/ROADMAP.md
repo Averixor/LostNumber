@@ -5,7 +5,7 @@
 | Версія документа   | **1.2** (2026-08-13)                                                                  |
 | Listing            | `com.Averixor.Lost_Number`                                                            |
 | Ship version у git | **2.1.6 / versionCode 6**                                                             |
-| Auth B2            | Shipped in source (Sign-In only); CT **NO-GO** до JSON + нового AAB                   |
+| Auth B2            | Shipped; AAB `93f72b58…` **PRE-UPLOAD READY**; CT GO після Play upload + smoke        |
 | Cloud Save         | Deferred — після CT GO ([`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md)) |
 
 ## Стратегія
@@ -82,13 +82,13 @@ VISUAL_TARGET, Settings Import stub UX, розмір AAB, фінальні 4 с�
 
 ## Етап 4 — Phase 6 Firebase
 
-**Kickoff docs ready; runtime blocked.** Offline-first лишається; Firebase optional після OWNER go.
+**Auth B2 shipped; Cloud Save runtime blocked.** Offline-first лишається; Cloud Save optional після OWNER go.
 
 | Статус           | Документ / гілка                                                                                                                                           |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **OWNER path**   | [`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md) — Auth-ready AAB → CT smoke → Cloud Save approve → gates                                      |
 | Docs / Auth B2   | [`AUTH_SIGNIN_QA.md`](AUTH_SIGNIN_QA.md), [`FIREBASE_STAGE4_GATES.md`](FIREBASE_STAGE4_GATES.md), [`FIREBASE_PRIVACY_DELTA.md`](FIREBASE_PRIVACY_DELTA.md) |
-| Auth B2 runtime  | **Shipped** (Sign-In only); CT **NO-GO** до JSON + нового AAB                                                                                              |
+| Auth B2 runtime  | **Shipped**; CT **PRE-UPLOAD READY** (AAB `93f72b58…`); Play upload + smoke OWNER                                                                          |
 | Cloud Save 4B/4C | **BLOCKED** до CT GO + OWNER flip gates                                                                                                                    |
 
 **Наступний OWNER крок:** `google-services.json` → rebuild → Sign-In smoke → CT ([`CLOSED_TESTING_RUNBOOK.md`](CLOSED_TESTING_RUNBOOK.md)).

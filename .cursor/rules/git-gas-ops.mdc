@@ -1,0 +1,29 @@
+---
+description: Контроль автоматизованих Git і GAS-операцій (npm gh/ship/go/release/push)
+alwaysApply: true
+---
+
+# Контроль Git / GAS операцій
+
+Автоматизовані npm-скрипти підпорядковуються тим самим правилам, що й ручні Git-операції.
+
+## Заборонено без окремого дозволу користувача
+
+- `npm run gh`, `npm run ship`, `npm run go`, `npm run release`, `npm run push:remote`
+- будь-який `clasp push` / production GAS deploy
+- `git add -A`, якщо є неперевірені сторонні зміни
+- production deployment без перевірки цільового проєкту, чистого погодженого коду й успішного CI
+
+Звичайна Git-синхронізація **не** повинна автоматично виконувати `clasp push`.
+
+## Перед дозволеною автоматизованою операцією
+
+1. Перевірити гілку, working tree, staged-зміни, стан remote
+2. Підтвердити, що скрипт не включить сторонні файли
+3. Виконати потрібний локальний CI (`npm run all:quick` / `release:check` за контекстом)
+4. Визначити, чи є production deployment → окреме підтвердження
+5. Лише після явного OK користувача запускати guard-скрипти з `CONFIRM_GIT_OPS=1` (і `CONFIRM_PRODUCTION_DEPLOY=1` для prod)
+
+## Примітка щодо цього репо
+
+Lost Number не використовує clasp/GAS як ship path. Скрипти `gh`/`ship`/`go`/`release`/`push:remote`/`clasp:push` у `package.json` — захисні stubs (`scripts/git-ops-guard.mjs`): з `CONFIRM_*` проходять лише preflight і **не** виконують push/deploy.

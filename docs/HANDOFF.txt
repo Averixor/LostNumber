@@ -1,13 +1,15 @@
 Lost Number — єдиний проєкт (Godot-only)
 ==========================================
 
-Це ОДИН канонічний репозиторій. Деталі консолідації: docs/archive/MERGE_NOTES.md
+Це ОДИН канонічний репозиторій. Канон: docs/en/SOURCE_OF_TRUTH.md
+Деталі консолідації (історія): docs/archive/MERGE_NOTES.md
 
 Структура
 ---------
   godot/                   — Godot 4 → Android для Play Market (ЄДИНА ГРА)
     Boot.tscn → App.tscn → екрани (ScreenRouter autoload, back-stack)
-  android/keystore/        — підпис release (gitignored)
+  android/firebase/        — google-services.json (dev/prod; gitignored)
+  android/keystore/        — підпис release (gitignored; локально)
   store/                   — Play Console: іконки, описи, скріншоти
   build/android/           — готові APK/AAB (якщо зібрані)
   privacy.html             — Privacy Policy для Play Store (не гра)
@@ -15,6 +17,7 @@ Lost Number — єдиний проєкт (Godot-only)
 
 Швидкий старт
 -------------
+  git lfs pull
   npm ci
   npm run godot:import
   godot4 --path godot
@@ -22,16 +25,17 @@ Lost Number — єдиний проєкт (Godot-only)
 Godot на телефон
 ----------------
   npm run godot:android:debug
-  adb uninstall com.averixor.lostnumber.dev 2>/dev/null || true
+  adb uninstall com.Averixor.Lost_Number.dev 2>/dev/null || true
   adb install -r build/android/lost-number-debug.apk
 
-  Тести: npm run godot:test:all  (локально; CI — npm run release:check)
+  Тести: npm run godot:test:all
+  CI на main: release:check + godot:test:all (Godot 4.7.1)
 
 Play Market (AAB)
 -----------------
   npm run godot:android:release
   # завантажити build/android/lost-number.aab у Play Console
-  # package: com.averixor.lostnumber, versionName 2.1.6 / versionCode 16
+  # package: com.Averixor.Lost_Number, versionName 2.1.6 / versionCode 6
 
 Privacy URL
 -----------
@@ -42,8 +46,9 @@ Privacy URL
 ----------------------------
   node_modules/          — npm ci
   android/keystore*      — локальний підпис
+  android/firebase/{dev,prod}/google-services.json
   godot/android/build/   — генерується при export
   build/                 — збірки
 
 Запакувати для передачі: ./scripts/pack-unified.sh
-Повний production handoff: docs/HANDOFF-IDEAL.md
+Повний production handoff: docs/HANDOFF-IDEAL.md (superseded banner → SoT)

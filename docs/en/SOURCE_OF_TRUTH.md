@@ -1,7 +1,7 @@
 ---
 language: en
 title: Lost Number — Source of Truth
-version: 2.1.6
+version: 2.1.7
 last_updated: 2026-10-03
 ---
 
@@ -9,36 +9,42 @@ Single canonical reference for PO-approved decisions. When docs disagree with th
 
 ## Version snapshot
 
-| Field               | Value                                       |
-| ------------------- | ------------------------------------------- |
-| Package             | `com.Averixor.Lost_Number`                  |
-| Debug package       | `com.Averixor.Lost_Number.dev`              |
-| versionName         | `2.1.6`                                     |
-| versionCode         | `6`                                         |
-| Next Play upload    | versionCode `≥` previous Console upload + 1 |
-| Engine              | Godot **4.7**                               |
-| npm package version | `2.1.6`                                     |
+| Field               | Value                                                           |
+| ------------------- | --------------------------------------------------------------- |
+| Package             | `com.Averixor.Lost_Number`                                      |
+| Debug package       | `com.Averixor.Lost_Number.dev`                                  |
+| versionName         | `2.1.7`                                                         |
+| versionCode         | `7`                                                             |
+| Next Play upload    | versionCode `>` Console max; bump **versionName + versionCode** |
+| Engine              | Godot **4.7**                                                   |
+| npm package version | `2.1.7`                                                         |
 
-**Versioning rule:** release uses the product version (`2.1.6`); debug uses the fixed `versionName=dev`. The independent integer `versionCode` must exceed the highest code already uploaded to Play Console.
+**Versioning rule:**
+
+- Debug: fixed `versionName=dev`; `versionCode` follows the release integer in presets.
+- Play compares **versionCode** only — it must be `>` max already uploaded for `com.Averixor.Lost_Number`.
+- **Current CT candidate:** `2.1.7` / `7` (account deletion + Play compliance). Supersedes `2.1.6` / `6` (`93f72b58…` — **do not upload**).
+- On every new Play upload series: bump **versionName** and **versionCode** together; sync `package.json` and `godot/project.godot` `config/version` with release `versionName`.
 
 Verified in: `godot/export_presets.cfg`, `godot/project.godot`, `package.json`.
 
 ## Decisions table
 
-| Topic                 | Canonical choice                                                                                                                                                                                                                                 | Verify in code                                                     |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
-| **Ship target**       | Godot 4.7 Android AAB → Google Play (`npm run godot:android:release`)                                                                                                                                                                            | `scripts/godot-android-export.sh`, `export_presets.cfg`            |
-| **Entry flow**        | `Boot.tscn` → `App.tscn` → screens via `ScreenRouter` autoload                                                                                                                                                                                   | `godot/project.godot`, `ScreenRouter.gd`                           |
-| **Autoloads**         | SaveManager, SettingsManager, AudioManager, I18nManager, ThemeManager, LeaderboardService, AuthManager, ScreenRouter, LegacySaveMigration                                                                                                        | `project.godot` `[autoload]`                                       |
-| **Network**           | `permissions/internet=true` for **optional** Google Sign-In (Firebase Auth). Offline play without account remains the default. No Cloud Save yet.                                                                                                | `godot/export_presets.cfg`, `AuthManager.gd`, `LostNumberFirebase` |
-| **Cloud / Firebase**  | **Auth-only (B2)** shipped in code; Cloud Save / Firestore still deferred. OWNER must supply `android/firebase/{dev,prod}/google-services.json`.                                                                                                 | `docs/FIREBASE_PRIVACY_DELTA.md`, `docs/AUTH_SIGNIN_QA.md`         |
-| **Save**              | `user://` envelope v1 + SHA-256 + `.bak`; legacy import via `LegacySaveMigration`                                                                                                                                                                | `SaveManager.gd`, `LegacySaveMigration.gd`                         |
-| **i18n**              | uk / ru / en — **330 keys** each                                                                                                                                                                                                                 | `godot/assets/i18n/*.json`, `run_i18n_tests.gd`                    |
-| **Levels**            | First **40** configs algorithmically generated at init (`_generate_manual_levels(40)`); from index 40+ separate procedural branch                                                                                                                | `LevelManager.gd`                                                  |
-| **Visual authority**  | **PO mockups + [VISUAL_TARGET.md](./VISUAL_TARGET.md)** = acceptance; gothic fantasy integration over flat neon                                                                                                                                  | `VISUAL_TARGET.md`, `docs/archive/VISUAL_PORT_MAP.md`              |
-| **Legacy import UI**  | Settings **Import** stub demoted below gallery CTA (`settings_import_legacy_stub`): no save mutation; startup migration + `LegacySaveMigration` remain                                                                                           | `Settings.gd`, `LegacySaveMigration.gd`, `Boot.gd`                 |
-| **Custom background** | Settings **Обрати фон з галереї** + BackgroundPreview picker → `ImagePickerHelper` → `user://custom_backgrounds/` via `SettingsManager.add_custom_background`                                                                                    | `Settings.gd`, `ImagePickerHelper.gd`, `BackgroundPreview.gd`      |
-| **CI**                | Workflow сконфігурований: `release:check` **і** `godot:test:all` (Godot **4.7.1** pinned) на push/PR `main`. Перед релізним рішенням **окремо підтвердити** successful run для цільового commit SHA — не стверджувати «зелений» без журналу run. | `.github/workflows/ci.yml`                                         |
+| Topic                 | Canonical choice                                                                                                                                                                                                                | Verify in code                                                     |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| **Ship target**       | Godot 4.7 Android AAB → Google Play (`npm run godot:android:release`)                                                                                                                                                           | `scripts/godot-android-export.sh`, `export_presets.cfg`            |
+| **Entry flow**        | `Boot.tscn` → `App.tscn` → screens via `ScreenRouter` autoload                                                                                                                                                                  | `godot/project.godot`, `ScreenRouter.gd`                           |
+| **Autoloads**         | SaveManager, SettingsManager, AudioManager, I18nManager, ThemeManager, LeaderboardService, AuthManager, ScreenRouter, LegacySaveMigration                                                                                       | `project.godot` `[autoload]`                                       |
+| **Network**           | `permissions/internet=true` for **optional** Google Sign-In (Firebase Auth). Offline play without account remains the default. No Cloud Save yet.                                                                               | `godot/export_presets.cfg`, `AuthManager.gd`, `LostNumberFirebase` |
+| **Cloud / Firebase**  | **Auth-only (B2)** + in-app account deletion; local `android/firebase/{dev,prod}/google-services.json` (gitignored). CT candidate **2.1.7 / 7**. Cloud Save / Firestore still deferred.                                         | `docs/FIREBASE_PRIVACY_DELTA.md`, `docs/AUTH_SIGNIN_QA.md`, STAGE1 |
+| **Account deletion**  | Settings → **Видалити акаунт** (Firebase `delete` + Google re-auth). Local saves kept. Web: `https://averixor.github.io/LostNumber/delete-account.html` (manual ≤7 days). No “delete data without account”.                     | `AuthManager.gd`, Firebase plugin, `delete-account.html`, privacy  |
+| **Save**              | `user://` envelope v1 + SHA-256 + `.bak`; legacy import via `LegacySaveMigration`                                                                                                                                               | `SaveManager.gd`, `LegacySaveMigration.gd`                         |
+| **i18n**              | uk / ru / en — **341 keys** each                                                                                                                                                                                                | `godot/assets/i18n/*.json`, `run_i18n_tests.gd`                    |
+| **Levels**            | First **40** configs algorithmically generated at init (`_generate_manual_levels(40)`); from index 40+ separate procedural branch                                                                                               | `LevelManager.gd`                                                  |
+| **Visual authority**  | **PO mockups + [VISUAL_TARGET.md](./VISUAL_TARGET.md)** = acceptance; gothic fantasy integration over flat neon                                                                                                                 | `VISUAL_TARGET.md`, `docs/archive/VISUAL_PORT_MAP.md`              |
+| **Legacy import UI**  | Settings **Import** stub demoted below gallery CTA (`settings_import_legacy_stub`): no save mutation; startup migration + `LegacySaveMigration` remain                                                                          | `Settings.gd`, `LegacySaveMigration.gd`, `Boot.gd`                 |
+| **Custom background** | Settings **Обрати фон з галереї** + BackgroundPreview picker → `ImagePickerHelper` → `user://custom_backgrounds/` via `SettingsManager.add_custom_background`                                                                   | `Settings.gd`, `ImagePickerHelper.gd`, `BackgroundPreview.gd`      |
+| **CI**                | `release:check` **і** `godot:test:all` (Godot **4.7.1**) на push/PR `main`; CodeQL через GitHub Advanced Security (шаблон manual Java: `docs/ci/codeql.workflow.yml`). Перед релізом підтвердити successful run для commit SHA. | `.github/workflows/ci.yml`, `docs/ci/codeql.workflow.yml`          |
 
 ## Build commands (by role)
 
@@ -83,7 +89,7 @@ Dated technical audits capture static-analysis findings, test gaps, and release 
 | ------------------------------------------------------ | --------- | -------------------------------------------------------------------------------------------------------------------------- |
 | [AUDIT_MAIN_2026-07-10.md](./AUDIT_MAIN_2026-07-10.md) | `dd6300a` | LevelManager high-index risk, backup-only save, migration plugin path, Settings import stub, CI/`release:ideal` scope      |
 | [AUDIT_PLAY_360.md](../AUDIT_PLAY_360.md)              | `5e39937` | 360° Play readiness; gothic PR #48 already on main; CI jobs configured — confirm run per release SHA; VC16 Console unknown |
-| [ROADMAP.md](../ROADMAP.md)                            | v1.2      | Play-first; Auth B2 shipped; CT NO-GO until JSON + new AAB; Cloud Save later                                               |
+| [ROADMAP.md](../ROADMAP.md)                            | v1.2      | Play-first; Auth B2 + account deletion; CT candidate **2.1.7 / 7**; Cloud Save later                                       |
 
 Update this table when a new dated audit lands on `main`.
 

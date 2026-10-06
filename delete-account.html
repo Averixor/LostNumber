@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Запит на видалення акаунта Google / Firebase Auth у грі Lost Number (Averixor).">
+    <title>Lost Number — Видалення акаунта</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #1b1028;
+        --panel: rgba(36, 22, 48, 0.92);
+        --text: #f6e8de;
+        --muted: #d9c6b8;
+        --accent: #ff6b9d;
+        --link: #ffb0d8;
+        --border: rgba(246, 232, 222, 0.14);
+        --divider: rgba(255, 255, 255, 0.12);
+        --btn: #6b2d4a;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.55;
+      }
+      main {
+        width: min(100% - 40px, 720px);
+        margin: 0 auto;
+        padding: 32px 0 48px;
+      }
+      h1 {
+        margin: 0 0 8px;
+        color: var(--accent);
+        font-size: clamp(1.75rem, 4vw, 2.2rem);
+        line-height: 1.2;
+      }
+      h2 {
+        margin: 28px 0 10px;
+        font-size: 1.1rem;
+      }
+      p,
+      li,
+      label {
+        color: var(--muted);
+      }
+      a {
+        color: var(--link);
+        text-underline-offset: 0.18em;
+      }
+      a:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 3px;
+        border-radius: 3px;
+      }
+      .updated {
+        margin-bottom: 24px;
+        font-size: 0.9rem;
+      }
+      .card {
+        padding: 18px 20px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: var(--panel);
+      }
+      .card > :first-child {
+        margin-top: 0;
+      }
+      .card + .card {
+        margin-top: 18px;
+      }
+      .divider {
+        margin: 32px 0;
+        border: 0;
+        border-top: 1px solid var(--divider);
+      }
+      label {
+        display: block;
+        margin: 14px 0 6px;
+        font-weight: 600;
+        color: var(--text);
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: rgba(0, 0, 0, 0.28);
+        color: var(--text);
+        font: inherit;
+      }
+      textarea {
+        min-height: 96px;
+        resize: vertical;
+      }
+      button {
+        margin-top: 18px;
+        padding: 12px 18px;
+        border: 1px solid rgba(255, 176, 216, 0.35);
+        border-radius: 12px;
+        background: var(--btn);
+        color: var(--text);
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button:hover {
+        filter: brightness(1.08);
+      }
+      .note {
+        font-size: 0.95rem;
+      }
+      .meta {
+        margin: 0 0 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Lost Number — Видалення акаунта</h1>
+        <p class="meta"><strong>Розробник:</strong> Averixor</p>
+        <p class="updated">
+          <time datetime="2026-10-03">Останнє оновлення: 3 жовтня 2026 року</time>
+        </p>
+      </header>
+
+      <section class="card">
+        <h2>Як видалити акаунт у застосунку (найшвидше)</h2>
+        <ol>
+          <li>Відкрийте Lost Number на Android.</li>
+          <li>Перейдіть у <strong>Налаштування → Акаунт Google</strong>.</li>
+          <li>Натисніть <strong>Видалити акаунт</strong> і підтвердіть.</li>
+          <li>
+            Якщо Firebase попросить повторний вхід — увійдіть через Google ще раз; після успішної
+            re-auth видалення повториться автоматично.
+          </li>
+        </ol>
+        <p class="note">
+          Після успішного видалення локальна auth-сесія очищається одразу. Локальний прогрес гри на
+          пристрої <strong>залишається</strong> (він не є хмарними даними акаунта).
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>Запит електронною поштою (якщо немає доступу до застосунку)</h2>
+        <p>
+          Надішліть запит на
+          <a href="mailto:ryabinin.sergei.alekseevich@gmail.com"
+            >ryabinin.sergei.alekseevich@gmail.com</a
+          >
+          або скористайтеся формою нижче (відкриє ваш поштовий застосунок).
+        </p>
+        <p class="note">
+          Вкажіть <strong>Google email</strong>, яким ви входили в гру. Запити обробляються
+          <strong>вручну</strong>: обліковий запис Firebase Auth буде видалено. Це
+          <strong>не миттєва автоматика</strong> — зазвичай до <strong>7 днів</strong> після
+          отримання запиту (часто швидше).
+        </p>
+
+        <form id="delete-request-form" action="#" method="get">
+          <label for="google-email">Google email, використаний для входу</label>
+          <input
+            id="google-email"
+            name="google-email"
+            type="email"
+            required
+            autocomplete="email"
+            placeholder="you@gmail.com">
+
+          <label for="notes">Додаткові відомості (необовʼязково)</label>
+          <textarea
+            id="notes"
+            name="notes"
+            placeholder="Наприклад: дата останнього входу, назва пристрою"
+          ></textarea>
+
+          <button type="submit">Відкрити лист із запитом</button>
+        </form>
+      </section>
+
+      <section>
+        <h2>Які дані видаляються</h2>
+        <ul>
+          <li>обліковий запис Firebase Auth (Google Sign-In) для Lost Number;</li>
+          <li>
+            локальний кеш сесії входу в застосунку (<code>auth_session.json</code>) після in-app
+            delete або після наступного запуску без акаунта.
+          </li>
+        </ul>
+        <p>
+          У поточній версії <strong>немає Cloud Save / Firestore</strong> ігрового прогресу на
+          серверах Averixor — окремих серверних ігрових збережень для видалення немає.
+        </p>
+      </section>
+
+      <section>
+        <h2>Які дані можуть залишитися і чому</h2>
+        <ul>
+          <li>
+            <strong>Локальний прогрес гри</strong> на пристрої (рівні, XP, налаштування тощо) —
+            зберігається локально і не прив’язаний до акаунта Google. Його можна видалити окремо:
+            Android → Налаштування → Застосунки → Lost Number → Сховище → Очистити дані, або
+            деінсталяцією.
+          </li>
+          <li>
+            Дані, які Google / Firebase зберігають як постачальник автентифікації, регулюються
+            їхніми політиками; ми видаляємо запис користувача в проєкті Firebase Auth Lost Number.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Строки</h2>
+        <ul>
+          <li>
+            <strong>У застосунку:</strong> видалення Firebase Auth user — одразу після успішного
+            підтвердження (і re-auth, якщо потрібно).
+          </li>
+          <li><strong>Email-запит:</strong> ручна обробка, зазвичай до 7 днів.</li>
+        </ul>
+      </section>
+
+      <p>
+        Політика конфіденційності:
+        <a href="./privacy.html">privacy.html</a>
+      </p>
+
+      <hr class="divider">
+
+      <section lang="en" aria-labelledby="delete-en">
+        <h1 id="delete-en">Lost Number — Account deletion</h1>
+        <p class="meta"><strong>Developer:</strong> Averixor</p>
+        <p>
+          <strong>In app (fastest):</strong> Settings → Google account → Delete account. If Firebase
+          requires a recent login, complete Google Sign-In; deletion retries automatically. Local
+          game progress on the device remains (not cloud account data).
+        </p>
+        <p>
+          <strong>Email request:</strong> write to
+          <a href="mailto:ryabinin.sergei.alekseevich@gmail.com"
+            >ryabinin.sergei.alekseevich@gmail.com</a
+          >
+          with the Google email used to sign in. Requests are handled
+          <strong>manually</strong> (not instant automation). Firebase Auth account deletion is
+          typically completed within <strong>7 days</strong>.
+        </p>
+        <p>
+          <strong>Deleted:</strong> Firebase Auth user for Lost Number; in-app auth session cache.
+          <strong>Not cloud game saves</strong> in the current version (Cloud Save is not shipped).
+          Device-local progress stays unless you clear app storage or uninstall.
+        </p>
+        <p><a href="./privacy.html">Privacy Policy</a></p>
+      </section>
+    </main>
+    <script>
+      (function () {
+        var form = document.getElementById('delete-request-form');
+        if (!form) return;
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+          var emailInput = document.getElementById('google-email');
+          var notesInput = document.getElementById('notes');
+          var email = emailInput && emailInput.value ? emailInput.value.trim() : '';
+          if (!email) {
+            if (emailInput) emailInput.focus();
+            return;
+          }
+          var notes = notesInput && notesInput.value ? notesInput.value.trim() : '';
+          var subject = encodeURIComponent('Lost Number — запит на видалення акаунта');
+          var body = encodeURIComponent(
+            'Прошу видалити мій акаунт Firebase Auth у Lost Number.\n\n' +
+              'Google email: ' +
+              email +
+              '\n' +
+              (notes ? 'Додатково: ' + notes + '\n' : '') +
+              '\nРозробник: Averixor\n',
+          );
+          window.location.href =
+            'mailto:ryabinin.sergei.alekseevich@gmail.com?subject=' + subject + '&body=' + body;
+        });
+      })();
+    </script>
+  </body>
+</html>

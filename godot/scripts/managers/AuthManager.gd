@@ -1,8 +1,10 @@
 extends Node
 ## Google Sign-In (Firebase Auth) — offline-first; no Cloud Save in this stage.
+## In-app account deletion for Play requirements (Firebase Auth user only).
 
 signal auth_state_changed(state: String, user: Dictionary)
 signal auth_error(message: String)
+signal account_deleted()
 
 const PLUGIN_NAME := "LostNumberFirebase"
 const SESSION_PATH := "user://auth_session.json"
@@ -10,6 +12,7 @@ const SESSION_PATH := "user://auth_session.json"
 const STATE_LOGGED_OUT := "logged_out"
 const STATE_SIGNING_IN := "signing_in"
 const STATE_LOGGED_IN := "logged_in"
+const STATE_DELETING := "deleting_account"
 const STATE_ERROR := "error"
 
 var state: String = STATE_LOGGED_OUT
@@ -18,6 +21,7 @@ var last_error: String = ""
 
 var _plugin = null
 var _signing_out := false
+var _deleting_account := false
 
 
 func _ready() -> void:
@@ -67,12 +71,16 @@ func is_signed_in() -> bool:
 	return state == STATE_LOGGED_IN and str(user.get("uid", "")) != ""
 
 
+func is_deleting_account() -> bool:
+	return _deleting_account or state == STATE_DELETING
+
+
 func get_display_label() -> String:
-	if not is_signed_in():
+	if not is_signed_in() and state != STATE_DELETING:
 		return ""
-	var name := str(user.get("displayName", "")).strip_edges()
-	if not name.is_empty():
-		return name
+	var display_name := str(user.get("displayName", "")).strip_edges()
+	if not display_name.is_empty():
+		return display_name
 	var email := str(user.get("email", "")).strip_edges()
 	if not email.is_empty():
 		return email
@@ -121,6 +129,32 @@ func sign_out() -> void:
 	auth_state_changed.emit(state, user.duplicate(true))
 
 
+## Play account-deletion: remove Firebase Auth user; keep local game saves.
+func delete_account() -> void:
+	if _deleting_account:
+		return
+	if not is_signed_in() and state != STATE_DELETING:
+		last_error = "not_signed_in"
+		auth_error.emit(last_error)
+		return
+	if not is_android():
+		last_error = "android_only"
+		auth_error.emit(last_error)
+		auth_state_changed.emit(state, user.duplicate(true))
+		return
+	_bind_plugin()
+	if _plugin == null or not _plugin_has("deleteAccount"):
+		last_error = "delete_unavailable"
+		auth_error.emit(last_error)
+		auth_state_changed.emit(state, user.duplicate(true))
+		return
+	_deleting_account = true
+	last_error = ""
+	state = STATE_DELETING
+	auth_state_changed.emit(state, user.duplicate(true))
+	_plugin_call("deleteAccount")
+
+
 func _bind_plugin() -> void:
 	# Retry until the Android singleton appears; do not latch a failed attempt.
 	if _plugin != null or not is_android():
@@ -148,10 +182,26 @@ func _refresh_from_plugin_or_cache() -> void:
 
 func _apply_payload(data: Dictionary, persist: bool) -> void:
 	var was_signing_out := _signing_out
+	var was_deleting := _deleting_account
 	_signing_out = false
 	var status := str(data.get("status", STATE_LOGGED_OUT))
 	var err := str(data.get("error", ""))
-	if status == "error" or (status == STATE_ERROR):
+
+	if status == STATE_DELETING or status == "deleting_account":
+		_deleting_account = true
+		state = STATE_DELETING
+		last_error = ""
+		auth_state_changed.emit(state, user.duplicate(true))
+		return
+
+	if status == "account_deleted":
+		_finish_account_deleted(persist)
+		return
+
+	if status == "error" or status == STATE_ERROR:
+		if was_deleting or _deleting_account:
+			_fail_account_delete(err if not err.is_empty() else "delete_failed")
+			return
 		if was_signing_out:
 			last_error = err if not err.is_empty() else "auth_failed"
 			state = STATE_LOGGED_IN if not str(user.get("uid", "")).is_empty() else STATE_LOGGED_OUT
@@ -160,16 +210,22 @@ func _apply_payload(data: Dictionary, persist: bool) -> void:
 			return
 		_set_error(err if not err.is_empty() else "auth_failed")
 		return
+
 	if status == "cancelled":
+		if was_deleting or _deleting_account:
+			_fail_account_delete("delete_cancelled")
+			return
 		state = STATE_LOGGED_OUT
 		last_error = "cancelled"
 		auth_state_changed.emit(state, user.duplicate(true))
 		return
+
 	if status == STATE_SIGNING_IN:
 		state = STATE_SIGNING_IN
 		last_error = ""
 		auth_state_changed.emit(state, user.duplicate(true))
 		return
+
 	if status == STATE_LOGGED_IN:
 		user = {
 			"uid": str(data.get("uid", "")),
@@ -179,15 +235,21 @@ func _apply_payload(data: Dictionary, persist: bool) -> void:
 		if str(user.get("uid", "")).is_empty():
 			_set_error("missing_uid")
 			return
+		_deleting_account = false
 		state = STATE_LOGGED_IN
 		last_error = ""
 		if persist:
 			_save_session_cache()
 		auth_state_changed.emit(state, user.duplicate(true))
 		return
+
 	# logged_out / default
+	if was_deleting:
+		_finish_account_deleted(persist)
+		return
 	user = {}
 	state = STATE_LOGGED_OUT
+	_deleting_account = false
 	if err == "cancelled":
 		last_error = "cancelled"
 	else:
@@ -197,10 +259,34 @@ func _apply_payload(data: Dictionary, persist: bool) -> void:
 	auth_state_changed.emit(state, user.duplicate(true))
 
 
+func _finish_account_deleted(persist: bool) -> void:
+	_deleting_account = false
+	user = {}
+	state = STATE_LOGGED_OUT
+	last_error = ""
+	if persist:
+		_clear_session()
+	account_deleted.emit()
+	auth_state_changed.emit(state, user.duplicate(true))
+
+
+## Delete failures must not wipe a still-valid Firebase session.
+func _fail_account_delete(message: String) -> void:
+	_deleting_account = false
+	last_error = message if not message.is_empty() else "delete_failed"
+	if not str(user.get("uid", "")).is_empty():
+		state = STATE_LOGGED_IN
+	else:
+		state = STATE_ERROR
+	auth_error.emit(last_error)
+	auth_state_changed.emit(state, user.duplicate(true))
+
+
 func _set_error(message: String) -> void:
 	## Зберігати сесію лише при невдалому sign-out (_apply_payload + was_signing_out).
 	## Інші auth-помилки скидають локальну сесію — інакше is_signed_in() лишається true
 	## після відхиленого бекендом credentials.
+	_deleting_account = false
 	last_error = message
 	user = {}
 	state = STATE_ERROR

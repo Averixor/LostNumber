@@ -1,8 +1,8 @@
 ---
 language: en
 title: Lost Number — Release Plans & Checklists
-version: 2.1.6
-last_updated: 2026-07-10
+version: 2.1.7
+last_updated: 2026-10-03
 ---
 
 # Release Plans & Checklists
@@ -14,19 +14,21 @@ Primary release path: **Godot 4 Android AAB** → Google Play. Web/JS/Capacitor 
 | Field       | Release                         | Debug                                 |
 | ----------- | ------------------------------- | ------------------------------------- |
 | Package     | `com.Averixor.Lost_Number`      | `com.Averixor.Lost_Number.dev`        |
-| versionName | `2.1.6`                         | `dev`                                 |
-| versionCode | `6`                             | `6`                                   |
+| versionName | `2.1.7`                         | `dev`                                 |
+| versionCode | `7`                             | `7`                                   |
 | Format      | AAB                             | APK                                   |
 | Output      | `build/android/lost-number.aab` | `build/android/lost-number-debug.apk` |
 | minSdk      | 24                              | 24                                    |
 | targetSdk   | 36                              | 36                                    |
 | ABI         | arm64-v8a, x86_64               | arm64-v8a, x86_64                     |
 
-**Next Play upload:** use a versionCode greater than the highest code already present in Play Console.
+**Current CT candidate:** `2.1.7` / `7` (account deletion). Supersedes `2.1.6` / `6` (`93f72b58…` — do not upload).
 
 ### Versioning rule
 
-Release uses the product version (`2.1.6`); debug uses the fixed `versionName=dev`. The independent integer `versionCode` must increase for every Play upload.
+- Debug: fixed `versionName=dev`.
+- Play: `versionCode` must be `>` Console max for `com.Averixor.Lost_Number`.
+- Every new Play upload series: raise `versionName` and `versionCode` together; sync `package.json` and `project.godot` `config/version` with release `versionName`.
 
 ABI note: `armeabi-v7a` intentionally excluded (~8k 32-bit-only devices in catalog).
 
@@ -126,15 +128,15 @@ In-game graphics: `godot/assets/ui/` (gothic PNG icons, wheel PNGs, skins).
 
 ## Icons
 
-| Asset           | Path                                |
-| --------------- | ----------------------------------- |
-| Launcher (1024) | `godot/assets/icons/icon-1024.png`  |
-| Project icon    | `godot/icon.png`                    |
+| Asset           | Path                                                           |
+| --------------- | -------------------------------------------------------------- |
+| Launcher (1024) | `godot/assets/icons/icon-1024.png`                             |
+| Project icon    | `godot/icon.png`                                               |
 | Adaptive icons  | `godot/assets/icons/adaptive-icon-{foreground,background}.png` |
 
 ## Google Play Console checklist
 
-- [ ] Upload `lost-number.aab` (Godot 2.1.6, versionCode **6+** / > Console max)
+- [ ] Upload `lost-number.aab` (Godot 2.1.7, versionCode **7+** / > Console max)
 - [ ] Privacy URL: `https://averixor.github.io/LostNumber/privacy.html`
 - [ ] Data Safety: optional Google Sign-In (no Cloud Save / Analytics)
 - [ ] IARC: puzzle, no violence/gambling/IAP/ads
@@ -166,7 +168,7 @@ Detailed QA doc: `docs/ANDROID_QA.md`.
 | ------------------------------------------- | ---------------------------------------------- |
 | `npm run godot:test:all`                    | Rules, save, smoke (autoloads, scenes compile) |
 | `npm run godot:test:save`                   | Checksum + backup recovery                     |
-| `npm run godot:test:i18n`                   | 330 keys × 3 locales                           |
+| `npm run godot:test:i18n`                   | 341 keys × 3 locales                           |
 | `timeout 15 godot4 --path godot --headless` | Boot → App → MainMenu, no script errors        |
 
 ## Troubleshooting

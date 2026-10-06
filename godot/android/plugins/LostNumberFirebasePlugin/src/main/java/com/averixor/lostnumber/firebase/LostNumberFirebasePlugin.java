@@ -18,9 +18,11 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,6 +46,7 @@ public class LostNumberFirebasePlugin extends GodotPlugin {
   private String lastError = "";
   private String webClientId = "";
   private final ExecutorService credentialExecutor = Executors.newSingleThreadExecutor();
+  private volatile boolean deleteInProgress = false;
 
   public LostNumberFirebasePlugin(Godot godot) {
     super(godot);
@@ -158,7 +161,50 @@ public class LostNumberFirebasePlugin extends GodotPlugin {
       return;
     }
     emitAuth("signing_in", null, "");
+    requestGoogleCredential(/*forDeleteReauth=*/ false);
+  }
 
+  /**
+   * Play account-deletion path: FirebaseUser.delete(), with Google re-auth when
+   * FirebaseAuthRecentLoginRequiredException is raised.
+   */
+  @UsedByGodot
+  public void deleteAccount() {
+    Activity activity = getActivity();
+    if (activity == null) {
+      emitAuth("error", currentUserOrNull(), "no_activity");
+      return;
+    }
+    if (!ensureFirebase() || credentialManager == null) {
+      emitAuth(
+          "error",
+          currentUserOrNull(),
+          lastError.isEmpty() ? "firebase_not_configured" : lastError);
+      return;
+    }
+    FirebaseUser user = firebaseAuth.getCurrentUser();
+    if (user == null) {
+      emitAuth("error", null, "not_signed_in");
+      return;
+    }
+    if (deleteInProgress) {
+      return;
+    }
+    deleteInProgress = true;
+    emitAuth("deleting_account", user, "");
+    attemptDelete(user, /*allowReauth=*/ true);
+  }
+
+  private void requestGoogleCredential(boolean forDeleteReauth) {
+    Activity activity = getActivity();
+    if (activity == null || credentialManager == null) {
+      if (forDeleteReauth) {
+        finishDeleteError(currentUserOrNull(), "no_activity");
+      } else {
+        emitAuth("error", null, "no_activity");
+      }
+      return;
+    }
     GetGoogleIdOption googleIdOption =
         new GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)
@@ -177,11 +223,21 @@ public class LostNumberFirebasePlugin extends GodotPlugin {
         new CredentialManagerCallback<GetCredentialResponse, GetCredentialException>() {
           @Override
           public void onResult(GetCredentialResponse result) {
-            handleCredentialResponse(result);
+            handleCredentialResponse(result, forDeleteReauth);
           }
 
           @Override
           public void onError(GetCredentialException e) {
+            if (forDeleteReauth) {
+              if (e instanceof GetCredentialCancellationException) {
+                finishDeleteError(currentUserOrNull(), "delete_cancelled");
+              } else {
+                String msg = e.getMessage();
+                finishDeleteError(
+                    currentUserOrNull(), msg == null ? "reauth_failed" : msg);
+              }
+              return;
+            }
             if (e instanceof GetCredentialCancellationException) {
               emitAuth("logged_out", null, "cancelled");
             } else {
@@ -192,10 +248,14 @@ public class LostNumberFirebasePlugin extends GodotPlugin {
         });
   }
 
-  private void handleCredentialResponse(GetCredentialResponse result) {
+  private void handleCredentialResponse(GetCredentialResponse result, boolean forDeleteReauth) {
     Activity activity = getActivity();
     if (activity == null || firebaseAuth == null) {
-      emitAuth("error", null, "no_activity");
+      if (forDeleteReauth) {
+        finishDeleteError(null, "no_activity");
+      } else {
+        emitAuth("error", null, "no_activity");
+      }
       return;
     }
     try {
@@ -203,17 +263,52 @@ public class LostNumberFirebasePlugin extends GodotPlugin {
       if (!(credential instanceof CustomCredential)
           || !GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL.equals(
               credential.getType())) {
-        emitAuth("error", null, "unexpected_credential_type");
+        if (forDeleteReauth) {
+          finishDeleteError(currentUserOrNull(), "unexpected_credential_type");
+        } else {
+          emitAuth("error", null, "unexpected_credential_type");
+        }
         return;
       }
       GoogleIdTokenCredential googleIdTokenCredential =
           GoogleIdTokenCredential.createFrom(credential.getData());
       String idToken = googleIdTokenCredential.getIdToken();
       if (idToken == null || idToken.isEmpty()) {
-        emitAuth("error", null, "missing_id_token");
+        if (forDeleteReauth) {
+          finishDeleteError(currentUserOrNull(), "missing_id_token");
+        } else {
+          emitAuth("error", null, "missing_id_token");
+        }
         return;
       }
       AuthCredential firebaseCredential = GoogleAuthProvider.getCredential(idToken, null);
+      if (forDeleteReauth) {
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        if (user == null) {
+          finishDeleteError(null, "not_signed_in");
+          return;
+        }
+        user.reauthenticate(firebaseCredential)
+            .addOnCompleteListener(
+                activity,
+                reauthTask -> {
+                  if (!reauthTask.isSuccessful()) {
+                    Exception ex = reauthTask.getException();
+                    String msg = ex != null ? ex.getMessage() : "reauth_failed";
+                    finishDeleteError(
+                        currentUserOrNull(), msg == null ? "reauth_failed" : msg);
+                    return;
+                  }
+                  FirebaseUser refreshed = firebaseAuth.getCurrentUser();
+                  if (refreshed == null) {
+                    finishDeleteError(null, "not_signed_in");
+                    return;
+                  }
+                  emitAuth("deleting_account", refreshed, "");
+                  attemptDelete(refreshed, /*allowReauth=*/ false);
+                });
+        return;
+      }
       firebaseAuth
           .signInWithCredential(firebaseCredential)
           .addOnCompleteListener(
@@ -229,8 +324,72 @@ public class LostNumberFirebasePlugin extends GodotPlugin {
               });
     } catch (Exception e) {
       Log.w(TAG, "handleCredentialResponse failed", e);
-      emitAuth("error", null, "credential_parse_failed");
+      if (forDeleteReauth) {
+        finishDeleteError(currentUserOrNull(), "credential_parse_failed");
+      } else {
+        emitAuth("error", null, "credential_parse_failed");
+      }
     }
+  }
+
+  private void attemptDelete(FirebaseUser user, boolean allowReauth) {
+    Activity activity = getActivity();
+    if (activity == null || user == null) {
+      finishDeleteError(currentUserOrNull(), "no_activity");
+      return;
+    }
+    user.delete()
+        .addOnCompleteListener(
+            activity,
+            task -> {
+              if (task.isSuccessful()) {
+                finishDeleteSuccess();
+                return;
+              }
+              Exception ex = task.getException();
+              if (allowReauth && isRecentLoginRequired(ex)) {
+                emitAuth("deleting_account", currentUserOrNull(), "requires_recent_login");
+                requestGoogleCredential(/*forDeleteReauth=*/ true);
+                return;
+              }
+              String msg = "delete_failed";
+              if (isRecentLoginRequired(ex)) {
+                msg = "requires_recent_login";
+              } else if (ex != null && ex.getMessage() != null && !ex.getMessage().isEmpty()) {
+                msg = ex.getMessage();
+              }
+              finishDeleteError(currentUserOrNull(), msg);
+            });
+  }
+
+  private static boolean isRecentLoginRequired(Exception ex) {
+    if (ex == null) {
+      return false;
+    }
+    if (ex instanceof FirebaseAuthRecentLoginRequiredException) {
+      return true;
+    }
+    String msg = ex.getMessage();
+    if (msg == null) {
+      return false;
+    }
+    String lower = msg.toLowerCase(Locale.US);
+    return lower.contains("requires-recent-login") || lower.contains("recent login");
+  }
+
+  private void finishDeleteSuccess() {
+    deleteInProgress = false;
+    // User is already removed from Firebase Auth; clear Credential Manager state.
+    clearCredentialStateThenEmit("account_deleted");
+  }
+
+  private void finishDeleteError(FirebaseUser user, String error) {
+    deleteInProgress = false;
+    emitAuth("error", user, error == null ? "delete_failed" : error);
+  }
+
+  private FirebaseUser currentUserOrNull() {
+    return firebaseAuth == null ? null : firebaseAuth.getCurrentUser();
   }
 
   @UsedByGodot
@@ -239,8 +398,12 @@ public class LostNumberFirebasePlugin extends GodotPlugin {
       emitAuth("error", null, lastError.isEmpty() ? "firebase_not_configured" : lastError);
       return;
     }
-    Activity activity = getActivity();
     firebaseAuth.signOut();
+    clearCredentialStateThenEmit("logged_out");
+  }
+
+  private void clearCredentialStateThenEmit(String status) {
+    Activity activity = getActivity();
     if (credentialManager != null && activity != null) {
       CancellationSignal cancellationSignal = new CancellationSignal();
       credentialManager.clearCredentialStateAsync(
@@ -250,17 +413,17 @@ public class LostNumberFirebasePlugin extends GodotPlugin {
           new CredentialManagerCallback<Void, ClearCredentialException>() {
             @Override
             public void onResult(Void unused) {
-              emitAuth("logged_out", null, "");
+              emitAuth(status, null, "");
             }
 
             @Override
             public void onError(ClearCredentialException e) {
-              // Local Firebase session already cleared.
-              emitAuth("logged_out", null, "");
+              // Local Firebase / Auth session already cleared for this status.
+              emitAuth(status, null, "");
             }
           });
     } else {
-      emitAuth("logged_out", null, "");
+      emitAuth(status, null, "");
     }
   }
 

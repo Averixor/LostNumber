@@ -15,13 +15,13 @@
 
 ## Closed testing (AAB candidate)
 
-> Legacy Stage 3 candidate — **superseded**. Current CT = **NO-GO** ([`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)).
+> Legacy Stage 3 candidate — **superseded**. Current CT = **PRE-UPLOAD READY** ([`CT_SMOKE_CHECKLIST.md`](CT_SMOKE_CHECKLIST.md)).
 
-| Поле                     | Значення                                     |
-| ------------------------ | -------------------------------------------- |
-| Closed testing (Stage 3) | `pending` → superseded                       |
-| Legacy AAB SHA-256       | `398b83f3…` @ `2ef0fcd…` — **не** upload     |
-| Current CT AAB           | pending rebuild after `google-services.json` |
+| Поле                     | Значення                                                |
+| ------------------------ | ------------------------------------------------------- |
+| Closed testing (Stage 3) | `pending` → superseded                                  |
+| Legacy AAB SHA-256       | `398b83f3…` @ `2ef0fcd…` — **не** upload                |
+| Current CT AAB           | `93f72b58…` (gates PASS 2026-10-03) — Play upload OWNER |
 
 ## Last verified CI (для base SHA)
 
