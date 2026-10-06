@@ -15,8 +15,6 @@ func _ready() -> void:
 
 
 func _apply_gothic_visuals() -> void:
-	if not GothicScreenMixinLib.uses_gothic_chrome(self):
-		return
 	GothicScreenMixinLib.apply_background(self, "", 0.30, &"menu")
 	title_label.add_theme_color_override("font_color", GothicVisualsLib.GOLD_LIGHT)
 	GothicScreenMixinLib.style_button(self, back_button)

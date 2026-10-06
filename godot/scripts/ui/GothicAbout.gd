@@ -9,7 +9,7 @@ const GOTHIC_VISUAL_SKIN_ID := "gothic_crystal"
 
 
 func _ready() -> void:
-	GothicScreenMixinLib.ensure_default_visual_skin(self, GOTHIC_VISUAL_SKIN_ID)
+	_ensure_gothic_skin()
 	super._ready()
 	_apply_gothic_visuals()
 	var theme_mgr := get_node_or_null("/root/ThemeManager")
@@ -17,9 +17,16 @@ func _ready() -> void:
 		theme_mgr.theme_changed.connect(_apply_gothic_visuals)
 
 
-func _apply_gothic_visuals() -> void:
-	if not GothicScreenMixinLib.uses_gothic_chrome(self):
+func _ensure_gothic_skin() -> void:
+	var theme_mgr := get_node_or_null("/root/ThemeManager")
+	if theme_mgr == null or not theme_mgr.has_method("set_visual_skin_id"):
 		return
+	if theme_mgr.has_method("uses_visual_skin") and bool(theme_mgr.call("uses_visual_skin")):
+		return
+	theme_mgr.call("set_visual_skin_id", GOTHIC_VISUAL_SKIN_ID)
+
+
+func _apply_gothic_visuals() -> void:
 	GothicScreenMixinLib.apply_background(self, "", 0.30, &"menu")
 	if title_label != null:
 		title_label.add_theme_color_override("font_color", GothicVisualsLib.GOLD_LIGHT)

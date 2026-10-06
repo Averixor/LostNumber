@@ -53,7 +53,7 @@ func _ready() -> void:
 	menu_button.pressed.connect(func(): menu_pressed.emit())
 	sound_button.pressed.connect(func(): sound_pressed.emit())
 	save_button.pressed.connect(func(): save_pressed.emit())
-	# Keep emit path for Game.gd; ThemeButton stays hidden (dark-only, no light theme).
+	# Keep emit path for Game.gd (theme_pressed); button stays hidden in dark-only.
 	if theme_button != null:
 		theme_button.pressed.connect(func(): theme_pressed.emit())
 		theme_button.visible = false

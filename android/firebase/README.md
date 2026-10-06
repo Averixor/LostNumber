@@ -34,6 +34,7 @@ Copy-Item path\to\downloaded-prod\google-services.json android/firebase/prod/goo
 
 - Plugin: `godot/android/plugins/LostNumberFirebase.gdap`
 - Export (`scripts/godot-android-export.sh` → `scripts/lib/firebase-android.sh`) copies `dev`/`prod` json into `godot/android/build/google-services.json` and applies Gradle plugin `com.google.gms.google-services` **4.5.0** (Godot regenerates `android/build/`; do not paste Firebase Console Android Studio / Analytics BoM snippets by hand).
+- Release minify: same export also runs `scripts/lib/r8-android.sh` (copies [`android/proguard-rules.pro`](../proguard-rules.pro), sets `minifyEnabled` / `shrinkResources` on the Godot `release` buildType). **AGP stays on the Godot template version (8.6.x)** — do not hand-bump to AGP 9.0 for Play DEX tips.
 - Auth SDK is in `LostNumberFirebasePlugin` AAR (BoM `34.17.0` → `firebase-auth`) and Godot `.gdap` pins `firebase-auth:24.2.0` as a plain Maven coordinate (Godot cannot parse Gradle `platform(...)`). **Do not** add `firebase-analytics`.
 - Without json the export still builds; Sign-In returns `firebase_not_configured`. JSON must include non-empty `oauth_client` (Web client id → `default_web_client_id`) for Credential Manager.
 

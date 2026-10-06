@@ -544,9 +544,9 @@ func _default_visual_skin_for_install() -> String:
 
 func _resolve_saved_visual_skin_id(data: Dictionary) -> String:
 	var requested := str(data.get("visual_skin_id", DEFAULT_VISUAL_SKIN_ID))
-	## procedural_neon is a valid Skin Preview choice — persist it.
+	## Legacy saves that still carry the pre-foundation procedural id migrate to gothic.
 	if requested == PROCEDURAL_VISUAL_SKIN_ID:
-		return PROCEDURAL_VISUAL_SKIN_ID
+		return DEFAULT_VISUAL_SKIN_ID
 	return requested if has_visual_skin_id(requested) else DEFAULT_VISUAL_SKIN_ID
 
 
