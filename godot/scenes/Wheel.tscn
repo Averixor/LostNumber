@@ -22,6 +22,17 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
+[node name="Vignette" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
 [node name="Layout" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
@@ -30,13 +41,13 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 20
+theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
 [node name="VBox" type="VBoxContainer" parent="Layout"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 6
 alignment = 1
 
 [node name="Title" type="Label" parent="Layout/VBox"]
@@ -45,25 +56,29 @@ text = ""
 horizontal_alignment = 1
 
 [node name="WheelCanvas" type="Control" parent="Layout/VBox"]
-custom_minimum_size = Vector2(320, 320)
+custom_minimum_size = Vector2(384, 384)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 3
 script = ExtResource("2_canvas")
 
-[node name="CostLabel" type="Label" parent="Layout/VBox"]
+[node name="CostPill" type="PanelContainer" parent="Layout/VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="CostLabel" type="Label" parent="Layout/VBox/CostPill"]
 layout_mode = 2
 horizontal_alignment = 1
 
 [node name="SpinButton" parent="Layout/VBox" instance=ExtResource("3_neon")]
-custom_minimum_size = Vector2(240, 52)
+custom_minimum_size = Vector2(260, 56)
 layout_mode = 2
 size_flags_horizontal = 4
-variant = 1
+variant = 0
 text = ""
 
 [node name="BackButton" parent="Layout/VBox" instance=ExtResource("3_neon")]
-custom_minimum_size = Vector2(220, 48)
+custom_minimum_size = Vector2(200, 44)
 layout_mode = 2
 size_flags_horizontal = 4
 text = ""
