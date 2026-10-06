@@ -30,7 +30,7 @@
 | `assets/ui/icons/`                                                          | Gothic PNG pack (`icons/gothic/`), wheel PNGs, shared `tile-crown.png`                                                                                                                              |
 | `assets/audio/{music,sfx}/`                                                 | mp3 (git LFS)                                                                                                                                                                                       |
 | `assets/i18n/{uk,ru,en}.json`                                               | 341 ключів кожна локаль                                                                                                                                                                             |
-| `export_presets.cfg`                                                        | Android AAB/APK, version 2.1.6 / code 6                                                                                                                                                             |
+| `export_presets.cfg`                                                        | Android AAB/APK, version 2.1.7 / code 7                                                                                                                                                             |
 
 Потік запуску: **Boot → App → MainMenu** (`ScreenRouter.replace("main_menu")`). Збірка: `npm run godot:android:release` → `build/android/lost-number.aab`.
 

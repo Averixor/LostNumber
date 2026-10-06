@@ -1,13 +1,13 @@
 ---
 language: en
 title: Lost Number — Architecture & Repository Layout
-version: 2.1.6
-last_updated: 2026-10-03
+version: 2.1.7
+last_updated: 2026-10-06
 ---
 
 ## Architecture & Repository Layout
 
-High-level technical architecture for Lost Number **2.1.6**. Godot 4.7 is the sole production runtime.
+High-level technical architecture for Lost Number **2.1.7**. Godot 4.7 is the sole production runtime.
 
 ### System overview
 
@@ -39,7 +39,7 @@ High-level technical architecture for Lost Number **2.1.6**. Godot 4.7 is the so
 | `SettingsManager`     | User preferences, `bg_effects_enabled`, locale     |
 | `AudioManager`        | SFX pool, music, semantic event mapping            |
 | `I18nManager`         | uk/ru/en JSON dictionaries                         |
-| `ThemeManager`        | dawn/dusk/twilight, background rotation            |
+| `ThemeManager`        | Release dusk-only brightness; VisualSkin; backgrounds |
 | `LeaderboardService`  | Offline queue stub                                 |
 | `AuthManager`         | Optional Google Sign-In (Firebase Auth)            |
 | `ScreenRouter`        | Screen navigation, back-stack, transitions         |
@@ -77,32 +77,33 @@ Registered screens (`ScreenRouter.SCREENS`): MainMenu, Game, Settings, Achieveme
 | Module            | Path                                | Role                                           |
 | ----------------- | ----------------------------------- | ---------------------------------------------- |
 | GameHud           | `scripts/ui/GameHud.gd`             | XP, target, bonus row                          |
-| ThemeTokens       | `scripts/ui/ThemeTokens.gd`         | Dark Neon Fantasy palette + dawn/dusk          |
+| ThemeTokens       | `scripts/ui/ThemeTokens.gd`         | Dark fantasy palette tokens (legacy dawn tokens remain in code) |
+| VisualSkin        | `scripts/ui/VisualSkin.gd`          | Skin kits: `gothic_crystal` \| `procedural_neon` |
 | LnUi              | `scripts/ui/LnUi.gd`                | Shared UI helpers, backgrounds, entrance anims |
 | NeonButton        | `scenes/components/NeonButton.tscn` | Primary/ghost menu buttons                     |
 | WheelManager      | `scripts/meta/WheelManager.gd`      | Spin logic                                     |
 | DailyQuestManager | `scripts/meta/DailyQuestManager.gd` | Quest progress                                 |
 | Achievements      | `scripts/ui/Achievements.gd`        | Achievement grid                               |
 
-#### Visual system (Dark Neon Fantasy)
+#### Visual system (gothic fantasy + VisualSkin)
 
-Recent redesign centralizes tokens in `ThemeTokens.gd` (design spec v2) and applies them through:
+North star: `docs/en/VISUAL_TARGET.md` (environment-integrated stone/metal chrome). Tokens live in `ThemeTokens.gd`; skins in `VisualSkin.gd` / `ThemeManager.visual_skin_id`.
 
-- `lost_number_theme.tres` — global GUI theme
+- `lost_number_theme.tres` — global GUI theme (gold/stone, not neon-purple outlines)
 - `LnUi.gd` — screen backgrounds, panels, button styling, logo glow
-- `NeonButton.tscn` — neon-bordered controls
-- `BackgroundLayer.gd` — art textures, dim overlay, optional particles
-- `ChainLineLayer.gd` — chain path neon rendering
-- Per-screen scripts (MainMenu, Settings, Stats, etc.) calling `LnUi` helpers
+- `Gothic*` / `GothicScreenMixin.gd` — carved chrome when `gothic_crystal` is active; skipped for `procedural_neon`
+- `BackgroundLayer.gd` — art textures, dim overlay, optional particles (real path under App shell)
+- `ChainLineLayer.gd` — chain path rendering
+- Per-screen scripts calling `LnUi` / gothic helpers
 
-`ThemeManager.gd` maps dawn/dusk/twilight to token sets and manages 6 background PNGs per bucket under `godot/assets/ui/backgrounds/`.
+`ThemeManager.gd` **release policy:** `RELEASE_THEME_ID` / `UI_CYCLE_THEMES` = `["dusk"]` only; `is_dark()` always true; ThemeButton hidden. Legacy dawn/twilight ids normalize to dusk (assets may remain on disk). Background carousel uses the dark bucket (6 PNGs under `godot/assets/ui/backgrounds/`). **VisualSkin:** `gothic_crystal` (default) and `procedural_neon` (Skin Preview fallback kit), both persist across restart.
 
 ### Repository layout
 
 ```text
 LostNumber/                      ← canonical project root
 ├── godot/                       # Ship target for Play
-│   ├── project.godot            # version 2.1.6, main_scene → Boot.tscn
+│   ├── project.godot            # version 2.1.7, main_scene → Boot.tscn
 │   ├── scenes/                  # Boot, App, screens, components
 │   ├── scripts/                 # core, game, ui, managers, meta, tests
 │   ├── assets/ui/               # In-game graphics (icons, backgrounds)

@@ -4,7 +4,7 @@
 | ------------------ | ------------------------------------------------------------------------------------- |
 | Версія документа   | **1.2** (2026-08-13)                                                                  |
 | Listing            | `com.Averixor.Lost_Number`                                                            |
-| Ship version у git | **2.1.6 / versionCode 6**                                                             |
+| Ship version у git | **2.1.7 / versionCode 7**                                                             |
 | Auth B2            | Shipped; AAB `93f72b58…` **PRE-UPLOAD READY**; CT GO після Play upload + smoke        |
 | Cloud Save         | Deferred — після CT GO ([`FIREBASE_STAGE4_SEQUENCE.md`](FIREBASE_STAGE4_SEQUENCE.md)) |
 
@@ -48,8 +48,8 @@ PR #48 (`godot/fix-gothic-chrome-readability`) **уже merged** (2026-08-02): h
 ```text
 Console max versionCode (новий listing com.Averixor.Lost_Number)
         ↓
-max < 6  → upload 6 / 2.1.6
-max ≥ 6  → bump max+1 (окремий PR) + rebuild
+max < 7  → upload 7 / 2.1.7
+max ≥ 7  → bump max+1 (окремий PR) + rebuild
         ↓
 Firebase JSON у AAB + Auth smoke PASS
         ↓

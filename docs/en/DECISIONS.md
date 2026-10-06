@@ -1,8 +1,8 @@
 ---
 language: en
 title: Lost Number — Accepted Technical Decisions
-version: 2.1.6
-last_updated: 2026-07-10
+version: 2.1.7
+last_updated: 2026-10-06
 ---
 
 # Accepted Technical Decisions
@@ -149,11 +149,11 @@ Applied across `ThemeTokens.gd`, `LnUi.gd`, `NeonButton.tscn`, `lost_number_them
 
 | Theme    | UI exposure                                                               |
 | -------- | ------------------------------------------------------------------------- |
-| Dawn     | Light palette — `DAWN_*` tokens                                           |
-| Dusk     | Dark default — aligned with Dark Neon Fantasy                             |
-| Twilight | In `ThemeManager.THEMES`; **hidden** from settings toggle until art ships |
+| Dusk     | **Only** user-facing release brightness; `is_dark()` always true          |
+| Dawn     | Legacy light tokens/assets — normalized to dusk; not selectable in UI     |
+| Twilight | In `ThemeManager.THEMES`; normalized to dusk; not selectable in UI        |
 
-Settings cycles **`UI_CYCLE_THEMES` = dawn/dusk only**. MainMenu tagline double-tap calls `ThemeManager.cycle_background()` (6 PNGs per bucket).
+Release lock: **`UI_CYCLE_THEMES` = `["dusk"]`**. ThemeButton is hidden. MainMenu tagline double-tap calls `ThemeManager.cycle_background()` (6 PNGs in the dark bucket). **VisualSkin:** `gothic_crystal` (default) \| `procedural_neon` via Skin Preview.
 
 ### Performance mode
 
@@ -191,8 +191,8 @@ Game scenes reference **`assets/ui/` only**, never `assets/store/*`.
 
 | Field               | Current | Rule                                                 |
 | ------------------- | ------- | ---------------------------------------------------- |
-| Release versionName | `2.1.6` | Match the product version in `package.json`          |
-| `versionCode`       | `6`     | Must exceed the highest code in Play Console         |
+| Release versionName | `2.1.7` | Match the product version in `package.json`          |
+| `versionCode`       | `7`     | Must exceed the highest code in Play Console         |
 | Debug versionName   | `dev`   | Debug preset package: `com.Averixor.Lost_Number.dev` |
 
 ## Versioning note

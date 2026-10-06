@@ -1,8 +1,8 @@
 ---
 language: en
 title: Lost Number — Game Design & Mechanics
-version: 2.1.6
-last_updated: 2026-07-10
+version: 2.1.7
+last_updated: 2026-10-06
 ---
 
 # Lost Number — Game Design & Mechanics
@@ -107,7 +107,7 @@ Implemented in Godot with varying visual polish:
 | Wheel of fortune                      | Logic — `WheelManager.gd`; canvas animation partial         |
 | Achievements                          | Save via `PlayerProgress`; UI partial                       |
 | Stats / About                         | Minimal screens with back-stack navigation                  |
-| Themes (dawn/dusk)                    | `ThemeManager.gd`; twilight in code, hidden from UI toggle  |
+| Themes (dusk-only)                    | `ThemeManager.gd`; VisualSkin gothic/procedural; ThemeButton hidden |
 | i18n (UA / RU / EN)                   | 330 keys per locale — `I18nManager.gd`                      |
 
 ## Not in scope (deferred)
