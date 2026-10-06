@@ -7,7 +7,7 @@ const GOTHIC_VISUAL_SKIN_ID := "gothic_crystal"
 
 
 func _ready() -> void:
-	_ensure_gothic_skin()
+	GothicScreenMixinLib.ensure_default_visual_skin(self, GOTHIC_VISUAL_SKIN_ID)
 	super._ready()
 	_apply_gothic_visuals()
 	call_deferred("_apply_gothic_visuals")
@@ -16,16 +16,10 @@ func _ready() -> void:
 		theme_mgr.theme_changed.connect(_apply_gothic_visuals)
 
 
-func _ensure_gothic_skin() -> void:
-	var theme_mgr := get_node_or_null("/root/ThemeManager")
-	if theme_mgr == null or not theme_mgr.has_method("set_visual_skin_id"):
-		return
-	if theme_mgr.has_method("uses_visual_skin") and bool(theme_mgr.call("uses_visual_skin")):
-		return
-	theme_mgr.call("set_visual_skin_id", GOTHIC_VISUAL_SKIN_ID)
-
-
 func _style_controls() -> void:
+	if not GothicScreenMixinLib.uses_gothic_chrome(self):
+		super._style_controls()
+		return
 	## Own gothic chrome — do not call LnUi neon apply_button / toggle / option styles.
 	if background != null:
 		background.color = Color(0, 0, 0, 0.55)
@@ -34,6 +28,11 @@ func _style_controls() -> void:
 
 
 func _apply_gothic_visuals() -> void:
+	if not GothicScreenMixinLib.uses_gothic_chrome(self):
+		## Skin Preview switched to procedural_neon — restore base Settings chrome.
+		super._style_controls()
+		LnUiLib.set_background(self, LnUiLib.screen_bg("settings"))
+		return
 	GothicScreenMixinLib.apply_background(self, "", 0.30, &"menu")
 	_group_settings_into_panels()
 	_apply_gothic_control_chrome()
@@ -57,7 +56,7 @@ func _group_settings_into_panels() -> void:
 		return
 	vbox.set_meta("gothic_grouped", true)
 	var groups: Array = [
-		[sound_check, music_check, sfx_volume_option, music_volume_option, music_track_option, bg_effects_check],
+		[sound_check, music_check, sfx_volume_slider, music_volume_slider, music_track_option, bg_effects_check],
 		[tile_font_size_option, language_option],
 		[account_label, account_status, account_button, delete_account_button, leaderboard_check],
 		[skin_label, skin_pick_button, background_label, background_pick_button, background_auto_check, gallery_pick_button, gallery_status],
@@ -67,8 +66,15 @@ func _group_settings_into_panels() -> void:
 	for group in groups:
 		var nodes: Array = []
 		for node in group:
-			if node != null and is_instance_valid(node) and node.get_parent() == vbox:
-				nodes.append(node)
+			if node == null or not is_instance_valid(node) or node.get_parent() != vbox:
+				continue
+			## Settings._ensure_control_label adds Label_<ControlName> as a VBox sibling —
+			## move it with the control or it piles up under the last panel.
+			if node is OptionButton or node is HSlider:
+				var opt_label := vbox.get_node_or_null("Label_%s" % node.name) as Label
+				if opt_label != null and opt_label.get_parent() == vbox:
+					nodes.append(opt_label)
+			nodes.append(node)
 		if nodes.is_empty():
 			continue
 		var panel := PanelContainer.new()
@@ -91,9 +97,11 @@ func _group_settings_into_panels() -> void:
 			vbox.remove_child(control)
 			inner.add_child(control)
 			control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	# Theme cycle stays hidden; drop empty leftover if still a direct child.
-	if theme_button != null and theme_button.get_parent() == vbox:
+	# Light theme removed — keep ThemeButton hidden, do not free (Settings still refs it).
+	if theme_button != null:
 		theme_button.visible = false
+		theme_button.disabled = true
+		theme_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 
 func _apply_gothic_control_chrome() -> void:
@@ -123,21 +131,85 @@ func _apply_gothic_control_chrome() -> void:
 	for check in [sound_check, music_check, bg_effects_check, leaderboard_check, background_auto_check]:
 		GothicScreenMixinLib.style_settings_toggle(self, check, false)
 
-	for option in [sfx_volume_option, music_volume_option, music_track_option, tile_font_size_option, language_option]:
+	for slider in [sfx_volume_slider, music_volume_slider]:
+		_style_volume_slider(slider)
+
+	for option in [music_track_option, tile_font_size_option, language_option]:
 		GothicScreenMixinLib.style_settings_option(self, option, false)
+
+
+func _style_volume_slider(slider: HSlider) -> void:
+	if slider == null:
+		return
+	var colors := GothicVisualsLib.resolve_palette(get_node_or_null("/root/ThemeManager"))
+	var rim: Color = colors.get("rim", GothicVisualsLib.GOLD)
+	var track := StyleBoxFlat.new()
+	track.bg_color = Color(GothicVisualsLib.STONE_BLACK, 0.88)
+	track.border_color = Color(rim, 0.55)
+	track.set_border_width_all(1)
+	track.set_corner_radius_all(6)
+	track.content_margin_top = 10
+	track.content_margin_bottom = 10
+	track.content_margin_left = 4
+	track.content_margin_right = 4
+	var fill := StyleBoxFlat.new()
+	fill.bg_color = Color(rim.lerp(GothicVisualsLib.BRONZE, 0.25), 0.92)
+	fill.set_corner_radius_all(6)
+	fill.content_margin_top = 10
+	fill.content_margin_bottom = 10
+	var fill_hi := fill.duplicate(true) as StyleBoxFlat
+	fill_hi.bg_color = Color(GothicVisualsLib.GOLD_LIGHT.lerp(rim, 0.35), 0.95)
+	slider.custom_minimum_size.y = maxf(slider.custom_minimum_size.y, 48.0)
+	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slider.add_theme_constant_override("center_grabber", 1)
+	slider.add_theme_stylebox_override("slider", track)
+	slider.add_theme_stylebox_override("grabber_area", fill)
+	slider.add_theme_stylebox_override("grabber_area_highlight", fill_hi)
+	var grabber: Texture2D = _slider_grabber_texture(rim)
+	var grabber_hi: Texture2D = _slider_grabber_texture(GothicVisualsLib.GOLD_LIGHT)
+	slider.add_theme_icon_override("grabber", grabber)
+	slider.add_theme_icon_override("grabber_highlight", grabber_hi)
+	slider.add_theme_icon_override("grabber_disabled", grabber)
+
+
+func _slider_grabber_texture(fill: Color, grabber_px: int = 28) -> Texture2D:
+	var img := Image.create(grabber_px, grabber_px, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	var center := Vector2(grabber_px * 0.5, grabber_px * 0.5)
+	var outer_r := grabber_px * 0.5 - 1.0
+	var rim_r := outer_r - 2.0
+	var core_r := outer_r * 0.45
+	for y in grabber_px:
+		for x in grabber_px:
+			var d := Vector2(x + 0.5, y + 0.5).distance_to(center)
+			if d > outer_r:
+				continue
+			if d >= rim_r:
+				img.set_pixel(x, y, Color(GothicVisualsLib.STONE_BLACK, 0.95))
+			elif d <= core_r:
+				img.set_pixel(x, y, Color(fill.lightened(0.18), 1.0))
+			else:
+				var t := clampf((d - core_r) / maxf(0.001, rim_r - core_r), 0.0, 1.0)
+				img.set_pixel(x, y, Color(fill.lerp(GothicVisualsLib.BRONZE, t * 0.35), 1.0))
+	return ImageTexture.create_from_image(img)
 
 
 func _style_labels() -> void:
 	if vbox == null:
 		return
-	for child in vbox.get_children():
+	_style_labels_under(vbox)
+
+
+func _style_labels_under(root: Node) -> void:
+	for child in root.get_children():
 		if child is Label:
 			var label := child as Label
-			var muted := label == import_status or label == gallery_status
+			var muted := label == import_status or label == gallery_status or label == account_status
 			label.add_theme_color_override(
 				"font_color",
 				GothicVisualsLib.TEXT_MUTED if muted else GothicVisualsLib.TEXT_IVORY
 			)
+		_style_labels_under(child)
 
 
 func _suppress_stray_scroll_chrome() -> void:

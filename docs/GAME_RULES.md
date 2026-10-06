@@ -76,15 +76,15 @@ Surplus XP when `sum > target` on level complete.
 
 Core gameplay rules above are MVP; the following meta systems **are implemented** in Godot (visual polish varies — see `VISUAL_PORT_MAP.md`):
 
-| Feature                               | Godot module                                                |
-| ------------------------------------- | ----------------------------------------------------------- |
-| Bonuses (shuffle, destroy, explosion) | `BonusManager.gd` + `GameHud`                               |
-| Daily quests                          | `DailyQuestManager.gd`, `DailyQuests.tscn`                  |
-| Wheel of fortune                      | `WheelManager.gd`, `Wheel.tscn` (canvas animation partial)  |
-| Achievements                          | `Achievements.tscn`, save via `PlayerProgress`              |
-| Stats / About                         | `Stats.tscn`, `About.tscn`                                  |
-| Themes (dawn/dusk)                    | `ThemeManager.gd` (twilight in code, hidden from UI toggle) |
-| i18n (UA / RU / EN)                   | `I18nManager.gd` — 330 keys per locale                      |
+| Feature                               | Godot module                                                         |
+| ------------------------------------- | -------------------------------------------------------------------- |
+| Bonuses (shuffle, destroy, explosion) | `BonusManager.gd` + `GameHud`                                        |
+| Daily quests                          | `DailyQuestManager.gd`, `DailyQuests.tscn`                           |
+| Wheel of fortune                      | `WheelManager.gd`, `Wheel.tscn` (canvas animation partial)           |
+| Achievements                          | `Achievements.tscn`, save via `PlayerProgress`                       |
+| Stats / About                         | `Stats.tscn`, `About.tscn`                                           |
+| Themes (dusk-only)                    | `ThemeManager.gd` (VisualSkin gothic/procedural; ThemeButton hidden) |
+| i18n (UA / RU / EN)                   | `I18nManager.gd` — 330 keys per locale                               |
 
 ## Intentionally deferred
 

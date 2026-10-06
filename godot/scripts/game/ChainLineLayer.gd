@@ -44,21 +44,21 @@ func clear_chain() -> void:
 
 
 func _refresh_colors() -> void:
-	var theme := get_node_or_null("/root/ThemeManager")
+	var theme_mgr := get_node_or_null("/root/ThemeManager")
 	match _state:
 		"valid":
-			if theme != null and theme.has_method("get_chain_valid_color"):
-				_line_color = theme.call("get_chain_valid_color")
+			if theme_mgr != null and theme_mgr.has_method("get_chain_valid_color"):
+				_line_color = theme_mgr.call("get_chain_valid_color")
 			else:
 				_line_color = ThemeTokensLib.COLOR_CHAIN_VALID
 		"invalid":
-			if theme != null and theme.has_method("get_chain_invalid_color"):
-				_line_color = theme.call("get_chain_invalid_color")
+			if theme_mgr != null and theme_mgr.has_method("get_chain_invalid_color"):
+				_line_color = theme_mgr.call("get_chain_invalid_color")
 			else:
 				_line_color = ThemeTokensLib.COLOR_CHAIN_INVALID
 		_:
-			if theme != null and theme.has_method("get_chain_continue_color"):
-				_line_color = theme.call("get_chain_continue_color")
+			if theme_mgr != null and theme_mgr.has_method("get_chain_continue_color"):
+				_line_color = theme_mgr.call("get_chain_continue_color")
 			else:
 				_line_color = ThemeTokensLib.COLOR_CHAIN_CONTINUE
 

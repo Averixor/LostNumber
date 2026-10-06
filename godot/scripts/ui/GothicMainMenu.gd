@@ -6,27 +6,17 @@ const GOTHIC_VISUAL_SKIN_ID := "gothic_crystal"
 
 
 func _ready() -> void:
-	_ensure_gothic_skin()
+	GothicScreenMixinLib.ensure_default_visual_skin(self, GOTHIC_VISUAL_SKIN_ID)
 	super._ready()
 	_apply_gothic_visuals()
-	var theme := _autoload("ThemeManager")
-	if theme != null and theme.has_signal("theme_changed"):
-		theme.theme_changed.connect(_apply_gothic_visuals)
-
-
-func _ensure_gothic_skin() -> void:
-	## Existing installs may still carry the pre-foundation procedural_neon id.
-	## The current release is Gothic-first; procedural neon remains an internal
-	## fallback only when the Gothic resource cannot be loaded.
-	var theme := get_node_or_null("/root/ThemeManager")
-	if theme == null or not theme.has_method("set_visual_skin_id"):
-		return
-	if theme.has_method("uses_visual_skin") and bool(theme.call("uses_visual_skin")):
-		return
-	theme.call("set_visual_skin_id", GOTHIC_VISUAL_SKIN_ID)
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_signal("theme_changed"):
+		theme_mgr.theme_changed.connect(_apply_gothic_visuals)
 
 
 func _apply_gothic_visuals() -> void:
+	if not GothicScreenMixinLib.uses_gothic_chrome(self):
+		return
 	GothicScreenMixinLib.apply_background(self, "", 0.28, &"menu")
 	# Pedestal dock uses stone-framed gothic chrome (same chrome/size).
 	for button in _dock_buttons():
@@ -40,6 +30,8 @@ func _apply_gothic_visuals() -> void:
 
 
 func _refresh_cta_styles() -> void:
+	if not GothicScreenMixinLib.uses_gothic_chrome(self):
+		return
 	for button in [play_button, continue_button]:
 		if button == null or not button.visible:
 			continue

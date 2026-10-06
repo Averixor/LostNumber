@@ -71,7 +71,9 @@ func _style_badge(badge: Label, count: int) -> void:
 
 func _style_icon_buttons() -> void:
 	var palette := _theme_palette()
-	for btn in [menu_button, save_button, sound_button, theme_button]:
+	for btn in [menu_button, save_button, sound_button]:
+		if btn == null:
+			continue
 		btn.custom_minimum_size = Vector2(
 			float(ThemeTokensLib.TOUCH_TARGET_MIN),
 			float(ThemeTokensLib.TOUCH_TARGET_MIN)
@@ -91,6 +93,12 @@ func _style_icon_buttons() -> void:
 		btn.add_theme_stylebox_override("hover", GothicVisualsLib.icon_button(palette, "hover"))
 		btn.add_theme_stylebox_override("pressed", GothicVisualsLib.icon_button(palette, "pressed"))
 		btn.add_theme_stylebox_override("focus", GothicVisualsLib.icon_button(palette, "hover"))
+	if theme_button != null:
+		theme_button.visible = false
+		theme_button.disabled = true
+		theme_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		theme_button.icon = null
+		theme_button.text = ""
 
 
 func _style_bonus_button(button: Button, kind: String, count: int, active_bonus: String) -> void:

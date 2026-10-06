@@ -22,8 +22,8 @@ var state: GameState = GameState.new()
 var _bonus: BonusManager
 var _daily: DailyQuestManager
 
-func _autoload(name: String) -> Node:
-	return get_node_or_null("/root/" + name)
+func _autoload(autoload_name: String) -> Node:
+	return get_node_or_null("/root/" + autoload_name)
 
 
 func _apply_leaderboard_preference() -> void:
@@ -96,11 +96,11 @@ func handle_back() -> bool:
 
 
 func _bind_theme_updates() -> void:
-	var theme := _autoload("ThemeManager")
-	if theme != null and theme.has_signal("theme_changed"):
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_signal("theme_changed"):
 		var callback := Callable(self, "_apply_theme")
-		if not theme.is_connected("theme_changed", callback):
-			theme.connect("theme_changed", callback)
+		if not theme_mgr.is_connected("theme_changed", callback):
+			theme_mgr.connect("theme_changed", callback)
 
 
 func _style_overlays() -> void:
@@ -111,14 +111,14 @@ func _style_overlays() -> void:
 
 	pause_title.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_TITLE)
 	overlay_title.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_TITLE)
-	var theme := _autoload("ThemeManager")
+	var theme_mgr := _autoload("ThemeManager")
 	var text_color := LnUiLib.TEXT
 	var title_color := LnUiLib.ACCENT_2
-	if theme != null:
-		if theme.has_method("get_text_color"):
-			text_color = theme.call("get_text_color", true) as Color
-		if theme.has_method("get_secondary_color"):
-			title_color = theme.call("get_secondary_color", true) as Color
+	if theme_mgr != null:
+		if theme_mgr.has_method("get_text_color"):
+			text_color = theme_mgr.call("get_text_color", true) as Color
+		if theme_mgr.has_method("get_secondary_color"):
+			title_color = theme_mgr.call("get_secondary_color", true) as Color
 	pause_title.add_theme_color_override("font_color", title_color)
 	overlay_title.add_theme_color_override("font_color", title_color)
 	LnUiLib.add_corner_decorations(level_complete_modal, title_color, 24.0, 2.0)
@@ -139,9 +139,9 @@ func _style_overlays() -> void:
 
 func _overlay_dim_style(alpha: float) -> StyleBoxFlat:
 	var dim_color := Color(ThemeTokensLib.COLOR_OVERLAY_BG, alpha)
-	var theme := _autoload("ThemeManager")
-	if theme != null and theme.has_method("get_overlay_color"):
-		dim_color = theme.call("get_overlay_color", alpha, true) as Color
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("get_overlay_color"):
+		dim_color = theme_mgr.call("get_overlay_color", alpha, true) as Color
 	var style := StyleBoxFlat.new()
 	style.bg_color = dim_color
 	style.set_content_margin_all(0)
@@ -150,9 +150,9 @@ func _overlay_dim_style(alpha: float) -> StyleBoxFlat:
 
 func _modal_frame_style() -> StyleBox:
 	var style: StyleBox
-	var theme := _autoload("ThemeManager")
-	if theme != null and theme.has_method("get_visual_style"):
-		style = theme.call("get_visual_style", &"modal") as StyleBox
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("get_visual_style"):
+		style = theme_mgr.call("get_visual_style", &"modal") as StyleBox
 	if style == null:
 		style = LnUiLib.make_neon_panel(LnUiLib.ACCENT_2, ThemeTokensLib.RADIUS_OVERLAY)
 	else:
@@ -202,10 +202,10 @@ func _update_sound_button() -> void:
 func _show_message(key: String) -> void:
 	game_hud.set_message("" if key.is_empty() else _i18n(key))
 
-func _play_sfx(name: String) -> void:
+func _play_sfx(sfx_name: String) -> void:
 	var audio := _autoload("AudioManager")
 	if audio != null and audio.has_method("play_sfx"):
-		audio.call("play_sfx", name)
+		audio.call("play_sfx", sfx_name)
 
 
 func _maybe_vibrate(duration_ms: int = 35) -> void:
@@ -266,9 +266,9 @@ func _on_save_pressed() -> void:
 
 func _on_theme_toggle() -> void:
 	_play_sfx("button_click")
-	var theme := _autoload("ThemeManager")
-	if theme != null and theme.has_method("cycle_theme"):
-		theme.call("cycle_theme")
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("cycle_theme"):
+		theme_mgr.call("cycle_theme")
 
 
 func _on_bonus_pressed(type: String) -> void:

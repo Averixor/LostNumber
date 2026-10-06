@@ -40,7 +40,7 @@ Export templates are downloaded automatically on first build if missing.
 | Field       | Value                                                    |
 | ----------- | -------------------------------------------------------- |
 | Package     | `com.Averixor.Lost_Number`                               |
-| Version     | `2.1.6` (versionCode **6**)                              |
+| Version     | `2.1.7` (versionCode **7**)                              |
 | AAB         | `build/android/lost-number.aab`                          |
 | Privacy URL | `https://averixor.github.io/LostNumber/privacy.html`     |
 | Store texts | `docs/store-listing/` or `store/PLAY_CONSOLE_LISTING.md` |
@@ -58,7 +58,7 @@ Full checklist: [docs/PLAY_STORE.md](../docs/PLAY_STORE.md) — same listing ass
 | UI shell    | `#appBackground` + CSS        | `App.tscn` + `BackgroundLayer`, `NeonButton`, tokens                   |
 | Package     | —                             | `build/android/...`                                                    |
 
-## Current scope (Godot 2.1.6)
+## Current scope (Godot 2.1.7)
 
 **Gameplay:** 5×8 grid, chain rules, merge/gravity/spawn, levels, XP, save (checksum + `.bak`), bonuses, wheel/daily/achievements logic.
 

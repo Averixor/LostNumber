@@ -74,13 +74,13 @@ done < <(
 
 echo "Removing non-shippable paths from staging"
 for rel in "${EXCLUDE_TREE_PATHS[@]}"; do
-  rm -rf "$STAGING/$rel"
+  rm -rf "${STAGING:?}/${rel}"
 done
 rm -f \
-  "$STAGING/android/keystore.properties" \
-  "$STAGING/scripts/keystore-info.mjs" \
-  "$STAGING/current_manifest.xml" \
-  "$STAGING/old_manifest.xml"
+  "${STAGING:?}/android/keystore.properties" \
+  "${STAGING:?}/scripts/keystore-info.mjs" \
+  "${STAGING:?}/current_manifest.xml" \
+  "${STAGING:?}/old_manifest.xml"
 while IFS= read -r -d '' f; do
   rm -f "$f"
 done < <(

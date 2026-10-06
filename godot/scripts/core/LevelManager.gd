@@ -22,6 +22,7 @@ func get_level_config(level_index: int) -> Dictionary:
 		return {
 			"target": level["target"],
 			"numbers": level["numbers"].duplicate(),
+			## Legacy config key — not read by BoardLogic spawn (numbers + max_reached).
 			"new_numbers": level["new_numbers"].duplicate(),
 		}
 
@@ -29,6 +30,7 @@ func get_level_config(level_index: int) -> Dictionary:
 	return {
 		"target": target,
 		"numbers": _build_level_numbers(idx, target),
+		## Legacy config key — not read by BoardLogic spawn (numbers + max_reached).
 		"new_numbers": _generate_new_numbers(target),
 	}
 
@@ -92,8 +94,10 @@ func _build_level_numbers(level_index: int, target: int) -> Array[int]:
 
 
 func _generate_new_numbers(target: int) -> Array[int]:
+	## Legacy helper for config.new_numbers only. BoardLogic spawn uses `numbers`
+	## filtered by min_spawn / max_reached — do not wire this array into gameplay.
 	var arr: Array[int] = []
-	var num := int(target / 8)
+	var num := int(target / 8.0)
 	for _i in 8:
 		if num <= target:
 			arr.insert(0, num)
@@ -114,5 +118,5 @@ func _cap_minimum_tile_to_target(raw_min: int, target: int) -> int:
 	var min_tile := _floor_power_of_two(raw_min)
 	if target <= 4096:
 		return min_tile
-	var cap_tile := _floor_power_of_two(int(target / 4096))
+	var cap_tile := _floor_power_of_two(int(target / 4096.0))
 	return maxi(2, mini(min_tile, cap_tile))

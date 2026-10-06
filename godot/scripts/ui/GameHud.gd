@@ -210,8 +210,13 @@ func _panel_stylebox() -> StyleBoxFlat:
 
 func _style_icon_buttons() -> void:
 	for btn in [menu_button, save_button, sound_button]:
+		if btn == null:
+			continue
 		btn.custom_minimum_size = Vector2.ONE * ThemeTokensLib.TOUCH_TARGET_MIN
 		btn.focus_mode = Control.FOCUS_NONE
+		btn.visible = true
+		btn.disabled = false
+		btn.mouse_filter = Control.MOUSE_FILTER_STOP
 		btn.text = ""
 		btn.expand_icon = true
 		btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER

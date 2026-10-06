@@ -54,7 +54,7 @@ func start_new_game(seed_value: int = -1) -> void:
 	progress.record_new_game()
 
 	board.grid = board._create_empty_grid()
-	board.fill_random(current_level, carry_number)
+	board.fill_random(current_level, carry_number, max_reached_number)
 
 
 func begin_chain(cell: Vector2i) -> void:
@@ -124,7 +124,6 @@ func merge_current_chain(defer_settle: bool = false) -> Dictionary:
 	if not validation.valid:
 		return {"ok": false, "reason": validation.get("reason", "invalid")}
 
-	var numbers: PackedInt32Array = validation.numbers
 	var sum: int = validation.sum
 	var level: Dictionary = board.level_manager.get_level_config(current_level)
 	var target: int = level["target"]
@@ -224,7 +223,7 @@ func complete_level_transition() -> void:
 	phase = Phase.PLAYING
 
 	board.grid = board._create_empty_grid()
-	board.fill_random(current_level, carry_number)
+	board.fill_random(current_level, carry_number, max_reached_number)
 	board.place_carry_unique(carry_number, current_level, max_reached_number)
 
 

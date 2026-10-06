@@ -96,10 +96,11 @@ func _test_manager_api() -> void:
 		manager.get_visual_background_path(&"menu") == GOTHIC_MENU_BG,
 		"manager resolves exact-case menu background path"
 	)
-	_assert_true(manager.normalize_release_theme_id("dawn") == "dusk", "dawn normalizes to dusk")
-	_assert_true(manager.normalize_release_theme_id("twilight") == "dusk", "twilight normalizes to dusk")
+	_assert_true(manager.normalize_release_theme_id("dawn") == "dusk", "dawn maps to dusk")
+	_assert_true(manager.normalize_release_theme_id("twilight") == "dusk", "twilight maps to dusk")
 	_assert_true(manager.normalize_release_theme_id("dusk") == "dusk", "dusk stays dusk")
 	_assert_true(manager.UI_CYCLE_THEMES == ["dusk"], "release UI cycle is dusk-only")
+	_assert_true(manager.is_dark() == true, "dark-only release always reports is_dark")
 	_assert_true(manager.get_tile_rarity(16) == &"uncommon", "manager resolves uncommon rarity at 16+")
 	_assert_true(manager.get_tile_rarity(8192) == &"legendary", "manager resolves legendary rarity")
 	_assert_true(manager.get_tile_style_for_value(2) != null, "manager resolves tile style")
@@ -252,6 +253,7 @@ func _test_app_shell_single_logo() -> void:
 
 
 func _test_dark_only_theme_controls_hidden() -> void:
+	## Light theme removed — ThemeButton must stay hidden.
 	var hud_packed := load("res://scenes/components/GameHud.tscn") as PackedScene
 	_assert_true(hud_packed != null, "GameHud.tscn loads")
 	if hud_packed != null:
@@ -263,7 +265,7 @@ func _test_dark_only_theme_controls_hidden() -> void:
 		_assert_true(theme_btn != null, "GameHud has ThemeButton node")
 		_assert_true(
 			theme_btn == null or not theme_btn.visible,
-			"GameHud ThemeButton hidden for dark-only release"
+			"GameHud ThemeButton hidden (no light theme)"
 		)
 		hud.queue_free()
 		await process_frame
@@ -275,10 +277,10 @@ func _test_dark_only_theme_controls_hidden() -> void:
 		root.add_child(settings)
 		for _frame in 8:
 			await process_frame
-		var theme_btn := settings.get_node_or_null("Scroll/VBox/ThemeButton") as CanvasItem
+		var theme_btn := settings.find_child("ThemeButton", true, false) as CanvasItem
 		_assert_true(
 			theme_btn == null or not theme_btn.visible,
-			"Settings ThemeButton hidden for dark-only release"
+			"Settings ThemeButton hidden (no light theme)"
 		)
 		settings.queue_free()
 		await process_frame
@@ -293,7 +295,7 @@ func _test_dark_only_theme_controls_hidden() -> void:
 		var mode_btn := skin.get_node_or_null("BottomPanel/VBox/ButtonRow/CustomButton") as CanvasItem
 		_assert_true(
 			mode_btn == null or not mode_btn.visible,
-			"SkinPreview dark/light toggle hidden for dark-only release"
+			"SkinPreview dark/light toggle hidden"
 		)
 		_assert_true(
 			bool(skin.get("_dark_mode")) == true,

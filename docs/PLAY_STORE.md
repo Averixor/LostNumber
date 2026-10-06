@@ -166,7 +166,7 @@ Android presets: **`permissions/internet=true`** (Auth-capable).
 - [ ] Data safety — optional Google Sign-In (не «дані не збираються»)
 - [ ] Email підтримки вказано в Store listing
 - [ ] Closed testing пройдено без критичних багів + Auth smoke
-- [ ] versionCode > max у Console (зараз у git **6 / 2.1.6**)
+- [ ] versionCode > max у Console (зараз у git **7 / 2.1.7**)
 
 ## 9. Версіонування
 
@@ -177,8 +177,8 @@ Android presets: **`permissions/internet=true`** (Auth-capable).
 
 | Артефакт     | versionName | versionCode | Package                        |
 | ------------ | ----------- | ----------- | ------------------------------ |
-| Godot (ship) | `2.1.6`     | `6`         | `com.Averixor.Lost_Number`     |
-| Debug        | `dev`       | `6`         | `com.Averixor.Lost_Number.dev` |
+| Godot (ship) | `2.1.7`     | `7`         | `com.Averixor.Lost_Number`     |
+| Debug        | `dev`       | `7`         | `com.Averixor.Lost_Number.dev` |
 
 Кожен новий upload потребує **versionCode більший за будь-який раніше завантажений** у **цьому** listing.
 

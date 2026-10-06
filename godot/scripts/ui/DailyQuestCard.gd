@@ -19,9 +19,9 @@ func _theme_manager() -> Node:
 	return get_node_or_null("/root/ThemeManager")
 
 
-func _base_panel_style(theme: Node) -> StyleBox:
-	if theme != null and theme.has_method("get_visual_style"):
-		return theme.call("get_visual_style", &"panel") as StyleBox
+func _base_panel_style(theme_mgr: Node) -> StyleBox:
+	if theme_mgr != null and theme_mgr.has_method("get_visual_style"):
+		return theme_mgr.call("get_visual_style", &"panel") as StyleBox
 	return null
 
 
@@ -44,9 +44,9 @@ func setup(done: bool, text: String, progress_text: String, reward_text: String,
 	if done and not status_text.is_empty():
 		reward.text = status_text
 
-	var theme := _theme_manager()
-	var palette := GothicVisualsLib.resolve_palette(theme)
-	var panel_style := GothicVisualsLib.card_panel(palette, done, _base_panel_style(theme))
+	var theme_mgr := _theme_manager()
+	var palette := GothicVisualsLib.resolve_palette(theme_mgr)
+	var panel_style := GothicVisualsLib.card_panel(palette, done, _base_panel_style(theme_mgr))
 	panel_style.content_margin_top = 6 if done else 8
 	panel_style.content_margin_bottom = 6 if done else 8
 	card_panel.add_theme_stylebox_override("panel", panel_style)

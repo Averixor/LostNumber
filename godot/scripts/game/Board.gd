@@ -360,23 +360,23 @@ func _position_preview_bubble(follow_local: Vector2) -> void:
 
 
 func _theme_chain_valid_color() -> Color:
-	var theme: Node = _autoload("ThemeManager")
-	if theme != null and theme.has_method("get_chain_valid_color"):
-		return theme.call("get_chain_valid_color")
+	var theme_mgr: Node = _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("get_chain_valid_color"):
+		return theme_mgr.call("get_chain_valid_color")
 	return ThemeTokensLib.COLOR_CHAIN_VALID
 
 
 func _theme_chain_invalid_color() -> Color:
-	var theme: Node = _autoload("ThemeManager")
-	if theme != null and theme.has_method("get_chain_invalid_color"):
-		return theme.call("get_chain_invalid_color")
+	var theme_mgr: Node = _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("get_chain_invalid_color"):
+		return theme_mgr.call("get_chain_invalid_color")
 	return ThemeTokensLib.COLOR_CHAIN_INVALID
 
 
 func _theme_chain_continue_color() -> Color:
-	var theme: Node = _autoload("ThemeManager")
-	if theme != null and theme.has_method("get_chain_continue_color"):
-		return theme.call("get_chain_continue_color")
+	var theme_mgr: Node = _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("get_chain_continue_color"):
+		return theme_mgr.call("get_chain_continue_color")
 	return ThemeTokensLib.COLOR_CHAIN_CONTINUE
 
 
@@ -489,8 +489,8 @@ func animate_merge_settle(removed: Array, anchor: Vector2i, result_number: int) 
 
 	refresh_all()
 
-func _autoload(name: String) -> Node:
-	return get_node_or_null("/root/" + name)
+func _autoload(autoload_name: String) -> Node:
+	return get_node_or_null("/root/" + autoload_name)
 
 
 func _effects_enabled() -> bool:

@@ -17,6 +17,21 @@ static func pick_image(host: Control, i18n: Callable) -> String:
 	return await _pick_with_file_dialog(host, i18n)
 
 
+static func _scene_tree() -> SceneTree:
+	return Engine.get_main_loop() as SceneTree
+
+
+static func _await_picker_done(state: Dictionary) -> void:
+	## Do not await via host.get_tree() — the Settings/BackgroundPreview host
+	## can be freed while the native dialog is still open.
+	var tree := _scene_tree()
+	while not bool(state["done"]):
+		if tree == null or not is_instance_valid(tree):
+			state["done"] = true
+			return
+		await tree.process_frame
+
+
 static func _desktop_image_filters() -> PackedStringArray:
 	return PackedStringArray([
 		"*.png,*.jpg,*.jpeg,*.webp;Images;image/png,image/jpeg,image/webp",
@@ -30,9 +45,8 @@ static func _android_image_filters() -> PackedStringArray:
 	])
 
 
-static func _pick_with_display_server(host: Control, i18n: Callable, on_android: bool) -> String:
-	var selected := ""
-	var done := false
+static func _pick_with_display_server(_host: Control, i18n: Callable, on_android: bool) -> String:
+	var state := {"selected": "", "done": false}
 	var title := str(i18n.call("skin_custom_bg"))
 	var root_dir := ""
 	if on_android:
@@ -48,15 +62,16 @@ static func _pick_with_display_server(host: Control, i18n: Callable, on_android:
 		filters,
 		func(status: bool, paths: PackedStringArray, _filter_idx: int) -> void:
 			if status and not paths.is_empty():
-				selected = paths[0]
-			done = true
+				state["selected"] = paths[0]
+			state["done"] = true
 	)
-	while not done:
-		await host.get_tree().process_frame
-	return selected
+	await _await_picker_done(state)
+	return str(state["selected"])
 
 
 static func _pick_with_file_dialog(host: Control, i18n: Callable) -> String:
+	if not is_instance_valid(host):
+		return ""
 	var dialog := FileDialog.new()
 	dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
 	dialog.access = FileDialog.ACCESS_FILESYSTEM
@@ -64,16 +79,15 @@ static func _pick_with_file_dialog(host: Control, i18n: Callable) -> String:
 	dialog.filters = _desktop_image_filters()
 	host.add_child(dialog)
 	dialog.popup_centered_ratio(0.8)
-	var selected := ""
-	var done := false
+	var state := {"selected": "", "done": false}
 	dialog.file_selected.connect(func(path: String) -> void:
-		selected = path
-		done = true
+		state["selected"] = path
+		state["done"] = true
 	)
 	dialog.canceled.connect(func() -> void:
-		done = true
+		state["done"] = true
 	)
-	while not done:
-		await host.get_tree().process_frame
-	dialog.queue_free()
-	return selected
+	await _await_picker_done(state)
+	if is_instance_valid(dialog):
+		dialog.queue_free()
+	return str(state["selected"])

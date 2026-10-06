@@ -16,8 +16,8 @@ App shell persists `BackgroundLayer` and overlay layers; individual screens moun
 | Field       | Release (`preset.0`)            | Debug (`preset.1`)                    |
 | ----------- | ------------------------------- | ------------------------------------- |
 | Package     | `com.Averixor.Lost_Number`      | `com.Averixor.Lost_Number.dev`        |
-| versionCode | `6`                             | `6`                                   |
-| versionName | `2.1.6`                         | `dev`                                 |
+| versionCode | `7`                             | `7`                                   |
+| versionName | `2.1.7`                         | `dev`                                 |
 | Format      | AAB (`export_format=1`)         | APK                                   |
 | minSdk      | 24                              | 24                                    |
 | targetSdk   | 36                              | 36                                    |
@@ -26,11 +26,11 @@ App shell persists `BackgroundLayer` and overlay layers; individual screens moun
 
 ### Versioning
 
-Current release: `versionName 2.1.6` / `versionCode 6`. **Every new upload needs a versionCode greater than any previously uploaded**, so the final upload code still depends on the Play Console history.
+Current release: `versionName 2.1.7` / `versionCode 7`. **Every new upload needs a versionCode greater than any previously uploaded**, so the final upload code still depends on the Play Console history.
 
 > `versionName` is a human-readable label (free-form). `versionCode` is the integer Play compares — just increment it by 1 each upload.
 >
-> **Naming rule:** release uses the product version (`2.1.6`); debug uses the fixed `versionName=dev`. Android/Play compares the independent integer `versionCode`.
+> **Naming rule:** release uses the product version (`2.1.7`); debug uses the fixed `versionName=dev`. Android/Play compares the independent integer `versionCode`.
 
 ABI note: only `arm64-v8a` + `x86_64` are shipped. Dropping `armeabi-v7a` excludes 32-bit-only devices (~8k in the device catalog) — intentional.
 
@@ -121,7 +121,7 @@ npm run godot:verify:aab       # full pre-upload gate (tests + release:check + A
 
 - SkinPreview + `ImagePickerHelper.gd` (custom background picker; не MobileImagePicker)
 - Global backgrounds: `ThemeManager.get_background_texture_path()` → `BackgroundLayer` / `LnUi.current_background_path()`
-- Settings: scroll layout, **Back** pinned at bottom; theme toggle cycles dawn/dusk only (`UI_CYCLE_THEMES`; twilight hidden)
+- Settings: scroll layout, **Back** pinned at bottom; brightness is dusk-only (`UI_CYCLE_THEMES = ["dusk"]`; ThemeButton hidden)
 - DailyQuests: scroll + Back at bottom; card layout refresh (`DailyQuestCard.tscn`)
 - Game HUD: bonus/crown visuals; tile crown rendering
 - i18n: **330** keys per locale (uk/ru/en)

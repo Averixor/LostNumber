@@ -1,8 +1,8 @@
 ---
 language: en
 title: Lost Number — Game Design & Mechanics
-version: 2.1.6
-last_updated: 2026-07-10
+version: 2.1.7
+last_updated: 2026-10-06
 ---
 
 # Lost Number — Game Design & Mechanics
@@ -100,15 +100,15 @@ Low-FPS Android devices use path interpolation during drag to keep chain selecti
 
 Implemented in Godot with varying visual polish:
 
-| Feature                               | Status                                                      |
-| ------------------------------------- | ----------------------------------------------------------- |
-| Bonuses (shuffle, destroy, explosion) | Logic + HUD — `BonusManager.gd`                             |
-| Daily quests                          | Logic + screen — `DailyQuestManager.gd`, `DailyQuests.tscn` |
-| Wheel of fortune                      | Logic — `WheelManager.gd`; canvas animation partial         |
-| Achievements                          | Save via `PlayerProgress`; UI partial                       |
-| Stats / About                         | Minimal screens with back-stack navigation                  |
-| Themes (dawn/dusk)                    | `ThemeManager.gd`; twilight in code, hidden from UI toggle  |
-| i18n (UA / RU / EN)                   | 330 keys per locale — `I18nManager.gd`                      |
+| Feature                               | Status                                                              |
+| ------------------------------------- | ------------------------------------------------------------------- |
+| Bonuses (shuffle, destroy, explosion) | Logic + HUD — `BonusManager.gd`                                     |
+| Daily quests                          | Logic + screen — `DailyQuestManager.gd`, `DailyQuests.tscn`         |
+| Wheel of fortune                      | Logic — `WheelManager.gd`; canvas animation partial                 |
+| Achievements                          | Save via `PlayerProgress`; UI partial                               |
+| Stats / About                         | Minimal screens with back-stack navigation                          |
+| Themes (dusk-only)                    | `ThemeManager.gd`; VisualSkin gothic/procedural; ThemeButton hidden |
+| i18n (UA / RU / EN)                   | 330 keys per locale — `I18nManager.gd`                              |
 
 ## Not in scope (deferred)
 

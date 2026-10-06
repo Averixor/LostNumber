@@ -214,9 +214,9 @@ func _apply_material_face(face_color: Color) -> void:
 
 
 func _get_rim_color() -> Color:
-	var theme := get_node_or_null("/root/ThemeManager")
-	if theme != null and theme.has_method("get_palette"):
-		var palette: Dictionary = theme.call("get_palette", true)
+	var theme_mgr := get_node_or_null("/root/ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("get_palette"):
+		var palette: Dictionary = theme_mgr.call("get_palette", true)
 		return Color(palette.get("rim", Color("#D4AF37")), 0.65)
 	return Color("#D4AF37", 0.55)
 
