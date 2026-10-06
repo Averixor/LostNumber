@@ -14,6 +14,8 @@ const DEBUG_VERSION_NAME = 'dev';
 const ANDROID_TARGET_SDK = '36';
 const FIREBASE_BOM_VERSION = '34.17.0';
 const GOOGLE_SERVICES_PLUGIN_VERSION = '4.5.0';
+/** Uncompressed DEX budget after R8 (pre-R8 baseline was ~8.39 MB). */
+const MAX_UNCOMPRESSED_DEX_BYTES = 8 * 1024 * 1024;
 
 function fail(msg) {
   failures.push(msg);
@@ -239,6 +241,67 @@ function verifyFirebaseGradleWiring() {
   );
 }
 
+function verifyR8ExportWiring() {
+  const rulesPath = join(root, 'android/proguard-rules.pro');
+  const r8HookPath = join(root, 'scripts/lib/r8-android.sh');
+  const exportScriptPath = join(root, 'scripts/godot-android-export.sh');
+  const firebaseRulesPath = join(
+    root,
+    'godot/android/plugins/LostNumberFirebasePlugin/proguard-rules.pro',
+  );
+  const migrationRulesPath = join(
+    root,
+    'godot/android/plugins/LostNumberMigrationPlugin/proguard-rules.pro',
+  );
+
+  for (const path of [
+    rulesPath,
+    r8HookPath,
+    exportScriptPath,
+    firebaseRulesPath,
+    migrationRulesPath,
+  ]) {
+    if (!existsSync(path)) {
+      fail(`R8 wiring file missing: ${path}`);
+    }
+  }
+
+  const exportScript = readFileSync(exportScriptPath, 'utf8');
+  const r8Hook = readFileSync(r8HookPath, 'utf8');
+  const firebaseRules = readFileSync(firebaseRulesPath, 'utf8');
+  const appRules = readFileSync(rulesPath, 'utf8');
+
+  if (!/install_r8_for_export/.test(exportScript) || !/r8-android\.sh/.test(exportScript)) {
+    fail(
+      'godot-android-export.sh must source scripts/lib/r8-android.sh and call install_r8_for_export',
+    );
+  }
+  if (!/minifyEnabled\s+true/.test(r8Hook) || !/shrinkResources\s+true/.test(r8Hook)) {
+    fail('r8-android.sh must patch release minifyEnabled true and shrinkResources true');
+  }
+  if (!/proguard-rules\.pro/.test(r8Hook)) {
+    fail('r8-android.sh must install android/proguard-rules.pro into godot/android/build/');
+  }
+  if (/-keep\s+class\s+com\.google\.firebase\.\*\*/.test(firebaseRules)) {
+    fail(
+      'LostNumberFirebasePlugin proguard-rules must not blanket-keep com.google.firebase.** (hurts R8)',
+    );
+  }
+  if (!/-keep\s+class\s+com\.averixor\.lostnumber\.firebase\.\*\*/.test(firebaseRules)) {
+    fail('LostNumberFirebasePlugin proguard-rules must keep com.averixor.lostnumber.firebase.**');
+  }
+  if (!/-keep\s+class\s+com\.averixor\.lostnumber\.firebase\.\*\*/.test(appRules)) {
+    fail('android/proguard-rules.pro must keep LostNumberFirebase plugin classes');
+  }
+  if (
+    !/-keep\s+class\s+\*\s+extends\s+org\.godotengine\.godot\.plugin\.GodotPlugin/.test(appRules)
+  ) {
+    fail('android/proguard-rules.pro must keep GodotPlugin subclasses');
+  }
+
+  ok('R8 export wiring: minify hook + targeted ProGuard rules (no blanket Firebase keep)');
+}
+
 function resolveAapt2() {
   const sdk = process.env.ANDROID_HOME || join(process.env.HOME || '', 'Android/Sdk');
   for (const version of ['35.0.0', '36.1.0', '34.0.0', '37.0.0']) {
@@ -325,10 +388,29 @@ function extractAabContract(aabPath) {
       hasDefaultWebClientId: /default_web_client_id/.test(resourceBlob),
       hasFirebaseProjectId:
         /project_id/.test(resourceBlob) || /gcm_defaultSenderId/.test(resourceBlob),
+      hasR8Metadata:
+        /BUNDLE-METADATA\/com\.android\.tools\/r8\.json/.test(listText) ||
+        /BUNDLE-METADATA\/.*r8\.json/.test(listText) ||
+        /BUNDLE-METADATA\/com\.android\.tools\.build\.obfuscation\/proguard\.map/.test(listText),
+      uncompressedDexBytes: sumUncompressedDexBytes(listText),
     };
   } finally {
     rmSync(workDir, { recursive: true, force: true });
   }
+}
+
+function sumUncompressedDexBytes(listText) {
+  let sum = 0;
+  for (const line of listText.split('\n')) {
+    if (!/\.dex\s*$/.test(line)) {
+      continue;
+    }
+    const match = line.trim().match(/^(\d+)\s+/);
+    if (match) {
+      sum += Number(match[1]);
+    }
+  }
+  return sum;
 }
 
 function verifyAab(aabPath) {
@@ -373,6 +455,26 @@ function verifyAab(aabPath) {
     fail('AAB missing LostNumberFirebase plugin (source enables Auth bridge)');
   } else {
     ok('AAB includes LostNumberFirebase plugin marker');
+  }
+
+  if (!contract.uncompressedDexBytes) {
+    fail('AAB listing has no *.dex entries');
+  } else if (contract.uncompressedDexBytes >= MAX_UNCOMPRESSED_DEX_BYTES) {
+    fail(
+      `AAB uncompressed DEX ${contract.uncompressedDexBytes} bytes exceeds R8 budget ` +
+        `${MAX_UNCOMPRESSED_DEX_BYTES} (enable minify via scripts/lib/r8-android.sh)`,
+    );
+  } else {
+    ok(
+      `AAB uncompressed DEX ${contract.uncompressedDexBytes} bytes < ${MAX_UNCOMPRESSED_DEX_BYTES} (R8 budget)`,
+    );
+  }
+
+  if (contract.hasR8Metadata) {
+    ok('AAB includes R8/ProGuard metadata (r8.json or proguard.map)');
+  } else {
+    // AGP 8.6 Godot template may omit r8.json (Play docs call out AGP 8.10+).
+    ok('AAB has no embedded r8.json (acceptable on AGP 8.6; DEX size gate still applies)');
   }
 
   // Hard-fail Firebase resources only when OWNER already placed prod JSON (rebuild expected).
@@ -488,6 +590,7 @@ function verifyAab(aabPath) {
 verifyExportPresetsNoSecrets();
 verifyPrivacyPolicyMatchesAuthBuild();
 verifyFirebaseGradleWiring();
+verifyR8ExportWiring();
 verifyAab(join(root, 'build/android/lost-number.aab'));
 
 if (failures.length) {

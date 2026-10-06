@@ -147,6 +147,9 @@ if [[ -f "$GODOT_DIR/android/build/build.gradle" ]]; then
   # shellcheck source=scripts/lib/firebase-android.sh
   source "$ROOT/scripts/lib/firebase-android.sh"
   install_google_services_for_export "$ROOT" "$GODOT_DIR" "$MODE"
+  # shellcheck source=scripts/lib/r8-android.sh
+  source "$ROOT/scripts/lib/r8-android.sh"
+  install_r8_for_export "$ROOT" "$GODOT_DIR"
 fi
 
 if [[ ! -x "$HOME/Android/jbr/bin/java" && -x /opt/android-studio/jbr/bin/java ]]; then
