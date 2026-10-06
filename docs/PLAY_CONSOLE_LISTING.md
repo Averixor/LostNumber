@@ -24,7 +24,7 @@
 
 **Українська** — скопіювати в Play Console:
 
-```text
+````text
 Логічна головоломка з числами. Рівні, бонуси, збереження прогресу.
 ```text
 
@@ -170,3 +170,4 @@ Lost Number — логическая головоломка с числами в
 4. [ ] Email і Privacy URL (див. вище)
 5. [ ] Категорія: Games → Puzzle
 6. [ ] Далі — [docs/PLAY_STORE.md](../docs/PLAY_STORE.md): IARC, Data safety, AAB у Closed testing
+````

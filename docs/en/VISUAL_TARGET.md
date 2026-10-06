@@ -6,9 +6,7 @@ last_updated: 2026-10-06
 status: canonical
 ---
 
-
-This document is the canonical visual acceptance target for Lost Number on Godot
-4.
+This document is the canonical visual acceptance target for Lost Number on Godot 4.
 
 When implementation, historical migration documentation, `VISUAL_PORT_MAP.md`,
 legacy web parity, or older screenshots disagree with this document, this

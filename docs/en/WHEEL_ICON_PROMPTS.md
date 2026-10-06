@@ -7,7 +7,7 @@ Style: **dark gothic fantasy**, purple-neon accents on stone/bronze, cohesive wi
 
 ## Shared style (prepend to every prompt)
 
-```text
+````text
 Dark gothic fantasy game icon for Lost Number puzzle game, muted amethyst and violet tones,
 antique bronze rim accents, subtle purple neon edge glow, candlelit stone atmosphere,
 painted illustration, bold readable silhouette at 64px, centered subject,
@@ -95,3 +95,4 @@ XP multiplier charm emblem, no literal text characters
 |            5 | Explosion 3×3   | `wheel-explosion.png` (source `1-transparent.png`) |
 |            6 | Shuffle         | `wheel-shuffle.png` (source `2-transparent.png`)   |
 |            7 | Break / Destroy | `wheel-break.png` (source `3-transparent.png`)     |
+````
