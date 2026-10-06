@@ -56,7 +56,7 @@ func _group_settings_into_panels() -> void:
 		return
 	vbox.set_meta("gothic_grouped", true)
 	var groups: Array = [
-		[sound_check, music_check, sfx_volume_option, music_volume_option, music_track_option, bg_effects_check],
+		[sound_check, music_check, sfx_volume_slider, music_volume_slider, music_track_option, bg_effects_check],
 		[tile_font_size_option, language_option],
 		[account_label, account_status, account_button, delete_account_button, leaderboard_check],
 		[skin_label, skin_pick_button, background_label, background_pick_button, background_auto_check, gallery_pick_button, gallery_status],
@@ -66,8 +66,15 @@ func _group_settings_into_panels() -> void:
 	for group in groups:
 		var nodes: Array = []
 		for node in group:
-			if node != null and is_instance_valid(node) and node.get_parent() == vbox:
-				nodes.append(node)
+			if node == null or not is_instance_valid(node) or node.get_parent() != vbox:
+				continue
+			## Settings._ensure_control_label adds Label_<ControlName> as a VBox sibling —
+			## move it with the control or it piles up under the last panel.
+			if node is OptionButton or node is HSlider:
+				var opt_label := vbox.get_node_or_null("Label_%s" % node.name) as Label
+				if opt_label != null and opt_label.get_parent() == vbox:
+					nodes.append(opt_label)
+			nodes.append(node)
 		if nodes.is_empty():
 			continue
 		var panel := PanelContainer.new()
@@ -90,9 +97,11 @@ func _group_settings_into_panels() -> void:
 			vbox.remove_child(control)
 			inner.add_child(control)
 			control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	# Theme cycle stays hidden; drop empty leftover if still a direct child.
-	if theme_button != null and theme_button.get_parent() == vbox:
+	# Light theme removed — keep ThemeButton hidden, do not free (Settings still refs it).
+	if theme_button != null:
 		theme_button.visible = false
+		theme_button.disabled = true
+		theme_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 
 func _apply_gothic_control_chrome() -> void:
