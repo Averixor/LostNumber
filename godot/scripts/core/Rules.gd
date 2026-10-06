@@ -14,12 +14,12 @@ static func is_adjacent(a: Vector2i, b: Vector2i) -> bool:
 	return absi(a.x - b.x) <= 1 and absi(a.y - b.y) <= 1
 
 
-static func is_valid_next_number(next_value: int, prev_value: int, chain_sum: int) -> bool:
+static func is_valid_next_number(next_value: int, prev_value: int, partial_sum: int) -> bool:
 	if next_value == prev_value:
 		return true
 	if next_value == prev_value * 2:
 		return true
-	if is_power_of_two(chain_sum) and next_value == chain_sum and chain_sum >= prev_value:
+	if is_power_of_two(partial_sum) and next_value == partial_sum and partial_sum >= prev_value:
 		return true
 	return false
 

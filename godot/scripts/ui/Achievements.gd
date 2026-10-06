@@ -11,8 +11,8 @@ const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 @onready var background: ColorRect = $Background
 
 
-func _autoload(name: String) -> Node:
-	return get_node_or_null("/root/" + name)
+func _autoload(autoload_name: String) -> Node:
+	return get_node_or_null("/root/" + autoload_name)
 
 
 func _i18n(key: String, args: Array = []) -> String:
@@ -41,9 +41,9 @@ func _navigate_back() -> void:
 
 func _ready() -> void:
 	LnUiLib.set_background(self, LnUiLib.screen_bg("achievements"))
-	var theme := _autoload("ThemeManager")
-	if background != null and theme != null and theme.has_method("get_background_color"):
-		background.color = Color(theme.call("get_background_color"), 0.6)
+	var theme_mgr := _autoload("ThemeManager")
+	if background != null and theme_mgr != null and theme_mgr.has_method("get_background_color"):
+		background.color = Color(theme_mgr.call("get_background_color"), 0.6)
 
 	title_label.text = _i18n("achievements_title")
 	back_button.text = _i18n("menu_back")

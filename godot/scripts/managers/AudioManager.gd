@@ -67,8 +67,8 @@ const SFX_COOLDOWN_MS := {
 }
 
 
-func _autoload(name: String) -> Node:
-	return get_node_or_null("/root/" + name)
+func _autoload(autoload_name: String) -> Node:
+	return get_node_or_null("/root/" + autoload_name)
 
 
 func _ready() -> void:
@@ -110,9 +110,9 @@ func _load_stream(path: String) -> AudioStream:
 	return stream
 
 
-func _resolve_sfx_path(name: String) -> String:
-	if SFX_EVENTS.has(name):
-		return SFX_EVENTS[name]
+func _resolve_sfx_path(sfx_name: String) -> String:
+	if SFX_EVENTS.has(sfx_name):
+		return SFX_EVENTS[sfx_name]
 	return ""
 
 
@@ -142,11 +142,11 @@ func _music_enabled() -> bool:
 	return bool(settings.get("music_enabled"))
 
 
-func _sfx_volume_multiplier(name: String) -> float:
+func _sfx_volume_multiplier(sfx_name: String) -> float:
 	var base := 0.55
-	if name in ["victory", "level_complete"]:
+	if sfx_name in ["victory", "level_complete"]:
 		base = 0.7
-	elif name in ["button_click", "button"]:
+	elif sfx_name in ["button_click", "button"]:
 		base = 0.45
 
 	var settings := _autoload("SettingsManager")
@@ -179,29 +179,29 @@ func get_music_track() -> String:
 	return _normalize_music_track(str(settings.get("music_track")))
 
 
-func play_sfx(name: String) -> void:
+func play_sfx(sfx_name: String) -> void:
 	if not _sound_enabled():
 		return
 
 	var now_ms := Time.get_ticks_msec()
-	var cooldown := int(SFX_COOLDOWN_MS.get(name, 0))
+	var cooldown := int(SFX_COOLDOWN_MS.get(sfx_name, 0))
 	if cooldown > 0:
-		var last_ms := int(_sfx_last_play_ms.get(name, 0))
+		var last_ms := int(_sfx_last_play_ms.get(sfx_name, 0))
 		if now_ms - last_ms < cooldown:
 			return
-		_sfx_last_play_ms[name] = now_ms
+		_sfx_last_play_ms[sfx_name] = now_ms
 
-	var stream: AudioStream = _streams.get(name)
+	var stream: AudioStream = _streams.get(sfx_name)
 	if stream == null:
-		var path := _resolve_sfx_path(name)
+		var path := _resolve_sfx_path(sfx_name)
 		if path.is_empty():
 			return
 		stream = _load_stream(path)
-		_streams[name] = stream
+		_streams[sfx_name] = stream
 	if stream == null:
 		return
 
-	var volume := _sfx_volume_multiplier(name)
+	var volume := _sfx_volume_multiplier(sfx_name)
 	for player in _sfx_players:
 		if not player.playing:
 			player.stream = stream

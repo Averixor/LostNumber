@@ -22,6 +22,7 @@ const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 var _new_game_dialog: ConfirmationDialog = null
 
 
+@warning_ignore("shadowed_variable_base_class")
 func _autoload(name: String) -> Node:
 	return get_node_or_null("/root/" + name)
 

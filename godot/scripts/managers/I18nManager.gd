@@ -403,10 +403,10 @@ func _format(text: String, args: Array) -> String:
 		"name", "message",
 	]
 	var placeholders: Array[String] = []
-	for name in names:
-		var token := "{%s}" % name
+	for placeholder_name in names:
+		var token := "{%s}" % placeholder_name
 		if token in text:
-			placeholders.append(name)
+			placeholders.append(placeholder_name)
 	if placeholders.is_empty():
 		return text
 	var out := text
@@ -415,8 +415,8 @@ func _format(text: String, args: Array) -> String:
 	return out
 
 
-func _autoload(name: String) -> Node:
-	return get_node_or_null("/root/" + name)
+func _autoload(autoload_name: String) -> Node:
+	return get_node_or_null("/root/" + autoload_name)
 
 
 func _current_lang() -> String:

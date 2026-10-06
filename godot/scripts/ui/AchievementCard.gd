@@ -24,9 +24,9 @@ func _theme_manager() -> Node:
 	return get_node_or_null("/root/ThemeManager")
 
 
-func _base_panel_style(theme: Node) -> StyleBox:
-	if theme != null and theme.has_method("get_visual_style"):
-		return theme.call("get_visual_style", &"panel") as StyleBox
+func _base_panel_style(theme_mgr: Node) -> StyleBox:
+	if theme_mgr != null and theme_mgr.has_method("get_visual_style"):
+		return theme_mgr.call("get_visual_style", &"panel") as StyleBox
 	return null
 
 
@@ -62,11 +62,11 @@ func setup(arg0 = null, arg1 = "", arg2 = 0, arg3 = 1, arg4 = "✓", arg5 = "○
 	name_label.text = name_text
 	progress_label.text = "%d / %d" % [progress, max_val]
 
-	var theme := _theme_manager()
-	var palette := GothicVisualsLib.resolve_palette(theme)
+	var theme_mgr := _theme_manager()
+	var palette := GothicVisualsLib.resolve_palette(theme_mgr)
 	panel.add_theme_stylebox_override(
 		"panel",
-		GothicVisualsLib.card_panel(palette, unlocked, _base_panel_style(theme))
+		GothicVisualsLib.card_panel(palette, unlocked, _base_panel_style(theme_mgr))
 	)
 
 	var success: Color = palette.get("success", Color("#4A9152"))

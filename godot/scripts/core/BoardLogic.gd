@@ -29,25 +29,39 @@ func _create_empty_grid() -> Array:
 	return g
 
 
-func fill_random(level_index: int, carry_number: int = 0) -> void:
+func fill_random(level_index: int, carry_number: int = 0, max_reached: int = 8) -> void:
+	## Initial board fill uses level `numbers` ∩ [min_spawn, max_reached].
 	var level: Dictionary = level_manager.get_level_config(level_index)
 	var spawn_pool: Array = level["numbers"]
 
 	for x in grid_w:
 		for y in grid_h:
-			var n: int = _pick_spawn_value(level_index, carry_number, level["target"], spawn_pool, 8)
+			var n: int = _pick_spawn_value(
+				level_index, carry_number, level["target"], spawn_pool, max_reached
+			)
 			grid[x][y] = n
 
 
-func _pick_spawn_value(level_index: int, carry_number: int, level_target: int, _pool: Array, max_reached: int = 8) -> int:
-	var allowed := _get_allowed_numbers(level_index, max_reached)
+func _pick_spawn_value(
+	level_index: int,
+	carry_number: int,
+	level_target: int,
+	pool: Array,
+	max_reached: int = 8
+) -> int:
+	## Contract: LevelManager.numbers is the base pool; max_reached caps it from above.
 	var min_spawn: int = level_manager.get_minimum_spawn_tile(level_index)
 	var filtered: Array[Dictionary] = []
 
-	for i in allowed.size():
-		var value: int = allowed[i]
-		if value >= min_spawn and value != carry_number and value != level_target:
-			filtered.append({"value": value, "weight": 1.0 / pow(2.0, i)})
+	for i in pool.size():
+		var value: int = int(pool[i])
+		if (
+			value >= min_spawn
+			and value <= max_reached
+			and value != carry_number
+			and value != level_target
+		):
+			filtered.append({"value": value, "weight": 1.0 / pow(2.0, float(filtered.size()))})
 
 	if filtered.is_empty():
 		return min_spawn
@@ -62,27 +76,6 @@ func _pick_spawn_value(level_index: int, carry_number: int, level_target: int, _
 		if roll <= 0.0:
 			return item.value
 	return filtered.back().value
-
-
-func _get_allowed_numbers(level_index: int, max_reached: int = 8) -> Array[int]:
-	const WINDOW := 9
-	var min_spawn: int = level_manager.get_minimum_spawn_tile(level_index)
-	var max_val := maxi(max_reached, min_spawn)
-	var arr: Array[int] = []
-	var current := _floor_power_of_two(min_spawn)
-	while arr.size() < WINDOW and current <= max_val:
-		arr.append(current)
-		current *= 2
-	return arr
-
-
-static func _floor_power_of_two(value: int) -> int:
-	if value < 2:
-		return 2
-	var p := 1
-	while p * 2 <= value:
-		p *= 2
-	return p
 
 
 func apply_merge(anchor: Vector2i, removed: Array[Vector2i], result_number: int) -> void:

@@ -15,8 +15,8 @@ var _exit_dialog: ConfirmationDialog = null
 var _back_busy := false
 
 
-func _autoload(name: String) -> Node:
-	return get_node_or_null("/root/" + name)
+func _autoload(autoload_name: String) -> Node:
+	return get_node_or_null("/root/" + autoload_name)
 
 
 func _i18n(key: String, args: Array = []) -> String:

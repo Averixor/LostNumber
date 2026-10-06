@@ -9,21 +9,21 @@ func _ready() -> void:
 	_ensure_gothic_skin()
 	super._ready()
 	_apply_gothic_visuals()
-	var theme := _autoload("ThemeManager")
-	if theme != null and theme.has_signal("theme_changed"):
-		theme.theme_changed.connect(_apply_gothic_visuals)
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_signal("theme_changed"):
+		theme_mgr.theme_changed.connect(_apply_gothic_visuals)
 
 
 func _ensure_gothic_skin() -> void:
 	## Existing installs may still carry the pre-foundation procedural_neon id.
 	## The current release is Gothic-first; procedural neon remains an internal
 	## fallback only when the Gothic resource cannot be loaded.
-	var theme := get_node_or_null("/root/ThemeManager")
-	if theme == null or not theme.has_method("set_visual_skin_id"):
+	var theme_mgr := get_node_or_null("/root/ThemeManager")
+	if theme_mgr == null or not theme_mgr.has_method("set_visual_skin_id"):
 		return
-	if theme.has_method("uses_visual_skin") and bool(theme.call("uses_visual_skin")):
+	if theme_mgr.has_method("uses_visual_skin") and bool(theme_mgr.call("uses_visual_skin")):
 		return
-	theme.call("set_visual_skin_id", GOTHIC_VISUAL_SKIN_ID)
+	theme_mgr.call("set_visual_skin_id", GOTHIC_VISUAL_SKIN_ID)
 
 
 func _apply_gothic_visuals() -> void:
