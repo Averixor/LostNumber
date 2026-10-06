@@ -60,6 +60,7 @@ func _preload_sector_icons() -> void:
 	for sector_type in SECTOR_ICON_FILES:
 		var tex := LnUiLib.load_wheel_icon(str(SECTOR_ICON_FILES[sector_type]))
 		if tex != null:
+			# Source PNGs are display-sized (~128px); avoid shipping full-res 1k+ textures.
 			_sector_icons[sector_type] = tex
 
 

@@ -78,7 +78,7 @@ variant = 0
 text = ""
 
 [node name="BackButton" parent="Layout/VBox" instance=ExtResource("3_neon")]
-custom_minimum_size = Vector2(200, 44)
+custom_minimum_size = Vector2(200, 48)
 layout_mode = 2
 size_flags_horizontal = 4
 text = ""

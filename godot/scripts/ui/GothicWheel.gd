@@ -61,7 +61,7 @@ func _apply_gothic_visuals() -> void:
 		if spin_button.has_method("set_gothic_cta"):
 			spin_button.call("set_gothic_cta", true)
 	if back_button != null:
-		back_button.custom_minimum_size = Vector2(200, 44)
+		back_button.custom_minimum_size = Vector2(200, float(ThemeTokensLib.TOUCH_TARGET_MIN))
 		back_button.add_theme_font_size_override("font_size", 15)
 		back_button.icon = null
 	if wheel_canvas != null:
