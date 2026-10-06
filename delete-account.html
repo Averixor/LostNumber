@@ -1,12 +1,11 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="uk">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta
       name="description"
-      content="Запит на видалення акаунта Google / Firebase Auth у грі Lost Number (Averixor)."
-    />
+      content="Запит на видалення акаунта Google / Firebase Auth у грі Lost Number (Averixor).">
     <title>Lost Number — Видалення акаунта</title>
     <style>
       :root {
@@ -77,6 +76,9 @@
       }
       .card > :first-child {
         margin-top: 0;
+      }
+      .card + .card {
+        margin-top: 18px;
       }
       .divider {
         margin: 32px 0;
@@ -152,7 +154,7 @@
         </p>
       </section>
 
-      <section class="card" style="margin-top: 18px">
+      <section class="card">
         <h2>Запит електронною поштою (якщо немає доступу до застосунку)</h2>
         <p>
           Надішліть запит на
@@ -176,8 +178,7 @@
             type="email"
             required
             autocomplete="email"
-            placeholder="you@gmail.com"
-          />
+            placeholder="you@gmail.com">
 
           <label for="notes">Додаткові відомості (необовʼязково)</label>
           <textarea
@@ -237,7 +238,7 @@
         <a href="./privacy.html">privacy.html</a>
       </p>
 
-      <hr class="divider" />
+      <hr class="divider">
 
       <section lang="en" aria-labelledby="delete-en">
         <h1 id="delete-en">Lost Number — Account deletion</h1>

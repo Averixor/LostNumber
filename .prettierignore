@@ -24,5 +24,10 @@ build/
 # Legacy JS migration dumps — not maintained for formatting
 docs/archive/**
 
+# Static legal pages: html-validate (omit void / uppercase DOCTYPE) ≠ Prettier HTML
+privacy.html
+delete-account.html
+privacy-host/**
+
 # ECC continuous-learning instincts: YAML frontmatter + Markdown bodies (not valid YAML)
 .claude/homunculus/**

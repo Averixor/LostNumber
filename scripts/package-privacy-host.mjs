@@ -20,11 +20,11 @@ for (const name of pages) {
 
 writeFileSync(
   join(outDir, 'index.html'),
-  `<!doctype html>
+  `<!DOCTYPE html>
 <html lang="uk">
   <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="refresh" content="0; url=./privacy.html" />
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="0; url=./privacy.html">
     <title>Lost Number — Privacy</title>
   </head>
   <body>
