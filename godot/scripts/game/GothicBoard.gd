@@ -11,9 +11,9 @@ var _gothic_frame: PanelContainer
 func _ready() -> void:
 	super._ready()
 	_ensure_gothic_frame()
-	var theme := get_node_or_null("/root/ThemeManager")
-	if theme != null and theme.has_signal("theme_changed"):
-		theme.theme_changed.connect(_style_gothic_frame)
+	var theme_mgr := get_node_or_null("/root/ThemeManager")
+	if theme_mgr != null and theme_mgr.has_signal("theme_changed"):
+		theme_mgr.theme_changed.connect(_style_gothic_frame)
 
 
 func _ensure_gothic_frame() -> void:
@@ -40,25 +40,24 @@ func _style_gothic_frame() -> void:
 		return
 
 	var palette: Dictionary = {}
-	var theme := get_node_or_null("/root/ThemeManager")
-	if theme != null and theme.has_method("get_palette"):
-		palette = theme.call("get_palette")
+	var theme_mgr := get_node_or_null("/root/ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("get_palette"):
+		palette = theme_mgr.call("get_palette")
 
 	var rim: Color = palette.get("rim", GothicVisualsLib.GOLD)
-	var crystal: Color = palette.get("crystal", GothicVisualsLib.CRYSTAL)
 	# Border-only shell: Board.gd already paints GothicFieldFill under the grid.
 	# A filled panel here stacked with FieldFrame looked like a dark lid.
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0, 0, 0, 0)
 	style.draw_center = false
-	style.border_color = Color(rim, 0.84)
+	style.border_color = Color(rim.lerp(GothicVisualsLib.BRONZE, 0.35), 0.90)
 	style.set_border_width_all(3)
 	style.set_corner_radius_all(12)
 	style.content_margin_left = 8
 	style.content_margin_right = 8
 	style.content_margin_top = 8
 	style.content_margin_bottom = 8
-	style.shadow_color = Color(crystal, 0.24)
-	style.shadow_size = 16
+	style.shadow_color = Color(GothicVisualsLib.STONE_BLACK, 0.55)
+	style.shadow_size = 14
 	style.shadow_offset = Vector2(0, 5)
 	_gothic_frame.add_theme_stylebox_override("panel", style)

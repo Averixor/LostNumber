@@ -2,6 +2,7 @@ extends Control
 
 const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 const ImagePickerHelperLib := preload("res://scripts/ui/ImagePickerHelper.gd")
+const GothicScreenMixinLib := preload("res://scripts/ui/GothicScreenMixin.gd")
 
 const CARD_SIZE := Vector2(96, 122)
 
@@ -20,8 +21,8 @@ var _selected_path := ""
 var _cards: Array[PanelContainer] = []
 
 
-func _autoload(name: String) -> Node:
-	return get_node_or_null("/root/" + name)
+func _autoload(autoload_name: String) -> Node:
+	return get_node_or_null("/root/" + autoload_name)
 
 
 func _t(key: String) -> String:
@@ -41,8 +42,12 @@ func _ready() -> void:
 	cancel_button.text = _t("skin_cancel")
 	apply_button.text = _t("skin_apply")
 	LnUiLib.apply_title(title_label, 26)
-	for button in [custom_button, cancel_button, apply_button]:
+	for button in [custom_button, cancel_button]:
 		LnUiLib.apply_compact_button(button, 14, 42)
+	# Apply uses carved gold CTA; Cancel/Custom stay secondary stone.
+	GothicScreenMixinLib.style_cta_button(self, apply_button)
+	if apply_button != null:
+		apply_button.custom_minimum_size.y = maxf(apply_button.custom_minimum_size.y, 48.0)
 
 	custom_button.pressed.connect(_on_custom_background)
 	cancel_button.pressed.connect(_on_cancel)
@@ -53,9 +58,9 @@ func _ready() -> void:
 
 
 func _active_bucket() -> String:
-	var theme := _autoload("ThemeManager")
-	if theme != null and theme.has_method("theme_bucket"):
-		return str(theme.call("theme_bucket"))
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("theme_bucket"):
+		return str(theme_mgr.call("theme_bucket"))
 	return "dark"
 
 
@@ -124,15 +129,15 @@ func _card_label(path: String, index: int) -> String:
 func _preview_path(path: String) -> String:
 	if not path.is_empty():
 		return path
-	var theme := _autoload("ThemeManager")
-	if theme != null:
-		var skin_id := str(theme.get("visual_skin_id"))
-		if skin_id != "procedural_neon" and theme.has_method("get_visual_skin_background_path"):
-			var visual_default := str(theme.call("get_visual_skin_background_path", skin_id, "game"))
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null:
+		var skin_id := str(theme_mgr.get("visual_skin_id"))
+		if skin_id != "procedural_neon" and theme_mgr.has_method("get_visual_skin_background_path"):
+			var visual_default := str(theme_mgr.call("get_visual_skin_background_path", skin_id, "game"))
 			if not visual_default.is_empty():
 				return visual_default
-		if theme.has_method("get_default_background_path"):
-			return str(theme.call("get_default_background_path", _active_bucket()))
+		if theme_mgr.has_method("get_default_background_path"):
+			return str(theme_mgr.call("get_default_background_path", _active_bucket()))
 	return LnUiLib.BG_GAME
 
 
@@ -186,9 +191,9 @@ func _on_custom_background() -> void:
 
 
 func _on_apply() -> void:
-	var theme := _autoload("ThemeManager")
-	if theme != null and theme.has_method("apply_background_path"):
-		theme.call("apply_background_path", _selected_path)
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("apply_background_path"):
+		theme_mgr.call("apply_background_path", _selected_path)
 	await _on_cancel()
 
 

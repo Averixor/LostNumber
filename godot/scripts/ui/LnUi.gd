@@ -89,6 +89,12 @@ static func apply_screen_background(root: Control, screen: String, dim_alpha: fl
 
 
 static func make_glass_panel(radius: int = ThemeTokensLib.RADIUS_PANEL, border_width: int = 1) -> StyleBox:
+	## Gothic Crystal: carved stone panel. Neon glass remains procedural fallback only.
+	if _has_visual_skin():
+		var style := GothicVisualsLib.hud_panel(GothicVisualsLib.resolve_palette(_theme_manager()))
+		style.set_corner_radius_all(radius)
+		style.set_border_width_all(maxi(border_width, 2))
+		return style
 	return glass_box(radius, border_width, PANEL, BORDER, Color(ACCENT, ThemeTokensLib.GLOW_SOFT), ThemeTokensLib.SHADOW_MEDIUM)
 
 
@@ -284,7 +290,7 @@ static func emphasized_panel(radius: int = 8) -> StyleBoxFlat:
 	return glass_box(radius, 2, Color(BG_TERTIARY, 0.65), BORDER_ACTIVE, Color(ACCENT, 0.18), 16)
 
 
-static func progress_track(height: float = 8.0) -> StyleBoxFlat:
+static func progress_track(_height: float = 8.0) -> StyleBoxFlat:
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = Color(ACCENT, 0.10)
 	sb.border_color = BORDER_LIGHT
@@ -448,13 +454,19 @@ static func apply_icon_button(btn: Button) -> void:
 
 
 static func apply_title(label: Label, size: int = 42) -> void:
-	label.add_theme_color_override("font_color", TEXT)
+	if _has_visual_skin():
+		label.add_theme_color_override("font_color", GothicVisualsLib.GOLD_LIGHT)
+	else:
+		label.add_theme_color_override("font_color", TEXT)
 	label.add_theme_font_size_override("font_size", size)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
 
 static func apply_body(label: Label, size: int = 22) -> void:
-	label.add_theme_color_override("font_color", TEXT_MUTED)
+	if _has_visual_skin():
+		label.add_theme_color_override("font_color", GothicVisualsLib.TEXT_MUTED)
+	else:
+		label.add_theme_color_override("font_color", TEXT_MUTED)
 	label.add_theme_font_size_override("font_size", size)
 
 
@@ -584,13 +596,16 @@ static func load_icon(name: String) -> Texture2D:
 
 
 static func hud_panel(use_visual_skin: bool = false) -> StyleBox:
-	var themed := _visual_style(&"hud") if use_visual_skin else null
+	var skin_on := use_visual_skin or _has_visual_skin()
+	var themed := _visual_style(&"hud") if skin_on else null
 	if themed != null:
 		themed.content_margin_left = 8
 		themed.content_margin_right = 8
 		themed.content_margin_top = 4
 		themed.content_margin_bottom = 4
 		return themed
+	if skin_on:
+		return GothicVisualsLib.hud_panel(GothicVisualsLib.resolve_palette(_theme_manager()))
 	var sb := glass_box(8, 1, Color(BG_TERTIARY, 0.55), BORDER_LIGHT, Color(ACCENT, 0.12), 10)
 	sb.content_margin_left = 10
 	sb.content_margin_right = 10
@@ -601,11 +616,10 @@ static func hud_panel(use_visual_skin: bool = false) -> StyleBox:
 
 static func chain_sum_panel(valid: bool) -> StyleBox:
 	var themed := _visual_style(&"hud")
+	var accent_color := VALID if valid else CYAN
 	if themed != null:
-		var accent := VALID if valid else CYAN
-		return _tint_texture_style(themed, Color(accent, 0.94))
-	var accent := VALID if valid else CYAN
-	var sb := glass_box(8, 2, Color(BG_DARK, 0.92), accent, Color(0, 0, 0, 0.45), 10)
+		return _tint_texture_style(themed, Color(accent_color, 0.94))
+	var sb := glass_box(8, 2, Color(BG_DARK, 0.92), accent_color, Color(0, 0, 0, 0.45), 10)
 	sb.content_margin_left = 12
 	sb.content_margin_right = 12
 	sb.content_margin_top = 10

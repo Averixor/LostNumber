@@ -51,12 +51,11 @@
 
 Повний навігатор: **`docs/README.md`**.
 
-- **`docs/ANDROID_RELEASE_READINESS.md`** — Godot Android, AAB, підпис
-- **`docs/ANDROID_QA.md`** — manual QA перед установкою на телефон
-- **`docs/PLAY_STORE.md`** — Google Play Console, IARC, Data safety
+- **`ANDROID_QA.md`** — manual QA перед установкою на телефон
+- **`PLAY_STORE.md`** — Google Play Console, IARC, Data safety
 - **`docs/en/SOURCE_OF_TRUTH.md`** — канонічні рішення
 - **`docs/en/VISUAL_TARGET.md`** — візуальний north star
-- **`docs/store-listing/`** — короткі/повні описи (uk, en, ru)
+- **`store-listing/`** — короткі/повні описи (uk, en, ru)
 
 ## Збереження (Godot)
 

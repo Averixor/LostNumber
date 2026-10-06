@@ -175,15 +175,16 @@ static func icon_button(palette: Dictionary = {}, state: String = "normal") -> S
 static func cta_button(palette: Dictionary = {}, state: String = "normal") -> StyleBoxFlat:
 	var rim: Color = palette.get("rim", GOLD)
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(STONE_MID.lightened(0.05), 0.92)
-	style.border_color = Color(rim, 0.82)
-	style.set_corner_radius_all(10)
+	# Gold fill — not dirty brown stone (primary CTA hierarchy).
+	style.bg_color = Color(GOLD.lerp(BRONZE, 0.22).darkened(0.08), 0.96)
+	style.border_color = Color(GOLD_LIGHT.lerp(rim, 0.25), 0.95)
+	style.set_corner_radius_all(12)
 	style.content_margin_top = 14.0
 	style.content_margin_bottom = 14.0
-	style.content_margin_left = 16.0
-	style.content_margin_right = 16.0
-	style.shadow_color = Color(STONE_BLACK, 0.42)
-	style.shadow_size = 5
+	style.content_margin_left = 18.0
+	style.content_margin_right = 18.0
+	style.shadow_color = Color(GOLD, 0.38)
+	style.shadow_size = 10
 	style.shadow_offset = Vector2(0, 3)
 	_apply_cta_button_state(style, palette, state)
 	return style
@@ -227,27 +228,31 @@ static func _apply_stone_button_state(style: StyleBoxFlat, palette: Dictionary, 
 
 static func _apply_cta_button_state(style: StyleBoxFlat, palette: Dictionary, state: String) -> void:
 	var rim: Color = palette.get("rim", GOLD)
-	var highlight := Color(GOLD_LIGHT.lerp(rim, 0.30), 0.92)
+	var highlight := Color(GOLD_LIGHT.lerp(rim, 0.20), 0.98)
 	var shadow_edge := Color(BRONZE_DARK.lerp(STONE_BLACK, 0.35), 0.88)
 	match state:
 		"normal":
+			style.bg_color = Color(GOLD.lerp(BRONZE, 0.18).darkened(0.06), 0.97)
 			style.border_width_top = 3
 			style.border_width_left = 3
 			style.border_width_bottom = 2
 			style.border_width_right = 2
 			style.border_color = highlight
+			style.shadow_color = Color(GOLD.lerp(CRYSTAL, 0.15), 0.42)
+			style.shadow_size = 11
+			style.shadow_offset = Vector2(0, 3)
 		"hover":
-			style.bg_color = Color(STONE_MID.lightened(0.10), 0.96)
+			style.bg_color = Color(GOLD_LIGHT.lerp(GOLD, 0.35), 0.98)
 			style.border_width_top = 3
 			style.border_width_left = 3
 			style.border_width_bottom = 2
 			style.border_width_right = 2
-			style.border_color = Color(GOLD_LIGHT, 0.95)
-			style.shadow_color = Color(STONE_BLACK, 0.48)
-			style.shadow_size = 6
+			style.border_color = Color(GOLD_LIGHT, 1.0)
+			style.shadow_color = Color(GOLD, 0.55)
+			style.shadow_size = 14
 			style.shadow_offset = Vector2(0, 4)
 		"pressed":
-			style.bg_color = Color(STONE_BLACK, 0.96)
+			style.bg_color = Color(BRONZE.darkened(0.15), 0.96)
 			style.border_width_top = 1
 			style.border_width_left = 1
 			style.border_width_bottom = 3
@@ -257,7 +262,7 @@ static func _apply_cta_button_state(style: StyleBoxFlat, palette: Dictionary, st
 			style.shadow_size = 2
 			style.shadow_offset = Vector2(0, 1)
 		"disabled":
-			style.bg_color = Color(STONE_BLACK, 0.55)
+			style.bg_color = Color(STONE_DEEP, 0.62)
 			style.border_color = Color(IRON, 0.45)
 			style.set_border_width_all(2)
 			style.shadow_color = Color.TRANSPARENT

@@ -21,18 +21,18 @@ var _skin_ids := PackedStringArray()
 var _cards: Array[PanelContainer] = []
 
 
-func _autoload(name: String) -> Node:
-	return get_node_or_null("/root/" + name)
+func _autoload(autoload_name: String) -> Node:
+	return get_node_or_null("/root/" + autoload_name)
 
 
 func _ready() -> void:
 	# Dark-only release: never offer a light preview that cannot stick on apply.
 	_dark_mode = true
-	var theme := _autoload("ThemeManager")
-	if theme != null:
-		if theme.has_method("get_visual_skin_ids"):
-			_skin_ids = theme.call("get_visual_skin_ids") as PackedStringArray
-		var active_id = theme.get("visual_skin_id")
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null:
+		if theme_mgr.has_method("get_visual_skin_ids"):
+			_skin_ids = theme_mgr.call("get_visual_skin_ids") as PackedStringArray
+		var active_id = theme_mgr.get("visual_skin_id")
 		if active_id != null:
 			_selected_skin_id = str(active_id)
 
@@ -89,9 +89,9 @@ func _refresh_localized_text() -> void:
 
 
 func _background_for(skin_id: String) -> String:
-	var theme := _autoload("ThemeManager")
-	if theme != null and theme.has_method("get_visual_skin_background_path"):
-		return str(theme.call("get_visual_skin_background_path", skin_id, "game", _dark_mode))
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("get_visual_skin_background_path"):
+		return str(theme_mgr.call("get_visual_skin_background_path", skin_id, "game", _dark_mode))
 	return ""
 
 
@@ -104,16 +104,16 @@ func _set_texture(texture_rect: TextureRect, path: String) -> void:
 
 
 func _style_for(kind: StringName, skin_id: String) -> StyleBox:
-	var theme := _autoload("ThemeManager")
-	if theme != null and theme.has_method("get_visual_style"):
-		return theme.call("get_visual_style", kind, skin_id) as StyleBox
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("get_visual_style"):
+		return theme_mgr.call("get_visual_style", kind, skin_id) as StyleBox
 	return null
 
 
 func _tile_style_for(value: int, skin_id: String) -> StyleBox:
-	var theme := _autoload("ThemeManager")
-	if theme != null and theme.has_method("get_tile_style_for_value"):
-		var style := theme.call("get_tile_style_for_value", value, false, skin_id) as StyleBox
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("get_tile_style_for_value"):
+		var style := theme_mgr.call("get_tile_style_for_value", value, false, skin_id) as StyleBox
 		if style != null:
 			return style
 
@@ -126,26 +126,26 @@ func _tile_style_for(value: int, skin_id: String) -> StyleBox:
 
 
 func _skin_text_color(skin_id: String) -> Color:
-	var theme := _autoload("ThemeManager")
-	if theme != null and theme.has_method("get_visual_skin"):
-		var skin = theme.call("get_visual_skin", skin_id)
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("get_visual_skin"):
+		var skin = theme_mgr.call("get_visual_skin", skin_id)
 		if skin != null and skin.has_method("text_color"):
 			return skin.call("text_color", _dark_mode) as Color
 	return Color("#f7ecdc") if _dark_mode else Color("#291d30")
 
 
 func _skin_overlay_color(skin_id: String) -> Color:
-	var theme := _autoload("ThemeManager")
-	if theme != null and theme.has_method("get_visual_skin"):
-		var skin = theme.call("get_visual_skin", skin_id)
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("get_visual_skin"):
+		var skin = theme_mgr.call("get_visual_skin", skin_id)
 		if skin != null and skin.has_method("overlay_color"):
 			return skin.call("overlay_color", _dark_mode) as Color
 	return Color(0.02, 0.01, 0.05, 0.58 if _dark_mode else 0.14)
 
 
 func _skin_supports_light_mode(skin_id: String) -> bool:
-	var theme := _autoload("ThemeManager")
-	return theme == null or not theme.has_method("visual_skin_supports_light_mode") or bool(theme.call("visual_skin_supports_light_mode", skin_id))
+	var theme_mgr := _autoload("ThemeManager")
+	return theme_mgr == null or not theme_mgr.has_method("visual_skin_supports_light_mode") or bool(theme_mgr.call("visual_skin_supports_light_mode", skin_id))
 
 
 func _flat_style(bg: Color, border: Color, radius: int, border_width: int = 1) -> StyleBoxFlat:
@@ -159,11 +159,12 @@ func _flat_style(bg: Color, border: Color, radius: int, border_width: int = 1) -
 
 
 func _fallback_panel_style() -> StyleBoxFlat:
+	## Stone / bronze fallback when kit StyleBox is missing — never violet neon glass.
 	return _flat_style(
-		Color(0.08, 0.025, 0.12, 0.9) if _dark_mode else Color(0.96, 0.89, 1.0, 0.92),
-		Color(0.72, 0.34, 0.9, 0.8),
+		Color(0.10, 0.09, 0.07, 0.94),
+		Color("#d6ad58"),
 		12,
-		1
+		2
 	)
 
 
@@ -192,17 +193,18 @@ func _style_ui() -> void:
 
 func _apply_button_kit(button: Button, skin_id: String, text_color: Color) -> void:
 	var fallbacks := {
-		"normal": _flat_style(Color(0.18, 0.08, 0.25, 0.94), Color("#a855f7"), 10),
-		"hover": _flat_style(Color(0.27, 0.11, 0.36, 0.96), Color("#d7aa54"), 10, 2),
-		"pressed": _flat_style(Color(0.12, 0.045, 0.18, 0.98), Color("#d7aa54"), 10, 2),
-		"disabled": _flat_style(Color(0.12, 0.1, 0.14, 0.72), Color(0.4, 0.36, 0.44), 10),
+		"normal": _flat_style(Color(0.16, 0.14, 0.11, 0.94), Color("#8f6a36"), 10, 2),
+		"hover": _flat_style(Color(0.22, 0.18, 0.12, 0.96), Color("#d6ad58"), 10, 2),
+		"pressed": _flat_style(Color(0.10, 0.08, 0.06, 0.98), Color("#d6ad58"), 10, 2),
+		"disabled": _flat_style(Color(0.10, 0.09, 0.08, 0.72), Color(0.40, 0.36, 0.30), 10, 2),
 	}
 	for state in ["normal", "hover", "pressed", "disabled"]:
 		var style := _style_for(StringName("button_" + state), skin_id)
 		button.add_theme_stylebox_override(state, style if style != null else fallbacks[state])
-	button.add_theme_color_override("font_color", text_color)
-	button.add_theme_color_override("font_hover_color", text_color)
-	button.add_theme_color_override("font_pressed_color", text_color)
+	var font_color := Color("#f7ead5") if skin_id != "procedural_neon" else text_color
+	button.add_theme_color_override("font_color", font_color)
+	button.add_theme_color_override("font_hover_color", Color("#f3d58b"))
+	button.add_theme_color_override("font_pressed_color", font_color)
 
 
 func _build_cards() -> void:
@@ -341,9 +343,9 @@ func _fill(control: Control) -> void:
 
 
 func _skin_metadata(skin_id: String) -> Dictionary:
-	var theme := _autoload("ThemeManager")
-	if theme != null and theme.has_method("get_visual_skin_metadata"):
-		return theme.call("get_visual_skin_metadata", skin_id) as Dictionary
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("get_visual_skin_metadata"):
+		return theme_mgr.call("get_visual_skin_metadata", skin_id) as Dictionary
 	return {}
 
 
@@ -431,10 +433,10 @@ func _on_mode_toggle() -> void:
 
 
 func _on_apply() -> void:
-	var theme := _autoload("ThemeManager")
-	if theme != null:
-		if theme.has_method("set_visual_skin_id"):
-			theme.call("set_visual_skin_id", _selected_skin_id)
+	var theme_mgr := _autoload("ThemeManager")
+	if theme_mgr != null:
+		if theme_mgr.has_method("set_visual_skin_id"):
+			theme_mgr.call("set_visual_skin_id", _selected_skin_id)
 	_on_cancel()
 
 

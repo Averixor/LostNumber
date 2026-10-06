@@ -540,15 +540,17 @@ func _migrate_from_settings_manager() -> void:
 
 
 func _default_visual_skin_for_install() -> String:
-	for path in EXISTING_USER_STATE_PATHS:
-		if FileAccess.file_exists(str(path)):
-			return PROCEDURAL_VISUAL_SKIN_ID
+	## Gothic Crystal is the release visual target for new and returning installs.
+	## procedural_neon remains selectable in Skin Preview as an internal fallback kit.
 	return DEFAULT_VISUAL_SKIN_ID
 
 
 func _resolve_saved_visual_skin_id(data: Dictionary) -> String:
-	var requested := str(data.get("visual_skin_id", PROCEDURAL_VISUAL_SKIN_ID))
-	return requested if has_visual_skin_id(requested) else PROCEDURAL_VISUAL_SKIN_ID
+	var requested := str(data.get("visual_skin_id", DEFAULT_VISUAL_SKIN_ID))
+	## Legacy saves that still carry the pre-foundation procedural id migrate to gothic.
+	if requested == PROCEDURAL_VISUAL_SKIN_ID:
+		return DEFAULT_VISUAL_SKIN_ID
+	return requested if has_visual_skin_id(requested) else DEFAULT_VISUAL_SKIN_ID
 
 
 func _builtin_pool_raw(bucket: String) -> Array:

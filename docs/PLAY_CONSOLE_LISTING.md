@@ -24,25 +24,25 @@
 
 **Українська** — скопіювати в Play Console:
 
-```
+````text
 Логічна головоломка з числами. Рівні, бонуси, збереження прогресу.
-```
+```text
 
 (67 символів)
 
 **English** (додаткова локаль):
 
-```
+```text
 Calm number grid puzzle. Levels, bonuses, offline save.
-```
+```text
 
 (54 characters)
 
 **Русский** (додаткова локаль):
 
-```
+```text
 Логическая головоломка с числами. Уровни, бонусы, сохранение прогресса.
-```
+```text
 
 (70 символов)
 
@@ -54,7 +54,7 @@ Calm number grid puzzle. Levels, bonuses, offline save.
 
 ### Українська
 
-```
+```text
 Lost Number — логічна головоломка з числами у зручному для тебе темпі.
 
 Поєднуй сусідні клітинки, будуй ланцюжки з правильних сум і відкривай нові рівні. Жодного зайвого тиску — грай коли зручно.
@@ -69,11 +69,11 @@ Lost Number — логічна головоломка з числами у зр�
 • Українська, російська та англійська мови
 
 Підходить для коротких сесій і розминки для мозку. Без реєстрації та без реклами в поточній версії.
-```
+```text
 
 ### English
 
-```
+```text
 Lost Number is a relaxed number grid puzzle you can enjoy on your schedule.
 
 Connect neighboring tiles, build valid chains, and unlock new levels. No rush — play when it suits you.
@@ -88,11 +88,11 @@ Features:
 • Ukrainian, Russian, and English UI
 
 Great for short sessions and brain warm-ups. No account required. No ads in the current release.
-```
+```text
 
 ### Русский
 
-```
+```text
 Lost Number — логическая головоломка с числами в удобном для вас темпе.
 
 Соединяйте соседние клетки, стройте цепочки с нужными суммами и открывайте новые уровни. Без лишнего давления — играйте когда удобно.
@@ -107,7 +107,7 @@ Lost Number — логическая головоломка с числами в
 • Украинский, русский и английский языки
 
 Короткие сессии и тренировка логики. Без регистрации и без рекламы в текущей версии.
-```
+```text
 
 Файли: `docs/store-listing/full-description-*.txt`
 
@@ -170,3 +170,4 @@ Lost Number — логическая головоломка с числами в
 4. [ ] Email і Privacy URL (див. вище)
 5. [ ] Категорія: Games → Puzzle
 6. [ ] Далі — [docs/PLAY_STORE.md](../docs/PLAY_STORE.md): IARC, Data safety, AAB у Closed testing
+````

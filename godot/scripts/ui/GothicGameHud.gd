@@ -25,7 +25,7 @@ func _apply_styles() -> void:
 	goal_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
 	xp_label.add_theme_font_size_override("font_size", hud_font)
-	xp_label.add_theme_color_override("font_color", GothicVisualsLib.CRYSTAL_LIGHT)
+	xp_label.add_theme_color_override("font_color", GothicVisualsLib.GOLD_LIGHT)
 	xp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
 	chain_sum_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -48,17 +48,21 @@ func _apply_styles() -> void:
 	if _xp_track != null:
 		_xp_track.color = Color(GothicVisualsLib.STONE_BLACK, 0.88)
 	if _xp_fill != null:
-		_xp_fill.color = Color(crystal.lightened(0.14), 1.0)
+		## Warm metal fill in carved channel — not violet neon bar.
+		_xp_fill.color = Color(GothicVisualsLib.GOLD.lerp(crystal, 0.15).lightened(0.06), 1.0)
 
 	_style_icon_buttons()
 
 
 func _style_badge(badge: Label, count: int) -> void:
 	badge.add_theme_font_size_override("font_size", ThemeTokensLib.FONT_SIZE_XS)
-	badge.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
+	badge.add_theme_color_override(
+		"font_color",
+		GothicVisualsLib.STONE_BLACK if count > 0 else GothicVisualsLib.TEXT_MUTED
+	)
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(GothicVisualsLib.CRYSTAL, 0.92) if count > 0 else Color(GothicVisualsLib.STONE_BLACK, 0.88)
-	style.border_color = Color(GothicVisualsLib.GOLD, 0.82)
+	style.bg_color = Color(GothicVisualsLib.GOLD.lerp(GothicVisualsLib.BRONZE, 0.25), 0.95) if count > 0 else Color(GothicVisualsLib.STONE_BLACK, 0.88)
+	style.border_color = Color(GothicVisualsLib.GOLD_LIGHT, 0.88) if count > 0 else Color(GothicVisualsLib.IRON, 0.55)
 	style.set_border_width_all(1)
 	style.set_corner_radius_all(8)
 	style.set_content_margin_all(2)
@@ -81,7 +85,7 @@ func _style_icon_buttons() -> void:
 		btn.add_theme_constant_override("icon_max_width", 26)
 		btn.add_theme_constant_override("icon_max_height", 26)
 		btn.add_theme_color_override("icon_normal_color", GothicVisualsLib.GOLD_LIGHT)
-		btn.add_theme_color_override("icon_hover_color", GothicVisualsLib.CRYSTAL_LIGHT)
+		btn.add_theme_color_override("icon_hover_color", GothicVisualsLib.TEXT_IVORY)
 		btn.add_theme_color_override("icon_pressed_color", GothicVisualsLib.GOLD)
 		btn.add_theme_stylebox_override("normal", GothicVisualsLib.icon_button(palette, "normal"))
 		btn.add_theme_stylebox_override("hover", GothicVisualsLib.icon_button(palette, "hover"))
@@ -114,9 +118,9 @@ func _style_bonus_button(button: Button, kind: String, count: int, active_bonus:
 
 
 func _hud_panel_style(palette: Dictionary) -> StyleBox:
-	var theme := get_node_or_null("/root/ThemeManager")
-	if theme != null and theme.has_method("get_visual_style"):
-		var themed := theme.call("get_visual_style", &"hud") as StyleBox
+	var theme_mgr := get_node_or_null("/root/ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method("get_visual_style"):
+		var themed := theme_mgr.call("get_visual_style", &"hud") as StyleBox
 		if themed != null:
 			return themed
 	return GothicVisualsLib.hud_panel(palette)
@@ -130,11 +134,11 @@ func update_chain_sum(state: GameState, can_finish: bool, dragging: bool = false
 	var style := _hud_panel_style(_theme_palette())
 	if style is StyleBoxFlat:
 		var flat := style as StyleBoxFlat
-		flat.border_color = GothicVisualsLib.GOLD_LIGHT if valid else GothicVisualsLib.CRYSTAL_LIGHT
+		flat.border_color = GothicVisualsLib.GOLD_LIGHT if valid else GothicVisualsLib.BRONZE
 		flat.shadow_color = Color(flat.border_color, 0.32)
 		flat.shadow_size = 12
 	bottom_strip.add_theme_stylebox_override("panel", style)
 	chain_sum_label.add_theme_color_override(
 		"font_color",
-		GothicVisualsLib.GOLD_LIGHT if valid else GothicVisualsLib.CRYSTAL_LIGHT
+		GothicVisualsLib.GOLD_LIGHT if valid else GothicVisualsLib.TEXT_IVORY
 	)
