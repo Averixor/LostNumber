@@ -23,7 +23,7 @@ _cleanup_android_artifacts() {
       rm -f "$f"
       echo "Removed old .$ext: $(basename "$f")"
       removed=$((removed + 1))
-    done < <(ls -1t "$BUILD_DIR"/*."$ext" 2>/dev/null | tail -n +4)
+    done < <(find "$BUILD_DIR" -maxdepth 1 -type f -name "*.${ext}" -printf '%T@\t%p\n' 2>/dev/null | sort -nr | cut -f2- | tail -n +4)
   done
   if [[ "$removed" -eq 0 ]]; then
     echo "Artifact retention: no old APK/AAB to remove (keeping up to 3 of each)."
@@ -145,6 +145,7 @@ fi
 if [[ -f "$GODOT_DIR/android/build/build.gradle" ]]; then
   echo "$ANDROID_BUILD_VERSION" > "$GODOT_DIR/android/.build_version"
   # shellcheck source=scripts/lib/firebase-android.sh
+  # shellcheck disable=SC1091
   source "$ROOT/scripts/lib/firebase-android.sh"
   install_google_services_for_export "$ROOT" "$GODOT_DIR" "$MODE"
 fi

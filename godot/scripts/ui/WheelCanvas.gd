@@ -8,10 +8,13 @@ const LnUiLib := preload("res://scripts/ui/LnUi.gd")
 const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
 const WheelManagerLib := preload("res://scripts/meta/WheelManager.gd")
 
-## Label sits mid-sector for readability on larger 384 canvas.
-const LABEL_RADIUS_FACTOR := 0.62
-const ICON_RADIUS_FACTOR := 0.78
-const ICON_SIZE := 32.0
+## Label sits mid-sector; icons occupy ~40–55% of useful sector band height.
+const LABEL_RADIUS_FACTOR := 0.52
+const ICON_RADIUS_FACTOR := 0.74
+const ICON_SIZE_MIN := 48.0
+const ICON_SIZE_MAX := 72.0
+## Fraction of the wedge content band (hub→rim usable height) for reward icons.
+const ICON_SECTOR_FRACTION := 0.48
 const DISK_RADIUS_FACTOR := 0.46
 
 const SECTOR_ICON_FILES := {
@@ -302,15 +305,22 @@ func set_sector_icon_slot(sector_type: String, texture: Texture2D) -> void:
 	queue_redraw()
 
 
+func _sector_icon_size_px() -> float:
+	## Useful sector band ≈ outer disk minus hub casing (~0.26r reserved for hub).
+	var radius := minf(size.x, size.y) * DISK_RADIUS_FACTOR
+	var band := radius * 0.74
+	return clampf(band * ICON_SECTOR_FRACTION, ICON_SIZE_MIN, ICON_SIZE_MAX)
+
+
 func _draw_sector_icon(pos: Vector2, sector: Dictionary, highlighted: bool) -> void:
 	var sector_type := str(sector.get("type", ""))
 	var tex: Texture2D = _sector_icons.get(sector_type, null)
 	if tex == null:
 		return
-	var size_px := ICON_SIZE * (1.08 if highlighted else 1.0)
+	var size_px := _sector_icon_size_px() * (1.06 if highlighted else 1.0)
 	var rect := Rect2(pos - Vector2(size_px, size_px) * 0.5, Vector2(size_px, size_px))
 	if highlighted:
-		draw_circle(pos, size_px * 0.55, Color(GothicVisualsLib.GOLD, 0.18))
+		draw_circle(pos, size_px * 0.52, Color(GothicVisualsLib.GOLD, 0.16))
 	draw_texture_rect(tex, rect, false)
 
 

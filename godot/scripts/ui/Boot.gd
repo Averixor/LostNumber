@@ -4,6 +4,8 @@ extends Control
 
 const ThemeTokensLib := preload("res://scripts/ui/ThemeTokens.gd")
 const LnUiLib := preload("res://scripts/ui/LnUi.gd")
+const GothicVisualsLib := preload("res://scripts/ui/GothicVisuals.gd")
+const GothicScreenMixinLib := preload("res://scripts/ui/GothicScreenMixin.gd")
 
 const APP_SCENE := "res://scenes/App.tscn"
 
@@ -14,8 +16,8 @@ const APP_SCENE := "res://scenes/App.tscn"
 @onready var background_art: TextureRect = $BackgroundArt
 
 
-func _autoload(name: String) -> Node:
-	return get_node_or_null("/root/" + name)
+func _autoload(autoload_name: String) -> Node:
+	return get_node_or_null("/root/" + autoload_name)
 
 
 func _i18n(key: String, args: Array = []) -> String:
@@ -26,7 +28,7 @@ func _i18n(key: String, args: Array = []) -> String:
 
 
 func _ready() -> void:
-	LnUiLib.set_background(self, LnUiLib.screen_bg("boot"), 0.55)
+	GothicScreenMixinLib.apply_background(self, LnUiLib.BG_BOOT, 0.42, &"menu")
 	_wire_static_boot_logo()
 	_apply_theme()
 	subtitle_label.text = _i18n("boot_loading")
@@ -72,11 +74,8 @@ func _fit_boot_logo(tex: Texture2D) -> void:
 
 func _apply_theme() -> void:
 	var theme_mgr := _autoload("ThemeManager")
-	var bg := ThemeTokensLib.COLOR_BG
-	if theme_mgr != null and theme_mgr.has_method("get_background_color"):
-		bg = theme_mgr.call("get_background_color")
-	background.color = Color(bg, 0.42)
-	subtitle_label.add_theme_color_override("font_color", ThemeTokensLib.LOADING_TEXT_COLOR)
+	background.color = Color(GothicVisualsLib.STONE_BLACK, 0.38)
+	subtitle_label.add_theme_color_override("font_color", GothicVisualsLib.TEXT_IVORY)
 
 	if background_art != null:
 		background_art.visible = true
@@ -92,24 +91,19 @@ func _apply_theme() -> void:
 
 
 func _style_progress_bar() -> void:
-	var theme_mgr := _autoload("ThemeManager")
-	var panel := LnUiLib.PANEL
-	var primary := LnUiLib.ACCENT
-	if theme_mgr != null:
-		if theme_mgr.has_method("get_panel_color"):
-			panel = theme_mgr.call("get_panel_color")
-		if theme_mgr.has_method("get_primary_color"):
-			primary = theme_mgr.call("get_primary_color")
+	## Inset stone channel + gold fill — boot progress as carved HUD, not neon bar.
 	var bg := StyleBoxFlat.new()
-	bg.bg_color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.10)
-	bg.set_corner_radius_all(4)
-	bg.set_border_width_all(1)
-	bg.border_color = Color(ThemeTokensLib.COLOR_PRIMARY, 0.25)
+	bg.bg_color = Color(GothicVisualsLib.STONE_BLACK, 0.90)
+	bg.set_corner_radius_all(6)
+	bg.set_border_width_all(2)
+	bg.border_color = Color(GothicVisualsLib.BRONZE, 0.72)
+	bg.shadow_color = Color(GothicVisualsLib.STONE_BLACK, 0.40)
+	bg.shadow_size = 4
 	var fill := StyleBoxFlat.new()
-	fill.bg_color = LnUiLib.GOAL
-	fill.set_corner_radius_all(4)
-	fill.shadow_color = Color(LnUiLib.GOAL, 0.55)
-	fill.shadow_size = 8
+	fill.bg_color = Color(GothicVisualsLib.GOLD.lerp(GothicVisualsLib.BRONZE, 0.20), 0.96)
+	fill.set_corner_radius_all(5)
+	fill.shadow_color = Color(GothicVisualsLib.GOLD, 0.35)
+	fill.shadow_size = 6
 	progress_bar.add_theme_stylebox_override("background", bg)
 	progress_bar.add_theme_stylebox_override("fill", fill)
 

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://about_screen"]
 
-[ext_resource type="Script" path="res://scripts/ui/About.gd" id="1_about"]
+[ext_resource type="Script" path="res://scripts/ui/GothicAbout.gd" id="1_about"]
 
 [node name="About" type="Control"]
 layout_mode = 3

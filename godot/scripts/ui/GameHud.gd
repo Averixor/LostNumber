@@ -12,7 +12,7 @@ const BONUS_WHEEL_ICONS := {
 	"shuffle": "wheel-shuffle.png",
 	"destroy": "wheel-break.png",
 }
-const BONUS_ICON_SIZE := 22
+const BONUS_ICON_SIZE := 28
 signal menu_pressed
 signal sound_pressed
 signal save_pressed
@@ -53,8 +53,9 @@ func _ready() -> void:
 	menu_button.pressed.connect(func(): menu_pressed.emit())
 	sound_button.pressed.connect(func(): sound_pressed.emit())
 	save_button.pressed.connect(func(): save_pressed.emit())
-	# Dark-only release: hide brightness cycle (cycle_theme is a dusk no-op).
+	# Keep emit path for Game.gd (theme_pressed); button stays hidden in dark-only.
 	if theme_button != null:
+		theme_button.pressed.connect(func(): theme_pressed.emit())
 		theme_button.visible = false
 		theme_button.disabled = true
 		theme_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -63,9 +64,9 @@ func _ready() -> void:
 	explosion_button.pressed.connect(func(): bonus_pressed.emit("explosion"))
 	_apply_styles()
 	_load_icons()
-	var theme := get_node_or_null("/root/ThemeManager")
-	if theme != null and theme.has_signal("theme_changed"):
-		theme.theme_changed.connect(_apply_styles)
+	var theme_mgr := get_node_or_null("/root/ThemeManager")
+	if theme_mgr != null and theme_mgr.has_signal("theme_changed"):
+		theme_mgr.theme_changed.connect(_apply_styles)
 
 
 func _center_level_label() -> void:
@@ -84,9 +85,9 @@ func _center_level_label() -> void:
 
 
 func _theme_color(method: String, fallback: Color) -> Color:
-	var theme := get_node_or_null("/root/ThemeManager")
-	if theme != null and theme.has_method(method):
-		return theme.call(method, true)
+	var theme_mgr := get_node_or_null("/root/ThemeManager")
+	if theme_mgr != null and theme_mgr.has_method(method):
+		return theme_mgr.call(method, true)
 	return fallback
 
 
