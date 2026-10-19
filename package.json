@@ -62,7 +62,7 @@
     "@cursor/sdk": "^1.0.37",
     "eslint": "^10.12.0",
     "globals": "^17.13.0",
-    "prettier": "^3.9.9",
+    "prettier": "^3.9.10",
     "typescript": "^5.9.3"
   },
   "engines": {
