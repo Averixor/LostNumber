@@ -1,9 +1,0 @@
-{
-  "recommendations": [
-    "streetsidesoftware.code-spell-checker",
-    "streetsidesoftware.code-spell-checker-ukrainian",
-    "streetsidesoftware.code-spell-checker-russian",
-    "openai.chatgpt",
-    "ms-vscode.powershell"
-  ]
-}
